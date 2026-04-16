@@ -1,0 +1,272 @@
+/* ─── ProofChain Landing — Minimal Dark Design ─── */
+
+:root {
+  --lp-bg: #000000;
+  --lp-surface: rgba(255, 255, 255, 0.03);
+  --lp-border: rgba(255, 255, 255, 0.08);
+  --lp-border-subtle: rgba(255, 255, 255, 0.05);
+  --lp-white: #ffffff;
+  --lp-gray-1: rgba(255, 255, 255, 0.72);
+  --lp-gray-2: rgba(255, 255, 255, 0.45);
+  --lp-gray-3: rgba(255, 255, 255, 0.25);
+  --lp-gray-4: rgba(255, 255, 255, 0.12);
+  --lp-accent: #e2e2e2;
+  --lp-blue: #4f8ef7;
+  --lp-blue-dim: rgba(79, 142, 247, 0.15);
+}
+
+/* Scrollbar */
+.lp-root { background: var(--lp-bg); overflow-x: hidden; }
+.lp-root::-webkit-scrollbar { width: 3px; }
+.lp-root::-webkit-scrollbar-track { background: transparent; }
+.lp-root::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 99px; }
+
+/* Noise texture */
+.noise-overlay::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.018;
+}
+
+/* ── Nav ── */
+.lp-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  transition: background 0.4s ease, border-color 0.4s ease;
+  border-bottom: 1px solid transparent;
+}
+.lp-nav.scrolled {
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: var(--lp-border-subtle);
+}
+
+/* ── Hero ── */
+.lp-hero-radial {
+  position: relative;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(255,255,255,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 20%, rgba(79,142,247,0.06) 0%, transparent 60%),
+    #000000;
+}
+
+.lp-hero-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 100%);
+}
+
+/* ── Gradient text ── */
+.lp-gradient-text {
+  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Section divider ── */
+.lp-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--lp-border) 30%, var(--lp-border) 70%, transparent 100%);
+}
+
+/* ── Glass Cards (Features & Roles) ── */
+.lp-feature-card, .lp-role-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.lp-feature-card {
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.lp-role-card {
+  border-radius: 20px;
+  padding: 40px 36px;
+}
+
+.lp-feature-card::before, .lp-role-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.lp-feature-card:hover, .lp-role-card:hover {
+  transform: scale(1.02) translateY(-4px);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: 0 24px 48px -12px rgba(16, 185, 129, 0.15), inset 0 1px 1px rgba(16, 185, 129, 0.2), 0 0 20px rgba(16, 185, 129, 0.05);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.04) 0%, rgba(16, 185, 129, 0.01) 100%);
+}
+
+.lp-feature-card:hover::before, .lp-role-card:hover::before {
+  opacity: 1;
+}
+
+/* ── Step number ── */
+.lp-step-num {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lp-gray-3);
+}
+
+/* ── Buttons ── */
+.lp-btn-primary {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+.lp-btn-primary:hover {
+  background: #e8e8e8;
+  transform: translateY(-1px);
+}
+.lp-btn-primary:active { transform: scale(0.98); }
+
+.lp-btn-primary-emer {
+  background: #ffffff;
+  color: #000000;
+  font-weight: 600;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 0 rgba(16, 185, 129, 0);
+}
+.lp-btn-primary-emer:hover {
+  background: #10b981;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -6px rgba(16, 185, 129, 0.4);
+}
+.lp-btn-primary-emer:active { transform: scale(0.98); }
+
+.lp-btn-ghost {
+  color: var(--lp-gray-2);
+  border: 1px solid var(--lp-border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+.lp-btn-ghost:hover {
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+}
+
+.lp-btn-ghost-emer {
+  color: var(--lp-gray-2);
+  border: 1px solid var(--lp-border);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lp-btn-ghost-emer:hover {
+  color: #10b981;
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -8px rgba(16, 185, 129, 0.15);
+}
+.lp-btn-ghost-emer:active { transform: scale(0.98); }
+
+/* Tech Section Glass Card Hover */
+.glass-card-emer {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card-emer:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.03);
+  box-shadow: 0 16px 40px -12px rgba(16, 185, 129, 0.15), inset 0 1px 1px rgba(16, 185, 129, 0.2);
+}
+
+/* ── Scroll indicator ── */
+@keyframes scroll-pulse {
+  0%, 100% { opacity: 0.3; transform: translateY(0); }
+  50%       { opacity: 0.8; transform: translateY(6px); }
+}
+.lp-scroll-dot { animation: scroll-pulse 2s ease-in-out infinite; }
+
+/* ── Badge ── */
+.lp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--lp-border);
+  background: rgba(255,255,255,0.04);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--lp-gray-2);
+}
+.lp-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+}
+
+/* ── CTA glow ── */
+.lp-cta-glow {
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255,255,255,0.05) 0%, transparent 60%),
+    #000;
+}
+
+/* ── Footer ── */
+.lp-footer-line {
+  height: 1px;
+  background: var(--lp-border-subtle);
+}
+
+/* ── Section label ── */
+.lp-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--lp-gray-3);
+}
+
+/* ── Number highlight ── */
+.lp-number {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* ── Responsive hero text ── */
+.lp-hero-h1 {
+  font-size: clamp(2.6rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.06;
+}
+
+.lp-section-h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+}
