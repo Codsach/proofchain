@@ -277,11 +277,16 @@ export function DashboardCharts() {
       {/* 8. Geographic Distribution Map */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl"
+        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl min-w-0"
       >
         <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Geographic Case Origins</h3>
-        <div className="h-[400px] w-full bg-[#050505] rounded-xl overflow-hidden relative">
-          <ComposableMap projectionConfig={{ scale: 140 }}>
+        <div className="h-[500px] w-full bg-[#050505] rounded-xl overflow-hidden relative flex items-center justify-center">
+          <ComposableMap 
+            projectionConfig={{ scale: 140, center: [0, 20] }} 
+            width={800} 
+            height={400}
+            style={{ width: "100%", height: "100%", objectFit: "contain" }}
+          >
             <Geographies geography={geoUrl}>
               {({ geographies }) =>
                 geographies.map((geo) => (
