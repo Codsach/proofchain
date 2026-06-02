@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { DashboardCharts } from "@/components/admin/DashboardCharts";
 
 interface Stats {
   total: number;
@@ -135,6 +136,9 @@ export default function AdminPage() {
           </motion.div>
         ))}
       </div>
+
+      {/* Analytics Charts */}
+      <DashboardCharts />
     </div>
   );
 }
