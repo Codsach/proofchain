@@ -86,11 +86,11 @@ export function DashboardCharts() {
       {/* 1. Case Volume Over Time */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl"
+        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl min-w-0"
       >
         <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Case Volume Over Time</h3>
-        <div className="h-[300px] w-full">
-          <ChartContainer config={{ cases: { label: "Cases", color: "var(--dash-accent)" } }}>
+        <div className="h-[300px] w-full min-w-0 overflow-hidden">
+          <ChartContainer config={{ cases: { label: "Cases", color: "var(--dash-accent)" } }} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={volumeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
@@ -171,15 +171,15 @@ export function DashboardCharts() {
       {/* 4. Case Status Breakdown */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl"
+        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
       >
         <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Status Breakdown</h3>
-        <div className="h-[250px] w-full">
+        <div className="h-[250px] w-full min-w-0 overflow-hidden">
           <ChartContainer config={{ 
             verified: { label: "Verified", color: "#10b981" },
             pending: { label: "Pending", color: "#f59e0b" },
             rejected: { label: "Rejected", color: "#f43f5e" }
-          }}>
+          }} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={statusBreakdownData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
@@ -198,11 +198,11 @@ export function DashboardCharts() {
       {/* 3. Tamper Score Histogram */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl"
+        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
       >
         <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Tamper Score Spread</h3>
-        <div className="h-[250px] w-full">
-          <ChartContainer config={{ count: { label: "Cases", color: "#8b5cf6" } }}>
+        <div className="h-[250px] w-full min-w-0 overflow-hidden">
+          <ChartContainer config={{ count: { label: "Cases", color: "#8b5cf6" } }} className="h-full w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={tamperScoreData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barCategoryGap={1}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
