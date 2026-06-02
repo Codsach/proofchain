@@ -7,7 +7,7 @@ import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
+import { InvestigatorCharts } from "@/components/investigator/InvestigatorCharts";
 type InvestigatorCase = {
   _id: string;
   caseId: string;
@@ -178,6 +178,8 @@ export default function InvestigatorPage() {
           </motion.div>
         ))}
       </div>
+
+      {!isLoadingCases && !error && <InvestigatorCharts cases={cases} />}
 
       {isLoadingCases ? (
         <div className="space-y-4">

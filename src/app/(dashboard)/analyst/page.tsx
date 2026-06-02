@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AnalystMetrics } from "@/components/analyst/AnalystMetrics";
 
 interface QueueCase {
   caseId: string;
@@ -77,6 +78,9 @@ export default function AnalystPage() {
           Welcome back, <span className="text-white/70">{user?.fullName}</span>. Please review the pending evidence submissions for cryptographic and visual integrity.
         </p>
       </motion.div>
+
+      {/* Metrics Dashboard */}
+      <AnalystMetrics />
 
       {/* Filters */}
       <motion.div 
