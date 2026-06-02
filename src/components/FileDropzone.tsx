@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, FileRejection } from "react-dropzone";
 
 const ACCEPTED_TYPES = {
   "image/jpeg": [".jpg", ".jpeg"],
@@ -25,7 +25,7 @@ export function FileDropzone({ files, onChange, error }: Props) {
   const [dropError, setDropError] = useState<string | null>(null);
 
   const onDrop = useCallback(
-    (accepted: File[], rejected: { file: File; errors: { message: string }[] }[]) => {
+    (accepted: File[], rejected: FileRejection[]) => {
       setDropError(null);
 
       if (rejected.length > 0) {

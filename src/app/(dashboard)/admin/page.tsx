@@ -37,10 +37,10 @@ export default function AdminPage() {
   }, [getToken]);
 
   const statCards = [
-    { label: "Total Cases", value: stats?.total, color: "text-white", glow: "emerald" },
+    { label: "Total Cases", value: stats?.total, color: "text-dash-text", glow: "emerald" },
     { label: "Pending Review", value: stats?.pending, color: "text-amber-400", glow: "amber" },
     { label: "High Risk", value: stats?.highRisk, color: "text-rose-500", glow: "rose" },
-    { label: "Verified Data", value: stats?.verified, color: "text-emerald-400", glow: "emerald" },
+    { label: "Verified Data", value: stats?.verified, color: "text-dash-accent", glow: "emerald" },
   ];
 
   const container = {
@@ -62,12 +62,12 @@ export default function AdminPage() {
     <div className="space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-emerald-500/50" />
-          <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em]">System Overview</p>
+          <div className="h-px w-8 bg-dash-accent/50" />
+          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">System Overview</p>
         </div>
-        <h1 className="text-4xl font-bold text-white tracking-tight">Admin Dashboard</h1>
-        <p className="text-white/40 mt-2 font-medium">
-          Welcome back, <span className="text-white">{user?.fullName}</span>. Operational status is nominal.
+        <h1 className="text-4xl font-bold text-dash-text tracking-tight">Admin Dashboard</h1>
+        <p className="text-dash-muted mt-2 font-medium">
+          Welcome back, <span className="text-dash-text">{user?.fullName}</span>. Operational status is nominal.
         </p>
       </div>
 
@@ -83,13 +83,13 @@ export default function AdminPage() {
             variants={item}
             key={card.label} 
             whileHover={{ y: -4, scale: 1.02 }}
-            className="relative overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-xl p-6 space-y-3 group transition-all hover:border-white/10"
+            className="relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-3 group transition-all hover:border-dash-muted/20"
           >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-white/[0.01] rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-700" />
-            <p className="text-xs font-bold text-white/30 uppercase tracking-widest leading-none">{card.label}</p>
+            <div className="absolute top-0 right-0 w-24 h-24 bg-dash-hover rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-700" />
+            <p className="text-xs font-bold text-dash-muted uppercase tracking-widest leading-none">{card.label}</p>
             <div className="flex items-baseline gap-2">
               {isLoading ? (
-                <Skeleton className="h-10 w-16 bg-white/5" />
+                <Skeleton className="h-10 w-16 bg-dash-border" />
               ) : (
                 <p className={`text-4xl font-bold tracking-tight ${card.color}`}>
                   {card.value ?? "0"}
@@ -97,7 +97,7 @@ export default function AdminPage() {
               )}
             </div>
             <div className={`h-1 w-8 rounded-full transition-all duration-500 group-hover:w-full ${
-              card.glow === "emerald" ? "bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" :
+              card.glow === "emerald" ? "bg-dash-accent shadow-[0_0_10px_var(--dash-accent-glow)]" :
               card.glow === "amber" ? "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" :
               "bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]"
             }`} />
@@ -117,15 +117,15 @@ export default function AdminPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 + (idx * 0.1) }}
             key={link.href}
-            className="group relative rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] p-1 transition-all duration-300 hover:border-emerald-500/20 shadow-2xl"
+            className="group relative rounded-2xl border border-dash-border bg-dash-sidebar hover:bg-dash-hover p-1 transition-all duration-300 hover:border-dash-accent/20 shadow-2xl"
           >
             <div className="p-6 space-y-4">
               <div className="space-y-1">
-                <p className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">{link.label}</p>
-                <p className="text-xs text-white/40 leading-relaxed font-medium">{link.desc}</p>
+                <p className="text-sm font-bold text-dash-text group-hover:text-dash-accent transition-colors">{link.label}</p>
+                <p className="text-xs text-dash-muted leading-relaxed font-medium">{link.desc}</p>
               </div>
               
-              <Button asChild variant="ghost" className="w-full justify-between h-10 px-4 bg-white/5 border border-white/5 hover:bg-emerald-500 hover:text-black hover:border-emerald-500 text-white transition-all rounded-xl group-hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]">
+              <Button asChild variant="ghost" className="w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:bg-dash-accent hover:text-[#050505] hover:border-dash-accent text-dash-text transition-all rounded-xl group-hover:shadow-[0_0_20px_var(--dash-accent-glow)]">
                 <Link href={link.href}>
                   <span className="text-[10px] font-bold uppercase tracking-wider">Access Module</span>
                   <span className="text-lg opacity-50 group-hover:translate-x-1 transition-transform">→</span>

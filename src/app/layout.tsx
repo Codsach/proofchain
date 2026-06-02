@@ -1,9 +1,20 @@
 import type { Metadata, Viewport } from "next";
+import { Orbitron, Exo_2 } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 import { AuthProvider } from "@/components/providers/AuthContext";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  variable: "--font-orbitron",
+});
+
+const exo2 = Exo_2({
+  subsets: ["latin"],
+  variable: "--font-exo2",
+});
 
 export const metadata: Metadata = {
   title: "ProofChain — Digital Forensic Evidence Platform",
@@ -28,7 +39,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f1117",
+  themeColor: "#000000",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -41,7 +52,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" className={`dark ${orbitron.variable} ${exo2.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA iOS meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -51,7 +62,7 @@ export default function RootLayout({
         {/* Required for camera access on iOS PWA */}
         <meta name="allow" content="camera; geolocation; microphone" />
       </head>
-      <body>
+      <body className="font-sans antialiased bg-black selection:bg-emerald-500/30">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

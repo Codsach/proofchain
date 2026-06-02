@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
+import { Mail, Lock } from "lucide-react";
 import { LoginInput, LoginSchema } from "@/lib/schemas/auth";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -140,12 +141,15 @@ export default function LoginForm({
                   <FormItem className="space-y-1.5">
                     <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="admin@proofchain.io"
-                        className="bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                        <Input
+                          type="email"
+                          placeholder="admin@proofchain.io"
+                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -159,12 +163,15 @@ export default function LoginForm({
                   <FormItem className="space-y-1.5">
                     <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        className="bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs" />
                   </FormItem>

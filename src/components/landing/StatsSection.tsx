@@ -35,7 +35,7 @@ export default function StatsSection() {
       <div className="max-w-6xl mx-auto">
         {/* Logo Ticker */}
         <div className={`flex items-center justify-center flex-wrap gap-8 mb-16 reveal ${isVisible ? "visible" : ""}`}>
-          <span className="text-xs uppercase tracking-widest mr-2" style={{ color: "rgba(255,255,255,0.25)" }}>
+          <span className="text-xs uppercase tracking-widest mr-2" style={{ color: "rgba(15, 23, 42, 0.25)" }}>
             Powered by
           </span>
           {logos.map((l, i) => (
@@ -44,7 +44,7 @@ export default function StatsSection() {
               className={`flex items-center gap-2 reveal reveal-delay-${i + 1} ${isVisible ? "visible" : ""}`}
             >
               <span className="text-xl" style={{ color: "rgba(99,102,241,0.7)" }}>{l.icon}</span>
-              <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
+              <span className="text-sm font-medium" style={{ color: "rgba(15, 23, 42, 0.35)" }}>
                 {l.name}
               </span>
             </div>
@@ -53,7 +53,7 @@ export default function StatsSection() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-px"
-          style={{ background: "rgba(255,255,255,0.04)", borderRadius: "20px", overflow: "hidden" }}
+          style={{ background: "rgba(15, 23, 42, 0.04)", borderRadius: "20px", overflow: "hidden" }}
         >
           {stats.map((s, i) => (
             <div
@@ -67,8 +67,8 @@ export default function StatsSection() {
               >
                 {s.value}
               </span>
-              <span className="text-sm font-semibold text-white mb-1">{s.label}</span>
-              <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>{s.sublabel}</span>
+              <span className="text-sm font-semibold text-slate-800 mb-1">{s.label}</span>
+              <span className="text-xs" style={{ color: "rgba(15, 23, 42, 0.35)" }}>{s.sublabel}</span>
             </div>
           ))}
         </div>

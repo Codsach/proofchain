@@ -1,15 +1,16 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { Database, Bot, History, Gavel, QrCode, Smartphone } from "lucide-react";
 
-const revealVariant = {
+const revealVariant: Variants = {
   hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
   visible: (i = 0) => ({
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 0.85, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.85, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as const },
   }),
 };
 
@@ -17,78 +18,89 @@ const features = [
   {
     label: "01",
     title: "IPFS + Blockchain Anchoring",
-    body: "Every submitted file is stored on IPFS and given a content-addressed CID. Its SHA-256 hash, CID, and Unix timestamp are anchored to the Polygon Amoy blockchain within 60 seconds — making any post-submission alteration mathematically detectable.",
-    tag: "SUB-03 · SUB-04 · SUB-05",
+    body: "Every submitted file is stored on IPFS and given a content-addressed CID. Its SHA-256 hash, CID, and Unix timestamp are anchored to the Polygon Amoy blockchain within 60 seconds.",
+    tag: "SUB-03 · SUB-04",
+    colSpan: "md:col-span-2",
+    rowSpan: "md:row-span-1",
+    Icon: Database,
   },
   {
     label: "02",
     title: "AI Tamper Analysis",
-    body: "An automated pipeline runs on every submission: ExifTool extracts metadata (GPS, device, software, timestamps). Gemini Vision API scans for lighting inconsistencies, cloning artifacts, and splicing boundaries. A composite tamper score 0–100 is produced within 30 seconds.",
-    tag: "AI-02 · AI-04 · AI-05",
+    body: "An automated pipeline runs on every submission: ExifTool extracts metadata. Gemini Vision API scans for lighting inconsistencies, cloning artifacts, and splicing boundaries.",
+    tag: "AI-02 · AI-04",
+    colSpan: "md:col-span-1",
+    rowSpan: "md:row-span-2",
+    Icon: Bot,
   },
   {
     label: "03",
-    title: "Chain-of-Custody Transfer Log",
-    body: "Every handoff of evidence between investigators and analysts is cryptographically signed. Each transfer records a keccak256 hash of (from + to + reason + timestamp) on-chain — proving the handoff occurred without exposing user identities. Maximum 10 transfers per case.",
-    tag: "TRF-01 · TRF-04 · TRF-07",
+    title: "Chain-of-Custody",
+    body: "Every handoff of evidence between investigators and analysts is cryptographically signed.",
+    tag: "TRF-01 · TRF-04",
+    colSpan: "md:col-span-1",
+    rowSpan: "md:row-span-1",
+    Icon: History,
   },
   {
     label: "04",
-    title: "Analyst Verdict — On-Chain",
-    body: "Analysts review the AI report, EXIF findings, and on-chain hash. They issue a signed verdict (Verified or Rejected) with a mandatory written reason. The verdict hash is recorded in the smart contract — immutable, timestamped, and publicly auditable.",
-    tag: "REV-03 · REV-04 · REV-05",
+    title: "On-Chain Verdict",
+    body: "Analysts issue a signed verdict with a mandatory written reason. The verdict hash is recorded in the smart contract.",
+    tag: "REV-03 · REV-04",
+    colSpan: "md:col-span-1",
+    rowSpan: "md:row-span-1",
+    Icon: Gavel,
   },
   {
     label: "05",
     title: "Public QR Verification",
-    body: "Every submission has a public verification URL — /verify/[caseId] — requiring no login. Anyone can verify the on-chain hash, submission timestamp, transfer count, and verdict status. A QR code is generated for each submission at the point of creation.",
-    tag: "VER-01 · VER-02 · VER-04",
+    body: "Every submission has a public verification URL requiring no login. Anyone can verify the on-chain hash, submission timestamp, transfer count, and verdict status.",
+    tag: "VER-01 · VER-02",
+    colSpan: "md:col-span-2",
+    rowSpan: "md:row-span-1",
+    Icon: QrCode,
   },
   {
     label: "06",
-    title: "Mobile PWA — Camera + GPS",
-    body: "Investigators submit evidence directly from the field using the installed PWA on iOS or Android. The app accesses the device camera for photo and video capture, embeds GPS coordinates, and queues submissions offline if connectivity is interrupted.",
-    tag: "MOB-02 · MOB-03 · MOB-04",
+    title: "Mobile PWA",
+    body: "Investigators submit evidence directly from the field using the installed PWA. The app accesses the device camera and queues submissions offline.",
+    tag: "MOB-02 · MOB-03",
+    colSpan: "md:col-span-3", // Full width on mobile/tablet, stretches on desktop
+    rowSpan: "md:row-span-1",
+    Icon: Smartphone,
   },
 ];
 
 export default function FeaturesSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Track section through the viewport — from entering bottom to leaving top
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
-  // Layer 1 — background glow blob (slowest, barely moves)
   const bgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-
-  // Layer 2 — section header (medium speed)
   const headerY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
-
-  // Layer 3 — card grid (fastest inner layer)
   const gridY = useTransform(scrollYProgress, [0, 1], ["-2%", "2%"]);
 
   return (
     <section
       ref={sectionRef}
       id="features"
-      style={{ padding: "120px 24px", position: "relative", overflow: "hidden" }}
+      className="bg-[#041a11] py-[120px] px-6 relative overflow-hidden font-sans"
     >
       <style>
         {`
-          .liquid-glass-border::before {
-             content: "";
-             position: absolute;
-             inset: 0;
-             padding: 1.4px;
-             border-radius: inherit;
-             background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0));
-             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-             -webkit-mask-composite: xor;
-             mask-composite: exclude;
-             pointer-events: none;
+          .bento-glass {
+             background: rgba(255, 255, 255, 0.03);
+             backdrop-filter: blur(12px);
+             -webkit-backdrop-filter: blur(12px);
+             border: 1px solid rgba(255, 255, 255, 0.08);
+             border-radius: 24px;
+          }
+          .bento-glass:hover {
+             border-color: rgba(194, 163, 50, 0.3);
+             background: rgba(194, 163, 50, 0.05);
           }
         `}
       </style>
@@ -105,7 +117,7 @@ export default function FeaturesSection() {
           maxWidth: 700,
           height: 400,
           background:
-            "radial-gradient(ellipse at center, rgba(16,185,129,0.07) 0%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(194, 163, 50, 0.05) 0%, rgba(161, 133, 37, 0.03) 50%, transparent 70%)",
           pointerEvents: "none",
           zIndex: 0,
           y: bgY,
@@ -113,44 +125,38 @@ export default function FeaturesSection() {
         }}
       />
 
-      <div style={{ maxWidth: 1120, margin: "0 auto", position: "relative", zIndex: 1 }}>
+      <div className="max-w-[1120px] mx-auto relative z-10">
         {/* Layer 2 — Header (medium parallax) */}
         <motion.div
           style={{
             marginBottom: 80,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            textAlign: "center",
             y: headerY,
             willChange: "transform",
           }}
+          className="flex flex-col items-center text-center"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
         >
-          <motion.p variants={revealVariant} custom={0} className="lp-section-label" style={{ margin: 0 }}>
+          <motion.p variants={revealVariant} custom={0} className="text-[var(--lp-accent)] font-semibold text-sm tracking-wider uppercase mb-4">
             Platform Features
           </motion.p>
           <motion.h2
             variants={revealVariant}
             custom={1}
-            className="lp-section-h2"
-            style={{ color: "#fff", maxWidth: 520, margin: "16px auto 0" }}
+            className="font-heading text-4xl md:text-5xl font-bold text-white max-w-[520px]"
           >
-            Everything the forensic workflow requires
+            Bento Grid Showcase
           </motion.h2>
         </motion.div>
 
-        {/* Layer 3 — Card grid (fastest inner layer) */}
+        {/* Layer 3 — Bento Card grid */}
         <motion.div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: 24,
             y: gridY,
             willChange: "transform",
           }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-min"
         >
           {features.map((f, i) => (
             <FeatureCell key={f.label} feature={f} index={i} />
@@ -171,70 +177,26 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
       viewport={{ once: true, margin: "-60px" }}
       variants={revealVariant}
       custom={col}
-      style={{
-        background: "rgba(255, 255, 255, 0.01)",
-        backgroundBlendMode: "luminosity",
-        backdropFilter: "blur(4px)",
-        WebkitBackdropFilter: "blur(4px)",
-        boxShadow: "inset 0 1px 1px rgba(255, 255, 255, 0.1)",
-        borderRadius: "24px",
-        position: "relative",
-        padding: "40px 36px",
-        display: "flex",
-        flexDirection: "column",
-        gap: 16,
-        willChange: "transform, opacity",
-      }}
+      className={`bento-glass relative p-8 md:p-10 flex flex-col gap-4 transition-colors duration-300 ${feature.colSpan} ${feature.rowSpan}`}
       whileHover={{
-        backgroundColor: "rgba(16,185,129,0.03)",
         y: -6,
         scale: 1.02,
-        boxShadow: "0 16px 40px -12px rgba(16,185,129,0.2), inset 0 1px 1px rgba(16,185,129,0.3)",
-        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+        boxShadow: "0 24px 48px -12px rgba(194, 163, 50, 0.15), inset 0 1px 1px rgba(194, 163, 50, 0.3)",
+        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
       }}
     >
-      <motion.div
-        className="liquid-glass-border"
-        style={{ position: "absolute", inset: 0, borderRadius: "inherit", pointerEvents: "none" }}
-        initial={{ opacity: 1 }}
-        whileHover={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      />
-      <motion.div
-        style={{
-          content: '""',
-          position: "absolute",
-          inset: 0,
-          padding: "1.4px",
-          borderRadius: "inherit",
-          background: "linear-gradient(180deg, rgba(16,185,129,0.6), rgba(16,185,129,0))",
-          WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-          pointerEvents: "none",
-          opacity: 0,
-        }}
-        whileHover={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
-      />
-
-      <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", gap: 16, flex: 1 }}>
-        <span className="lp-step-num">{feature.label}</span>
-        <h3 style={{ fontSize: 17, fontWeight: 600, color: "#fff", lineHeight: 1.3, margin: 0 }}>
+      <div className="relative z-10 flex flex-col gap-4 h-full">
+        <div className="flex items-center justify-between">
+          <span className="text-[var(--lp-accent)]/80 font-mono text-sm tracking-widest">{feature.label}</span>
+          <feature.Icon className="text-[var(--lp-accent)]/60" size={24} />
+        </div>
+        <h3 className="font-heading text-xl md:text-2xl font-bold text-white leading-tight">
           {feature.title}
         </h3>
-        <p style={{ fontSize: 14, color: "rgba(255,255,255,0.42)", lineHeight: 1.7, margin: 0, flex: 1 }}>
+        <p className="font-sans text-slate-300/80 text-sm md:text-base leading-relaxed flex-1">
           {feature.body}
         </p>
-        <span
-          style={{
-            fontSize: 11,
-            fontFamily: "monospace",
-            color: "rgba(255,255,255,0.2)",
-            letterSpacing: "0.04em",
-            marginTop: 8,
-          }}
-        >
+        <span className="font-mono text-xs text-[var(--lp-accent)]/40 tracking-wider mt-4">
           {feature.tag}
         </span>
       </div>

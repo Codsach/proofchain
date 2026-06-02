@@ -6,13 +6,13 @@ import { logAction } from "@/lib/audit";
 
 async function getCase(
   req: NextRequest,
-  ctx: { params: Record<string, string> },
+  ctx: { params: Promise<{ id: string }> },
   user: JWTPayload
 ) {
   try {
     await connectDB();
 
-    const { caseId } = ctx.params;
+    const { id: caseId } = await ctx.params;
 
     const query = Case.findOne({ caseId }).select("-__v");
 
@@ -28,7 +28,7 @@ async function getCase(
     }
 
     // Strip investigator identity from analyst view — PRD REV-08
-    let responseDoc: Record<string, unknown> = { ...caseDoc as Record<string, unknown> };
+    let responseDoc: Record<string, unknown> = { ...caseDoc as unknown as Record<string, unknown> };
     if (user.role === "analyst") {
       delete responseDoc.investigatorId;
     }

@@ -77,22 +77,22 @@ export default function AdminCasesPage() {
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-emerald-500/50" />
-          <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em]">Evidence Repository</p>
+          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Evidence Repository</p>
         </div>
-        <h1 className="text-4xl font-bold text-white tracking-tight">Global Archives</h1>
-        <p className="text-white/40 mt-2 font-medium">
-          Accessing <span className="text-white">{cases.length}</span> forensic subjects in this sector. 
+        <h1 className="text-4xl font-bold text-dash-text tracking-tight">Global Archives</h1>
+        <p className="text-dash-muted mt-2 font-medium">
+          Accessing <span className="text-dash-text">{cases.length}</span> forensic subjects in this sector. 
         </p>
       </div>
 
-      <div className="flex bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-xl shadow-2xl items-center gap-4">
+      <div className="flex bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl shadow-2xl items-center gap-4">
         <div className="space-y-1.5 min-w-[200px]">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Lifecycle Status</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle Status</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="bg-white/[0.03] border-white/5 hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
               <SelectValue placeholder="All states" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-950 border-white/10 text-white font-medium">
+            <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
               <SelectItem value="all">All statuses</SelectItem>
               <SelectItem value="pending_ai_review">AI Scanning</SelectItem>
               <SelectItem value="pending_review">Pending Review</SelectItem>
@@ -109,27 +109,27 @@ export default function AdminCasesPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4, 5, 6].map((n) => (
-            <Skeleton key={n} className="h-16 w-full rounded-2xl bg-white/[0.03]" />
+            <Skeleton key={n} className="h-16 w-full rounded-2xl bg-dash-hover" />
           ))}
         </div>
       ) : cases.length === 0 ? (
-        <div className="rounded-3xl border border-white/5 bg-white/[0.01] backdrop-blur-2xl p-20 text-center shadow-2xl">
-          <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
-            <span className="text-white/20">∅</span>
+        <div className="rounded-3xl border border-dash-border bg-dash-sidebar backdrop-blur-2xl p-20 text-center shadow-2xl">
+          <div className="w-12 h-12 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-4 border border-dash-border">
+            <span className="text-dash-muted">∅</span>
           </div>
-          <p className="text-white/30 text-sm font-medium">No encrypted records match current query parameters.</p>
+          <p className="text-dash-muted text-sm font-medium">No encrypted records match current query parameters.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02]">
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px]">Case Descriptor</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px]">Integrity Score</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px]">Phase</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px] hidden sm:table-cell">Ingestion Date</th>
+                <tr className="border-b border-dash-border bg-dash-card">
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Case Descriptor</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Integrity Score</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Phase</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Ingestion Date</th>
                   <th className="px-6 py-4" />
                 </tr>
               </thead>
@@ -145,15 +145,15 @@ export default function AdminCasesPage() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <p className="font-semibold text-white group-hover:text-emerald-400 transition-colors truncate max-w-[200px]">
+                          <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors truncate max-w-[200px]">
                             {c.title}
                           </p>
-                          <p className="text-[10px] text-white/20 font-mono mt-0.5 tracking-tighter">
+                          <p className="text-[10px] text-dash-muted font-mono mt-0.5 tracking-tighter">
                             OBJID::{c.caseId.slice(0, 12)}
                           </p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell text-white/40 text-xs">
+                      <td className="px-6 py-4 hidden md:table-cell text-dash-muted text-xs">
                         {INCIDENT_LABELS[c.incidentType] ?? c.incidentType}
                       </td>
                       <td className="px-6 py-4 group-hover:scale-105 transition-transform duration-300 origin-left">
@@ -165,13 +165,13 @@ export default function AdminCasesPage() {
                       <td className="px-6 py-4">
                         <CaseStatusBadge status={c.status} />
                       </td>
-                      <td className="px-6 py-4 text-white/30 text-xs hidden sm:table-cell font-mono">
+                      <td className="px-6 py-4 text-dash-muted text-xs hidden sm:table-cell font-mono">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <Link
                           href={`/admin/cases/${c.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/60 hover:text-emerald-400 transition-all border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 rounded-lg hover:border-emerald-500/40 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none"
+                          className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 rounded-lg hover:border-emerald-500/40 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none"
                         >
                           Inspect →
                         </Link>
@@ -193,14 +193,14 @@ export default function AdminCasesPage() {
             size="sm"
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page === 1 || isLoading}
-            className="text-[10px] font-bold uppercase tracking-widest text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all outline-none"
+            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent hover:text-dash-accent hover:bg-emerald-500/5 transition-all outline-none"
           >
             ← Previous Channel
           </Button>
           <div className="flex items-center gap-4">
             <div className="h-px w-8 bg-white/10" />
-            <span className="text-[10px] font-bold text-white/20 uppercase tracking-[0.2em]">
-              Sector <span className="text-white">{page}</span> of {totalPages}
+            <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">
+              Sector <span className="text-dash-text">{page}</span> of {totalPages}
             </span>
             <div className="h-px w-8 bg-white/10" />
           </div>
@@ -209,7 +209,7 @@ export default function AdminCasesPage() {
             size="sm"
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page === totalPages || isLoading}
-            className="text-[10px] font-bold uppercase tracking-widest text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/5 transition-all outline-none"
+            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent hover:text-dash-accent hover:bg-emerald-500/5 transition-all outline-none"
           >
             Next Channel →
           </Button>

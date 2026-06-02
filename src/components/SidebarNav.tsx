@@ -6,6 +6,10 @@ import {
   ShieldCheck,
   Sparkles,
   Users,
+  ShieldHalf,
+  Settings2,
+  Layers,
+  Scale
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -16,7 +20,7 @@ export function SidebarNav() {
       <div className="flex h-full flex-col px-4 py-5 sm:px-5">
         <div className="flex items-center gap-3">
           <div className="flex size-11 items-center justify-center rounded-2xl border border-emerald-400/30 bg-emerald-500/10 text-sm font-semibold tracking-[0.2em] text-emerald-100">
-            PC
+            <ShieldHalf size={24} className="text-emerald-400" />
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-zinc-500">
@@ -27,7 +31,8 @@ export function SidebarNav() {
         </div>
 
         <div className="mt-6 rounded-3xl border border-white/10 bg-white/5 p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.35em] text-zinc-500">
+          <p className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-zinc-500">
+            <Settings2 size={14} />
             Control Room
           </p>
           <p className="mt-3 text-sm leading-6 text-zinc-300">
@@ -37,7 +42,8 @@ export function SidebarNav() {
 
         <nav className="mt-6 space-y-6">
           <div>
-            <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-zinc-500">
+            <p className="flex items-center gap-2 mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-zinc-500">
+              <Layers size={14} />
               Workspace
             </p>
             <div className="space-y-1.5">
@@ -69,7 +75,8 @@ export function SidebarNav() {
           </div>
 
           <div>
-            <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-zinc-500">
+            <p className="flex items-center gap-2 mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.35em] text-zinc-500">
+              <Scale size={14} />
               Governance
             </p>
             <div className="space-y-1.5">

@@ -47,8 +47,8 @@ export default function LandingNav() {
       >
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/logo.png" alt="ProofChain Logo" width="28" height="28" style={{ objectFit: 'contain' }} />
-          <span style={{ fontSize: 15, fontWeight: 600, color: "#ffffff", letterSpacing: "-0.01em" }}>
+          <img src="/logo.png" alt="ProofChain Logo" width="26" height="26" style={{ objectFit: 'contain' }} />
+          <span style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em" }}>
             ProofChain
           </span>
         </Link>
@@ -62,14 +62,20 @@ export default function LandingNav() {
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "rgba(255,255,255,0.5)",
+                color: "rgba(15, 23, 42, 0.5)",
                 padding: "6px 14px",
                 borderRadius: 8,
                 textDecoration: "none",
-                transition: "color 0.2s",
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = "#ffffff";
+                e.currentTarget.style.textShadow = "0 0 10px rgba(0, 242, 254, 0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = "rgba(15, 23, 42, 0.5)";
+                e.currentTarget.style.textShadow = "none";
+              }}
             >
               {label}
             </a>
@@ -81,7 +87,15 @@ export default function LandingNav() {
           <Link
             href={getDashboardUrl()}
             className="lp-btn-primary"
-            style={{ padding: "8px 20px", fontSize: 14, textDecoration: "none" }}
+            style={{ 
+              padding: "8px 24px", 
+              fontSize: 13.5, 
+              textDecoration: "none",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "36px"
+            }}
           >
             {user ? "Dashboard" : "Sign In"}
           </Link>

@@ -34,15 +34,10 @@ export default function CTASection() {
   return (
     <section
       ref={sectionRef}
-      className="lp-cta-glow"
-      style={{
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        padding: "140px 24px",
-        textAlign: "center",
-        position: "relative",
-        overflow: "hidden",
-      }}
+      className="bg-gradient-to-b from-[#022c22] to-[#021810] relative overflow-hidden text-center py-36 px-6 border-t border-white/5 font-sans"
     >
+      {/* Premium ambient light sweep matching reference mockup */}
+      <div className="lp-ambient-sweep-horizontal-bottom" style={{ bottom: "-15%", opacity: 0.85 }} />
       {/* Layer 1 — large central glow blob (slowest) */}
       <motion.div
         aria-hidden
@@ -55,7 +50,7 @@ export default function CTASection() {
           maxWidth: 800,
           height: 500,
           background:
-            "radial-gradient(ellipse at center, rgba(16,185,129,0.08) 0%, transparent 65%)",
+            "radial-gradient(ellipse at center, rgba(161, 133, 37, 0.06) 0%, rgba(194, 163, 50, 0.03) 50%, transparent 65%)",
           pointerEvents: "none",
           zIndex: 0,
           y: bgY,
@@ -74,8 +69,7 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={0}
-            className="lp-section-label"
-            style={{ marginBottom: 24 }}
+            className="text-[var(--lp-accent)] font-mono text-sm tracking-widest uppercase mb-6"
           >
             ProofChain
           </motion.p>
@@ -83,8 +77,7 @@ export default function CTASection() {
           <motion.h2
             variants={revealVariant}
             custom={1}
-            className="lp-section-h2"
-            style={{ color: "#fff", marginBottom: 20 }}
+            className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
           >
             Evidence that cannot be denied.
           </motion.h2>
@@ -100,12 +93,7 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={0}
-            style={{
-              fontSize: 16,
-              color: "rgba(255,255,255,0.38)",
-              lineHeight: 1.7,
-              marginBottom: 44,
-            }}
+            className="font-sans text-slate-200/80 text-base md:text-lg leading-relaxed mb-12 max-w-lg mx-auto"
           >
             Built for cybersecurity and digital forensics teams who need
             cryptographically guaranteed chain of custody — not just a file store.
@@ -114,21 +102,19 @@ export default function CTASection() {
           <motion.div
             variants={revealVariant}
             custom={1}
-            style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <Link
               href="/login"
               id="cta-access"
-              className="lp-btn-primary-emer"
-              style={{ padding: "14px 32px", fontSize: 15, textDecoration: "none", display: "inline-block" }}
+              className="font-sans bg-[var(--lp-accent)] hover:bg-emerald-400 text-black font-semibold py-4 px-10 rounded-full transition-colors duration-300"
             >
               Request Access
             </Link>
             <a
               href="#features"
               id="cta-features"
-              className="lp-btn-ghost-emer"
-              style={{ padding: "14px 28px", fontSize: 15, textDecoration: "none", display: "inline-block" }}
+              className="font-sans bg-white/5 hover:bg-white/10 text-white font-semibold py-4 px-8 rounded-full border border-white/10 transition-colors duration-300"
             >
               View Features
             </a>
@@ -137,7 +123,7 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            style={{ marginTop: 36, fontSize: 12, color: "rgba(255,255,255,0.16)", letterSpacing: "0.04em" }}
+            className="mt-10 text-xs text-white/40 tracking-wider font-mono uppercase"
           >
             Designed for law enforcement · Forensic labs · Cyber incident response teams
           </motion.p>

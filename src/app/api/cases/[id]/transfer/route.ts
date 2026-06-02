@@ -10,12 +10,12 @@ import { computeTransferHash, anchorTransfer } from "@/lib/blockchain";
 
 async function initiateTransfer(
   req: NextRequest,
-  ctx: { params: Record<string, string> },
+  ctx: { params: Promise<{ id: string }> },
   user: JWTPayload
 ) {
   try {
     await connectDB();
-    const { caseId } = ctx.params;
+    const { id: caseId } = await ctx.params;
     const body = await req.json();
 
     // 1. Validate input
@@ -130,12 +130,12 @@ async function initiateTransfer(
 
 async function getTransferLog(
   _req: NextRequest,
-  ctx: { params: Record<string, string> },
+  ctx: { params: Promise<{ id: string }> },
   _user: JWTPayload
 ) {
   try {
     await connectDB();
-    const { caseId } = ctx.params;
+    const { id: caseId } = await ctx.params;
 
     const transfers = await Transfer.find({ caseId })
       .sort({ transferredAt: 1 })

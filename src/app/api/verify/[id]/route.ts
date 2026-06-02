@@ -29,7 +29,7 @@ function isRateLimited(ip: string): boolean {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { caseId: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   const ip =
     req.headers.get("x-forwarded-for")?.split(",")[0].trim() ?? "unknown";
@@ -42,7 +42,7 @@ export async function GET(
   }
 
   try {
-    const { caseId } = params;
+    const { id: caseId } = await context.params;
 
     await connectDB();
 
@@ -76,8 +76,7 @@ export async function GET(
     if (primaryFile) {
       try {
         currentFileHash = await fetchAndHashFromIPFS(
-          primaryFile.ipfsCid,
-          primaryFile.originalName
+          primaryFile.ipfsCid
         );
 
         if (currentFileHash) {

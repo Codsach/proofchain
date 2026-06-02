@@ -6,6 +6,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
+import { User, Mail, Lock } from "lucide-react";
 import { RegisterSchema } from "@/lib/schemas/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -162,13 +163,16 @@ export default function RegisterPage() {
                   <FormItem className="space-y-1.5">
                     <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Full name</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Jane Smith" 
-                        className="bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                        autoComplete="name" 
-                        disabled={isSubmitting}
-                        {...field} 
-                      />
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                        <Input 
+                          placeholder="Jane Smith" 
+                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
+                          autoComplete="name" 
+                          disabled={isSubmitting}
+                          {...field} 
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs text-destructive/80" />
                   </FormItem>
@@ -182,14 +186,17 @@ export default function RegisterPage() {
                   <FormItem className="space-y-1.5">
                     <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="name@company.com"
-                        className="bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                        autoComplete="email"
-                        disabled={isSubmitting}
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                        <Input
+                          type="email"
+                          placeholder="name@company.com"
+                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
+                          autoComplete="email"
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs text-destructive/80" />
                   </FormItem>
@@ -203,14 +210,17 @@ export default function RegisterPage() {
                   <FormItem className="space-y-1.5">
                     <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        className="bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                        autoComplete="new-password"
-                        disabled={isSubmitting}
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
+                          autoComplete="new-password"
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs text-destructive/80" />
                   </FormItem>
@@ -224,14 +234,17 @@ export default function RegisterPage() {
                   <FormItem className="space-y-1.5">
                     <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Confirm password</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        className="bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                        autoComplete="new-password"
-                        disabled={isSubmitting}
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                        <Input
+                          type="password"
+                          placeholder="••••••••"
+                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
+                          autoComplete="new-password"
+                          disabled={isSubmitting}
+                          {...field}
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs text-destructive/80" />
                   </FormItem>

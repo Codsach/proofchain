@@ -6,13 +6,13 @@ import { withAuth, JWTPayload } from "@/lib/auth";
 
 async function getAiReport(
   _req: NextRequest,
-  ctx: { params: Record<string, string> },
+  ctx: { params: Promise<{ id: string }> },
   user: JWTPayload
 ) {
   try {
     await connectDB();
 
-    const { caseId } = ctx.params;
+    const { id: caseId } = await ctx.params;
 
     // Verify the case exists and user has access
     const caseDoc = await Case.findOne({ caseId }).select("aiReportId status investigatorId");

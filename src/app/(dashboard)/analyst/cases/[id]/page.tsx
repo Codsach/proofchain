@@ -164,17 +164,17 @@ export default function AnalystCaseReviewPage() {
   if (isLoadingCase) {
     return (
       <div className="space-y-6 max-w-5xl">
-        <Skeleton className="h-10 w-64 bg-white/[0.03] rounded-lg" />
-        <Skeleton className="h-96 w-full bg-white/[0.03] rounded-2xl" />
+        <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
+        <Skeleton className="h-96 w-full bg-dash-hover rounded-2xl" />
       </div>
     );
   }
 
   if (!caseData) {
     return (
-      <div className="rounded-3xl border border-white/5 bg-white/[0.01] p-24 text-center backdrop-blur-2xl">
+      <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-24 text-center backdrop-blur-2xl">
         <p className="text-white/30 text-sm font-medium">Authentication required: Subject not accessible.</p>
-        <Link href="/analyst" className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest hover:text-emerald-400 mt-4 block transition-colors">
+        <Link href="/analyst" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
           ← Back to Queue
         </Link>
       </div>
@@ -185,7 +185,7 @@ export default function AnalystCaseReviewPage() {
     <div className="space-y-10 pb-10">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
-          <Link href="/analyst" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-emerald-500 transition-colors flex items-center gap-2 mb-4">
+          <Link href="/analyst" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-dash-accent transition-colors flex items-center gap-2 mb-4">
             <span className="text-lg">←</span> Authentication Queue
           </Link>
           <div className="flex flex-wrap items-center gap-4">
@@ -229,10 +229,10 @@ export default function AnalystCaseReviewPage() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-2xl p-6 space-y-6 shadow-2xl relative overflow-hidden group"
+            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-2xl p-6 space-y-6 shadow-2xl relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 p-4">
-              <div className="text-[10px] font-bold text-emerald-500/20 uppercase tracking-[0.3em] group-hover:text-emerald-500 transition-colors">Target Spec</div>
+              <div className="text-[10px] font-bold text-dash-accent/20 uppercase tracking-[0.3em] group-hover:text-dash-accent transition-colors">Target Spec</div>
             </div>
             
             <div className="grid grid-cols-2 gap-x-8 gap-y-6 text-sm">
@@ -246,7 +246,7 @@ export default function AnalystCaseReviewPage() {
                 </div>
             </div>
 
-            <div className="pt-4 border-t border-white/5 space-y-2">
+            <div className="pt-4 border-t border-dash-border space-y-2">
               <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Forensic Narrative</p>
               <p className="text-sm text-white/70 leading-relaxed font-normal">
                 {caseData.description}
@@ -262,7 +262,7 @@ export default function AnalystCaseReviewPage() {
           >
             <div className="flex items-center gap-4">
               <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Enclosed Evidence</h2>
-              <div className="h-px flex-1 bg-white/5" />
+              <div className="h-px flex-1 bg-dash-border" />
               <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{caseData.files.length} Modules</span>
             </div>
             
@@ -273,11 +273,11 @@ export default function AnalystCaseReviewPage() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + idx * 0.05 }}
-                  className="rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all p-5 space-y-4 group/file"
+                  className="rounded-2xl border border-dash-border bg-dash-sidebar hover:bg-dash-hover transition-all p-5 space-y-4 group/file"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-white truncate group-hover/file:text-emerald-400 transition-colors uppercase tracking-tight">
+                      <p className="text-sm font-bold text-white truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">
                         {file.originalName}
                       </p>
                       <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-0.5">
@@ -290,14 +290,14 @@ export default function AnalystCaseReviewPage() {
                       href={getIpfsGatewayUrl(file.ipfsCid)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/80 bg-emerald-500/5 border border-emerald-500/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-emerald-500/10"
+                      className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/80 bg-emerald-500/5 border border-dash-accent/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-dash-accent/10"
                     >
                       Gateway
                     </motion.a>
                   </div>
                   <div className="space-y-1.5">
                     <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">SHA-256 Fingerprint</p>
-                    <p className="text-[10px] font-mono text-emerald-500/40 break-all bg-black/40 rounded-xl px-4 py-2 border border-white/5">
+                    <p className="text-[10px] font-mono text-dash-accent/40 break-all bg-black/40 rounded-xl px-4 py-2 border border-dash-border">
                       {file.sha256Hash}
                     </p>
                   </div>
@@ -321,7 +321,7 @@ export default function AnalystCaseReviewPage() {
         >
           <div className="flex items-center gap-4">
             <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Neural Intelligence</h2>
-            <div className="h-px flex-1 bg-white/5" />
+            <div className="h-px flex-1 bg-dash-border" />
           </div>
           <AiReportPanel report={aiReport} isLoading={isLoadingAi} />
         </motion.div>

@@ -70,10 +70,10 @@ export default function AnalystPage() {
       <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-emerald-500/50" />
-          <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.3em]">Forensic Authentication Center</p>
+          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Forensic Authentication Center</p>
         </div>
         <h1 className="text-4xl font-bold text-white tracking-tight">Case Queue</h1>
-        <p className="mt-2 text-white/40 font-medium max-w-lg">
+        <p className="mt-2 text-dash-muted font-medium max-w-lg">
           Welcome back, <span className="text-white/70">{user?.fullName}</span>. Please review the pending evidence submissions for cryptographic and visual integrity.
         </p>
       </motion.div>
@@ -82,15 +82,15 @@ export default function AnalystPage() {
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex gap-4 flex-wrap bg-white/[0.02] border border-white/5 p-4 rounded-2xl backdrop-blur-xl"
+        className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl"
       >
         <div className="space-y-1.5">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Lifecycle State</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-52 h-11 bg-black/40 border-white/5 hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
+            <SelectTrigger className="w-52 h-11 bg-black/40 border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
               <SelectValue placeholder="System status" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-950 border-white/10 text-white font-medium">
+            <SelectContent className="bg-zinc-950 border-dash-border text-white font-medium">
               <SelectItem value="all">Global (All States)</SelectItem>
               <SelectItem value="pending_review">Awaiting Review</SelectItem>
               <SelectItem value="ai_timeout">Internal Error (Timeout)</SelectItem>
@@ -102,10 +102,10 @@ export default function AnalystPage() {
         <div className="space-y-1.5">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Taxonomy</p>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-52 h-11 bg-black/40 border-white/5 hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
+            <SelectTrigger className="w-52 h-11 bg-black/40 border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
               <SelectValue placeholder="Classification" />
             </SelectTrigger>
-            <SelectContent className="bg-zinc-950 border-white/10 text-white font-medium">
+            <SelectContent className="bg-zinc-950 border-dash-border text-white font-medium">
               <SelectItem value="all">Global (All Types)</SelectItem>
               {Object.entries(INCIDENT_LABELS).map(([v, l]) => (
                 <SelectItem key={v} value={v}>{l}</SelectItem>
@@ -128,14 +128,14 @@ export default function AnalystPage() {
       {isLoading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((n) => (
-            <Skeleton key={n} className="h-20 w-full rounded-2xl bg-white/[0.03]" />
+            <Skeleton key={n} className="h-20 w-full rounded-2xl bg-dash-hover" />
           ))}
         </div>
       ) : cases.length === 0 ? (
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="rounded-3xl border border-white/5 bg-white/[0.01] p-20 text-center backdrop-blur-2xl shadow-2xl"
+          className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center backdrop-blur-2xl shadow-2xl"
         >
           <p className="text-white/30 text-sm font-medium tracking-tight">
             Queue empty. No subjects currently match the selected filtering protocols.
@@ -145,12 +145,12 @@ export default function AnalystPage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-xl overflow-hidden shadow-2xl"
+          className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl overflow-hidden shadow-2xl"
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5 bg-white/[0.01]">
+                <tr className="border-b border-dash-border bg-dash-sidebar">
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Case Target</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest hidden md:table-cell">Category</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Neural Score</th>
@@ -167,12 +167,12 @@ export default function AnalystPage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: idx * 0.03 }}
-                      className="hover:bg-emerald-500/[0.02] transition-colors group cursor-pointer"
+                      className="hover:bg-dash-accent/[0.02] transition-colors group cursor-pointer"
                       onClick={() => window.location.href = `/analyst/cases/${c.caseId}`}
                     >
                       <td className="px-6 py-5">
                         <div className="flex flex-col">
-                          <p className="font-bold text-white group-hover:text-emerald-400 transition-colors">
+                          <p className="font-bold text-white group-hover:text-dash-accent transition-colors">
                             {c.title}
                           </p>
                           <p className="text-[10px] text-white/20 font-mono tracking-tighter mt-0.5">
@@ -181,7 +181,7 @@ export default function AnalystPage() {
                         </div>
                       </td>
                       <td className="px-6 py-5 hidden md:table-cell">
-                        <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest border border-white/5 bg-white/5 px-2 py-0.5 rounded italic">
+                        <span className="text-[10px] font-bold text-dash-muted uppercase tracking-widest border border-dash-border bg-dash-border px-2 py-0.5 rounded italic">
                           {INCIDENT_LABELS[c.incidentType] ?? c.incidentType}
                         </span>
                       </td>
@@ -202,7 +202,7 @@ export default function AnalystPage() {
                       <td className="px-6 py-5 text-right">
                         <Link
                           href={`/analyst/cases/${c.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500/80 hover:text-emerald-400 transition-colors border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 rounded-lg group-hover:bg-emerald-500/10"
+                          className="text-[10px] font-bold uppercase tracking-[0.2em] text-dash-accent/80 hover:text-dash-accent transition-colors border border-dash-accent/20 bg-emerald-500/5 px-4 py-1.5 rounded-lg group-hover:bg-dash-accent/10"
                         >
                           Review Target
                         </Link>

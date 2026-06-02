@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface VerifyResult {
@@ -44,8 +45,9 @@ export function VerifyHashButton({ caseId }: Props) {
         size="sm"
         onClick={verify}
         disabled={isLoading}
-        className="border-teal-800 text-teal-400 hover:bg-teal-950/30"
+        className="border-teal-800 text-teal-400 hover:bg-teal-950/30 flex items-center gap-2"
       >
+        <ShieldCheck className="h-4 w-4" />
         {isLoading ? "Verifying…" : "Verify On-Chain Hash"}
       </Button>
 

@@ -13,13 +13,13 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function issueVerdict(
   req: NextRequest,
-  ctx: { params: Record<string, string> },
+  ctx: { params: Promise<{ id: string }> },
   user: JWTPayload
 ) {
   try {
     await connectDB();
 
-    const { caseId } = ctx.params;
+    const { id: caseId } = await ctx.params;
     const body = await req.json();
 
     // 1. Validate input

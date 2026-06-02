@@ -16,7 +16,7 @@ export async function uploadToIPFS(
   }
 
   const formData = new FormData();
-  const blob = new Blob([buffer], { type: mimeType });
+  const blob = new Blob([new Uint8Array(buffer)], { type: mimeType });
   formData.append("file", blob, filename);
 
   const response = await fetch("https://api.pinata.cloud/pinning/pinFileToIPFS", {

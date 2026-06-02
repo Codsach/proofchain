@@ -74,17 +74,17 @@ export default function InvestigatorCaseDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6 max-w-3xl">
-        <Skeleton className="h-10 w-64 bg-white/[0.03] rounded-lg" />
-        <Skeleton className="h-64 w-full bg-white/[0.03] rounded-2xl" />
+        <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
+        <Skeleton className="h-64 w-full bg-dash-hover rounded-2xl" />
       </div>
     );
   }
 
   if (!caseData) {
     return (
-      <div className="rounded-3xl border border-white/5 bg-white/[0.01] p-24 text-center backdrop-blur-2xl">
+      <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-24 text-center backdrop-blur-2xl">
         <p className="text-white/30 text-sm font-medium">Forensic record not located.</p>
-        <Link href="/investigator" className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest hover:text-emerald-400 mt-4 block transition-colors">
+        <Link href="/investigator" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
           ← Back to Registry
         </Link>
       </div>
@@ -94,7 +94,7 @@ export default function InvestigatorCaseDetailPage() {
   return (
     <div className="space-y-10 pb-10 max-w-3xl">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <Link href="/investigator" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-emerald-500 transition-colors flex items-center gap-2 mb-6">
+        <Link href="/investigator" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-dash-accent transition-colors flex items-center gap-2 mb-6">
           <span className="text-lg">←</span> Operative Registry
         </Link>
         <div className="flex flex-wrap items-center gap-4">
@@ -110,10 +110,10 @@ export default function InvestigatorCaseDetailPage() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}
-        className="rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-2xl p-8 space-y-8 shadow-2xl relative overflow-hidden group"
+        className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-2xl p-8 space-y-8 shadow-2xl relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-6">
-          <div className="text-[10px] font-bold text-emerald-500/20 uppercase tracking-[0.3em] group-hover:text-emerald-500 transition-colors">Subject Profile</div>
+          <div className="text-[10px] font-bold text-dash-accent/20 uppercase tracking-[0.3em] group-hover:text-dash-accent transition-colors">Subject Profile</div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 text-sm">
@@ -136,7 +136,7 @@ export default function InvestigatorCaseDetailPage() {
                 href={`https://amoy.polygonscan.com/tx/${caseData.onChainTxHash}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-emerald-500 font-mono hover:text-emerald-400 transition-colors flex items-center gap-2 group/link"
+                className="text-dash-accent font-mono hover:text-dash-accent transition-colors flex items-center gap-2 group/link"
               >
                 <span className="truncate max-w-[140px]">{caseData.onChainTxHash}</span>
                 <span className="text-[10px] opacity-0 group-hover/link:opacity-100 transition-opacity">↗</span>
@@ -147,7 +147,7 @@ export default function InvestigatorCaseDetailPage() {
           </div>
         </div>
 
-        <div className="pt-4 border-t border-white/5 space-y-2">
+        <div className="pt-4 border-t border-dash-border space-y-2">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Operational Intel</p>
           <p className="text-sm text-white/70 leading-relaxed font-normal">{caseData.description}</p>
         </div>
@@ -161,7 +161,7 @@ export default function InvestigatorCaseDetailPage() {
       >
         <div className="flex items-center gap-4">
           <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Enclosed Artifacts</h2>
-          <div className="h-px flex-1 bg-white/5" />
+          <div className="h-px flex-1 bg-dash-border" />
           <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{caseData.files.length} Modules</span>
         </div>
 
@@ -173,11 +173,11 @@ export default function InvestigatorCaseDetailPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + idx * 0.05 }}
-                className="rounded-2xl border border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all p-5 space-y-4 group/file"
+                className="rounded-2xl border border-dash-border bg-dash-sidebar hover:bg-dash-hover transition-all p-5 space-y-4 group/file"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-white truncate group-hover/file:text-emerald-400 transition-colors uppercase tracking-tight">{file.originalName}</p>
+                    <p className="text-sm font-bold text-white truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
                     <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-0.5">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
                   </div>
                   <motion.a
@@ -186,14 +186,14 @@ export default function InvestigatorCaseDetailPage() {
                     href={getIpfsGatewayUrl(file.ipfsCid)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/80 bg-emerald-500/5 border border-emerald-500/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-emerald-500/10"
+                    className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/80 bg-emerald-500/5 border border-dash-accent/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-dash-accent/10"
                   >
                     Gateway Link
                   </motion.a>
                 </div>
                 <div className="space-y-1.5 pt-1">
                   <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Digital Fingerprint (SHA-256)</p>
-                  <p className="text-[10px] font-mono text-emerald-500/40 break-all bg-black/40 rounded-xl px-4 py-2 border border-white/5">
+                  <p className="text-[10px] font-mono text-dash-accent/40 break-all bg-black/40 rounded-xl px-4 py-2 border border-dash-border">
                     {file.sha256Hash}
                   </p>
                 </div>
@@ -211,14 +211,14 @@ export default function InvestigatorCaseDetailPage() {
       >
         <div className="space-y-1">
           <p className="text-xs font-bold text-white uppercase tracking-tight text-center sm:text-left">Public Verification Signal</p>
-          <p className="text-[10px] text-white/40 font-medium text-center sm:text-left">Distribute this secure link for third-party blockchain validation protocol.</p>
+          <p className="text-[10px] text-dash-muted font-medium text-center sm:text-left">Distribute this secure link for third-party blockchain validation protocol.</p>
         </div>
         <motion.a
           whileHover={{ x: 5 }}
           href={`/verify/${caseData.caseId}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] font-bold text-emerald-400 hover:text-emerald-300 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 whitespace-nowrap"
+          className="text-[10px] font-bold text-dash-accent hover:text-emerald-300 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 whitespace-nowrap"
         >
           Verify Interface <span className="text-lg">→</span>
         </motion.a>

@@ -6,7 +6,7 @@ import { withAuth, JWTPayload } from "@/lib/auth";
 
 async function getAllCases(
   req: NextRequest,
-  _ctx: { params: Record<string, string> },
+  _ctx: any,
   _user: JWTPayload
 ) {
   try {

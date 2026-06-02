@@ -95,7 +95,7 @@ export default function TechSection() {
             </span>
           </div>
           <h2
-            className={`text-4xl md:text-5xl font-bold text-white mb-4 reveal reveal-delay-1 ${headVisible ? "visible" : ""}`}
+            className={`text-4xl md:text-5xl font-bold text-slate-800 mb-4 reveal reveal-delay-1 ${headVisible ? "visible" : ""}`}
           >
             Built on{" "}
             <span className="gradient-text-accent">battle-tested</span>{" "}
@@ -103,7 +103,7 @@ export default function TechSection() {
           </h2>
           <p
             className={`text-lg max-w-xl mx-auto reveal reveal-delay-2 ${headVisible ? "visible" : ""}`}
-            style={{ color: "rgba(255,255,255,0.4)" }}
+            style={{ color: "rgba(15, 23, 42, 0.4)" }}
           >
             Every layer of ProofChain is engineered for cryptographic security, legal admissibility,
             and forensic-grade reliability.
@@ -154,10 +154,10 @@ function TechCard({ tech, index }: { tech: (typeof technologies)[0]; index: numb
           <div
             key={item.name}
             className="flex items-center justify-between py-2.5 border-b last:border-0"
-            style={{ borderColor: "rgba(255,255,255,0.05)" }}
+            style={{ borderColor: "rgba(15, 23, 42, 0.05)" }}
           >
-            <span className="text-sm font-medium text-white">{item.name}</span>
-            <span className="text-xs ml-4 text-right" style={{ color: "rgba(255,255,255,0.35)" }}>
+            <span className="text-sm font-medium text-slate-800">{item.name}</span>
+            <span className="text-xs ml-4 text-right" style={{ color: "rgba(15, 23, 42, 0.35)" }}>
               {item.desc}
             </span>
           </div>
@@ -175,7 +175,7 @@ function TechPills({ headVisible }: { headVisible: boolean }) {
       ref={ref}
       className={`glass-card-emer rounded-2xl p-8 reveal ${isVisible ? "visible" : ""}`}
     >
-      <p className="text-xs uppercase tracking-widest mb-5 text-center" style={{ color: "rgba(255,255,255,0.25)" }}>
+      <p className="text-xs uppercase tracking-widest mb-5 text-center" style={{ color: "rgba(15, 23, 42, 0.25)" }}>
         Full Technology Stack
       </p>
       <div className="flex flex-wrap gap-2.5 justify-center">
@@ -184,9 +184,9 @@ function TechPills({ headVisible }: { headVisible: boolean }) {
             key={pill}
             className={`tech-pill text-xs font-medium px-3.5 py-1.5 rounded-full reveal ${isVisible ? "visible" : ""}`}
             style={{
-              color: "rgba(255,255,255,0.6)",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
+              color: "rgba(15, 23, 42, 0.6)",
+              background: "rgba(15, 23, 42, 0.04)",
+              border: "1px solid rgba(15, 23, 42, 0.08)",
               transitionDelay: `${i * 0.03}s`,
             }}
           >

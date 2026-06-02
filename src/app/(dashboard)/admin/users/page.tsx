@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
+import { User, Mail } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -173,17 +174,17 @@ export default function AdminUsersPage() {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <div className="h-px w-6 bg-emerald-500/50" />
-            <p className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Identity Management</p>
+            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-widest">Identity Management</p>
           </div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">System Users</h1>
-          <p className="text-white/40 text-sm mt-1 font-medium">
-            Review and manage <span className="text-white">{users.length}</span> active directory entities.
+          <h1 className="text-3xl font-bold text-dash-text tracking-tight">System Users</h1>
+          <p className="text-dash-muted text-sm mt-1 font-medium">
+            Review and manage <span className="text-dash-text">{users.length}</span> active directory entities.
           </p>
         </div>
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
             onClick={() => setCreateOpen(true)}
-            className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-11 px-6 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+            className="bg-dash-accent hover:bg-dash-accent text-black font-bold h-11 px-6 rounded-xl shadow-[0_0_20px_var(--dash-accent-glow)]"
           >
             + Register Analyst
           </Button>
@@ -192,18 +193,18 @@ export default function AdminUsersPage() {
 
       {isLoading ? (
         <div className="space-y-3">
-          {[1, 2, 3, 4].map((n) => <Skeleton key={n} className="h-16 w-full rounded-2xl bg-white/[0.03]" />)}
+          {[1, 2, 3, 4].map((n) => <Skeleton key={n} className="h-16 w-full rounded-2xl bg-dash-hover" />)}
         </div>
       ) : (
-        <div className="rounded-2xl border border-white/5 bg-white/[0.01] backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-2xl border border-dash-border bg-dash-table backdrop-blur-xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/5 bg-white/[0.02]">
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px]">Registry Subject</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px] hidden sm:table-cell">Privilege Level</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px] hidden md:table-cell">Last Access</th>
-                  <th className="text-left px-6 py-4 font-bold text-white/30 uppercase tracking-widest text-[10px]">Operational Status</th>
+                <tr className="border-b border-dash-border bg-dash-hover">
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Registry Subject</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Privilege Level</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Last Access</th>
+                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Operational Status</th>
                   <th className="px-6 py-4" />
                 </tr>
               </thead>
@@ -219,30 +220,30 @@ export default function AdminUsersPage() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <p className="font-semibold text-white group-hover:text-emerald-400 transition-colors">{u.fullName}</p>
-                          <p className="text-xs text-white/30 font-medium">{u.email}</p>
+                          <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors">{u.fullName}</p>
+                          <p className="text-xs text-dash-muted font-medium">{u.email}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4 hidden sm:table-cell">
                         <span
                           className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
-                            ROLE_STYLES[u.role] ?? "text-white/40 bg-white/5 border-white/10"
+                            ROLE_STYLES[u.role] ?? "text-dash-muted bg-dash-border border-dash-border"
                           }`}
                         >
                           {u.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-xs text-white/30 hidden md:table-cell font-mono">
+                      <td className="px-6 py-4 text-xs text-dash-muted hidden md:table-cell font-mono">
                         {u.lastLoginAt
                           ? new Date(u.lastLoginAt).toLocaleDateString()
                           : "INITIALIZING"}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-emerald-500 animate-pulse" : "bg-white/20"}`} />
+                          <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-dash-accent animate-pulse" : "bg-white/20"}`} />
                           <span
                             className={`text-[10px] font-bold uppercase tracking-widest ${
-                              u.isActive ? "text-emerald-400" : "text-white/20"
+                              u.isActive ? "text-dash-accent" : "text-dash-muted"
                             }`}
                           >
                             {u.isActive ? "Online" : "Terminated"}
@@ -256,7 +257,7 @@ export default function AdminUsersPage() {
                               onClick={() => toggleActive(u._id, u.isActive)}
                               disabled={togglingId === u._id || deletingId === u._id}
                               className={`text-[10px] font-bold uppercase tracking-widest transition-colors ${
-                                u.isActive ? "text-white/40 hover:text-white" : "text-emerald-500/60 hover:text-emerald-400"
+                                u.isActive ? "text-dash-muted hover:text-dash-text" : "text-dash-accent/60 hover:text-dash-accent"
                               } disabled:opacity-40`}
                             >
                               {togglingId === u._id ? "..." : u.isActive ? "Deactivate" : "Activate"}
@@ -282,10 +283,10 @@ export default function AdminUsersPage() {
 
       {/* Create analyst dialog */}
       <Dialog open={createOpen} onOpenChange={(o) => { if (!isCreating) { setCreateOpen(o); form.reset(); } }}>
-        <DialogContent className="sm:max-w-md bg-zinc-950 border-white/10 backdrop-blur-2xl">
+        <DialogContent className="sm:max-w-md bg-dash-modal border-dash-border backdrop-blur-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white text-xl font-bold tracking-tight">Register System Analyst</DialogTitle>
-            <DialogDescription className="text-white/40 font-medium">
+            <DialogTitle className="text-dash-text text-xl font-bold tracking-tight">Register System Analyst</DialogTitle>
+            <DialogDescription className="text-dash-muted font-medium">
               Create a new authenticated entity. Temporary credentials will be generated and dispatched.
             </DialogDescription>
           </DialogHeader>
@@ -296,13 +297,16 @@ export default function AdminUsersPage() {
                 name="fullName"
                 render={({ field }) => (
                   <FormItem className="space-y-1.5">
-                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Legal Full Name</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Legal Full Name</FormLabel>
                     <FormControl>
-                      <Input 
-                        placeholder="Jane Smith" 
-                        {...field} 
-                        className="bg-white/[0.03] border-white/5 focus:border-emerald-500/50 transition-all h-11"
-                      />
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-dash-muted" />
+                        <Input 
+                          placeholder="Jane Smith" 
+                          {...field} 
+                          className="pl-10 bg-dash-hover border-dash-border focus:border-emerald-500/50 transition-all h-11 text-dash-text"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs italic" />
                   </FormItem>
@@ -313,14 +317,17 @@ export default function AdminUsersPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem className="space-y-1.5">
-                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-white/40">Secure Email Channel</FormLabel>
+                    <FormLabel className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Secure Email Channel</FormLabel>
                     <FormControl>
-                      <Input 
-                        type="email" 
-                        placeholder="analyst@proofchain.io" 
-                        {...field} 
-                        className="bg-white/[0.03] border-white/5 focus:border-emerald-500/50 transition-all h-11"
-                      />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-dash-muted" />
+                        <Input 
+                          type="email" 
+                          placeholder="analyst@proofchain.io" 
+                          {...field} 
+                          className="pl-10 bg-dash-hover border-dash-border focus:border-emerald-500/50 transition-all h-11 text-dash-text"
+                        />
+                      </div>
                     </FormControl>
                     <FormMessage className="text-xs italic" />
                   </FormItem>
@@ -333,14 +340,14 @@ export default function AdminUsersPage() {
                   variant="ghost"
                   onClick={() => { setCreateOpen(false); form.reset(); }}
                   disabled={isCreating}
-                  className="text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white"
+                  className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text"
                 >
                   Abort Registration
                 </Button>
                 <Button
                   type="submit"
                   disabled={isCreating}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-11 px-8 rounded-xl"
+                  className="bg-dash-accent hover:bg-dash-accent text-black font-bold h-11 px-8 rounded-xl"
                 >
                   {isCreating ? "Encrypting Data…" : "Authorize Entity"}
                 </Button>
@@ -358,17 +365,17 @@ export default function AdminUsersPage() {
           }
         }}
       >
-        <DialogContent className="sm:max-w-md bg-zinc-950 border-rose-500/20 backdrop-blur-2xl">
+        <DialogContent className="sm:max-w-md bg-dash-modal border-rose-500/20 backdrop-blur-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white text-xl font-bold tracking-tight">Purge System Entity</DialogTitle>
-            <DialogDescription className="text-white/40 font-medium">
+            <DialogTitle className="text-dash-text text-xl font-bold tracking-tight">Purge System Entity</DialogTitle>
+            <DialogDescription className="text-dash-muted font-medium">
               This action is <span className="text-rose-400">destructive</span> and permanent. All access tokens will be revoked immediately.
             </DialogDescription>
           </DialogHeader>
           {deleteTarget && (
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 space-y-2">
-              <p className="font-bold text-white text-lg">{deleteTarget.fullName}</p>
-              <p className="text-white/40 text-sm font-mono">{deleteTarget.email}</p>
+            <div className="rounded-xl border border-dash-border bg-dash-card p-5 space-y-2">
+              <p className="font-bold text-dash-text text-lg">{deleteTarget.fullName}</p>
+              <p className="text-dash-muted text-sm font-mono">{deleteTarget.email}</p>
               <div className="pt-2">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-rose-500/60 bg-rose-500/5 border border-rose-500/20 px-3 py-1 rounded-full">
                   Target: {deleteTarget.role}
@@ -382,7 +389,7 @@ export default function AdminUsersPage() {
               variant="ghost"
               onClick={() => setDeleteTarget(null)}
               disabled={Boolean(deletingId)}
-              className="text-[10px] font-bold uppercase tracking-widest text-white/40 hover:text-white"
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text"
             >
               Cancel Purge
             </Button>
@@ -390,7 +397,7 @@ export default function AdminUsersPage() {
               type="button"
               onClick={handleDelete}
               disabled={Boolean(deletingId) || !deleteTarget}
-              className="bg-rose-500 hover:bg-rose-600 text-white font-bold h-11 px-8 rounded-xl shadow-[0_0_20px_rgba(244,63,94,0.1)]"
+              className="bg-rose-500 hover:bg-rose-600 text-dash-text font-bold h-11 px-8 rounded-xl shadow-[0_0_20px_rgba(244,63,94,0.1)]"
             >
               {deletingId ? "Executing…" : "Confirm Purge"}
             </Button>

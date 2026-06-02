@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { FolderSearch, FileText, AlignLeft } from "lucide-react";
 import { CameraCapture } from "@/components/evidence/CameraCapture";
 import { GPSStatusBadge } from "@/components/evidence/GPSStatusBadge";
 import { OfflineQueueIndicator } from "@/components/evidence/OfflineQueueIndicator";
@@ -267,36 +268,45 @@ export default function SubmitEvidencePage() {
           {/* Case ID */}
           <div className="field">
             <label>Case ID *</label>
-            <input
-              type="text"
-              placeholder="e.g. CASE-2024-001"
-              value={caseId}
-              onChange={(e) => setCaseId(e.target.value)}
-              required
-            />
+            <div className="input-with-icon">
+              <FolderSearch className="input-icon" />
+              <input
+                type="text"
+                placeholder="e.g. CASE-2024-001"
+                value={caseId}
+                onChange={(e) => setCaseId(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           {/* Title */}
           <div className="field">
             <label>Evidence Title *</label>
-            <input
-              type="text"
-              placeholder="Brief description of evidence"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
+            <div className="input-with-icon">
+              <FileText className="input-icon" />
+              <input
+                type="text"
+                placeholder="Brief description of evidence"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
           {/* Description */}
           <div className="field">
             <label>Description</label>
-            <textarea
-              placeholder="Optional: additional context about where and how this was captured"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            />
+            <div className="input-with-icon">
+              <AlignLeft className="input-icon" style={{ top: "12px" }} />
+              <textarea
+                placeholder="Optional: additional context about where and how this was captured"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
           </div>
 
           {/* Capture method */}
@@ -527,6 +537,21 @@ export default function SubmitEvidencePage() {
           transition: border-color 0.15s;
           font-family: inherit;
           resize: vertical;
+          width: 100%;
+          box-sizing: border-box;
+        }
+        .input-with-icon { position: relative; width: 100%; }
+        .input-with-icon input[type="text"], .input-with-icon textarea {
+          padding-left: 40px;
+        }
+        .input-with-icon .input-icon {
+          position: absolute;
+          left: 12px;
+          top: 10px;
+          color: #9ca3af;
+          width: 18px;
+          height: 18px;
+          pointer-events: none;
         }
         input:focus, textarea:focus { border-color: rgba(59,130,246,0.6); }
         input::placeholder, textarea::placeholder { color: #4b5563; }
