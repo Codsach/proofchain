@@ -9,6 +9,14 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InvestigatorCharts } from "@/components/investigator/InvestigatorCharts";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 type InvestigatorCase = {
   _id: string;
   caseId: string;
@@ -60,6 +68,18 @@ export default function InvestigatorPage() {
   const [isLoadingCases, setIsLoadingCases] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [incidentTypeFilter, setIncidentTypeFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
   useEffect(() => {
     let isCancelled = false;
 
@@ -79,7 +99,12 @@ export default function InvestigatorPage() {
           throw new Error("Your session expired. Please log in again.");
         }
 
-        const res = await fetch("/api/cases", {
+        const params = new URLSearchParams();
+        if (statusFilter !== "all") params.set("status", statusFilter);
+        if (incidentTypeFilter !== "all") params.set("incidentType", incidentTypeFilter);
+        if (debouncedSearch) params.set("search", debouncedSearch);
+
+        const res = await fetch(`/api/cases?${params}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -117,7 +142,7 @@ export default function InvestigatorPage() {
     return () => {
       isCancelled = true;
     };
-  }, [user, getToken]);
+  }, [user, getToken, statusFilter, incidentTypeFilter, debouncedSearch]);
 
   const openCases = getOpenCaseCount(cases);
   const totalFiles = cases.reduce(
@@ -180,7 +205,53 @@ export default function InvestigatorPage() {
         ))}
       </div>
 
-      {!isLoadingCases && !error && <InvestigatorCharts cases={cases} />}
+      <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl">
+        <div className="flex-1 min-w-[200px] space-y-1.5">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Search Cases</p>
+          <Input
+            placeholder="Search by title or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-11 rounded-xl"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Taxonomy</p>
+          <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
+            <SelectTrigger className="w-48 h-11 bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
+              <SelectValue placeholder="All types" />
+            </SelectTrigger>
+            <SelectContent className="bg-dash-bg border-dash-border text-white font-medium">
+              <SelectItem value="all">All Types</SelectItem>
+              {Object.entries(INCIDENT_TYPE_LABELS).map(([v, l]) => (
+                <SelectItem key={v} value={v}>{l}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Lifecycle State</p>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="w-48 h-11 bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
+              <SelectValue placeholder="System status" />
+            </SelectTrigger>
+            <SelectContent className="bg-dash-bg border-dash-border text-white font-medium">
+              <SelectItem value="all">All States</SelectItem>
+              <SelectItem value="pending_ai_review">AI Scanning</SelectItem>
+              <SelectItem value="pending_review">Pending Review</SelectItem>
+              <SelectItem value="ai_timeout">AI Timeout</SelectItem>
+              <SelectItem value="under_review">Under Review</SelectItem>
+              <SelectItem value="verified">Verified</SelectItem>
+              <SelectItem value="rejected">Rejected</SelectItem>
+              <SelectItem value="archived">Archived</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      {!isLoadingCases && !error && cases.length > 0 && <InvestigatorCharts cases={cases} />}
 
       {isLoadingCases ? (
         <div className="space-y-4">

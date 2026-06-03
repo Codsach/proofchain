@@ -19,14 +19,22 @@ async function getCaseQueue(
     const limit = 20;
     const skip = (page - 1) * limit;
 
+    const searchQuery = searchParams.get("search");
+
     // Build filter — analysts see reviewable cases
-    const filter: Record<string, unknown> = {
+    const filter: Record<string, any> = {
       status: statusFilter
         ? statusFilter
         : { $in: ["pending_review", "ai_timeout", "under_review"] },
     };
 
-    if (incidentFilter) filter.incidentType = incidentFilter;
+    if (incidentFilter && incidentFilter !== "all") filter.incidentType = incidentFilter;
+    if (searchQuery) {
+      filter.$or = [
+        { title: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
 
     const [cases, total] = await Promise.all([
       Case.find(filter)

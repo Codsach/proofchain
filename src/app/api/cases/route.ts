@@ -242,9 +242,22 @@ async function listCases(
     const limit = 20;
     const skip = (page - 1) * limit;
 
+    const statusFilter = searchParams.get("status");
+    const incidentTypeFilter = searchParams.get("incidentType");
+    const searchQuery = searchParams.get("search");
+
     // Analysts and admins see all cases; investigators see only their own
-    const filter =
+    const filter: Record<string, any> =
       user.role === "investigator" ? { investigatorId: user.userId } : {};
+
+    if (statusFilter && statusFilter !== "all") filter.status = statusFilter;
+    if (incidentTypeFilter && incidentTypeFilter !== "all") filter.incidentType = incidentTypeFilter;
+    if (searchQuery) {
+      filter.$or = [
+        { title: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
 
     const [cases, total] = await Promise.all([
       Case.find(filter)

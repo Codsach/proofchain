@@ -15,11 +15,20 @@ async function getAllCases(
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
     const statusFilter = searchParams.get("status");
+    const incidentTypeFilter = searchParams.get("incidentType");
+    const searchQuery = searchParams.get("search");
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    const filter: Record<string, unknown> = {};
-    if (statusFilter) filter.status = statusFilter;
+    const filter: Record<string, any> = {};
+    if (statusFilter && statusFilter !== "all") filter.status = statusFilter;
+    if (incidentTypeFilter && incidentTypeFilter !== "all") filter.incidentType = incidentTypeFilter;
+    if (searchQuery) {
+      filter.$or = [
+        { title: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
 
     const [cases, total] = await Promise.all([
       Case.find(filter)
