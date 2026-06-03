@@ -9,6 +9,12 @@ import { AiReportPanel } from "@/components/AiReportPanel";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import dynamic from "next/dynamic";
+
+const EvidenceMap = dynamic(() => import("@/components/evidence/EvidenceMap"), {
+  ssr: false,
+  loading: () => <Skeleton className="h-[300px] w-full rounded-2xl bg-dash-hover mt-4" />
+});
 
 interface FileRecord {
   fileId: string;
@@ -280,6 +286,27 @@ export default function AdminCaseDetailPage() {
                 </motion.div>
               ))}
             </div>
+            
+            {/* Show Map for the first file with GPS data */}
+            {caseData.files.find(f => f.gpsLat !== null && f.gpsLng !== null) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="pt-6"
+              >
+                {(() => {
+                  const fileWithGps = caseData.files.find(f => f.gpsLat !== null && f.gpsLng !== null)!;
+                  return (
+                    <EvidenceMap 
+                      lat={fileWithGps.gpsLat!} 
+                      lng={fileWithGps.gpsLng!} 
+                      accuracy={8} // Demo accuracy radius
+                    />
+                  );
+                })()}
+              </motion.div>
+            )}
           </motion.div>
         </div>
 
