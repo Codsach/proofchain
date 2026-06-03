@@ -25,6 +25,7 @@ interface FileRecord {
   ipfsCid: string;
   gpsLat: number | null;
   gpsLng: number | null;
+  gpsAccuracy?: number | null;
 }
 
 interface CaseDetail {
@@ -301,7 +302,7 @@ export default function AdminCaseDetailPage() {
                     <EvidenceMap 
                       lat={fileWithGps.gpsLat!} 
                       lng={fileWithGps.gpsLng!} 
-                      accuracy={8} // Demo accuracy radius
+                      accuracy={fileWithGps.gpsAccuracy ?? 8}
                     />
                   );
                 })()}

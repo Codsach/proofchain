@@ -25,6 +25,7 @@ export interface IFileRecord {
   ipfsCid: string;
   gpsLat: number | null;
   gpsLng: number | null;
+  gpsAccuracy: number | null;
   uploadedAt: Date;
 }
 
@@ -54,6 +55,7 @@ const FileRecordSchema = new Schema<IFileRecord>(
     ipfsCid: { type: String, required: true },
     gpsLat: { type: Number, default: null },
     gpsLng: { type: Number, default: null },
+    gpsAccuracy: { type: Number, default: null },
     uploadedAt: { type: Date, default: Date.now },
   },
   { _id: false }

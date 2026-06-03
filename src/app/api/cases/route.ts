@@ -36,6 +36,7 @@ async function createCase(
       incidentType: formData.get("incidentType") as string,
       gpsLat: formData.get("gpsLat") ? Number(formData.get("gpsLat")) : null,
       gpsLng: formData.get("gpsLng") ? Number(formData.get("gpsLng")) : null,
+      gpsAccuracy: formData.get("gpsAccuracy") ? Number(formData.get("gpsAccuracy")) : null,
     };
 
     const parsed = CreateCaseSchema.safeParse(rawFields);
@@ -106,6 +107,7 @@ async function createCase(
         ipfsCid: file.ipfsCid,
         gpsLat: parsed.data.gpsLat ?? null,
         gpsLng: parsed.data.gpsLng ?? null,
+        gpsAccuracy: parsed.data.gpsAccuracy ?? null,
         uploadedAt: file.uploadedAt,
       });
 

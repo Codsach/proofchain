@@ -37,6 +37,7 @@ export const CreateCaseSchema = z.object({
   ]),
   gpsLat: z.number().min(-90).max(90).optional().nullable(),
   gpsLng: z.number().min(-180).max(180).optional().nullable(),
+  gpsAccuracy: z.number().optional().nullable(),
 });
 
 export type CreateCaseInput = z.infer<typeof CreateCaseSchema>;
