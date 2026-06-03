@@ -59,8 +59,8 @@ export default function EvidenceMap({ lat, lng, accuracy = 8 }: EvidenceMapProps
       </div>
 
       <div className="h-[300px] w-full relative group">
-        {/* CSS Filter to make OSM dark and match theme */}
-        <div className="absolute inset-0 [&_.leaflet-layer]:brightness-[0.4] [&_.leaflet-layer]:contrast-[1.2] [&_.leaflet-layer]:hue-rotate-[180deg] [&_.leaflet-layer]:invert">
+        {/* Normal mode tiles (no CSS filters applied) */}
+        <div className="absolute inset-0">
           <MapContainer 
             center={[lat, lng]} 
             zoom={16} 

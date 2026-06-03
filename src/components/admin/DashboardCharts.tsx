@@ -19,8 +19,10 @@ import {
   RadialBar,
   Legend
 } from "recharts";
-import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import dynamic from "next/dynamic";
+
+const GlobalCasesMap = dynamic(() => import("@/components/admin/GlobalCasesMap"), { ssr: false });
 
 // --- Mock Data ---
 
@@ -58,14 +60,12 @@ const aiPerformanceData = [
 
 // Map markers
 const markers = [
-  { markerOffset: -15, name: "New York", coordinates: [-74.006, 40.7128] as [number, number] },
-  { markerOffset: -15, name: "London", coordinates: [-0.1276, 51.5072] as [number, number] },
-  { markerOffset: -15, name: "Tokyo", coordinates: [139.6917, 35.6895] as [number, number] },
-  { markerOffset: 15, name: "Singapore", coordinates: [103.8198, 1.3521] as [number, number] },
-  { markerOffset: 15, name: "Sydney", coordinates: [151.2093, -33.8688] as [number, number] },
+  { id: "demo-ny", name: "New York Incident", lng: -74.006, lat: 40.7128 },
+  { id: "demo-ldn", name: "London Breach", lng: -0.1276, lat: 51.5072 },
+  { id: "demo-tyo", name: "Tokyo Malware", lng: 139.6917, lat: 35.6895 },
+  { id: "demo-sgp", name: "Singapore Phishing", lng: 103.8198, lat: 1.3521 },
+  { id: "demo-syd", name: "Sydney Threat", lng: 151.2093, lat: -33.8688 },
 ];
-
-const geoUrl = "https://unpkg.com/world-atlas@2.0.2/countries-110m.json";
 
 // Heatmap Data (Days x Hours)
 const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -280,46 +280,8 @@ export function DashboardCharts() {
         className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl min-w-0"
       >
         <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Geographic Case Origins</h3>
-        <div className="h-[500px] w-full bg-[#050505] rounded-xl overflow-hidden relative flex items-center justify-center">
-          <ComposableMap 
-            projectionConfig={{ scale: 140, center: [0, 20] }} 
-            width={800} 
-            height={400}
-            style={{ width: "100%", height: "100%", objectFit: "contain" }}
-          >
-            <Geographies geography={geoUrl}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    fill="#151515"
-                    stroke="#2a2a2a"
-                    strokeWidth={0.5}
-                    style={{
-                      default: { outline: "none" },
-                      hover: { fill: "#1f1f1f", outline: "none" },
-                      pressed: { outline: "none" },
-                    }}
-                  />
-                ))
-              }
-            </Geographies>
-            {markers.map(({ name, coordinates, markerOffset }) => (
-              <Marker key={name} coordinates={coordinates}>
-                <circle r={4} fill="var(--dash-accent)" stroke="#fff" strokeWidth={1} className="animate-pulse" />
-                <text
-                  textAnchor="middle"
-                  y={markerOffset}
-                  style={{ fontFamily: "system-ui", fill: "#888", fontSize: "10px", fontWeight: "bold" }}
-                >
-                  {name}
-                </text>
-              </Marker>
-            ))}
-          </ComposableMap>
-          {/* Subtle overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-dash-card/50 to-transparent pointer-events-none" />
+        <div className="h-[500px] w-full rounded-xl overflow-hidden relative flex items-center justify-center border border-dash-border/50">
+          <GlobalCasesMap markers={markers} />
         </div>
       </motion.div>
 
