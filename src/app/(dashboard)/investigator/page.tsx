@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Folder, Brain, Shield, FolderOpen } from "lucide-react";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -158,9 +159,9 @@ export default function InvestigatorPage() {
 
       <div className="grid gap-6 sm:grid-cols-3">
         {[
-          { label: "Assigned Cases", value: cases.length, desc: "Total subjects in registry", icon: "📁" },
-          { label: "Pending Analysis", value: openCases, desc: "Active neural review", icon: "🧠" },
-          { label: "Evidence Integrity", value: totalFiles, desc: "Validated artifacts", icon: "🛡️" },
+          { label: "Assigned Cases", value: cases.length, desc: "Total subjects in registry", icon: <Folder className="w-6 h-6 text-dash-muted group-hover:text-dash-accent transition-colors" /> },
+          { label: "Pending Analysis", value: openCases, desc: "Active neural review", icon: <Brain className="w-6 h-6 text-dash-muted group-hover:text-dash-accent transition-colors" /> },
+          { label: "Evidence Integrity", value: totalFiles, desc: "Validated artifacts", icon: <Shield className="w-6 h-6 text-dash-muted group-hover:text-dash-accent transition-colors" /> },
         ].map((stat, idx) => (
           <motion.div
             key={stat.label}
@@ -170,7 +171,7 @@ export default function InvestigatorPage() {
             className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl group hover:border-dash-accent/20 transition-all hover:bg-dash-hover"
           >
             <div className="flex justify-between items-start mb-4">
-              <span className="text-2xl">{stat.icon}</span>
+              {stat.icon}
               <p className="text-[10px] font-bold text-dash-accent/40 uppercase tracking-widest">{stat.label}</p>
             </div>
             <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
@@ -199,7 +200,7 @@ export default function InvestigatorPage() {
       ) : cases.length === 0 ? (
         <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center backdrop-blur-2xl shadow-2xl">
           <div className="w-16 h-16 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-6 border border-dash-border">
-            <span className="text-2xl grayscale">📂</span>
+            <FolderOpen className="w-8 h-8 text-dash-muted" />
           </div>
           <h2 className="text-xl font-bold text-white mb-2">Registry Empty</h2>
           <p className="text-white/30 mb-8 max-w-xs mx-auto text-sm font-medium">No forensic records detected. Deploy your first evidence package to begin tracking.</p>

@@ -24,12 +24,12 @@ async function getAnalystMetrics(
 
     // Cases completed by this analyst in the last 7 days
     const completedThisWeek = await Verdict.countDocuments({
-      analystId: user.id,
+      analystId: user.userId,
       issuedAt: { $gte: sevenDaysAgo },
     });
 
     // Fetch all verdicts issued by this analyst for accuracy and time calculations
-    const analystVerdicts = await Verdict.find({ analystId: user.id }).lean();
+    const analystVerdicts = await Verdict.find({ analystId: user.userId }).lean();
     
     let verdictAccuracyRate = 100; // default if no verdicts
     let averageReviewTimeHours = 0;

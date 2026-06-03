@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -H 0.0.0.0 --webpack",
+    "dev": "next dev -H 0.0.0.0",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -15,7 +15,6 @@
     "@types/qrcode": "^1.5.6",
     "@types/three": "^0.183.1",
     "@types/uuid": "^10.0.0",
-    "@web3-storage/w3up-client": "^17.3.0",
     "axios": "^1.15.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",
@@ -36,7 +35,6 @@
     "react-dom": "19.2.4",
     "react-dropzone": "^15.0.0",
     "react-hook-form": "^7.72.1",
-    "react-simple-maps": "^3.0.0",
     "recharts": "^3.8.0",
     "resend": "^6.10.0",
     "shadcn": "^4.2.0",
