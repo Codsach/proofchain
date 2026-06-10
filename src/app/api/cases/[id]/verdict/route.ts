@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { Resend } from "resend";
 import { connectDB } from "@/lib/db";
 import Case from "@/lib/models/Case";
 import User from "@/lib/models/User";
@@ -9,8 +8,7 @@ import { withAuth, getIp, JWTPayload } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import { VerdictSchema } from "@/lib/schemas/case";
 import { NotificationModel } from "@/lib/models/Notification";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { notifyInvestigator } from "@/lib/email";
 
 async function issueVerdict(
   req: NextRequest,
@@ -120,50 +118,6 @@ async function issueVerdict(
     console.error("[verdict]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
-}
-
-async function notifyInvestigator(
-  investigatorId: string,
-  caseId: string,
-  caseTitle: string,
-  verdict: string,
-  reason: string
-) {
-  const investigator = await User.findById(investigatorId).select("email fullName");
-  if (!investigator) return;
-
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  const statusColor = verdict === "verified" ? "#00C9A7" : "#FF6B6B";
-  const statusLabel = verdict === "verified" ? "VERIFIED" : "REJECTED";
-
-  await resend.emails.send({
-    from: "ProofChain <noreply@proofchain.app>",
-    to: investigator.email,
-    subject: `Case ${statusLabel}: ${caseTitle}`,
-    html: `
-      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0D1B2A;color:#E8E8F0;padding:32px;border-radius:8px;">
-        <h2 style="color:#00C9A7;margin-top:0;">ProofChain</h2>
-        <p>Hi ${investigator.fullName},</p>
-        <p>A verdict has been issued on your case:</p>
-        <div style="background:#1C1C28;border-radius:6px;padding:16px;margin:16px 0;">
-          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Case</p>
-          <p style="margin:0 0 16px;font-weight:bold;">${caseTitle}</p>
-          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Verdict</p>
-          <p style="margin:0 0 16px;font-weight:bold;color:${statusColor};">${statusLabel}</p>
-          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Reason</p>
-          <p style="margin:0;color:#E8E8F0;">${reason}</p>
-        </div>
-        <a href="${appUrl}/investigator/cases/${caseId}"
-           style="display:inline-block;background:#00C9A7;color:#000;padding:10px 20px;
-                  text-decoration:none;border-radius:6px;font-weight:bold;margin-top:8px;">
-          View Case
-        </a>
-        <p style="font-size:11px;color:#555570;margin-top:24px;">
-          ProofChain · Digital Forensic Evidence Platform
-        </p>
-      </div>
-    `,
-  });
 }
 
 async function anchorVerdictOnChain(

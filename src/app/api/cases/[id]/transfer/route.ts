@@ -8,6 +8,7 @@ import { logAction } from "@/lib/audit";
 import { computeTransferHash, anchorTransfer } from "@/lib/blockchain";
 import { NotificationModel } from "@/lib/models/Notification";
 import { TransferSchema } from "@/lib/schemas/case";
+import { notifyAnalyst } from "@/lib/email";
 
 async function initiateTransfer(
   req: NextRequest,
@@ -122,6 +123,11 @@ async function initiateTransfer(
       message: `Case ${caseDoc.title} (${caseId.slice(0, 8)}) has been transferred to you.`,
       link: `/analyst/cases/${caseId}`,
     });
+
+    // 13. Email Alert
+    notifyAnalyst(toUserId, [caseId], "transfer").catch(err => 
+      console.error("[transfer] Email notification failed:", err)
+    );
 
     return NextResponse.json({
       message: "Custody transferred successfully",

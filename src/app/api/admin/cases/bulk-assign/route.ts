@@ -7,6 +7,7 @@ import { withAuth, getIp, JWTPayload } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import { computeTransferHash, anchorTransfer } from "@/lib/blockchain";
 import { NotificationModel } from "@/lib/models/Notification";
+import { notifyAnalyst } from "@/lib/email";
 import { z } from "zod";
 
 const BulkAssignSchema = z.object({
@@ -105,6 +106,12 @@ async function bulkAssignCases(
       });
 
       assignedCount++;
+    }
+
+    if (assignedCount > 0) {
+      notifyAnalyst(analystId, caseIds, "bulk_assign").catch(err => 
+        console.error("[bulk-assign] Email notification failed:", err)
+      );
     }
 
     return NextResponse.json({ message: `Assigned ${assignedCount} cases successfully` });

@@ -1,4 +1,5 @@
 import { Resend, type ErrorResponse } from "resend";
+import User from "@/lib/models/User";
 
 const DEFAULT_FROM_ADDRESS = "ProofChain <onboarding@resend.dev>";
 
@@ -135,4 +136,92 @@ export async function sendEmail({
   }
 
   return data;
+}
+
+export async function notifyInvestigator(
+  investigatorId: string,
+  caseId: string,
+  caseTitle: string,
+  verdict: string,
+  reason: string
+) {
+  const investigator = await User.findById(investigatorId).select("email fullName");
+  if (!investigator) return;
+
+  const appUrl = getAppBaseUrl();
+  const statusColor = verdict === "verified" ? "#00C9A7" : "#FF6B6B";
+  const statusLabel = verdict === "verified" ? "VERIFIED" : "REJECTED";
+
+  await sendEmail({
+    to: investigator.email,
+    subject: `Case ${statusLabel}: ${caseTitle}`,
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0D1B2A;color:#E8E8F0;padding:32px;border-radius:8px;">
+        <h2 style="color:#00C9A7;margin-top:0;">ProofChain</h2>
+        <p>Hi ${investigator.fullName},</p>
+        <p>A verdict has been issued on your case:</p>
+        <div style="background:#1C1C28;border-radius:6px;padding:16px;margin:16px 0;">
+          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Case</p>
+          <p style="margin:0 0 16px;font-weight:bold;">${caseTitle}</p>
+          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Verdict</p>
+          <p style="margin:0 0 16px;font-weight:bold;color:${statusColor};">${statusLabel}</p>
+          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Reason</p>
+          <p style="margin:0;color:#E8E8F0;">${reason}</p>
+        </div>
+        <a href="${appUrl}/investigator/cases/${caseId}"
+           style="display:inline-block;background:#00C9A7;color:#000;padding:10px 20px;
+                  text-decoration:none;border-radius:6px;font-weight:bold;margin-top:8px;">
+          View Case
+        </a>
+        <p style="font-size:11px;color:#555570;margin-top:24px;">
+          ProofChain · Digital Forensic Evidence Platform
+        </p>
+      </div>
+    `,
+  });
+}
+
+export async function notifyAnalyst(
+  analystId: string,
+  caseIds: string[],
+  actionType: "transfer" | "bulk_assign"
+) {
+  const analyst = await User.findById(analystId).select("email fullName");
+  if (!analyst) return;
+
+  const appUrl = getAppBaseUrl();
+  const caseCount = caseIds.length;
+  const isMultiple = caseCount > 1;
+
+  const titleText = isMultiple ? `You have been assigned ${caseCount} new cases` : `A new case has been assigned to you`;
+  const subjectText = isMultiple ? `New Assignment: ${caseCount} Cases` : `New Case Assignment: ${caseIds[0].substring(0, 8)}`;
+
+  await sendEmail({
+    to: analyst.email,
+    subject: subjectText,
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0D1B2A;color:#E8E8F0;padding:32px;border-radius:8px;">
+        <h2 style="color:#00C9A7;margin-top:0;">ProofChain</h2>
+        <p>Hi ${analyst.fullName},</p>
+        <p>${titleText}.</p>
+        <div style="background:#1C1C28;border-radius:6px;padding:16px;margin:16px 0;">
+          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Action Type</p>
+          <p style="margin:0 0 16px;font-weight:bold;text-transform:capitalize;">${actionType.replace('_', ' ')}</p>
+          
+          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Case ${isMultiple ? 'IDs' : 'ID'}</p>
+          <ul style="margin:0;padding-left:16px;color:#00C9A7;font-family:monospace;">
+            ${caseIds.map(id => `<li>${id.substring(0, 16)}...</li>`).join('')}
+          </ul>
+        </div>
+        <a href="${appUrl}/analyst"
+           style="display:inline-block;background:#3B82F6;color:#FFF;padding:10px 20px;
+                  text-decoration:none;border-radius:6px;font-weight:bold;margin-top:8px;">
+          View My Queue
+        </a>
+        <p style="font-size:11px;color:#555570;margin-top:24px;">
+          ProofChain · Digital Forensic Evidence Platform
+        </p>
+      </div>
+    `,
+  });
 }
