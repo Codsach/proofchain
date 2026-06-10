@@ -3,12 +3,6 @@ import bcrypt from "bcryptjs";
 import User from "./models/User";
 import { normalizeEmail } from "./schemas/auth";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI is not defined in environment variables");
-}
-
 // Global cache to prevent multiple connections in Next.js dev hot-reload
 declare global {
   var _mongooseCache: {
@@ -30,6 +24,11 @@ export async function connectDB(): Promise<typeof mongoose> {
     await ensureUserIndexes();
     await ensureBootstrapAdmin();
     return cached.conn;
+  }
+
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI is not defined in environment variables");
   }
 
   if (!cached.promise) {
