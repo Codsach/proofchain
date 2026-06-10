@@ -106,7 +106,7 @@ async function listUsers(
     const { searchParams } = new URL(req.url);
     const roleFilter = searchParams.get("role");
 
-    const filter = roleFilter ? { role: roleFilter } : {};
+    const filter: Record<string, unknown> = roleFilter ? { role: roleFilter } : {};
     const users = await User.find(filter)
       .select("-passwordHash -emailVerifyToken -emailVerifyExpires -__v")
       .sort({ createdAt: -1 })
