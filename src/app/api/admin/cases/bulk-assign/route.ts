@@ -6,6 +6,7 @@ import { Transfer } from "@/lib/models/Verdict";
 import { withAuth, getIp, JWTPayload } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import { computeTransferHash, anchorTransfer } from "@/lib/blockchain";
+import { NotificationModel } from "@/lib/models/Notification";
 import { z } from "zod";
 
 const BulkAssignSchema = z.object({
@@ -94,6 +95,15 @@ async function bulkAssignCases(
       });
 
       anchorTransferAsync(caseDoc.caseId, transferHash, transferDoc._id.toString());
+      
+      await NotificationModel.create({
+        recipientId: analystId,
+        type: "case_assigned",
+        title: "New Case Assigned",
+        message: `Case ${caseDoc.title} (${caseDoc.caseId.slice(0, 8)}) has been assigned to you.`,
+        link: `/analyst/cases/${caseDoc.caseId}`,
+      });
+
       assignedCount++;
     }
 

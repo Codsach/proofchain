@@ -5,8 +5,9 @@ import User from "@/lib/models/User";
 import { Transfer } from "@/lib/models/Verdict";
 import { withAuth, getIp, JWTPayload } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
-import { TransferSchema } from "@/lib/schemas/case";
 import { computeTransferHash, anchorTransfer } from "@/lib/blockchain";
+import { NotificationModel } from "@/lib/models/Notification";
+import { TransferSchema } from "@/lib/schemas/case";
 
 async function initiateTransfer(
   req: NextRequest,
@@ -112,6 +113,15 @@ async function initiateTransfer(
 
     // 11. Anchor on blockchain (non-blocking)
     anchorTransferAsync(caseId, transferHash, transferDoc._id.toString());
+
+    // 12. Notify the recipient
+    await NotificationModel.create({
+      recipientId: toUserId,
+      type: "case_assigned",
+      title: "Case Transferred to You",
+      message: `Case ${caseDoc.title} (${caseId.slice(0, 8)}) has been transferred to you.`,
+      link: `/analyst/cases/${caseId}`,
+    });
 
     return NextResponse.json({
       message: "Custody transferred successfully",

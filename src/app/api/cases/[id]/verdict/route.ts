@@ -8,6 +8,7 @@ import Verdict  from "@/lib/models/Verdict";
 import { withAuth, getIp, JWTPayload } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import { VerdictSchema } from "@/lib/schemas/case";
+import { NotificationModel } from "@/lib/models/Notification";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -95,6 +96,15 @@ async function issueVerdict(
     notifyInvestigator(caseDoc.investigatorId.toString(), caseId, caseDoc.title, verdict, reason).catch(
       (err) => console.error("[verdict] Email notification failed:", err)
     );
+
+    // 9.1 In-app Notification
+    await NotificationModel.create({
+      recipientId: caseDoc.investigatorId.toString(),
+      type: "verdict_issued",
+      title: "Verdict Issued",
+      message: `A verdict of ${verdict.toUpperCase()} was issued for ${caseDoc.title}.`,
+      link: `/investigator/cases/${caseId}`,
+    });
 
     // 10. Anchor verdict on blockchain (non-blocking)
     anchorVerdictOnChain(caseId, verdictHash, verdictDoc._id.toString()).catch(

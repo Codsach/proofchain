@@ -104,7 +104,7 @@
 - **Responsive Improvements** — Optimize all pages for mobile (currently basic)
 - **Mobile Evidence Capture** — Camera roll auto-upload on iOS/Android
 - **Offline Mode** — Full offline queue, background sync (currently service worker only)
-- **Push Notifications** — Notify analyst when new case assigned, investigator when verdict issued
+- **Push Notifications** — Notify analyst when new case assigned, investigator when verdict issued , done
 
 ### Export & Reporting
 - **Case Report PDF** — Download full case with evidence, AI analysis, verdict
@@ -262,8 +262,8 @@
 ## IMPLEMENTATION PRIORITY (Quick Wins → Big Impact)
 
 ### Phase 1 (1-2 weeks) — Highest ROI
-1. **Case Dashboard Charts** — Admin case volume, status breakdown (Recharts)
-2. **Search & Advanced Filters** — Full-text case search
+1. **Case Dashboard Charts** — Admin case volume, status breakdown (Recharts) done
+2. **Search & Advanced Filters** — Full-text case search done
 3. **Email Alerts** — Notify analyst of new cases, investigator of verdicts
 4. **Case Comments** — Simple investigator ↔ analyst discussion
 5. **Bulk Assign Cases** — Admin bulk-assign to analysts

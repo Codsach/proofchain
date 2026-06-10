@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Menu, LogOut } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const navItems = {
   investigator: [
@@ -169,14 +170,20 @@ export default function DashboardLayout({
               {user.email}
             </p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="justify-start text-dash-muted hover:text-dash-accent hover:bg-dash-accent/5 transition-colors group w-full px-0 h-auto"
-            onClick={logout}
-          >
-            <span className="text-xs font-semibold uppercase tracking-wider group-hover:pl-1 transition-all whitespace-nowrap">Terminate Session →</span>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex-1 justify-start text-dash-muted hover:text-dash-accent hover:bg-dash-accent/5 transition-colors group px-2 h-10"
+              onClick={logout}
+            >
+              <LogOut size={16} className="mr-2 opacity-50 group-hover:opacity-100 transition-opacity" />
+              <span className="text-xs font-semibold uppercase tracking-wider group-hover:pl-1 transition-all whitespace-nowrap">Logout</span>
+            </Button>
+            <div className="flex-shrink-0">
+              <NotificationBell />
+            </div>
+          </div>
         </div>
       </motion.aside>
 
