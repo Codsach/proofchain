@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "55mb",
     },
   },
+  
+  turbopack: {},
+
+  allowedDevOrigins: ["10.122.120.59", "localhost"],
 
   async headers() {
     return [
@@ -26,16 +30,6 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
-  },
-
-  webpack(config, { isServer }) {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-      };
-    }
-    return config;
   },
 };
 
