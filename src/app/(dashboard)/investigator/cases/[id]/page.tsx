@@ -28,6 +28,7 @@ interface CaseDetail {
   incidentDate: string;
   incidentType: string;
   status: string;
+  tags: string[];
   files: FileRecord[];
   createdAt: string;
   onChainTxHash: string | null;
@@ -143,6 +144,20 @@ export default function InvestigatorCaseDetailPage() {
               </a>
             ) : (
               <p className="text-white/20 italic font-medium">Awaiting cryptographic anchoring…</p>
+            )}
+          </div>
+          <div className="space-y-1">
+            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Tags / Labels</p>
+            {caseData.tags && caseData.tags.length > 0 ? (
+              <div className="flex flex-wrap gap-2 mt-1">
+                {caseData.tags.map((tag) => (
+                  <span key={tag} className="text-[10px] font-bold uppercase tracking-widest bg-dash-border/30 text-white/60 px-2 py-1 rounded border border-dash-border/50">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-white/20 italic font-medium text-sm">None assigned</p>
             )}
           </div>
         </div>

@@ -39,6 +39,7 @@ export interface ICase extends Document {
   incidentType: IncidentType;
   status: CaseStatus;
   files: IFileRecord[];
+  tags: string[];
   aiReportId: Types.ObjectId | null;
   onChainTxHash: string | null;
   createdAt: Date;
@@ -88,6 +89,7 @@ const CaseSchema = new Schema<ICase>(
       default: "pending_ai_review",
     },
     files: [FileRecordSchema],
+    tags: [{ type: String, trim: true }],
     aiReportId: { type: Schema.Types.ObjectId, ref: "AiReport", default: null },
     onChainTxHash: { type: String, default: null },
   },

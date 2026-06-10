@@ -37,6 +37,7 @@ async function createCase(
       gpsLat: formData.get("gpsLat") ? Number(formData.get("gpsLat")) : null,
       gpsLng: formData.get("gpsLng") ? Number(formData.get("gpsLng")) : null,
       gpsAccuracy: formData.get("gpsAccuracy") ? Number(formData.get("gpsAccuracy")) : null,
+      tags: formData.getAll("tags") as string[],
     };
 
     const parsed = CreateCaseSchema.safeParse(rawFields);
@@ -139,6 +140,7 @@ async function createCase(
       incidentType: parsed.data.incidentType,
       status: "pending_ai_review",
       files: fileRecords,
+      tags: parsed.data.tags || [],
       aiReportId: null,
       onChainTxHash: null,
     });
@@ -245,6 +247,7 @@ async function listCases(
     const statusFilter = searchParams.get("status");
     const incidentTypeFilter = searchParams.get("incidentType");
     const searchQuery = searchParams.get("search");
+    const tagFilter = searchParams.get("tag");
 
     // Analysts and admins see all cases; investigators see only their own
     const filter: Record<string, any> =
@@ -252,6 +255,7 @@ async function listCases(
 
     if (statusFilter && statusFilter !== "all") filter.status = statusFilter;
     if (incidentTypeFilter && incidentTypeFilter !== "all") filter.incidentType = incidentTypeFilter;
+    if (tagFilter && tagFilter !== "all") filter.tags = tagFilter;
     if (searchQuery) {
       filter.$or = [
         { title: { $regex: searchQuery, $options: "i" } },

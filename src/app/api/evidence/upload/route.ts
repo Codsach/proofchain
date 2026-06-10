@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
       fileHash,
       ipfsCid,
       status: "pending_ai_review",
-      captureMethod: captureMethod || "upload",
+      captureMethod: (captureMethod as "camera" | "upload") || "upload",
       gpsMetadata,
       deviceInfo: parsedDeviceInfo,
       offlineQueueId: offlineQueueId || null,

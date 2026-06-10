@@ -86,7 +86,7 @@ async function bulkAssignCases(
       await logAction({
         actorId: user.userId,
         actorRole: user.role,
-        actionType: "admin.bulk_assign",
+        actionType: "transfer.initiate",
         targetType: "case",
         targetId: caseDoc.caseId,
         ipAddress: getIp(req),

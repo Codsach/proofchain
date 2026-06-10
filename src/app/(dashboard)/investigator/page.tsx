@@ -23,6 +23,7 @@ type InvestigatorCase = {
   title: string;
   incidentType: string;
   status: string;
+  tags: string[];
   files: Array<{ fileId: string }>;
   createdAt: string;
   incidentDate: string;
@@ -70,6 +71,7 @@ export default function InvestigatorPage() {
 
   const [statusFilter, setStatusFilter] = useState("all");
   const [incidentTypeFilter, setIncidentTypeFilter] = useState("all");
+  const [tagFilter, setTagFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -102,6 +104,7 @@ export default function InvestigatorPage() {
         const params = new URLSearchParams();
         if (statusFilter !== "all") params.set("status", statusFilter);
         if (incidentTypeFilter !== "all") params.set("incidentType", incidentTypeFilter);
+        if (tagFilter !== "all") params.set("tag", tagFilter);
         if (debouncedSearch) params.set("search", debouncedSearch);
 
         const res = await fetch(`/api/cases?${params}`, {
@@ -142,7 +145,7 @@ export default function InvestigatorPage() {
     return () => {
       isCancelled = true;
     };
-  }, [user, getToken, statusFilter, incidentTypeFilter, debouncedSearch]);
+  }, [user, getToken, statusFilter, incidentTypeFilter, tagFilter, debouncedSearch]);
 
   const openCases = getOpenCaseCount(cases);
   const totalFiles = cases.reduce(
@@ -170,15 +173,25 @@ export default function InvestigatorPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="flex items-center gap-3"
         >
-          <Button
-            asChild
-            className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-12 px-8 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-          >
-            <Link href="/investigator/submit">+ Deploy Evidence</Link>
-          </Button>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              asChild
+              variant="outline"
+              className="border-emerald-500/50 hover:bg-emerald-500/10 text-emerald-400 font-bold h-12 px-8 rounded-xl"
+            >
+              <Link href="/investigator/submit">Submit Evidence</Link>
+            </Button>
+          </motion.div>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button
+              asChild
+              className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-12 px-8 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+            >
+              <Link href="/investigator/cases/new">+ New Case</Link>
+            </Button>
+          </motion.div>
         </motion.div>
       </div>
 
@@ -248,6 +261,16 @@ export default function InvestigatorPage() {
               <SelectItem value="archived">Archived</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="flex-1 min-w-[200px] space-y-1.5">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Tag Filter</p>
+          <Input
+            placeholder="Filter by exact tag..."
+            value={tagFilter === "all" ? "" : tagFilter}
+            onChange={(e) => setTagFilter(e.target.value || "all")}
+            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-11 rounded-xl"
+          />
         </div>
       </div>
 
@@ -326,6 +349,15 @@ export default function InvestigatorPage() {
                           <p className="text-[10px] text-white/20 font-mono tracking-tighter mt-0.5">
                             ID::{caseItem.caseId.slice(0, 16)}
                           </p>
+                          {caseItem.tags && caseItem.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {caseItem.tags.map((tag) => (
+                                <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-border/50 text-white/40 px-1.5 py-0.5 rounded">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4">
