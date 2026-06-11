@@ -99,9 +99,9 @@ export default function RolesSection() {
       ref={sectionRef}
       id="roles"
       className="bg-[#0B120D]"
-      style={{ 
-        padding: "120px 24px", 
-        position: "relative", 
+      style={{
+        padding: "120px 24px",
+        position: "relative",
         overflow: "hidden",
         backgroundImage: `
           radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
@@ -183,7 +183,7 @@ export default function RolesSection() {
               variants={revealVariant}
               custom={i}
               className="lp-role-card"
-              style={{ 
+              style={{
                 willChange: "transform, opacity",
                 borderRadius: "24px"
               }}
@@ -197,16 +197,16 @@ export default function RolesSection() {
               }}
             >
               {/* Dynamic decorative top light */}
-              <div 
-                style={{ 
-                  position: "absolute", 
-                  top: 0, 
-                  left: "10%", 
-                  right: "10%", 
-                  height: "1px", 
+              <div
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: "10%",
+                  right: "10%",
+                  height: "1px",
                   background: `linear-gradient(90deg, transparent, ${role.accent}, transparent)`,
-                  opacity: 0.3 
-                }} 
+                  opacity: 0.3
+                }}
               />
 
               {/* Role header */}

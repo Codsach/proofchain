@@ -6,6 +6,7 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,6 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import Link from "next/link";
 
 interface CaseRow {
@@ -39,8 +46,44 @@ export default function AdminCasesPage() {
   const [cases, setCases] = useState<CaseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
+  const [incidentTypeFilter, setIncidentTypeFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  // Bulk Assign State
+  const [selectedCases, setSelectedCases] = useState<string[]>([]);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [analysts, setAnalysts] = useState<Array<{ _id: string; fullName: string }>>([]);
+  const [selectedAnalystId, setSelectedAnalystId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load analysts
+  useEffect(() => {
+    async function loadAnalysts() {
+      try {
+        const token = await getToken();
+        const res = await fetch("/api/admin/users?role=analyst", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setAnalysts(data.users ?? []);
+        }
+      } catch (err) {
+        console.error("Failed to load analysts", err);
+      }
+    }
+    loadAnalysts();
+  }, [getToken]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   const fetchCases = useCallback(async (currentPage: number) => {
     setIsLoading(true);
@@ -49,6 +92,8 @@ export default function AdminCasesPage() {
       const params = new URLSearchParams();
       params.set("page", String(currentPage));
       if (statusFilter !== "all") params.set("status", statusFilter);
+      if (incidentTypeFilter !== "all") params.set("incidentType", incidentTypeFilter);
+      if (debouncedSearch) params.set("search", debouncedSearch);
  
       const res = await fetch(`/api/admin/cases?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -62,15 +107,60 @@ export default function AdminCasesPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [getToken, statusFilter]);
+  }, [getToken, statusFilter, incidentTypeFilter, debouncedSearch]);
 
   useEffect(() => {
     setPage(1);
-  }, [statusFilter]);
+  }, [statusFilter, incidentTypeFilter, debouncedSearch]);
 
   useEffect(() => {
     fetchCases(page);
   }, [page, fetchCases]);
+
+  const toggleSelectAll = () => {
+    if (selectedCases.length === cases.length && cases.length > 0) {
+      setSelectedCases([]);
+    } else {
+      setSelectedCases(cases.map((c) => c.caseId));
+    }
+  };
+
+  const toggleSelectCase = (caseId: string) => {
+    setSelectedCases((prev) =>
+      prev.includes(caseId) ? prev.filter((id) => id !== caseId) : [...prev, caseId]
+    );
+  };
+
+  const handleBulkAssign = async () => {
+    if (!selectedAnalystId || selectedCases.length === 0) return;
+    setIsSubmitting(true);
+    try {
+      const token = await getToken();
+      const res = await fetch("/api/admin/cases/bulk-assign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          caseIds: selectedCases,
+          analystId: selectedAnalystId,
+        }),
+      });
+
+      if (!res.ok) throw new Error("Bulk assign failed");
+
+      // Success
+      setIsAssignModalOpen(false);
+      setSelectedCases([]);
+      fetchCases(page);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to assign cases.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="space-y-10">
@@ -85,8 +175,33 @@ export default function AdminCasesPage() {
         </p>
       </div>
 
-      <div className="flex bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl shadow-2xl items-center gap-4">
-        <div className="space-y-1.5 min-w-[200px]">
+      <div className="flex flex-col sm:flex-row bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl shadow-2xl gap-4">
+        <div className="flex-1 space-y-1.5">
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Search Archives</p>
+          <Input
+            placeholder="Search by title or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-10 rounded-xl"
+          />
+        </div>
+
+        <div className="space-y-1.5 sm:min-w-[180px]">
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Incident Type</p>
+          <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
+            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+              <SelectValue placeholder="All types" />
+            </SelectTrigger>
+            <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
+              <SelectItem value="all">All Types</SelectItem>
+              {Object.entries(INCIDENT_LABELS).map(([key, label]) => (
+                <SelectItem key={key} value={key}>{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="space-y-1.5 sm:min-w-[180px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle Status</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
@@ -105,6 +220,36 @@ export default function AdminCasesPage() {
           </Select>
         </div>
       </div>
+
+      <AnimatePresence>
+        {selectedCases.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-2xl backdrop-blur-xl shadow-lg"
+          >
+            <p className="text-sm font-bold text-emerald-400">
+              {selectedCases.length} case{selectedCases.length !== 1 ? 's' : ''} selected
+            </p>
+            <div className="flex gap-3">
+              <Button
+                variant="ghost"
+                onClick={() => setSelectedCases([])}
+                className="text-white/60 hover:text-white"
+              >
+                Clear
+              </Button>
+              <Button
+                onClick={() => setIsAssignModalOpen(true)}
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold"
+              >
+                Assign to Analyst
+              </Button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {isLoading ? (
         <div className="space-y-3">
@@ -125,6 +270,14 @@ export default function AdminCasesPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
+                  <th className="px-6 py-4 w-10">
+                    <input
+                      type="checkbox"
+                      checked={cases.length > 0 && selectedCases.length === cases.length}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 rounded border-dash-border bg-dash-bg accent-emerald-500 cursor-pointer"
+                    />
+                  </th>
                   <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Case Descriptor</th>
                   <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
                   <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Integrity Score</th>
@@ -141,8 +294,18 @@ export default function AdminCasesPage() {
                       initial={{ opacity: 0, y: 5 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: idx * 0.02 }}
-                      className="hover:bg-emerald-500/[0.02] transition-colors group"
+                      className={`transition-colors group ${
+                        selectedCases.includes(c.caseId) ? "bg-emerald-500/[0.05]" : "hover:bg-emerald-500/[0.02]"
+                      }`}
                     >
+                      <td className="px-6 py-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedCases.includes(c.caseId)}
+                          onChange={() => toggleSelectCase(c.caseId)}
+                          className="w-4 h-4 rounded border-dash-border bg-dash-bg accent-emerald-500 cursor-pointer"
+                        />
+                      </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
                           <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors truncate max-w-[200px]">
@@ -215,6 +378,49 @@ export default function AdminCasesPage() {
           </Button>
         </div>
       )}
+
+      {/* Bulk Assign Modal */}
+      <Dialog open={isAssignModalOpen} onOpenChange={setIsAssignModalOpen}>
+        <DialogContent className="bg-dash-sidebar border-dash-border text-white p-6 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold tracking-tight">Assign {selectedCases.length} Cases</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 pt-4">
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Select Analyst</p>
+              <Select value={selectedAnalystId} onValueChange={setSelectedAnalystId}>
+                <SelectTrigger className="bg-dash-hover border-dash-border focus-visible:ring-emerald-500/30 transition-all text-white h-12 rounded-xl">
+                  <SelectValue placeholder="Choose an analyst" />
+                </SelectTrigger>
+                <SelectContent className="bg-dash-bg border-dash-border text-white">
+                  {analysts.map((analyst) => (
+                    <SelectItem key={analyst._id} value={analyst._id}>
+                      {analyst.fullName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button
+                variant="ghost"
+                onClick={() => setIsAssignModalOpen(false)}
+                className="text-white/60 hover:text-white"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleBulkAssign}
+                disabled={!selectedAnalystId || isSubmitting}
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-6"
+              >
+                {isSubmitting ? "Assigning..." : "Confirm Assignment"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

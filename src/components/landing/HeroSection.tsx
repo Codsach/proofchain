@@ -76,7 +76,8 @@ export default function HeroSection() {
         boxSizing: "border-box",
       }}
     >
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes textShimmer {
           0% { background-position: 200% center; }
           100% { background-position: -200% center; }
@@ -206,10 +207,10 @@ export default function HeroSection() {
         className="relative w-full max-w-[1160px] mx-auto px-4 sm:px-6 md:px-8"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          
+
           {/* Left Column: Text and Actions */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
-            
+
             {/* Headline */}
             <motion.h1
               className={`font-heading text-[2.5rem] sm:text-5xl md:text-6xl lg:text-[4.5rem] leading-[1.08] tracking-tight mb-6 font-extrabold text-white text-left`}
@@ -283,7 +284,7 @@ export default function HeroSection() {
           </div>
 
           {/* Right Column: Interactive Forensic Seal Widget */}
-          <motion.div 
+          <motion.div
             className="lg:col-span-5 w-full flex justify-center items-center relative"
             variants={fadeUp}
             initial="hidden"

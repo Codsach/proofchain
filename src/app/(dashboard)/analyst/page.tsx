@@ -7,6 +7,7 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -14,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AnalystMetrics } from "@/components/analyst/AnalystMetrics";
 
 interface QueueCase {
   caseId: string;
@@ -39,14 +41,24 @@ export default function AnalystPage() {
   const [error, setError] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const fetchQueue = async (status: string, incidentType: string) => {
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  const fetchQueue = async (status: string, incidentType: string, search: string) => {
     setIsLoading(true);
     try {
       const token = await getToken();
       const params = new URLSearchParams();
       if (status !== "all") params.set("status", status);
       if (incidentType !== "all") params.set("incidentType", incidentType);
+      if (search) params.set("search", search);
 
       const res = await fetch(`/api/cases/queue?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -62,8 +74,8 @@ export default function AnalystPage() {
   };
 
   useEffect(() => {
-    fetchQueue(statusFilter, typeFilter);
-  }, [statusFilter, typeFilter]);
+    fetchQueue(statusFilter, typeFilter, debouncedSearch);
+  }, [statusFilter, typeFilter, debouncedSearch]);
 
   return (
     <div className="space-y-10 pb-10">
@@ -78,12 +90,25 @@ export default function AnalystPage() {
         </p>
       </motion.div>
 
+      {/* Metrics Dashboard */}
+      <AnalystMetrics />
+
       {/* Filters */}
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl"
       >
+        <div className="flex-1 min-w-[200px] space-y-1.5">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Search Queue</p>
+          <Input
+            placeholder="Search by title or description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="bg-black/40 border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-11 rounded-xl"
+          />
+        </div>
+
         <div className="space-y-1.5">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Lifecycle State</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
