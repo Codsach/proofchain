@@ -52,7 +52,9 @@ export default function AdminAuditPage() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("50");
   const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
 
   const fetchLogs = useCallback(async () => {
     setIsLoading(true);
@@ -60,6 +62,7 @@ export default function AdminAuditPage() {
       const token = await getToken();
       const params = new URLSearchParams();
       params.set("page", String(page));
+      params.set("limit", limit);
       if (actionFilter !== "all") params.set("actionType", actionFilter);
       if (fromDate) params.set("from", fromDate);
       if (toDate) params.set("to", toDate);
@@ -71,12 +74,13 @@ export default function AdminAuditPage() {
       const data = await res.json();
       setLogs(data.logs ?? []);
       setTotalPages(data.pagination?.pages ?? 1);
+      setTotalRecords(data.pagination?.total ?? 0);
     } catch {
       // Non-fatal
     } finally {
       setIsLoading(false);
     }
-  }, [getToken, page, actionFilter, fromDate, toDate]);
+  }, [getToken, page, limit, actionFilter, fromDate, toDate]);
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
@@ -217,33 +221,70 @@ export default function AdminAuditPage() {
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between pt-4 px-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page === 1 || isLoading}
-            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent hover:text-dash-accent hover:bg-emerald-500/5 transition-all outline-none"
-          >
-            ← Previous Channel
-          </Button>
-          <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-white/10" />
-            <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">
-              Sector <span className="text-dash-text">{page}</span> of {totalPages}
-            </span>
-            <div className="h-px w-8 bg-white/10" />
+      {(totalPages > 1 || logs.length > 0) && (
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 px-2 gap-4">
+          <div className="flex items-center gap-3">
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Items per page</p>
+            <Select value={limit} onValueChange={(v) => { setLimit(v); setPage(1); }}>
+              <SelectTrigger className="w-20 bg-dash-sidebar border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-8 rounded-lg text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-dash-bg border-dash-border text-dash-text text-xs">
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-            disabled={page === totalPages || isLoading}
-            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent hover:text-dash-accent hover:bg-emerald-500/5 transition-all outline-none"
-          >
-            Next Channel →
-          </Button>
+
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPage(1)}
+              disabled={page === 1 || isLoading}
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text hover:bg-white/5 transition-all outline-none hidden sm:flex"
+            >
+              First
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1 || isLoading}
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-accent hover:text-dash-accent hover:bg-emerald-500/5 transition-all outline-none"
+            >
+              ← Prev
+            </Button>
+            <div className="flex items-center gap-2 sm:gap-4 px-2">
+              <div className="h-px w-4 sm:w-8 bg-white/10" />
+              <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em] text-center">
+                Sector <span className="text-dash-text">{page}</span> of {totalPages}
+                <br className="sm:hidden" />
+                <span className="sm:ml-2 text-dash-accent/40">({totalRecords} logs)</span>
+              </span>
+              <div className="h-px w-4 sm:w-8 bg-white/10" />
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages || isLoading}
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-accent hover:text-dash-accent hover:bg-emerald-500/5 transition-all outline-none"
+            >
+              Next →
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPage(totalPages)}
+              disabled={page === totalPages || isLoading}
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text hover:bg-white/5 transition-all outline-none hidden sm:flex"
+            >
+              Last
+            </Button>
+          </div>
         </div>
       )}
     </div>

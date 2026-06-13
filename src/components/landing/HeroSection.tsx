@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { ArrowRight, Lock } from "lucide-react";
-import { DottedSurface } from "@/components/ui/dotted-surface";
+import { NetworkParticles } from "@/components/ui/network-particles";
 import HeroInteractiveWidget from "./HeroInteractiveWidget";
 
 const fadeUp: Variants = {
@@ -130,8 +130,8 @@ export default function HeroSection() {
         />
       </motion.div>
 
-      {/* Three.js Animated Dotted Mesh Background */}
-      <DottedSurface className="absolute inset-0 z-1 opacity-25" />
+      {/* Canvas Animated Network Mesh Background */}
+      <NetworkParticles className="opacity-25 z-[1]" />
 
       {/* ── Layer 2: Overlays + grid + glow (mid parallax) ── */}
       <motion.div
