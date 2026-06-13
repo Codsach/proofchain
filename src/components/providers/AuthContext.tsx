@@ -22,7 +22,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ requiresMfa?: boolean; mfaToken?: string } | void>;
-  verifyMfa: (code: string, mfaToken: string) => Promise<void>;
+  verifyMfa: (code: string, mfaToken: string, rememberDevice: boolean) => Promise<void>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
 }
@@ -107,12 +107,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ── Verify MFA ────────────────────────────────────────────────────────────
   const verifyMfa = useCallback(
-    async (code: string, mfaToken: string): Promise<void> => {
+    async (code: string, mfaToken: string, rememberDevice: boolean): Promise<void> => {
       const res = await fetch("/api/auth/login/mfa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ code, mfaToken }),
+        body: JSON.stringify({ code, mfaToken, rememberDevice }),
       });
 
       let data;

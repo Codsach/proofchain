@@ -59,6 +59,26 @@ export function setRefreshCookie(res: NextResponse, token: string): void {
   });
 }
 
+export function setTrustedDeviceCookie(res: NextResponse, token: string): void {
+  res.cookies.set("trustedDevice", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+    path: "/",
+  });
+}
+
+export function clearTrustedDeviceCookie(res: NextResponse): void {
+  res.cookies.set("trustedDevice", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
+    path: "/",
+  });
+}
+
 export function clearRefreshCookie(res: NextResponse): void {
   res.cookies.set("refreshToken", "", {
     httpOnly: true,

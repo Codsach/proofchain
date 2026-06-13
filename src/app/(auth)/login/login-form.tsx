@@ -37,6 +37,7 @@ export default function LoginForm({
   const [step, setStep] = useState<"credentials" | "mfa">("credentials");
   const [mfaToken, setMfaToken] = useState<string | null>(null);
   const [mfaCode, setMfaCode] = useState("");
+  const [rememberDevice, setRememberDevice] = useState(false);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
@@ -74,7 +75,7 @@ export default function LoginForm({
     
     setIsSubmitting(true);
     try {
-      await verifyMfa(mfaCode, mfaToken);
+      await verifyMfa(mfaCode, mfaToken, rememberDevice);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "MFA Verification failed";
       toast({
@@ -250,6 +251,22 @@ export default function LoginForm({
                 </div>
               </div>
               
+              <div className="flex items-center space-x-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="rememberDevice"
+                  checked={rememberDevice}
+                  onChange={(e) => setRememberDevice(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/10 bg-white/[0.03] text-emerald-500 focus:ring-emerald-500/20 focus:ring-offset-0"
+                />
+                <label
+                  htmlFor="rememberDevice"
+                  className="text-sm text-white/60 font-medium leading-none cursor-pointer hover:text-white/80 transition-colors"
+                >
+                  Remember this device for 30 days
+                </label>
+              </div>
+
               <motion.div
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}

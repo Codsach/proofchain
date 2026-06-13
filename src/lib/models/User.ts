@@ -17,6 +17,10 @@ export interface IUser extends Document {
   emailVerifyExpires: Date | null;
   mfaEnabled: boolean;
   mfaSecret: string | null;
+  trustedDevices: {
+    deviceTokenHash: string;
+    expiresAt: Date;
+  }[];
 }
 
 const UserSchema = new Schema<IUser>(
@@ -44,6 +48,12 @@ const UserSchema = new Schema<IUser>(
     emailVerifyExpires: { type: Date, default: null },
     mfaEnabled: { type: Boolean, default: false },
     mfaSecret: { type: String, default: null, select: false },
+    trustedDevices: [
+      {
+        deviceTokenHash: { type: String, required: true },
+        expiresAt: { type: Date, required: true },
+      },
+    ],
   },
   { timestamps: true }
 );
