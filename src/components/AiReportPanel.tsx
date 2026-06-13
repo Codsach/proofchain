@@ -1,0 +1,185 @@
+import { TamperScoreBadge } from "./TamperScoreBadge";
+import { motion } from "framer-motion";
+
+interface ExifData {
+  software: string | null;
+  gps_present: boolean;
+  creation_timestamp: string | null;
+  modification_timestamp: string | null;
+  device: string | null;
+  flags: string[];
+}
+
+interface GeminiResult {
+  manipulation_likelihood: string;
+  findings: string[];
+  confidence: string;
+}
+
+interface AiReport {
+  tamperScore: number;
+  riskLevel: string;
+  plainNotesSummary: string;
+  exifData: ExifData;
+  geminiResult: GeminiResult;
+  scoreBreakdown: Record<string, { points: number; detail: string }>;
+  analysedAt: string;
+  status: string;
+}
+
+interface Props {
+  report: AiReport | null;
+  isLoading?: boolean;
+}
+
+export function AiReportPanel({ report, isLoading }: Props) {
+  if (isLoading) {
+    return (
+      <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-4 animate-pulse">
+        <div className="h-4 bg-white/5 rounded-full w-1/3" />
+        <div className="h-3 bg-white/5 rounded-full w-full" />
+        <div className="h-3 bg-white/5 rounded-full w-2/3" />
+      </div>
+    );
+  }
+
+  if (!report) {
+    return (
+      <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-xl">
+        <div className="flex items-center gap-3">
+          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+            Analysis Protocol In Progress...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const flagLabels: Record<string, string> = {
+    editing_software_detected: "Editing software in metadata",
+    modification_after_creation: "Modified after creation",
+    gps_absent_on_field_incident: "GPS absent",
+    no_creation_timestamp: "No creation timestamp",
+  };
+
+  return (
+    <div className="rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-2xl p-6 space-y-6 shadow-2xl relative overflow-hidden group">
+      {/* Background Decorative Element */}
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
+
+      {/* Header */}
+      <div className="flex items-start justify-between gap-4 relative">
+        <div>
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-2">Integrity Index</p>
+          <div className="scale-110 origin-left">
+            <TamperScoreBadge score={report.tamperScore} showLabel />
+          </div>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Temporal Scan</p>
+          <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
+            {new Date(report.analysedAt).toLocaleString(undefined, {
+              hour: '2-digit', minute: '2-digit', second: '2-digit'
+            })}
+          </p>
+        </div>
+      </div>
+
+      {/* Neural Summary */}
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-xl bg-white/[0.03] border border-white/5 px-4 py-4 relative group/summary"
+      >
+        <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20 group-hover/summary:bg-emerald-500/40 transition-colors" />
+        <p className="text-[10px] font-bold text-emerald-500/40 uppercase tracking-widest mb-2 ml-1">AI Executive Summary</p>
+        <p className="text-sm text-white/70 leading-relaxed font-medium ml-1">
+          {report.plainNotesSummary}
+        </p>
+      </motion.div>
+
+      {/* EXIF flags */}
+      {report.exifData.flags && report.exifData.flags.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+            Anomalous Metadata
+          </p>
+          <div className="space-y-2">
+            {report.exifData.flags.map((flag, i) => {
+              const key = flag.split(":")[0];
+              const label = flagLabels[key] ?? flag;
+              const detail = flag.includes(":") ? flag.split(":").slice(1).join(":") : null;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex items-start gap-3 text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-500/5 border border-amber-500/10 rounded-xl px-4 py-3"
+                >
+                  <span className="mt-0.5 shrink-0 text-amber-500/60">⚡</span>
+                  <div className="flex flex-col gap-0.5">
+                    <span>{label}</span>
+                    {detail && (
+                      <span className="text-[9px] text-amber-600/60 lowercase tracking-tight">source::{detail}</span>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Gemini visual findings */}
+      {report.geminiResult.findings && report.geminiResult.findings.length > 0 && (
+        <div className="space-y-3 pt-2">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1 flex justify-between">
+            <span>Visual Neural Findings</span>
+            <span className="text-emerald-500/40 text-[9px]">CONF::{report.geminiResult.confidence}</span>
+          </p>
+          <div className="space-y-2">
+            {report.geminiResult.findings.map((f, i) => (
+              <div key={i} className="text-[11px] text-white/50 font-medium flex gap-3 px-1 group/finding">
+                <span className="text-emerald-500/20 group-hover:text-emerald-500/50 transition-colors shrink-0">■</span>
+                {f}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* EXIF metadata table */}
+      <div className="pt-4 border-t border-white/5 space-y-3">
+        <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+          Raw Metadata Registry
+        </p>
+        <div className="rounded-xl overflow-hidden border border-white/5 bg-black/20">
+          <table className="w-full text-[10px] font-bold uppercase tracking-tight">
+            <tbody className="divide-y divide-white/5">
+              {[
+                ["Software", report.exifData.software],
+                ["Device", report.exifData.device],
+                ["Created", report.exifData.creation_timestamp],
+                ["Modified", report.exifData.modification_timestamp],
+                ["GPS", report.exifData.gps_present ? "Present" : "Absent"],
+              ].map(([label, value]) => (
+                <tr key={label as string} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="py-2.5 px-4 text-white/30 w-32">{label}</td>
+                  <td
+                    className={`py-2.5 px-4 font-mono tracking-tighter ${
+                      value ? "text-white/60" : "text-white/10 italic"
+                    }`}
+                  >
+                    {value ?? "N/A"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
