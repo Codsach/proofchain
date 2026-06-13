@@ -11,6 +11,7 @@ import {
   signMfaToken,
 } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
+import crypto from "crypto";
 
 const LOCK_TIME_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_ATTEMPTS = 5;
@@ -116,11 +117,26 @@ export async function POST(req: NextRequest) {
 
     // 7. Check if MFA is enabled
     if (user.mfaEnabled) {
-      const mfaToken = signMfaToken({ userId: user._id.toString() });
-      return NextResponse.json({
-        requiresMfa: true,
-        mfaToken,
-      });
+      const trustedDeviceCookie = req.cookies.get("trustedDevice")?.value;
+      let bypassMfa = false;
+
+      if (trustedDeviceCookie && user.trustedDevices) {
+        const hashedToken = crypto.createHash("sha256").update(trustedDeviceCookie).digest("hex");
+        const validDevice = user.trustedDevices.find(
+          (d: any) => d.deviceTokenHash === hashedToken && d.expiresAt > new Date()
+        );
+        if (validDevice) {
+          bypassMfa = true;
+        }
+      }
+
+      if (!bypassMfa) {
+        const mfaToken = signMfaToken({ userId: user._id.toString() });
+        return NextResponse.json({
+          requiresMfa: true,
+          mfaToken,
+        });
+      }
     }
 
     // 8. Build token payload — role is ALWAYS taken from DB here
