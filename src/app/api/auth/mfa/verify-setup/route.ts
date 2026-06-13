@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticator } from "otplib";
+import { authenticator } from "@/lib/totp";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import { withAuth, JWTPayload, getIp } from "@/lib/auth";
@@ -7,9 +7,10 @@ import { logAction } from "@/lib/audit";
 
 async function verifySetupMfa(
   req: NextRequest,
-  _ctx: { params: Promise<Record<string, never>> },
+  _ctx: unknown,
   user: JWTPayload
 ) {
+  void _ctx;
   try {
     const body = await req.json();
     const { secret, code } = body;
@@ -22,9 +23,9 @@ async function verifySetupMfa(
     }
 
     // Verify the provided code against the provided secret
-    const isValid = authenticator.check(code, secret);
+    const verification = await authenticator.verify(code, { secret });
     
-    if (!isValid) {
+    if (!verification.valid) {
       return NextResponse.json(
         { error: "Invalid authenticator code" },
         { status: 400 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticator } from "otplib";
+import { authenticator } from "@/lib/totp";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import {
@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Verify the TOTP code
-    const isValid = authenticator.check(code, user.mfaSecret);
-    if (!isValid) {
+    const verification = await authenticator.verify(code, { secret: user.mfaSecret });
+    if (!verification.valid) {
       return NextResponse.json(
         { error: "Invalid authenticator code" },
         { status: 400 }
