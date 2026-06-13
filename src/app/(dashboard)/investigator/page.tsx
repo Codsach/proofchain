@@ -178,8 +178,7 @@ export default function InvestigatorPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               asChild
-              variant="outline"
-              className="border-emerald-500/50 hover:bg-emerald-500/10 text-emerald-400 font-bold h-12 px-8 rounded-xl"
+              className="border border-emerald-500/50 bg-transparent hover:bg-emerald-500/10 text-emerald-400 hover:text-emerald-300 font-bold h-12 px-8 rounded-xl transition-all"
             >
               <Link href="/investigator/submit">Submit Evidence</Link>
             </Button>
@@ -197,25 +196,27 @@ export default function InvestigatorPage() {
 
       <div className="grid gap-6 sm:grid-cols-3">
         {[
-          { label: "Assigned Cases", value: cases.length, desc: "Total subjects in registry", icon: <Folder className="w-6 h-6 text-dash-muted group-hover:text-dash-accent transition-colors" /> },
-          { label: "Pending Analysis", value: openCases, desc: "Active neural review", icon: <Brain className="w-6 h-6 text-dash-muted group-hover:text-dash-accent transition-colors" /> },
-          { label: "Evidence Integrity", value: totalFiles, desc: "Validated artifacts", icon: <Shield className="w-6 h-6 text-dash-muted group-hover:text-dash-accent transition-colors" /> },
-        ].map((stat, idx) => (
+          { label: "Assigned Cases", value: cases.length, desc: "Total subjects in registry", icon: Folder, hoverBorder: "hover:border-blue-500/30", hoverText: "group-hover:text-blue-400" },
+          { label: "Pending Analysis", value: openCases, desc: "Active neural review", icon: Brain, hoverBorder: "hover:border-amber-500/30", hoverText: "group-hover:text-amber-400" },
+          { label: "Evidence Integrity", value: totalFiles, desc: "Validated artifacts", icon: Shield, hoverBorder: "hover:border-emerald-500/30", hoverText: "group-hover:text-emerald-400" },
+        ].map((stat, idx) => {
+          const Icon = stat.icon;
+          return (
           <motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl group hover:border-dash-accent/20 transition-all hover:bg-dash-hover"
+            className={`rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl group transition-all hover:bg-dash-hover ${stat.hoverBorder}`}
           >
             <div className="flex justify-between items-start mb-4">
-              {stat.icon}
-              <p className="text-[10px] font-bold text-dash-accent/40 uppercase tracking-widest">{stat.label}</p>
+              <Icon className={`w-6 h-6 text-dash-muted transition-colors ${stat.hoverText}`} />
+              <p className={`text-[10px] font-bold text-dash-accent/40 uppercase tracking-widest transition-colors ${stat.hoverText}`}>{stat.label}</p>
             </div>
             <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
             <p className="text-[10px] text-white/20 font-bold uppercase tracking-tight group-hover:text-dash-muted transition-colors italic">{stat.desc}</p>
           </motion.div>
-        ))}
+        )})}
       </div>
 
       <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl">
@@ -306,12 +307,12 @@ export default function InvestigatorPage() {
           </Button>
         </div>
       ) : (
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl overflow-hidden shadow-2xl"
-        >
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl"
+          >
           <div className="p-6 border-b border-dash-border bg-dash-card flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Operational Stream</h2>
@@ -322,7 +323,7 @@ export default function InvestigatorPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-dash-border bg-dash-sidebar">
+                <tr className="border-b border-dash-border bg-dash-card">
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Target Subject</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Taxonomy</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Review State</th>

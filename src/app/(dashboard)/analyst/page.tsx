@@ -160,7 +160,7 @@ export default function AnalystPage() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center backdrop-blur-2xl shadow-2xl"
+          className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center backdrop-blur-2xl shadow-2xl"
         >
           <p className="text-white/30 text-sm font-medium tracking-tight">
             Queue empty. No subjects currently match the selected filtering protocols.
@@ -170,12 +170,12 @@ export default function AnalystPage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl overflow-hidden shadow-2xl"
+          className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl"
         >
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-dash-border bg-dash-sidebar">
+                <tr className="border-b border-dash-border bg-dash-card">
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Case Target</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest hidden md:table-cell">Category</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Neural Score</th>
