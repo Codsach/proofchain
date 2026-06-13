@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticator } from "otplib";
-import qrcode from "qrcode";
+import { authenticator } from "@/lib/totp";
+import * as qrcode from "qrcode";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import { withAuth, JWTPayload } from "@/lib/auth";
 
 async function setupMfa(
   req: NextRequest,
-  _ctx: { params: Promise<Record<string, never>> },
+  _ctx: unknown,
   user: JWTPayload
 ) {
+  void _ctx;
   try {
     await connectDB();
     
@@ -29,11 +30,10 @@ async function setupMfa(
     const secret = authenticator.generateSecret();
     
     // Create the otpauth URI
-    const otpauthUrl = authenticator.keyuri(
-      dbUser.email,
-      "ProofChain",
+    const otpauthUrl = authenticator.toURI({
+      label: dbUser.email,
       secret
-    );
+    });
 
     // Generate a QR code as a Data URL
     const qrCodeUrl = await qrcode.toDataURL(otpauthUrl);
