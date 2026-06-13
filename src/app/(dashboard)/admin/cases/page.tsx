@@ -258,14 +258,14 @@ export default function AdminCasesPage() {
           ))}
         </div>
       ) : cases.length === 0 ? (
-        <div className="rounded-3xl border border-dash-border bg-dash-sidebar backdrop-blur-2xl p-20 text-center shadow-2xl">
+        <div className="rounded-3xl border border-dash-border bg-dash-card backdrop-blur-2xl p-20 text-center shadow-2xl">
           <div className="w-12 h-12 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-4 border border-dash-border">
             <span className="text-dash-muted">∅</span>
           </div>
           <p className="text-dash-muted text-sm font-medium">No encrypted records match current query parameters.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -381,7 +381,7 @@ export default function AdminCasesPage() {
 
       {/* Bulk Assign Modal */}
       <Dialog open={isAssignModalOpen} onOpenChange={setIsAssignModalOpen}>
-        <DialogContent className="bg-dash-sidebar border-dash-border text-white p-6 max-w-md">
+        <DialogContent className="bg-dash-card border-dash-border text-white p-6 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold tracking-tight">Assign {selectedCases.length} Cases</DialogTitle>
           </DialogHeader>

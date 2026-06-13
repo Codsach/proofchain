@@ -1,13 +1,12 @@
 "use client";
 
 import { GPSCoordinates, GPSStatus } from "@/hooks/useGPS";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GPSStatusBadgeProps {
   status: GPSStatus;
   coords: GPSCoordinates | null;
   error: string | null;
-  onRequest: () => void;
-  onClear: () => void;
   compact?: boolean;
 }
 
@@ -15,8 +14,6 @@ export function GPSStatusBadge({
   status,
   coords,
   error,
-  onRequest,
-  onClear,
   compact = false,
 }: GPSStatusBadgeProps) {
   if (compact) {
@@ -60,18 +57,6 @@ export function GPSStatusBadge({
             <span className="accuracy-badge">±{Math.round(coords.accuracy)}m</span>
           )}
         </div>
-        <div className="gps-actions">
-          {status !== "requesting" && (
-            <button className="gps-btn" onClick={onRequest} title="Refresh location">
-              {status === "acquired" ? "Refresh" : "Get Location"}
-            </button>
-          )}
-          {status === "acquired" && (
-            <button className="gps-btn danger" onClick={onClear} title="Remove GPS">
-              Remove
-            </button>
-          )}
-        </div>
       </div>
 
       {status === "acquired" && coords && (
@@ -100,9 +85,19 @@ export function GPSStatusBadge({
       )}
 
       {status === "requesting" && (
-        <div className="gps-status-row">
-          <div className="spinner-sm" />
-          <span>Acquiring GPS signal…</span>
+        <div className="gps-coords">
+          <div className="coord-row">
+            <span className="coord-label">Latitude</span>
+            <Skeleton className="h-4 w-[100px] bg-slate-800" />
+          </div>
+          <div className="coord-row">
+            <span className="coord-label">Longitude</span>
+            <Skeleton className="h-4 w-[100px] bg-slate-800" />
+          </div>
+          <div className="coord-row">
+            <span className="coord-label">Accuracy</span>
+            <Skeleton className="h-4 w-[60px] bg-slate-800" />
+          </div>
         </div>
       )}
 

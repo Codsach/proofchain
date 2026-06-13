@@ -157,14 +157,14 @@ export default function AdminAuditPage() {
           {[1,2,3,4,5,6].map((n) => <Skeleton key={n} className="h-14 w-full rounded-2xl bg-dash-hover" />)}
         </div>
       ) : logs.length === 0 ? (
-        <div className="rounded-3xl border border-dash-border bg-dash-sidebar backdrop-blur-2xl p-20 text-center shadow-2xl">
+        <div className="rounded-3xl border border-dash-border bg-dash-card backdrop-blur-2xl p-20 text-center shadow-2xl">
           <div className="w-12 h-12 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-4 border border-dash-border">
             <span className="text-dash-muted">?</span>
           </div>
           <p className="text-dash-muted text-sm font-medium">No system events detected mapping current filter criteria.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
