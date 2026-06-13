@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock } from "lucide-react";
@@ -19,7 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { DottedSurface } from "@/components/ui/dotted-surface";
+import { NetworkParticles } from "@/components/ui/network-particles";
 
 // Add confirm password to schema for the form only
 const RegisterFormSchema = RegisterSchema.extend({
@@ -79,9 +80,9 @@ export default function RegisterPage() {
 
   if (submitted) {
     return (
-      <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#000000]/30 to-[#000000] pointer-events-none" />
-        <DottedSurface className="opacity-60 z-[1]" />
+      <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
+        <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+        <NetworkParticles className="opacity-70 z-[1]" />
 
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
@@ -115,10 +116,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden">
-      {/* Background Dotted Surface */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#000000]/30 to-[#000000] pointer-events-none" />
-      <DottedSurface className="opacity-60 z-[1]" />
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
+      {/* Background Network Nodes */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      <NetworkParticles className="opacity-70 z-[1]" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -127,14 +128,55 @@ export default function RegisterPage() {
         className="relative z-10 w-full max-w-sm space-y-6"
       >
         <div className="text-center space-y-2">
-          <motion.h1 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="text-3xl font-bold tracking-tight bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent"
-          >
-            ProofChain
-          </motion.h1>
+          <div className="flex items-center justify-center gap-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.5, rotate: -20, filter: "blur(10px)" }}
+              animate={{ opacity: 1, scale: 1, rotate: 0, filter: "blur(0px)" }}
+              transition={{ 
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+                delay: 0.1 
+              }}
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, -3, 0],
+                  filter: [
+                    "drop-shadow(0px 0px 4px rgba(7, 165, 114, 0.1))",
+                    "drop-shadow(0px 0px 12px rgba(7, 165, 114, 0.5))",
+                    "drop-shadow(0px 0px 4px rgba(7, 165, 114, 0.1))"
+                  ]
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 4, 
+                  ease: "easeInOut",
+                  delay: 0.5 // Start after entrance
+                }}
+              >
+                <Image src="/icon-v2.png" alt="ProofChain Icon" width={56} height={56} className="object-contain" priority />
+              </motion.div>
+            </motion.div>
+            <div className="flex text-5xl font-extrabold tracking-tight">
+              <motion.span
+                initial={{ opacity: 0, x: -20, filter: "blur(8px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.3 }}
+                className="text-white"
+              >
+                Proof
+              </motion.span>
+              <motion.span
+                initial={{ opacity: 0, x: 20, filter: "blur(8px)" }}
+                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.4 }}
+                className="text-[#07A572]"
+              >
+                Chain
+              </motion.span>
+            </div>
+          </div>
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

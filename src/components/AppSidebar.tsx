@@ -25,7 +25,8 @@ import {
   LogOut,
   Hexagon,
   ChevronLeft,
-  Briefcase
+  Briefcase,
+  User
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MfaSetupModal } from "@/components/MfaSetupModal";
@@ -35,15 +36,18 @@ const navItems = {
   investigator: [
     { label: "My Cases", href: "/investigator", icon: Search },
     { label: "Submit Evidence", href: "/investigator/submit", icon: ShieldCheck },
+    { label: "Profile", href: "/profile", icon: User },
   ],
   analyst: [
     { label: "Case Queue", href: "/analyst", icon: Activity },
+    { label: "Profile", href: "/profile", icon: User },
   ],
   admin: [
     { label: "Dashboard", href: "/admin", icon: Hexagon },
     { label: "Cases", href: "/admin/cases", icon: Briefcase },
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
+    { label: "Profile", href: "/profile", icon: User },
   ],
 };
 

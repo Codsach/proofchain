@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 
-import { DottedSurface } from "@/components/ui/dotted-surface";
+import { NetworkParticles } from "@/components/ui/network-particles";
 
 import { Suspense } from "react";
 
@@ -114,7 +114,7 @@ function LoginForm() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="h-8 w-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-emerald-500/50 text-xs font-medium uppercase tracking-widest animate-pulse">
@@ -142,10 +142,10 @@ function LoginForm() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden">
-      {/* Background Dotted Surface */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-[#000000]/30 to-[#000000] pointer-events-none" />
-      <DottedSurface className="opacity-60 z-[1]" />
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
+      {/* Background Network Nodes */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+      <NetworkParticles className="opacity-70 z-[1]" />
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -383,7 +383,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] flex items-center justify-center">
         <div className="text-emerald-500 animate-pulse">Loading...</div>
       </div>
     }>
