@@ -8,6 +8,8 @@ interface GPSStatusBadgeProps {
   coords: GPSCoordinates | null;
   error: string | null;
   compact?: boolean;
+  onRequest?: () => void;
+  onClear?: () => void;
 }
 
 export function GPSStatusBadge({
@@ -15,6 +17,8 @@ export function GPSStatusBadge({
   coords,
   error,
   compact = false,
+  onRequest,
+  onClear,
 }: GPSStatusBadgeProps) {
   if (compact) {
     return (
@@ -55,6 +59,18 @@ export function GPSStatusBadge({
           <span>GPS Location</span>
           {status === "acquired" && coords && (
             <span className="accuracy-badge">±{Math.round(coords.accuracy)}m</span>
+          )}
+        </div>
+        <div className="gps-actions">
+          {status !== "acquired" && status !== "requesting" && onRequest && (
+            <button type="button" className="gps-btn" onClick={onRequest}>
+              Locate
+            </button>
+          )}
+          {status === "acquired" && onClear && (
+            <button type="button" className="gps-btn danger" onClick={onClear}>
+              Clear
+            </button>
           )}
         </div>
       </div>
