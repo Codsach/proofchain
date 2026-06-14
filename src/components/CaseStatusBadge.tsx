@@ -23,11 +23,11 @@ const config: Record<
   },
   ai_timeout: {
     label: "AI Timeout",
-    className: "bg-orange-900/40 text-orange-300 border-orange-800",
+    className: "bg-red-900/40 text-red-300 border-red-800",
   },
   under_review: {
     label: "Under Review",
-    className: "bg-purple-900/40 text-purple-300 border-purple-800",
+    className: "bg-cyan-900/40 text-cyan-300 border-cyan-800",
   },
   verified: {
     label: "Verified",

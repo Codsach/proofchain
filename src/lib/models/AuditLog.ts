@@ -6,6 +6,7 @@ export type AuditActionType =
   | "user.logout"
   | "user.deactivate"
   | "user.delete"
+  | "user.enable_mfa"
   | "case.create"
   | "case.view"
   | "case.archive"

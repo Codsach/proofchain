@@ -31,6 +31,10 @@ export function signRefreshToken(payload: JWTPayload): string {
   return jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
 }
 
+export function signMfaToken(payload: { userId: string }): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "5m" });
+}
+
 // ── Verify tokens ────────────────────────────────────────────────────────────
 export function verifyAccessToken(token: string): JWTPayload {
   return jwt.verify(token, JWT_SECRET) as JWTPayload;
@@ -40,6 +44,10 @@ export function verifyRefreshToken(token: string): JWTPayload {
   return jwt.verify(token, REFRESH_SECRET) as JWTPayload;
 }
 
+export function verifyMfaToken(token: string): { userId: string } {
+  return jwt.verify(token, JWT_SECRET) as { userId: string };
+}
+
 // ── Refresh cookie helpers ────────────────────────────────────────────────────
 export function setRefreshCookie(res: NextResponse, token: string): void {
   res.cookies.set("refreshToken", token, {
@@ -47,6 +55,26 @@ export function setRefreshCookie(res: NextResponse, token: string): void {
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    path: "/",
+  });
+}
+
+export function setTrustedDeviceCookie(res: NextResponse, token: string): void {
+  res.cookies.set("trustedDevice", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+    path: "/",
+  });
+}
+
+export function clearTrustedDeviceCookie(res: NextResponse): void {
+  res.cookies.set("trustedDevice", "", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 0,
     path: "/",
   });
 }

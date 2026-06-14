@@ -32,7 +32,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 		// Scene setup
 		const scene = new THREE.Scene();
-		scene.fog = new THREE.Fog(0xffffff, 2000, 10000);
+		scene.fog = new THREE.Fog(0x09111e, 2000, 10000);
 
 		const camera = new THREE.PerspectiveCamera(
 			60,
@@ -66,7 +66,8 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 
 				positions.push(x, y, z);
 				if (isDark) {
-					colors.push(1, 1, 1); // White for dark theme
+					// Emerald accent color: #10b981
+					colors.push(0.063, 0.725, 0.506); 
 				} else {
 					colors.push(0, 0, 0); // Black for light theme
 				}

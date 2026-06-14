@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Download } from "lucide-react";
+import { motion } from "framer-motion";
 
 const links = [
   {
@@ -31,6 +35,33 @@ const links = [
 ];
 
 export default function LandingFooter() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') setDeferredPrompt(null);
+      return;
+    }
+
+    // Fallback if prompt is not available
+    toast({
+      title: "Install ProofChain",
+      description: "Tap your browser's menu (⋮ or Share) and select 'Add to Home Screen' or 'Install App'.",
+    });
+  };
+
   return (
     <footer
       style={{
@@ -55,20 +86,11 @@ export default function LandingFooter() {
           {/* Brand */}
           <div>
             <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 14 }}>
-              <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
-                <path
-                  d="M11 2L3 6v5.5c0 4.2 3.2 8.1 8 9.5 4.8-1.4 8-5.3 8-9.5V6L11 2Z"
-                  fill="url(#footer-shield-gradient)"
-                />
-                <defs>
-                  <linearGradient id="footer-shield-gradient" x1="3" y1="2" x2="19" y2="21" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#00f2fe" />
-                    <stop offset="1" stopColor="#7c3aed" />
-                  </linearGradient>
-                </defs>
-                <path d="M8 11l2 2 4-4" stroke="black" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span style={{ fontSize: 14, fontWeight: 700, color: "#fff" }}>ProofChain</span>
+              <img src="/icon-v2.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: 'contain' }} />
+              <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>
+                <span style={{ color: "#ffffff" }}>Proof</span>
+                <span style={{ color: "#07A572" }}>Chain</span>
+              </span>
             </Link>
             <p style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.45)", lineHeight: 1.65, maxWidth: 240, margin: 0 }}>
               Tamper-proof digital forensic evidence. Blockchain-anchored. AI-analysed.
@@ -77,6 +99,42 @@ export default function LandingFooter() {
               <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--lp-primary-neon)", boxShadow: "0 0 8px var(--lp-primary-neon)", display: "inline-block" }} />
               <span style={{ fontSize: 12, color: "rgba(255, 255, 255, 0.3)" }}>Polygon Amoy Testnet</span>
             </div>
+            <motion.button 
+              onClick={handleInstallClick}
+              animate={{ 
+                scale: [1, 1.02, 1],
+                boxShadow: [
+                  "0 4px 14px rgba(7, 165, 114, 0.2)",
+                  "0 8px 24px rgba(7, 165, 114, 0.4)",
+                  "0 4px 14px rgba(7, 165, 114, 0.2)"
+                ]
+              }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+              style={{ 
+                marginTop: 24, 
+                background: "linear-gradient(135deg, #07A572 0%, #047857 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.1)", 
+                color: "#ffffff", 
+                padding: "8px 16px", 
+                borderRadius: 12, 
+                cursor: "pointer", 
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Download className="w-6 h-6" />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left" }}>
+                <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "rgba(255,255,255,0.8)", lineHeight: 1, marginBottom: 3 }}>
+                  Available Now
+                </span>
+                <span style={{ fontSize: 15, fontWeight: 700, lineHeight: 1 }}>
+                  Install Web App
+                </span>
+              </div>
+            </motion.button>
           </div>
 
           {/* Link columns */}

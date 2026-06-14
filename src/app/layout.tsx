@@ -5,6 +5,8 @@ import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvi
 import { AuthProvider } from "@/components/providers/AuthContext";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
 const orbitron = Orbitron({
   subsets: ["latin"],
@@ -71,10 +73,13 @@ export default function RootLayout({
         >
           <ServiceWorkerProvider>
             <AuthProvider>
-              {children}
+              <TooltipProvider>
+                {children}
+              </TooltipProvider>
             </AuthProvider>
           </ServiceWorkerProvider>
           <Toaster />
+          <PWAInstallPrompt />
         </ThemeProvider>
       </body>
     </html>

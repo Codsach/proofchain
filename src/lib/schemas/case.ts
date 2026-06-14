@@ -23,8 +23,8 @@ export const CreateCaseSchema = z.object({
     .max(200, "Title is too long"),
   description: z
     .string()
-    .min(20, "Description must be at least 20 characters")
-    .max(5000, "Description is too long"),
+    .max(5000, "Description is too long")
+    .optional(),
   incidentDate: z.string().refine((val) => !isNaN(Date.parse(val)), {
     message: "Invalid incident date",
   }),

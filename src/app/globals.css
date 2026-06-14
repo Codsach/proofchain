@@ -94,17 +94,19 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Dashboard variables */
-  --dash-bg: #07110C;
-  --dash-sidebar: #050505;
-  --dash-card: #111A14;
-  --dash-table: #0B1510;
-  --dash-modal: #101820;
-  --dash-hover: #131D17;
-  --dash-border: #1A2A20;
+  --dash-bg: #09090B;
+  --dash-sidebar: #09090B;
+  --dash-card: #111827;
+  --dash-table: #09090B;
+  --dash-modal: #111827;
+  --dash-hover: #1F2937;
+  --dash-border: #1F2937;
   --dash-text: #F8FAFC;
-  --dash-muted: #94A3B8;
-  --dash-accent: #22C55E;
-  --dash-accent-glow: rgba(34, 197, 94, 0.5);
+  --dash-muted: #9CA3AF;
+  --dash-accent: #10B981;
+  --dash-danger: #EF4444;
+  --dash-info: #06B6D4;
+  --dash-accent-glow: rgba(16, 185, 129, 0.5);
 }
 
 .dark {

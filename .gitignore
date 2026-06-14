@@ -92,13 +92,6 @@ public/workbox-*.js.map
 uploads/
 tmp/
 
-# AI Agents & related project files
-ai_agents/
-agents/
-*.agent
-agent_cache/
-agent_data/
-
 # Vercel
 .vercel
 

@@ -109,24 +109,39 @@ export default function AdminPage() {
       {/* Quick links */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
         {[
-          { label: "Identity & Access", desc: "Manage system analysts and investigator accounts", href: "/admin/users" },
-          { label: "Operational Audit", desc: "Cryptographically signed history of all system events", href: "/admin/audit" },
-          { label: "Global Repository", desc: "Universal access to all evidence cases and metadata", href: "/admin/cases" },
+          { 
+            label: "Identity & Access", desc: "Manage system analysts and investigator accounts", href: "/admin/users",
+            hoverBorder: "hover:border-blue-500/30",
+            hoverText: "group-hover:text-blue-400",
+            btnHover: "hover:bg-blue-500 hover:border-blue-500 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
+          },
+          { 
+            label: "Operational Audit", desc: "Cryptographically signed history of all system events", href: "/admin/audit",
+            hoverBorder: "hover:border-amber-500/30",
+            hoverText: "group-hover:text-amber-400",
+            btnHover: "hover:bg-amber-500 hover:border-amber-500 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]"
+          },
+          { 
+            label: "Global Repository", desc: "Universal access to all evidence cases and metadata", href: "/admin/cases",
+            hoverBorder: "hover:border-emerald-500/30",
+            hoverText: "group-hover:text-emerald-400",
+            btnHover: "hover:bg-emerald-500 hover:border-emerald-500 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
+          },
         ].map((link, idx) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 + (idx * 0.1) }}
             key={link.href}
-            className="group relative rounded-2xl border border-dash-border bg-dash-sidebar hover:bg-dash-hover p-1 transition-all duration-300 hover:border-dash-accent/20 shadow-2xl"
+            className={`group relative rounded-2xl border border-dash-border bg-dash-card hover:bg-dash-hover p-1 transition-all duration-300 shadow-2xl ${link.hoverBorder}`}
           >
             <div className="p-6 space-y-4">
               <div className="space-y-1">
-                <p className="text-sm font-bold text-dash-text group-hover:text-dash-accent transition-colors">{link.label}</p>
+                <p className={`text-sm font-bold text-dash-text transition-colors ${link.hoverText}`}>{link.label}</p>
                 <p className="text-xs text-dash-muted leading-relaxed font-medium">{link.desc}</p>
               </div>
               
-              <Button asChild variant="ghost" className="w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:bg-dash-accent hover:text-[#050505] hover:border-dash-accent text-dash-text transition-all rounded-xl group-hover:shadow-[0_0_20px_var(--dash-accent-glow)]">
+              <Button asChild variant="ghost" className={`w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:text-[#050505] text-dash-text transition-all rounded-xl ${link.btnHover}`}>
                 <Link href={link.href}>
                   <span className="text-[10px] font-bold uppercase tracking-wider">Access Module</span>
                   <span className="text-lg opacity-50 group-hover:translate-x-1 transition-transform">→</span>

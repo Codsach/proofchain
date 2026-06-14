@@ -1,23 +1,24 @@
 "use client";
 
 import { GPSCoordinates, GPSStatus } from "@/hooks/useGPS";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface GPSStatusBadgeProps {
   status: GPSStatus;
   coords: GPSCoordinates | null;
   error: string | null;
-  onRequest: () => void;
-  onClear: () => void;
   compact?: boolean;
+  onRequest?: () => void;
+  onClear?: () => void;
 }
 
 export function GPSStatusBadge({
   status,
   coords,
   error,
+  compact = false,
   onRequest,
   onClear,
-  compact = false,
 }: GPSStatusBadgeProps) {
   if (compact) {
     return (
@@ -61,14 +62,14 @@ export function GPSStatusBadge({
           )}
         </div>
         <div className="gps-actions">
-          {status !== "requesting" && (
-            <button className="gps-btn" onClick={onRequest} title="Refresh location">
-              {status === "acquired" ? "Refresh" : "Get Location"}
+          {status !== "acquired" && status !== "requesting" && onRequest && (
+            <button type="button" className="gps-btn" onClick={onRequest}>
+              Locate
             </button>
           )}
-          {status === "acquired" && (
-            <button className="gps-btn danger" onClick={onClear} title="Remove GPS">
-              Remove
+          {status === "acquired" && onClear && (
+            <button type="button" className="gps-btn danger" onClick={onClear}>
+              Clear
             </button>
           )}
         </div>
@@ -100,9 +101,19 @@ export function GPSStatusBadge({
       )}
 
       {status === "requesting" && (
-        <div className="gps-status-row">
-          <div className="spinner-sm" />
-          <span>Acquiring GPS signal…</span>
+        <div className="gps-coords">
+          <div className="coord-row">
+            <span className="coord-label">Latitude</span>
+            <Skeleton className="h-4 w-[100px] bg-slate-800" />
+          </div>
+          <div className="coord-row">
+            <span className="coord-label">Longitude</span>
+            <Skeleton className="h-4 w-[100px] bg-slate-800" />
+          </div>
+          <div className="coord-row">
+            <span className="coord-label">Accuracy</span>
+            <Skeleton className="h-4 w-[60px] bg-slate-800" />
+          </div>
         </div>
       )}
 

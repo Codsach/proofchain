@@ -37,7 +37,7 @@ export default function SubmitEvidencePage() {
 
   // GPS
   const { coords, status: gpsStatus, error: gpsError, requestGPS, clearGPS } = useGPS({
-    autoStart: false,
+    autoStart: true,
     highAccuracy: true,
   });
 
@@ -247,6 +247,18 @@ export default function SubmitEvidencePage() {
           <p>All submissions are hashed, IPFS-stored, and blockchain-anchored.</p>
         </header>
 
+        <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 md:p-8 shadow-2xl form-card">
+          {/* Offline / Queue status */}
+          <OfflineQueueIndicator
+            isOnline={isOnline}
+            pendingCount={pendingCount}
+            isSyncing={isSyncing}
+            queue={queue}
+            onSync={syncQueue}
+            onRemove={removeFromQueue}
+            expanded={pendingCount > 0}
+          />
+
         {/* Offline / Queue status */}
         <OfflineQueueIndicator
           isOnline={isOnline}
@@ -379,7 +391,10 @@ export default function SubmitEvidencePage() {
                     <video src={filePreviewUrl!} className="file-thumb" muted />
                   )}
                   <div className="file-info">
-                    <span className="file-name">{selectedFile.name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="file-name">{selectedFile.name}</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                    </div>
                     <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
                     {capturedAt && (
                       <span className="file-time">{capturedAt.toLocaleString()}</span>
@@ -450,7 +465,10 @@ export default function SubmitEvidencePage() {
                     </div>
                   )}
                   <div className="file-info">
-                    <span className="file-name">{selectedFile.name}</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span className="file-name">{selectedFile.name}</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                    </div>
                     <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
                     <button
                       type="button"
@@ -467,14 +485,12 @@ export default function SubmitEvidencePage() {
 
           {/* GPS panel */}
           {submitMode && (
-            <div className="field">
+            <div className="field gps-box">
               <label>GPS Geotag</label>
               <GPSStatusBadge
                 status={gpsStatus}
                 coords={coords}
                 error={gpsError}
-                onRequest={requestGPS}
-                onClear={clearGPS}
               />
             </div>
           )}
@@ -489,12 +505,17 @@ export default function SubmitEvidencePage() {
             <button
               type="submit"
               className="submit-btn"
-              disabled={isSubmitting || !selectedFile || !caseId || !title}
+              disabled={isSubmitting || !selectedFile || !caseId || !title || !coords || gpsStatus !== "acquired"}
             >
               {isSubmitting ? (
                 <>
                   <span className="spinner-sm" />
                   {isOnline ? "Submitting…" : "Saving offline…"}
+                </>
+              ) : gpsStatus === "requesting" ? (
+                <>
+                  <span className="spinner-sm" />
+                  Acquiring GPS...
                 </>
               ) : isOnline ? (
                 "Submit Evidence"
@@ -504,37 +525,41 @@ export default function SubmitEvidencePage() {
             </button>
           )}
         </form>
+        </div>
       </div>
 
       <style jsx>{`
         .page {
           min-height: 100vh;
-          background: #0f1117;
+          background: transparent;
           padding: 24px 16px 48px;
           color: white;
         }
         .container {
-          max-width: 560px;
+          max-width: 500px;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
           gap: 20px;
         }
-        .page-header { padding-bottom: 4px; }
-        .page-header h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; color: #f9fafb; }
-        .page-header p { font-size: 13px; color: #6b7280; margin: 0; }
-        .form { display: flex; flex-direction: column; gap: 16px; }
-        .field { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 13px; font-weight: 500; color: #9ca3af; }
+        .form-card {
+          /* specific padding/margin tweaks can go here if needed */
+        }
+        .page-header { padding-bottom: 4px; text-align: center; }
+        .page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 6px; color: #f8fafc; }
+        .page-header p { font-size: 14px; color: #94a3b8; margin: 0; }
+        .form { display: flex; flex-direction: column; gap: 20px; }
+        .field { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 14px; font-weight: 600; color: #cbd5e1; }
         input[type="text"], textarea {
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: #1e293b;
+          border: 1px solid #334155;
           border-radius: 8px;
           color: white;
           padding: 10px 12px;
           font-size: 14px;
           outline: none;
-          transition: border-color 0.15s;
+          transition: all 0.2s;
           font-family: inherit;
           resize: vertical;
           width: 100%;
@@ -548,13 +573,17 @@ export default function SubmitEvidencePage() {
           position: absolute;
           left: 12px;
           top: 10px;
-          color: #9ca3af;
+          color: #64748b;
           width: 18px;
           height: 18px;
           pointer-events: none;
         }
-        input:focus, textarea:focus { border-color: rgba(59,130,246,0.6); }
-        input::placeholder, textarea::placeholder { color: #4b5563; }
+        input:focus, textarea:focus { 
+          border-color: #06b6d4; 
+          box-shadow: 0 0 0 1px #06b6d4;
+          background: #0f172a;
+        }
+        input::placeholder, textarea::placeholder { color: #94a3b8; }
         .method-tabs { display: flex; gap: 8px; }
         .method-tab {
           flex: 1;
@@ -564,33 +593,38 @@ export default function SubmitEvidencePage() {
           gap: 7px;
           padding: 10px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04);
-          color: #9ca3af;
+          border: 1px solid #334155;
+          background: #1e293b;
+          color: #94a3b8;
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: all 0.2s;
         }
+        .method-tab:hover { background: #334155; color: #e2e8f0; }
         .method-tab.active {
-          border-color: rgba(59,130,246,0.5);
-          background: rgba(59,130,246,0.1);
-          color: #60a5fa;
+          border-color: #06b6d4;
+          background: rgba(6,182,212,0.1);
+          color: #22d3ee;
         }
-        .capture-type-row { display: flex; gap: 6px; margin-bottom: 10px; }
+        .capture-type-row { display: flex; gap: 6px; margin-bottom: 8px; }
         .capture-type-btn {
-          padding: 5px 14px;
+          flex: 1;
+          padding: 6px 14px;
           border-radius: 6px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: transparent;
-          color: #6b7280;
+          border: 1px solid #334155;
+          background: #1e293b;
+          color: #94a3b8;
           font-size: 13px;
+          font-weight: 500;
           cursor: pointer;
+          transition: all 0.2s;
         }
+        .capture-type-btn:hover { background: #334155; color: #e2e8f0; }
         .capture-type-btn.active {
-          border-color: rgba(59,130,246,0.4);
-          background: rgba(59,130,246,0.1);
-          color: #60a5fa;
+          border-color: #06b6d4;
+          background: rgba(6,182,212,0.1);
+          color: #22d3ee;
         }
         .open-camera-btn {
           display: flex;
@@ -598,38 +632,43 @@ export default function SubmitEvidencePage() {
           justify-content: center;
           gap: 8px;
           width: 100%;
-          padding: 14px;
-          border-radius: 10px;
-          border: 1.5px dashed rgba(255,255,255,0.15);
-          background: rgba(255,255,255,0.03);
-          color: #9ca3af;
+          padding: 12px;
+          border-radius: 8px;
+          border: 1.5px dashed #475569;
+          background: rgba(30,41,59,0.5);
+          color: #cbd5e1;
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: all 0.2s;
         }
         .open-camera-btn:hover {
-          border-color: rgba(59,130,246,0.4);
-          color: #60a5fa;
-          background: rgba(59,130,246,0.05);
+          border-color: #06b6d4;
+          color: #22d3ee;
+          background: rgba(6,182,212,0.05);
         }
         .upload-zone {
           display: flex;
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 8px;
+          gap: 6px;
           width: 100%;
-          padding: 24px;
-          border-radius: 10px;
-          border: 1.5px dashed rgba(255,255,255,0.15);
-          background: rgba(255,255,255,0.03);
-          color: #9ca3af;
+          padding: 20px;
+          border-radius: 8px;
+          border: 1.5px dashed #475569;
+          background: rgba(30,41,59,0.5);
+          color: #cbd5e1;
           cursor: pointer;
           text-align: center;
+          transition: all 0.2s;
         }
-        .upload-zone span { font-size: 14px; font-weight: 500; color: #d1d5db; }
-        .upload-zone small { font-size: 12px; color: #4b5563; }
+        .upload-zone:hover {
+          border-color: #06b6d4;
+          background: rgba(6,182,212,0.05);
+        }
+        .upload-zone span { font-size: 14px; font-weight: 500; color: #e2e8f0; }
+        .upload-zone small { font-size: 12px; color: #94a3b8; }
         .hidden-input { display: none; }
         .file-preview-row {
           display: flex;
@@ -637,39 +676,49 @@ export default function SubmitEvidencePage() {
           align-items: center;
           padding: 10px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.03);
+          border: 1px solid #334155;
+          background: #1e293b;
         }
         .file-thumb {
-          width: 64px;
-          height: 64px;
+          width: 56px;
+          height: 56px;
           object-fit: cover;
           border-radius: 6px;
           flex-shrink: 0;
+          border: 1px solid #334155;
         }
         .file-icon {
-          width: 64px;
-          height: 64px;
+          width: 56px;
+          height: 56px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(255,255,255,0.06);
+          background: #0f172a;
           border-radius: 6px;
-          color: #6b7280;
+          color: #64748b;
           flex-shrink: 0;
+          border: 1px solid #334155;
         }
-        .file-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-        .file-name { font-size: 13px; color: #e5e7eb; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-size, .file-time { font-size: 11px; color: #6b7280; }
+        .file-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .file-name { font-size: 13px; color: #f8fafc; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size, .file-time { font-size: 11px; color: #94a3b8; }
         .reopen-camera {
           font-size: 12px;
-          color: #60a5fa;
+          color: #06b6d4;
           background: none;
           border: none;
           cursor: pointer;
           padding: 0;
           margin-top: 2px;
           text-align: left;
+          font-weight: 500;
+        }
+        .reopen-camera:hover { color: #22d3ee; text-decoration: underline; }
+        .gps-box {
+          background: rgba(15,23,42,0.4);
+          border: 1px solid #1e293b;
+          border-radius: 8px;
+          padding: 12px;
         }
         .camera-modal-backdrop {
           position: fixed;
@@ -684,42 +733,53 @@ export default function SubmitEvidencePage() {
         .camera-modal {
           width: 100%;
           max-width: 480px;
-          background: #111827;
-          border-radius: 16px;
+          background: #0f172a;
+          border-radius: 12px;
           padding: 16px;
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid #334155;
         }
         .error-banner {
           background: rgba(239,68,68,0.1);
           border: 1px solid rgba(239,68,68,0.3);
           border-radius: 8px;
-          padding: 10px 14px;
+          padding: 12px 14px;
           font-size: 13px;
-          color: #f87171;
+          font-weight: 500;
+          color: #fca5a5;
         }
         .submit-btn {
           width: 100%;
-          padding: 13px;
-          border-radius: 10px;
+          padding: 14px;
+          border-radius: 8px;
           border: none;
-          background: #2563eb;
-          color: white;
+          background: #06b6d4;
+          color: #082f49;
           font-size: 15px;
-          font-weight: 600;
+          font-weight: 700;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
           gap: 8px;
-          transition: background 0.15s;
+          transition: all 0.2s;
+          box-shadow: 0 4px 12px rgba(6,182,212,0.2);
         }
-        .submit-btn:hover:not(:disabled) { background: #1d4ed8; }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .submit-btn:hover:not(:disabled) { 
+          background: #22d3ee; 
+          box-shadow: 0 4px 16px rgba(6,182,212,0.3);
+          transform: translateY(-1px);
+        }
+        .submit-btn:disabled { 
+          opacity: 0.6; 
+          cursor: not-allowed; 
+          box-shadow: none;
+          transform: none;
+        }
         .spinner-sm {
           width: 16px;
           height: 16px;
-          border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: white;
+          border: 2px solid rgba(8,47,73,0.3);
+          border-top-color: #082f49;
           border-radius: 50%;
           animation: spin 0.7s linear infinite;
         }

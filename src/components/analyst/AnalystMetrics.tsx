@@ -73,7 +73,7 @@ export function AnalystMetrics() {
       {/* 1. Queue Metrics */}
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 backdrop-blur-xl hover:border-emerald-500/30 transition-all duration-300"
+        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-emerald-500/30 transition-all duration-300"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
@@ -101,9 +101,10 @@ export function AnalystMetrics() {
       </motion.div>
 
       {/* 2. Verdict Accuracy */}
+      {(isLoading || (metrics && metrics.completedThisWeek > 1)) && (
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 backdrop-blur-xl hover:border-blue-500/30 transition-all duration-300"
+        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-blue-500/30 transition-all duration-300"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
@@ -128,11 +129,12 @@ export function AnalystMetrics() {
           </div>
         )}
       </motion.div>
+      )}
 
       {/* 3. Average Review Time */}
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 backdrop-blur-xl hover:border-purple-500/30 transition-all duration-300"
+        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-purple-500/30 transition-all duration-300"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
@@ -142,8 +144,12 @@ export function AnalystMetrics() {
               <Skeleton className="h-8 w-24 bg-dash-hover" />
             ) : (
               <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-white">{metrics?.averageReviewTimeHours ?? 0}</span>
-                <span className="text-xs text-white/50">hrs / case</span>
+                <span className="text-3xl font-bold text-white">
+                  {metrics?.completedThisWeek === 0 ? "N/A" : (metrics?.averageReviewTimeHours ?? 0)}
+                </span>
+                {metrics?.completedThisWeek !== 0 && (
+                  <span className="text-xs text-white/50">hrs / case</span>
+                )}
               </div>
             )}
           </div>
@@ -161,7 +167,7 @@ export function AnalystMetrics() {
       {/* 4. High-Risk Cases Alert */}
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 backdrop-blur-xl hover:border-rose-500/30 transition-all duration-300"
+        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-rose-500/30 transition-all duration-300"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">

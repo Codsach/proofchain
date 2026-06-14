@@ -68,7 +68,7 @@ const CaseSchema = new Schema<ICase>(
     investigatorId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     currentCustodian: { type: Schema.Types.ObjectId, ref: "User", required: true },
     title: { type: String, required: true, trim: true },
-    description: { type: String, required: true },
+    description: { type: String, default: "" },
     incidentDate: { type: Date, required: true },
     incidentType: {
       type: String,

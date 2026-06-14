@@ -1,0 +1,217 @@
+"use client";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Mail, Phone, MapPin, Calendar, Camera, Loader2, User, ShieldCheck, Clock } from "lucide-react";
+import { useState } from "react";
+import { uploadAvatar } from "@/app/(dashboard)/profile/actions";
+import { EditDossierModal } from "./EditDossierModal";
+
+interface DossierHeaderProps {
+  user: {
+    fullName: string;
+    email: string;
+    role: "investigator" | "analyst" | "admin";
+    createdAt: string;
+    lastLoginAt: string | null;
+    mfaEnabled: boolean;
+  };
+  profile: {
+    avatarUrl: string | null;
+    phoneNumber: string | null;
+    department: string | null;
+    location: string | null;
+    bio: string | null;
+    emergencyContactName: string | null;
+    emergencyContactPhone: string | null;
+    skills: string[];
+    assignedDevices: string[];
+  } | null;
+}
+
+export function DossierHeader({ user, profile }: DossierHeaderProps) {
+  const [isUploading, setIsUploading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(profile?.avatarUrl || null);
+
+  const roleColor = {
+    investigator: "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-emerald-500/20",
+    analyst: "bg-cyan-600/10 text-cyan-600 hover:bg-cyan-600/20 border-cyan-600/30",
+    admin: "bg-purple-500/10 text-purple-500 hover:bg-purple-500/20 border-purple-500/20",
+  }[user.role];
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+      // Optimistic UI
+      const objectUrl = URL.createObjectURL(file);
+      setAvatarPreview(objectUrl);
+
+      const formData = new FormData();
+      formData.append("avatar", file);
+      
+      const res = await uploadAvatar(formData);
+      if (res.success && res.url) {
+        setAvatarPreview(res.url);
+      } else {
+        console.error(res.error);
+        setAvatarPreview(profile?.avatarUrl || null); // Revert on failure
+      }
+    } catch (error) {
+      console.error(error);
+      setAvatarPreview(profile?.avatarUrl || null);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const formattedDate = new Date(user.createdAt).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+
+  return (
+    <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
+      {/* Strict utilitarian top bar */}
+      <div className="h-2 w-full bg-[var(--dash-border)]" />
+      
+      <CardContent className="pt-8 pb-6 flex flex-col gap-6 relative">
+        {/* Absolute positioned edit button so it stays in top right of content area */}
+        <div className="absolute right-6 top-6 z-10">
+          <EditDossierModal profile={profile} />
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-6 items-start md:items-center w-full">
+        {/* Avatar Section */}
+        <div className="relative group">
+          <Avatar className="h-24 w-24 rounded-md border border-[var(--dash-border)] bg-[var(--dash-bg)]">
+            <AvatarImage src={avatarPreview || undefined} className="object-cover" />
+            <AvatarFallback className="rounded-md bg-[var(--dash-bg)] text-[var(--dash-muted)] flex items-center justify-center">
+              <User size={32} strokeWidth={1.5} />
+            </AvatarFallback>
+          </Avatar>
+          
+          <label 
+            htmlFor="avatar-upload" 
+            className="absolute inset-0 flex flex-col items-center justify-center bg-[var(--dash-bg)]/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all cursor-pointer text-xs font-mono text-white rounded-md"
+          >
+            {isUploading ? <Loader2 className="h-4 w-4 animate-spin mb-1" /> : <Camera className="h-4 w-4 mb-1" />}
+            {isUploading ? "UPLOADING" : "UPDATE"}
+          </label>
+          <input 
+            type="file" 
+            id="avatar-upload" 
+            className="hidden" 
+            accept="image/*"
+            onChange={handleAvatarChange}
+            disabled={isUploading}
+          />
+        </div>
+
+        {/* Identity Section */}
+        <div className="flex-1 space-y-1">
+          <div className="flex items-center gap-3">
+            <h1 className="text-2xl font-bold tracking-tight text-[var(--dash-text)] uppercase">
+              {user.fullName}
+            </h1>
+            <Badge variant="outline" className={`rounded-sm font-mono uppercase tracking-wider ${roleColor}`}>
+              {user.role}
+            </Badge>
+            {user.mfaEnabled ? (
+              <Badge variant="outline" className="rounded-sm font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border-emerald-500/20 flex items-center gap-1">
+                <ShieldCheck size={12} /> MFA Active
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="rounded-sm font-mono uppercase tracking-wider bg-rose-500/10 text-rose-500 border-rose-500/20">
+                MFA Disabled
+              </Badge>
+            )}
+          </div>
+          <div className="text-[var(--dash-muted)] font-mono text-sm uppercase">
+            Status: <span className="text-[var(--dash-text)]">Active Duty</span>
+          </div>
+        </div>
+
+        {/* Official Data Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs w-full md:w-auto">
+          <div className="flex items-center gap-2 text-[var(--dash-muted)]">
+            <Mail className="h-3.5 w-3.5 text-[var(--dash-accent)]" />
+            <span className="truncate max-w-[150px]">{user.email}</span>
+          </div>
+          <div className="flex items-center gap-2 text-[var(--dash-muted)]">
+            <Phone className="h-3.5 w-3.5 text-[var(--dash-accent)]" />
+            <span>{profile?.phoneNumber || "Not Provided"}</span>
+          </div>
+          <div className="flex items-center gap-2 text-[var(--dash-muted)]">
+            <MapPin className="h-3.5 w-3.5 text-[var(--dash-accent)]" />
+            <span>{profile?.department || "Not Provided"} - {profile?.location || "Not Provided"}</span>
+          </div>
+        </div>
+        
+        {/* Metadata Row */}
+        <div className="flex flex-col gap-1 mt-4 text-[10px] text-[var(--dash-muted)] font-mono uppercase w-full">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-3 w-3" /> Member Since: {formattedDate}
+          </div>
+          <div className="flex items-center gap-2">
+            <Clock className="h-3 w-3" /> Last Login: {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}
+          </div>
+        </div>
+        </div>
+
+        {/* Extended Dossier Data */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-[var(--dash-border)] w-full">
+          <div className="md:col-span-2 space-y-4">
+            <div>
+              <h3 className="text-xs font-mono uppercase text-[var(--dash-muted)] mb-1">Duty Notes / Bio</h3>
+              <p className="text-sm text-[var(--dash-text)] font-mono whitespace-pre-wrap">
+                {profile?.bio || "No duty notes recorded."}
+              </p>
+            </div>
+            {profile?.skills && profile.skills.length > 0 && (
+              <div>
+                <h3 className="text-xs font-mono uppercase text-[var(--dash-muted)] mb-2">Certifications & Skills</h3>
+                <div className="flex flex-wrap gap-2">
+                  {profile.skills.map((skill, i) => (
+                    <Badge key={i} variant="outline" className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-zinc-300 font-mono text-[10px] uppercase">
+                      {skill}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          <div className="space-y-4">
+            {(profile?.emergencyContactName || profile?.emergencyContactPhone) && (
+              <div>
+                <h3 className="text-xs font-mono uppercase text-[var(--dash-muted)] mb-1">Emergency Contact</h3>
+                <p className="text-sm text-[var(--dash-text)] font-mono">{profile.emergencyContactName || "Unknown"}</p>
+                <p className="text-xs text-[var(--dash-muted)] font-mono">{profile.emergencyContactPhone || "No number listed"}</p>
+              </div>
+            )}
+
+            {profile?.assignedDevices && profile.assignedDevices.length > 0 && (
+              <div>
+                <h3 className="text-xs font-mono uppercase text-[var(--dash-muted)] mb-2">Assigned Hardware</h3>
+                <div className="flex flex-col gap-1">
+                  {profile.assignedDevices.map((device, i) => (
+                    <div key={i} className="text-xs text-zinc-300 font-mono flex items-center gap-2">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--dash-accent)]" />
+                      {device}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

@@ -31,9 +31,13 @@ export default function LoginForm({
   statusError,
   mode = "default",
 }: LoginFormProps) {
-  const { login } = useAuth();
+  const { login, verifyMfa } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [step, setStep] = useState<"credentials" | "mfa">("credentials");
+  const [mfaToken, setMfaToken] = useState<string | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+  const [rememberDevice, setRememberDevice] = useState(false);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
@@ -44,11 +48,38 @@ export default function LoginForm({
     setIsSubmitting(true);
 
     try {
-      await login(values.email, values.password);
+      const result = await login(values.email, values.password);
+      if (result?.requiresMfa) {
+        setStep("mfa");
+        setMfaToken(result.mfaToken || null);
+        toast({
+          title: "Two-Factor Authentication Required",
+          description: "Please enter the code from your authenticator app.",
+        });
+      }
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Login failed";
       toast({
         title: "Login failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mfaCode || !mfaToken) return;
+    
+    setIsSubmitting(true);
+    try {
+      await verifyMfa(mfaCode, mfaToken, rememberDevice);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "MFA Verification failed";
+      toast({
+        title: "Verification failed",
         description: errorMessage,
         variant: "destructive",
       });
@@ -125,14 +156,20 @@ export default function LoginForm({
               {isAdminMode ? "Admin Sign in" : "Sign in"}
             </h2>
             <div className="h-0.5 w-8 bg-emerald-500 rounded-full transition-all duration-300 group-hover:w-16" />
-            {isAdminMode && (
+            {isAdminMode && step === "credentials" && (
               <p className="pt-2 text-xs text-white/40">
                 Authorized access only. Audit logging is active.
               </p>
             )}
+            {step === "mfa" && (
+              <p className="pt-2 text-xs text-white/40">
+                Enter the 6-digit code from your authenticator app.
+              </p>
+            )}
           </div>
 
-          <Form {...form}>
+          {step === "credentials" ? (
+            <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <FormField
                 control={form.control}
@@ -192,6 +229,71 @@ export default function LoginForm({
               </motion.div>
             </form>
           </Form>
+          ) : (
+            <form onSubmit={onMfaSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-white/60 text-xs font-semibold uppercase tracking-wider">
+                  Authenticator Code
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-500" />
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={mfaCode}
+                    onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white text-center tracking-[0.5em] font-mono text-lg"
+                    required
+                  />
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="rememberDevice"
+                  checked={rememberDevice}
+                  onChange={(e) => setRememberDevice(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/10 bg-white/[0.03] text-emerald-500 focus:ring-emerald-500/20 focus:ring-offset-0"
+                />
+                <label
+                  htmlFor="rememberDevice"
+                  className="text-sm text-white/60 font-medium leading-none cursor-pointer hover:text-white/80 transition-colors"
+                >
+                  Remember this device for 30 days
+                </label>
+              </div>
+
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
+              >
+                <Button
+                  type="submit"
+                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-11 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
+                  disabled={isSubmitting || mfaCode.length !== 6}
+                >
+                  {isSubmitting ? "Verifying..." : "Verify"}
+                </Button>
+              </motion.div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("credentials");
+                    setMfaCode("");
+                  }}
+                  className="text-xs text-emerald-500/80 hover:text-emerald-400 transition-colors"
+                >
+                  Back to login
+                </button>
+              </div>
+            </form>
+          )}
         </motion.div>
 
         <motion.div 

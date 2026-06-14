@@ -8,8 +8,11 @@ import {
   signRefreshToken,
   setRefreshCookie,
   getIp,
+  signMfaToken,
+  setTrustedDeviceCookie,
 } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
+import crypto from "crypto";
 
 const LOCK_TIME_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_ATTEMPTS = 5;
@@ -90,7 +93,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = matchedUser;
+    const user = matchedUser; // TypeScript now knows matchedUser is not null
 
     // 3. Check account status
     if (!user.isActive) {
@@ -113,7 +116,31 @@ export async function POST(req: NextRequest) {
     user.lastLoginAt = new Date();
     await user.save();
 
-    // 7. Build token payload — role is ALWAYS taken from DB here
+    // 7. Check if MFA is enabled
+    if (user.mfaEnabled) {
+      const trustedDeviceCookie = req.cookies.get("trustedDevice")?.value;
+      let bypassMfa = false;
+
+      if (trustedDeviceCookie && user.trustedDevices) {
+        const hashedToken = crypto.createHash("sha256").update(trustedDeviceCookie).digest("hex");
+        const validDevice = user.trustedDevices.find(
+          (d: any) => d.deviceTokenHash === hashedToken && d.expiresAt > new Date()
+        );
+        if (validDevice) {
+          bypassMfa = true;
+        }
+      }
+
+      if (!bypassMfa) {
+        const mfaToken = signMfaToken({ userId: user._id.toString() });
+        return NextResponse.json({
+          requiresMfa: true,
+          mfaToken,
+        });
+      }
+    }
+
+    // 8. Build token payload — role is ALWAYS taken from DB here
     const tokenPayload = {
       userId: user._id.toString(),
       role: user.role,   // ← from DB, never from request body
@@ -123,7 +150,7 @@ export async function POST(req: NextRequest) {
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
 
-    // 8. Determine redirect path by role — computed server-side
+    // 9. Determine redirect path by role — computed server-side
     const redirectMap: Record<string, string> = {
       admin:         "/admin",
       analyst:       "/analyst",
@@ -131,7 +158,7 @@ export async function POST(req: NextRequest) {
     };
     const redirectTo = redirectMap[user.role] ?? "/";
 
-    // 9. Audit log
+    // 10. Audit log
     await logAction({
       actorId: user._id.toString(),
       actorRole: user.role,
@@ -141,7 +168,7 @@ export async function POST(req: NextRequest) {
       ipAddress: getIp(req),
     });
 
-    // 10. Build response — refresh token in httpOnly cookie
+    // 11. Build response — refresh token in httpOnly cookie
     const res = NextResponse.json({
       accessToken,
       redirectTo,           // ← frontend just follows this, doesn't decide it
@@ -153,6 +180,20 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Track active session
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    
+    if (!user.trustedDevices) user.trustedDevices = [];
+    user.trustedDevices.push({ deviceTokenHash: hashedToken, expiresAt });
+    if (user.trustedDevices.length > 5) {
+      user.trustedDevices = user.trustedDevices.slice(-5);
+    }
+    await user.save();
+
+    setTrustedDeviceCookie(res, rawToken);
     setRefreshCookie(res, refreshToken);
     return res;
   } catch (err) {

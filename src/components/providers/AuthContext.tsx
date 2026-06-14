@@ -21,7 +21,8 @@ interface AuthUser {
 interface AuthContextValue {
   user: AuthUser | null;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ requiresMfa?: boolean; mfaToken?: string } | void>;
+  verifyMfa: (code: string, mfaToken: string, rememberDevice: boolean) => Promise<void>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
 }
@@ -69,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // ── Login ─────────────────────────────────────────────────────────────────
   // Only sends email + password. Role and redirect come from the server.
   const login = useCallback(
-    async (email: string, password: string): Promise<void> => {
+    async (email: string, password: string): Promise<{ requiresMfa?: boolean; mfaToken?: string } | void> => {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -89,12 +90,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(data.error || `Login failed (${res.status})`);
       }
 
+      if (data.requiresMfa) {
+        return { requiresMfa: true, mfaToken: data.mfaToken };
+      }
+
       // Store token in memory
       accessTokenRef.current = data.accessToken;
       setUser(data.user);
 
       // Follow the redirect path the server computed from the DB role
       // The frontend never decides where to go — it just follows the server
+      router.push(data.redirectTo);
+    },
+    [router]
+  );
+
+  // ── Verify MFA ────────────────────────────────────────────────────────────
+  const verifyMfa = useCallback(
+    async (code: string, mfaToken: string, rememberDevice: boolean): Promise<void> => {
+      const res = await fetch("/api/auth/login/mfa", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ code, mfaToken, rememberDevice }),
+      });
+
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: "Unexpected server response" };
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || `MFA Verification failed (${res.status})`);
+      }
+
+      accessTokenRef.current = data.accessToken;
+      setUser(data.user);
       router.push(data.redirectTo);
     },
     [router]
@@ -120,7 +153,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout, getToken }}>
+    <AuthContext.Provider value={{ user, isLoading, login, verifyMfa, logout, getToken }}>
       {children}
     </AuthContext.Provider>
   );

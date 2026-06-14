@@ -69,30 +69,25 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
         )
 
     try:
-        import google.generativeai as genai
+        from google import genai
+        from google.genai import types
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        client = genai.Client(api_key=api_key)
 
         # Upload image inline
-        image_part = {"mime_type": mime_type, "data": image_bytes}
+        image_part = types.Part.from_bytes(data=image_bytes, mime_type=mime_type)
 
-        response = model.generate_content(
-            [CANONICAL_PROMPT, image_part],
-            generation_config={
-                "temperature": 0.1,  # Low temperature for consistent forensic analysis
-                "max_output_tokens": 512,
-            },
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[CANONICAL_PROMPT, image_part],
+            config=types.GenerateContentConfig(
+                temperature=0.1,  # Low temperature for consistent forensic analysis
+                max_output_tokens=512,
+                response_mime_type="application/json",
+            ),
         )
 
         raw_text = response.text.strip()
-
-        # Strip markdown code fences if present
-        if raw_text.startswith("```"):
-            lines = raw_text.split("\n")
-            raw_text = "\n".join(
-                line for line in lines if not line.startswith("```")
-            ).strip()
 
         # Parse and validate JSON
         parsed = json.loads(raw_text)
