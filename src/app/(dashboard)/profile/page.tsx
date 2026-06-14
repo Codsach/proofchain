@@ -37,6 +37,8 @@ export default async function ProfilePage() {
     email: user.email as string,
     role: user.role as "investigator" | "analyst" | "admin",
     createdAt: (user.createdAt as Date).toISOString(),
+    lastLoginAt: user.lastLoginAt ? (user.lastLoginAt as Date).toISOString() : null,
+    mfaEnabled: user.mfaEnabled as boolean,
   };
 
   const profileProps = profile ? {
@@ -44,6 +46,11 @@ export default async function ProfilePage() {
     phoneNumber: profile.phoneNumber as string | null,
     department: profile.department as string | null,
     location: profile.location as string | null,
+    bio: profile.bio as string | null,
+    emergencyContactName: profile.emergencyContactName as string | null,
+    emergencyContactPhone: profile.emergencyContactPhone as string | null,
+    skills: profile.skills as string[],
+    assignedDevices: profile.assignedDevices as string[],
   } : null;
 
   // Compute stats and fetch recent logs based on role
@@ -71,6 +78,11 @@ export default async function ProfilePage() {
     // Assuming Evidence model has an 'assignedAnalyst' and 'status' field, or we just count all pending
     const pendingReviews = await Evidence.countDocuments({ status: "pending_review" });
     const verdictsIssued = await Verdict.countDocuments({ analystId: session.id });
+    
+    // Aggregate authentic vs tampered
+    const authenticReviews = await Verdict.countDocuments({ analystId: session.id, status: "authentic" });
+    const tamperedReviews = await Verdict.countDocuments({ analystId: session.id, status: "tampered" });
+
     const recentVerdicts = await Verdict.find({ analystId: session.id })
       .sort({ createdAt: -1 })
       .limit(5)
@@ -79,7 +91,7 @@ export default async function ProfilePage() {
 
     roleComponent = (
       <AnalystDossier 
-        stats={{ pendingReviews, verdictsIssued }} 
+        stats={{ pendingReviews, verdictsIssued, authenticReviews, tamperedReviews }} 
         recentVerdicts={JSON.parse(JSON.stringify(recentVerdicts))} 
       />
     );

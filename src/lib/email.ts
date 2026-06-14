@@ -225,3 +225,31 @@ export async function notifyAnalyst(
     `,
   });
 }
+
+export async function notifyPasswordChange(email: string, fullName: string) {
+  const appUrl = getAppBaseUrl();
+
+  await sendEmail({
+    to: email,
+    subject: "ProofChain: Security Alert - Password Changed",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0D1B2A;color:#E8E8F0;padding:32px;border-radius:8px;">
+        <h2 style="color:#00C9A7;margin-top:0;">ProofChain Security</h2>
+        <p>Hi ${fullName},</p>
+        <p>The password for your ProofChain account has just been changed.</p>
+        <div style="background:#1C1C28;border-radius:6px;padding:16px;margin:16px 0;">
+          <p style="margin:0;color:#E8E8F0;">If you made this change, no further action is required.</p>
+        </div>
+        <p>If you did not authorize this change, please contact an administrator immediately.</p>
+        <a href="${appUrl}/login"
+           style="display:inline-block;background:#FF6B6B;color:#FFF;padding:10px 20px;
+                  text-decoration:none;border-radius:6px;font-weight:bold;margin-top:8px;">
+          Secure Account
+        </a>
+        <p style="font-size:11px;color:#555570;margin-top:24px;">
+          ProofChain · Digital Forensic Evidence Platform
+        </p>
+      </div>
+    `,
+  });
+}

@@ -32,18 +32,16 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="relative flex h-screen overflow-hidden bg-[#07110C] text-[#F8FAFC] selection:bg-emerald-500/30 w-full">
+      <div className="relative flex h-screen overflow-hidden bg-[var(--dash-bg)] text-[var(--dash-text)] selection:bg-emerald-500/30 w-full">
         {/* Background decoration */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[100px]" />
-          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#07110C_20%,transparent_100%)] opacity-20" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,var(--dash-bg)_20%,transparent_100%)] opacity-20" />
         </div>
 
         <AppSidebar />
 
         <main className="relative z-10 flex-1 h-full flex flex-col overflow-hidden">
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-[#1A2A20]/50 bg-[#050505]/50 backdrop-blur-xl px-4 w-full">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-sidebar)]/50 backdrop-blur-xl px-4 w-full">
             <SidebarTrigger className="-ml-1 text-zinc-400 hover:text-emerald-400" />
           </header>
           <div className="flex-1 overflow-y-auto custom-scrollbar">

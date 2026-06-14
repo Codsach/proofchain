@@ -6,6 +6,11 @@ export interface IUserProfile extends Document {
   phoneNumber: string | null;
   department: string | null;
   location: string | null;
+  bio: string | null;
+  emergencyContactName: string | null;
+  emergencyContactPhone: string | null;
+  skills: string[];
+  assignedDevices: string[];
 }
 
 const UserProfileSchema = new Schema<IUserProfile>(
@@ -15,6 +20,11 @@ const UserProfileSchema = new Schema<IUserProfile>(
     phoneNumber: { type: String, default: null },
     department: { type: String, default: null },
     location: { type: String, default: null },
+    bio: { type: String, default: null },
+    emergencyContactName: { type: String, default: null },
+    emergencyContactPhone: { type: String, default: null },
+    skills: { type: [String], default: [] },
+    assignedDevices: { type: [String], default: [] },
   },
   { timestamps: true }
 );

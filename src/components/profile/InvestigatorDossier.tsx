@@ -14,35 +14,35 @@ interface InvestigatorDossierProps {
 
 export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDossierProps) {
   return (
-    <Tabs defaultValue="overview" className="w-full mt-6">
+    <Tabs defaultValue="overview" className="w-full mt-10">
       <TabsList className="bg-[var(--dash-card)] border border-[var(--dash-border)] rounded-sm p-1 grid w-full grid-cols-2 md:w-[400px]">
-        <TabsTrigger value="overview" className="font-mono uppercase text-xs rounded-sm data-[state=active]:bg-[var(--dash-bg)] data-[state=active]:text-[var(--dash-accent)]">
+        <TabsTrigger value="overview" className="font-mono uppercase text-xs rounded-sm text-zinc-400 data-[state=active]:bg-[var(--dash-bg)] data-[state=active]:text-[var(--dash-accent)]">
           Mission Overview
         </TabsTrigger>
-        <TabsTrigger value="log" className="font-mono uppercase text-xs rounded-sm data-[state=active]:bg-[var(--dash-bg)] data-[state=active]:text-[var(--dash-accent)]">
+        <TabsTrigger value="log" className="font-mono uppercase text-xs rounded-sm text-zinc-400 data-[state=active]:bg-[var(--dash-bg)] data-[state=active]:text-[var(--dash-accent)]">
           Custody Log
         </TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview" className="mt-6 space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
-          <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-sm">
+          <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] border-t-2 border-t-[var(--dash-accent)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-[var(--dash-accent)] transition-all cursor-pointer group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-mono uppercase text-[var(--dash-muted)]">Evidence Submitted</CardTitle>
               <FileText className="h-4 w-4 text-[var(--dash-accent)]" />
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-[var(--dash-text)] font-mono">{stats.evidenceSubmitted}</div>
+              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.evidenceSubmitted}</div>
             </CardContent>
           </Card>
           
-          <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-sm">
+          <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] border-t-2 border-t-emerald-500 rounded-sm hover:bg-[var(--dash-hover)] hover:border-[var(--dash-accent)] transition-all cursor-pointer group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-mono uppercase text-[var(--dash-muted)]">Active Cases</CardTitle>
-              <Briefcase className="h-4 w-4 text-emerald-500" />
+              <Briefcase className="h-4 w-4 text-[var(--dash-accent)]" />
             </CardHeader>
             <CardContent>
-              <div className="text-4xl font-bold text-[var(--dash-text)] font-mono">{stats.activeCases}</div>
+              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.activeCases}</div>
             </CardContent>
           </Card>
         </div>
@@ -64,7 +64,7 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
             ) : (
               <div className="space-y-4">
                 {recentSubmissions.map((sub, i) => (
-                  <div key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm">
+                  <div key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-[var(--dash-accent)] transition-all cursor-pointer group">
                     <ShieldCheck className="h-5 w-5 text-[var(--dash-accent)] mt-0.5" />
                     <div>
                       <p className="font-mono text-sm text-[var(--dash-text)] truncate">{sub.title || "Unknown Evidence"}</p>
