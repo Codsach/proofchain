@@ -8,6 +8,7 @@ import {
   signRefreshToken,
   setRefreshCookie,
   getIp,
+  signMfaToken,
 } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = matchedUser;
+    const user = matchedUser; // TypeScript now knows matchedUser is not null
 
     // 3. Check account status
     if (!user.isActive) {
@@ -113,7 +114,16 @@ export async function POST(req: NextRequest) {
     user.lastLoginAt = new Date();
     await user.save();
 
-    // 7. Build token payload — role is ALWAYS taken from DB here
+    // 7. Check if MFA is enabled
+    if (user.mfaEnabled) {
+      const mfaToken = signMfaToken({ userId: user._id.toString() });
+      return NextResponse.json({
+        requiresMfa: true,
+        mfaToken,
+      });
+    }
+
+    // 8. Build token payload — role is ALWAYS taken from DB here
     const tokenPayload = {
       userId: user._id.toString(),
       role: user.role,   // ← from DB, never from request body
@@ -123,7 +133,7 @@ export async function POST(req: NextRequest) {
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
 
-    // 8. Determine redirect path by role — computed server-side
+    // 9. Determine redirect path by role — computed server-side
     const redirectMap: Record<string, string> = {
       admin:         "/admin",
       analyst:       "/analyst",
@@ -131,7 +141,7 @@ export async function POST(req: NextRequest) {
     };
     const redirectTo = redirectMap[user.role] ?? "/";
 
-    // 9. Audit log
+    // 10. Audit log
     await logAction({
       actorId: user._id.toString(),
       actorRole: user.role,
@@ -141,7 +151,7 @@ export async function POST(req: NextRequest) {
       ipAddress: getIp(req),
     });
 
-    // 10. Build response — refresh token in httpOnly cookie
+    // 11. Build response — refresh token in httpOnly cookie
     const res = NextResponse.json({
       accessToken,
       redirectTo,           // ← frontend just follows this, doesn't decide it

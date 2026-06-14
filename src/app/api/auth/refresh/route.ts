@@ -15,8 +15,8 @@ export async function POST(req: NextRequest) {
 
     if (!refreshToken) {
       return NextResponse.json(
-        { error: "No refresh token provided" },
-        { status: 401 }
+        { accessToken: null, user: null },
+        { status: 200 }
       );
     }
 
@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
       payload = verifyRefreshToken(refreshToken);
     } catch {
       return NextResponse.json(
-        { error: "Refresh token expired or invalid" },
-        { status: 401 }
+        { accessToken: null, user: null },
+        { status: 200 }
       );
     }
 
@@ -38,7 +38,10 @@ export async function POST(req: NextRequest) {
     );
 
     if (!user || !user.isActive || !user.isVerified) {
-      return NextResponse.json({ error: "User not found or inactive" }, { status: 401 });
+      return NextResponse.json(
+        { accessToken: null, user: null },
+        { status: 200 }
+      );
     }
 
     // Issue new tokens (rotation)

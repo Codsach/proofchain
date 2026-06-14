@@ -5,6 +5,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthContext";
 import { useRouter } from "next/navigation";
+import { Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 export default function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
@@ -47,9 +49,10 @@ export default function LandingNav() {
       >
         {/* Logo */}
         <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <img src="/logo.png" alt="ProofChain Logo" width="26" height="26" style={{ objectFit: 'contain' }} />
-          <span style={{ fontSize: 15, fontWeight: 700, color: "#ffffff", letterSpacing: "-0.01em" }}>
-            ProofChain
+          <img src="/icon-v2.png" alt="ProofChain Logo" width="26" height="26" style={{ objectFit: 'contain' }} />
+          <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: "-0.01em" }}>
+            <span style={{ color: "#ffffff" }}>Proof</span>
+            <span style={{ color: "#07A572" }}>Chain</span>
           </span>
         </Link>
 
@@ -62,7 +65,7 @@ export default function LandingNav() {
               style={{
                 fontSize: 14,
                 fontWeight: 500,
-                color: "rgba(15, 23, 42, 0.5)",
+                color: "rgba(255, 255, 255, 0.6)",
                 padding: "6px 14px",
                 borderRadius: 8,
                 textDecoration: "none",
@@ -73,7 +76,7 @@ export default function LandingNav() {
                 e.currentTarget.style.textShadow = "0 0 10px rgba(0, 242, 254, 0.5)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = "rgba(15, 23, 42, 0.5)";
+                e.currentTarget.style.color = "rgba(255, 255, 255, 0.6)";
                 e.currentTarget.style.textShadow = "none";
               }}
             >
@@ -82,24 +85,52 @@ export default function LandingNav() {
           ))}
         </nav>
 
-        {/* CTA */}
-        {!isLoading && (
-          <Link
-            href={getDashboardUrl()}
-            className="lp-btn-primary"
-            style={{ 
-              padding: "8px 24px", 
-              fontSize: 13.5, 
-              textDecoration: "none",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              height: "36px"
-            }}
-          >
-            {user ? "Dashboard" : "Sign In"}
-          </Link>
-        )}
+        {/* Right side group */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* CTA */}
+          {!isLoading && (
+            <Link
+              href={getDashboardUrl()}
+              className="lp-btn-primary"
+              style={{ 
+                padding: "8px 16px", 
+                fontSize: 13.5, 
+                textDecoration: "none",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: "36px"
+              }}
+            >
+              {user ? "Dashboard" : "Sign In"}
+            </Link>
+          )}
+
+          {/* Mobile Menu */}
+          <div className="md:hidden flex items-center">
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="text-white p-2 flex items-center justify-center">
+                  <Menu className="w-6 h-6" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="bg-black border-slate-800">
+                <SheetTitle className="text-white mb-6">Menu</SheetTitle>
+                <nav className="flex flex-col gap-4">
+                  {["Features", "How It Works", "Roles"].map((label) => (
+                    <a
+                      key={label}
+                      href={`#${label.toLowerCase().replace(/\s+/g, "-")}`}
+                      className="text-white/70 hover:text-white text-lg font-medium transition-colors"
+                    >
+                      {label}
+                    </a>
+                  ))}
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </div>
       </div>
     </motion.header>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Bell, Check, ExternalLink } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -21,10 +22,17 @@ export function NotificationBell() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   
   // Track the ID of the most recent notification we have seen to know when to play sound
   const latestSeenId = useRef<string | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const playNotificationSound = useCallback(() => {
     try {
@@ -90,10 +98,37 @@ export function NotificationBell() {
     return () => clearInterval(interval);
   }, [fetchNotifications]);
 
+  const updateDropdownPosition = useCallback(() => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownStyle({
+        position: 'fixed',
+        bottom: window.innerHeight - rect.top + 8,
+        left: Math.max(16, rect.left), // Ensure it doesn't go off-screen to the left
+        zIndex: 9999
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      updateDropdownPosition();
+      window.addEventListener('resize', updateDropdownPosition);
+      window.addEventListener('scroll', updateDropdownPosition, true);
+    }
+    return () => {
+      window.removeEventListener('resize', updateDropdownPosition);
+      window.removeEventListener('scroll', updateDropdownPosition, true);
+    };
+  }, [isOpen, updateDropdownPosition]);
+
   // Click outside to close dropdown
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -145,8 +180,9 @@ export function NotificationBell() {
   if (!user) return null;
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <>
       <button
+        ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
         className="relative p-2 rounded-xl text-dash-muted hover:text-dash-text hover:bg-dash-hover transition-colors"
       >
@@ -156,69 +192,75 @@ export function NotificationBell() {
         )}
       </button>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-2 w-80 max-h-[400px] overflow-y-auto custom-scrollbar bg-dash-card border border-dash-border rounded-2xl shadow-2xl z-50 backdrop-blur-3xl"
-          >
-            <div className="p-4 border-b border-dash-border sticky top-0 bg-dash-card/90 backdrop-blur-md z-10 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Notifications</h3>
-              {unreadCount > 0 && (
-                <span className="text-[10px] font-bold bg-dash-accent/20 text-dash-accent px-2 py-0.5 rounded-full">
-                  {unreadCount} new
-                </span>
-              )}
-            </div>
-            
-            {notifications.length === 0 ? (
-              <div className="p-8 text-center text-dash-muted text-sm font-medium">
-                No notifications yet.
+      {mounted && createPortal(
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              ref={dropdownRef}
+              style={dropdownStyle}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ duration: 0.15 }}
+              className="w-80 max-h-[400px] overflow-y-auto custom-scrollbar bg-dash-card border border-dash-border rounded-2xl shadow-2xl backdrop-blur-3xl"
+            >
+              <div className="p-4 border-b border-dash-border sticky top-0 bg-dash-card/90 backdrop-blur-md z-10 flex items-center justify-between">
+                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Notifications</h3>
+                {unreadCount > 0 && (
+                  <span className="text-[10px] font-bold bg-dash-accent/20 text-dash-accent px-2 py-0.5 rounded-full">
+                    {unreadCount} new
+                  </span>
+                )}
               </div>
-            ) : (
-              <div className="divide-y divide-dash-border/50">
-                {notifications.map((notif) => (
-                  <div 
-                    key={notif._id}
-                    onClick={() => markAsRead(notif._id, notif.link)}
-                    className={`p-4 hover:bg-dash-hover transition-colors cursor-pointer group flex gap-3 ${!notif.isRead ? 'bg-emerald-500/5' : ''}`}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <p className={`text-sm font-semibold truncate ${!notif.isRead ? 'text-white' : 'text-dash-muted'}`}>
-                          {notif.title}
+              
+              {notifications.length === 0 ? (
+                <div className="p-8 text-center text-dash-muted text-sm font-medium">
+                  No notifications yet.
+                </div>
+              ) : (
+                <div className="divide-y divide-dash-border/50">
+                  {notifications.map((notif) => (
+                    <div 
+                      key={notif._id}
+                      onClick={() => markAsRead(notif._id, notif.link)}
+                      className={`p-4 hover:bg-dash-hover transition-colors cursor-pointer group flex gap-3 ${!notif.isRead ? 'bg-emerald-500/5' : ''}`}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <p className={`text-sm font-semibold truncate ${!notif.isRead ? 'text-white' : 'text-dash-muted'}`}>
+                            {notif.title}
+                          </p>
+                          <span className="text-[9px] text-dash-muted font-mono whitespace-nowrap mt-1">
+                            {new Date(notif.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className={`text-xs leading-relaxed line-clamp-2 ${!notif.isRead ? 'text-white/80' : 'text-white/40'}`}>
+                          {notif.message}
                         </p>
-                        <span className="text-[9px] text-dash-muted font-mono whitespace-nowrap mt-1">
-                          {new Date(notif.createdAt).toLocaleDateString()}
-                        </span>
                       </div>
-                      <p className={`text-xs leading-relaxed line-clamp-2 ${!notif.isRead ? 'text-white/80' : 'text-white/40'}`}>
-                        {notif.message}
-                      </p>
+                      
+                      <div className="flex flex-col justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        {!notif.isRead && (
+                          <button 
+                            onClick={(e) => markAsReadWithoutNavigation(e, notif._id)}
+                            className="p-1 text-dash-muted hover:text-emerald-400 hover:bg-emerald-400/10 rounded transition-colors"
+                            title="Mark as read"
+                          >
+                            <Check size={14} />
+                          </button>
+                        )}
+                        <ExternalLink size={14} className="text-dash-muted" />
+                      </div>
                     </div>
-                    
-                    <div className="flex flex-col justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      {!notif.isRead && (
-                        <button 
-                          onClick={(e) => markAsReadWithoutNavigation(e, notif._id)}
-                          className="p-1 text-dash-muted hover:text-emerald-400 hover:bg-emerald-400/10 rounded transition-colors"
-                          title="Mark as read"
-                        >
-                          <Check size={14} />
-                        </button>
-                      )}
-                      <ExternalLink size={14} className="text-dash-muted" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+    </>
   );
 }
+

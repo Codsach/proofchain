@@ -9,6 +9,7 @@ import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
+import { Share2 } from "lucide-react";
 
 interface FileRecord {
   fileId: string;
@@ -70,6 +71,25 @@ export default function InvestigatorCaseDetailPage() {
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const handleShare = async () => {
+    if (!caseData) return;
+    const url = `${window.location.origin}/verify/${caseData.caseId}`;
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `ProofChain Verification: ${caseData.title}`,
+          text: `View cryptographic verification for forensic case: ${caseData.title}`,
+          url,
+        });
+      } catch (err) {
+        console.error("Error sharing", err);
+      }
+    } else {
+      navigator.clipboard.writeText(url);
+      toast({ title: "Copied!", description: "Verification link copied to clipboard." });
+    }
   };
 
   if (isLoading) {
@@ -228,15 +248,26 @@ export default function InvestigatorCaseDetailPage() {
           <p className="text-xs font-bold text-white uppercase tracking-tight text-center sm:text-left">Public Verification Signal</p>
           <p className="text-[10px] text-dash-muted font-medium text-center sm:text-left">Distribute this secure link for third-party blockchain validation protocol.</p>
         </div>
-        <motion.a
-          whileHover={{ x: 5 }}
-          href={`/verify/${caseData.caseId}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[10px] font-bold text-dash-accent hover:text-emerald-300 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 whitespace-nowrap"
-        >
-          Verify Interface <span className="text-lg">→</span>
-        </motion.a>
+        <div className="flex items-center gap-4">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleShare}
+            className="flex items-center justify-center size-8 rounded-full bg-emerald-500/10 text-dash-accent hover:bg-emerald-500/20 transition-colors"
+            title="Share Case Link"
+          >
+            <Share2 size={14} />
+          </motion.button>
+          <motion.a
+            whileHover={{ x: 5 }}
+            href={`/verify/${caseData.caseId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] font-bold text-dash-accent hover:text-emerald-300 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 whitespace-nowrap"
+          >
+            Verify Interface <span className="text-lg">→</span>
+          </motion.a>
+        </div>
       </motion.div>
     </div>
   );

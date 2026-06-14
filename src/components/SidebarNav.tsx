@@ -13,20 +13,24 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export function SidebarNav() {
   return (
     <aside className="w-full shrink-0 border-b border-white/10 bg-black/30 backdrop-blur-xl lg:h-screen lg:w-72 lg:border-r lg:border-b-0">
       <div className="flex h-full flex-col px-4 py-5 sm:px-5">
         <div className="flex items-center gap-3">
-          <div className="flex size-11 items-center justify-center rounded-2xl border border-emerald-400/30 bg-emerald-500/10 text-sm font-semibold tracking-[0.2em] text-emerald-100">
-            <ShieldHalf size={24} className="text-emerald-400" />
+          <div className="flex size-11 items-center justify-center rounded-2xl border border-emerald-400/30 bg-[#0A1A10] overflow-hidden shrink-0">
+            <Image src="/icon-v2.png" alt="ProofChain Icon" width={32} height={32} className="object-contain" />
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-zinc-500">
               Chain of Custody
             </p>
-            <h1 className="text-xl font-semibold text-white">ProofChain</h1>
+            <h1 className="text-xl font-semibold tracking-tight">
+              <span className="text-white">Proof</span>
+              <span className="text-[#07A572]">Chain</span>
+            </h1>
           </div>
         </div>
 

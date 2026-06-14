@@ -5,7 +5,7 @@ import { withAuth, getIp } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import { v4 as uuidv4 } from "uuid";
 import { uploadEvidenceFiles } from "@/lib/evidence-files";
-import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
+import { anchorEvidence } from "@/lib/blockchain";
 import {
   CreateCaseSchema,
   MAX_FILES_PER_CASE,
@@ -157,9 +157,20 @@ async function createCase(
 
     // 7. Trigger AI analysis asynchronously — do NOT await
     // This runs after we return the response to the client
-    triggerAIAnalysis(caseId, newCase._id.toString(), fileRecords).catch(
+    triggerAIAnalysis(caseId, newCase._id.toString(), fileRecords, files).catch(
       (err) => console.error("[cases/create] AI trigger failed:", err)
     );
+
+    // 8. Anchor case to blockchain asynchronously
+    const primaryFile = fileRecords[0];
+    if (primaryFile) {
+      anchorEvidence(caseId, primaryFile.sha256Hash, primaryFile.ipfsCid)
+        .then(async (txHash) => {
+          await Case.updateOne({ caseId }, { onChainTxHash: txHash });
+          console.log(`[cases/create] Case ${caseId} anchored on chain with tx ${txHash}`);
+        })
+        .catch((err) => console.error("[cases/create] Blockchain anchoring failed:", err));
+    }
 
     return NextResponse.json(
       {
@@ -185,7 +196,8 @@ async function triggerAIAnalysis(
     mimeType: string;
     ipfsCid: string;
     sha256Hash: string;
-  }>
+  }>,
+  files: File[]
 ) {
   const fastApiUrl = process.env.FASTAPI_URL;
   const internalKey = process.env.INTERNAL_AI_KEY;
@@ -197,16 +209,16 @@ async function triggerAIAnalysis(
 
   for (const file of fileRecords) {
     try {
-      // Fetch file from IPFS for analysis
-      const ipfsUrl = getIpfsGatewayUrl(file.ipfsCid);
-      const fileRes = await fetch(ipfsUrl);
+      // Find the corresponding original File object
+      const index = fileRecords.findIndex(f => f.fileId === file.fileId);
+      const originalFile = files[index];
 
-      if (!fileRes.ok) {
-        console.error(`[AI trigger] Could not fetch file from IPFS: ${file.ipfsCid}`);
+      if (!originalFile) {
+        console.error(`[AI trigger] Could not find original file in upload list: ${file.fileId}`);
         continue;
       }
 
-      const fileBuffer = Buffer.from(await fileRes.arrayBuffer());
+      const fileBuffer = Buffer.from(await originalFile.arrayBuffer());
 
       // Send to FastAPI for analysis
       const aiFormData = new FormData();

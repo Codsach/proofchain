@@ -9,7 +9,26 @@ type ToastOptions = {
   variant?: "default" | "destructive";
 };
 
+let lastSoundPlay = 0;
+
+const playNotificationSound = () => {
+  if (typeof window !== "undefined") {
+    const now = Date.now();
+    // Throttle sound to play at most once every 1 second
+    if (now - lastSoundPlay > 1000) {
+      lastSoundPlay = now;
+      const audio = new Audio("/notification.mp3");
+      audio.volume = 0.5; // keep it subtle
+      audio.play().catch(() => {
+        // Autoplay may be blocked if user hasn't interacted yet
+      });
+    }
+  }
+};
+
 function showToast({ title, description, variant = "default" }: ToastOptions) {
+  playNotificationSound();
+
   if (variant === "destructive") {
     return sonnerToast.error(title, { description });
   }

@@ -31,6 +31,10 @@ export function signRefreshToken(payload: JWTPayload): string {
   return jwt.sign(payload, REFRESH_SECRET, { expiresIn: "7d" });
 }
 
+export function signMfaToken(payload: { userId: string }): string {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: "5m" });
+}
+
 // ── Verify tokens ────────────────────────────────────────────────────────────
 export function verifyAccessToken(token: string): JWTPayload {
   return jwt.verify(token, JWT_SECRET) as JWTPayload;
@@ -38,6 +42,10 @@ export function verifyAccessToken(token: string): JWTPayload {
 
 export function verifyRefreshToken(token: string): JWTPayload {
   return jwt.verify(token, REFRESH_SECRET) as JWTPayload;
+}
+
+export function verifyMfaToken(token: string): { userId: string } {
+  return jwt.verify(token, JWT_SECRET) as { userId: string };
 }
 
 // ── Refresh cookie helpers ────────────────────────────────────────────────────
