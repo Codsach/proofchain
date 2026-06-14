@@ -57,7 +57,16 @@ export async function uploadAvatar(formData: FormData) {
   }
 }
 
-export async function updateDossier(data: { phoneNumber?: string; department?: string; location?: string }) {
+export async function updateDossier(data: {
+  phoneNumber?: string | null;
+  department?: string | null;
+  location?: string | null;
+  bio?: string | null;
+  emergencyContactName?: string | null;
+  emergencyContactPhone?: string | null;
+  skills?: string[];
+  assignedDevices?: string[];
+}) {
   try {
     const session = await getServerSessionUser();
     if (!session) {

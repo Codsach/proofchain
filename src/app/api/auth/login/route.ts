@@ -9,6 +9,7 @@ import {
   setRefreshCookie,
   getIp,
   signMfaToken,
+  setTrustedDeviceCookie,
 } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import crypto from "crypto";
@@ -179,6 +180,20 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Track active session
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
+    
+    if (!user.trustedDevices) user.trustedDevices = [];
+    user.trustedDevices.push({ deviceTokenHash: hashedToken, expiresAt });
+    if (user.trustedDevices.length > 5) {
+      user.trustedDevices = user.trustedDevices.slice(-5);
+    }
+    await user.save();
+
+    setTrustedDeviceCookie(res, rawToken);
     setRefreshCookie(res, refreshToken);
     return res;
   } catch (err) {

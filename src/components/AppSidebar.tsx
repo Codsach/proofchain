@@ -26,7 +26,8 @@ import {
   Hexagon,
   ChevronLeft,
   Briefcase,
-  User
+  User,
+  Settings
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MfaSetupModal } from "@/components/MfaSetupModal";
@@ -37,10 +38,12 @@ const navItems = {
     { label: "My Cases", href: "/investigator", icon: Search },
     { label: "Submit Evidence", href: "/investigator/submit", icon: ShieldCheck },
     { label: "Profile", href: "/profile", icon: User },
+    { label: "Settings", href: "/settings", icon: Settings },
   ],
   analyst: [
     { label: "Case Queue", href: "/analyst", icon: Activity },
     { label: "Profile", href: "/profile", icon: User },
+    { label: "Settings", href: "/settings", icon: Settings },
   ],
   admin: [
     { label: "Dashboard", href: "/admin", icon: Hexagon },
@@ -48,6 +51,7 @@ const navItems = {
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
     { label: "Profile", href: "/profile", icon: User },
+    { label: "Settings", href: "/settings", icon: Settings },
   ],
 };
 
@@ -72,20 +76,20 @@ export function AppSidebar() {
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className="border-r border-[#1A2A20]"
+      className="border-r border-dash-border bg-dash-sidebar"
     >
-      <SidebarHeader className="py-6 px-4 border-b border-[#1A2A20]/50 min-h-[96px] flex items-center justify-center">
+      <SidebarHeader className="py-6 px-4 border-b border-dash-border/50 min-h-[96px] flex items-center justify-center">
         <SidebarMenu>
           <SidebarMenuItem>
             <div className={`flex items-center w-full ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
-              <div className="flex size-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-[#0A1A10] shrink-0 overflow-hidden">
+              <div className="flex size-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 shrink-0 overflow-hidden">
                 <Image src="/icon-v2.png" alt="ProofChain Icon" width={28} height={28} className="object-contain" />
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col flex-1 overflow-hidden">
                   <span className="text-lg font-bold tracking-tight truncate">
                     <span className="text-white">Proof</span>
-                    <span className="text-[#07A572]">Chain</span>
+                    <span className="text-emerald-500">Chain</span>
                   </span>
                   <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate">
                     {roleLabel[user.role]}
@@ -118,7 +122,7 @@ export function AppSidebar() {
                   >
                     <Link href={item.href} className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
                       <div className={`flex items-center justify-center rounded-full shrink-0 transition-all duration-300 ${isActive ? "bg-white text-black shadow-md size-9" : "size-9"}`}>
-                        <Icon size={18} className={isActive ? "" : "opacity-70"} />
+                        <Icon size={20} className={isActive ? "" : "opacity-70"} />
                       </div>
                       {!isCollapsed && <span className={isActive ? "text-zinc-200 font-medium" : ""}>{item.label}</span>}
                     </Link>
@@ -130,7 +134,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="p-4 border-t border-[#1A2A20]/50 min-h-[80px]">
+      <SidebarFooter className="p-4 border-t border-dash-border/50 min-h-[80px]">
         {!isCollapsed ? (
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between px-2">
@@ -147,7 +151,7 @@ export function AppSidebar() {
 
             <SidebarMenuButton
               onClick={() => setIsMfaOpen(true)}
-              className="h-10 mt-2 text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10 justify-start rounded-xl px-3"
+              className="h-10 mt-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold justify-center rounded-xl shadow-sm transition-colors"
             >
               <ShieldCheck size={18} />
               <span>Enable 2FA</span>

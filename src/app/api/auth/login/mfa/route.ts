@@ -98,32 +98,29 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    if (body.rememberDevice) {
-      const rawToken = crypto.randomBytes(32).toString("hex");
-      const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
-      
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 30);
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+    
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 30);
 
-      // Initialize array if undefined
-      if (!user.trustedDevices) {
-        user.trustedDevices = [];
-      }
-
-      user.trustedDevices.push({
-        deviceTokenHash: hashedToken,
-        expiresAt,
-      });
-
-      // Enforce max 3 devices
-      if (user.trustedDevices.length > 3) {
-        // Remove the oldest (first) elements until we have 3
-        user.trustedDevices = user.trustedDevices.slice(-3);
-      }
-
-      await user.save();
-      setTrustedDeviceCookie(res, rawToken);
+    // Initialize array if undefined
+    if (!user.trustedDevices) {
+      user.trustedDevices = [];
     }
+
+    user.trustedDevices.push({
+      deviceTokenHash: hashedToken,
+      expiresAt,
+    });
+
+    // Enforce max 5 devices
+    if (user.trustedDevices.length > 5) {
+      user.trustedDevices = user.trustedDevices.slice(-5);
+    }
+
+    await user.save();
+    setTrustedDeviceCookie(res, rawToken);
 
     setRefreshCookie(res, refreshToken);
     return res;
