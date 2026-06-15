@@ -80,7 +80,7 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
     <div className="space-y-6">
       {/* Password Reset */}
       <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-        <div className="h-1 w-full bg-cyan-600" />
+        <div className="absolute top-0 left-0 h-[2px] w-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
         <CardHeader>
           <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
             <KeyRound className="h-5 w-5 text-cyan-600" />
@@ -163,7 +163,7 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
 
       {/* Two-Factor Auth */}
       <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-        <div className="h-1 w-full bg-emerald-500" />
+        <div className="absolute top-0 left-0 h-[2px] w-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <div className="space-y-1">
             <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
@@ -204,7 +204,7 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
 
       {/* Trusted Devices */}
       <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-        <div className="h-1 w-full bg-purple-500" />
+        <div className="absolute top-0 left-0 h-[2px] w-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
         <CardHeader>
           <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
             <Laptop className="h-5 w-5 text-purple-500" />

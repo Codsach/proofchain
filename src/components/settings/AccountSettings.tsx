@@ -50,7 +50,7 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
 
   return (
     <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-      <div className="h-1 w-full bg-[var(--dash-accent)]" />
+      <div className="absolute top-0 left-0 h-[2px] w-full bg-[var(--dash-accent)] shadow-[0_0_8px_var(--dash-accent)]" />
       <CardHeader>
         <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
           <User className="h-5 w-5 text-[var(--dash-accent)]" />

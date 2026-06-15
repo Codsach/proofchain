@@ -36,7 +36,7 @@ export function DangerZone() {
 
   return (
     <Card className="bg-rose-950/10 border-rose-900/50 rounded-none relative overflow-hidden">
-      <div className="h-1 w-full bg-rose-600" />
+      <div className="absolute top-0 left-0 h-[2px] w-full bg-rose-600 shadow-[0_0_8px_rgba(225,29,72,0.8)]" />
       <CardHeader>
         <CardTitle className="text-xl font-mono uppercase text-rose-500 flex items-center gap-2">
           <AlertTriangle className="h-5 w-5" />

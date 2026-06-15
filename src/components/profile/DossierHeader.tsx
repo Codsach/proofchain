@@ -78,7 +78,7 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
   return (
     <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
       {/* Strict utilitarian top bar */}
-      <div className="h-2 w-full bg-[var(--dash-border)]" />
+      <div className="absolute top-0 left-0 h-[2px] w-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
       
       <CardContent className="pt-8 pb-6 flex flex-col gap-6 relative">
         {/* Absolute positioned edit button so it stays in top right of content area */}
