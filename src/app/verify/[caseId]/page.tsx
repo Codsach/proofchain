@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import QRCode from "qrcode";
+import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 
 interface TransferEntry {
   transferHash: string;
   transferredAt: string;
+  fromRole: string;
+  toRole: string;
 }
 
 interface VerifyData {
@@ -21,6 +24,8 @@ interface VerifyData {
   verdictHash: string | null;
   verdictAt: string | null;
   transferCount: number;
+  uploaderRole: string;
+  currentCustodianRole: string;
   transferLog: TransferEntry[];
   message?: string;
 }
@@ -76,6 +81,51 @@ export default function PublicVerifyPage() {
         </div>
       </div>
     );
+  }
+
+  const timelineNodes: TimelineNode[] = [];
+  if (data) {
+    // 1. Initial Upload event
+    timelineNodes.push({
+      id: "upload-" + data.caseId,
+      type: "upload",
+      title: "Evidence Uploaded & Sealed",
+      subtitle: `Action taken by ${data.uploaderRole || "investigator"}`,
+      description: `Cryptographic fingerprint registered on-chain: ${data.onChainHash.slice(0, 16)}...`,
+      timestamp: data.onChainTimestamp,
+      txHash: null,
+      isActive: data.transferLog.length === 0 && !data.verdictIssued,
+    });
+
+    // 2. Transfer events
+    data.transferLog.forEach((t, index) => {
+      const isLastTransfer = index === data.transferLog.length - 1;
+      timelineNodes.push({
+        id: t.transferHash,
+        type: "transfer",
+        title: "Custody Hand-off",
+        subtitle: `${t.fromRole || "analyst"} ➔ ${t.toRole || "analyst"}`,
+        description: `Cryptographic transfer registered under hash: ${t.transferHash.slice(0, 16)}...`,
+        timestamp: t.transferredAt,
+        txHash: null,
+        isActive: isLastTransfer && !data.verdictIssued,
+      });
+    });
+
+    // 3. Verdict event
+    if (data.verdictIssued) {
+      timelineNodes.push({
+        id: "verdict-" + data.caseId,
+        type: "verdict",
+        title: `Forensic Verdict Issued`,
+        subtitle: `Action taken by analyst`,
+        description: `Cryptographic verification status locked on-chain.`,
+        timestamp: data.verdictAt!,
+        txHash: data.verdictHash,
+        verdictType: "verified",
+        isActive: true,
+      });
+    }
   }
 
   return (
@@ -145,27 +195,7 @@ export default function PublicVerifyPage() {
           </div>
         )}
 
-        {/* Transfer log */}
-        {data.transferLog && data.transferLog.length > 0 && (
-          <div className="rounded-xl border border-border bg-card p-5 space-y-3">
-            <h2 className="text-sm font-semibold text-foreground">
-              Chain of custody transfers ({data.transferLog.length})
-            </h2>
-            <div className="space-y-2">
-              {data.transferLog.map((t, i) => (
-                <div key={i} className="flex items-start gap-3 text-xs">
-                  <span className="text-muted-foreground/40 shrink-0 mt-0.5">{i + 1}</span>
-                  <div className="space-y-0.5">
-                    <p className="font-mono text-foreground break-all">{t.transferHash}</p>
-                    <p className="text-muted-foreground">
-                      {new Date(t.transferredAt).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <CustodyTimeline nodes={timelineNodes} isPublic={true} />
 
         {/* Disclaimer */}
         <p className="text-xs text-muted-foreground text-center leading-relaxed">

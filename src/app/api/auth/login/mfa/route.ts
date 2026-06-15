@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticator } from "@/lib/totp";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
+import UserProfile from "@/lib/models/UserProfile";
 import {
   signAccessToken,
   signRefreshToken,
@@ -87,6 +88,8 @@ export async function POST(req: NextRequest) {
       ipAddress: getIp(req),
     });
 
+    const profile = await UserProfile.findOne({ userId: user._id });
+
     const res = NextResponse.json({
       accessToken,
       redirectTo,
@@ -95,6 +98,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         fullName: user.fullName,
         role: user.role,
+        avatarUrl: profile?.avatarUrl || null,
       },
     });
 

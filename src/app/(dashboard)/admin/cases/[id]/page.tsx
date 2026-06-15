@@ -10,6 +10,7 @@ import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
+import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 
 const EvidenceMap = dynamic(() => import("@/components/evidence/EvidenceMap"), {
   ssr: false,
@@ -28,6 +29,13 @@ interface FileRecord {
   gpsAccuracy?: number | null;
 }
 
+interface UserProfile {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: string;
+}
+
 interface CaseDetail {
   caseId: string;
   title: string;
@@ -37,8 +45,8 @@ interface CaseDetail {
   status: string;
   files: FileRecord[];
   createdAt: string;
-  investigatorId: string;
-  currentCustodian: string;
+  investigatorId: UserProfile | null;
+  currentCustodian: UserProfile;
   onChainTxHash: string | null;
 }
 
@@ -75,8 +83,8 @@ interface Verdict {
 
 interface TransferEntry {
   _id: string;
-  fromUserId: { fullName: string; email: string };
-  toUserId: { fullName: string; email: string };
+  fromUserId: UserProfile;
+  toUserId: UserProfile;
   reason: string;
   transferredAt: string;
   onChainTxHash: string | null;
@@ -200,6 +208,57 @@ export default function AdminCaseDetailPage() {
         </Link>
       </div>
     );
+  }
+
+  const timelineNodes: TimelineNode[] = [];
+  if (caseData) {
+    // 1. Initial Upload event
+    timelineNodes.push({
+      id: "upload-" + caseData.caseId,
+      type: "upload",
+      title: "Evidence Uploaded & Sealed",
+      subtitle: caseData.files.map((f) => f.originalName).join(", "),
+      description: "Evidence files originally registered and anchored to blockchain.",
+      timestamp: caseData.createdAt,
+      txHash: caseData.onChainTxHash,
+      actorName: caseData.investigatorId?.fullName || "Investigator",
+      actorRole: "investigator",
+      isActive: transfers.length === 0 && !verdict,
+    });
+
+    // 2. Transfer events
+    transfers.forEach((t, index) => {
+      const isLastTransfer = index === transfers.length - 1;
+      timelineNodes.push({
+        id: t._id,
+        type: "transfer",
+        title: "Custody Hand-off",
+        subtitle: `${t.fromUserId?.fullName || "Custodian"} ➔ ${t.toUserId?.fullName || "Custodian"}`,
+        description: t.reason,
+        timestamp: t.transferredAt,
+        txHash: t.onChainTxHash,
+        actorName: t.fromUserId?.fullName,
+        actorRole: t.fromUserId?.role,
+        recipientName: t.toUserId?.fullName,
+        recipientRole: t.toUserId?.role,
+        isActive: isLastTransfer && !verdict,
+      });
+    });
+
+    // 3. Verdict event
+    if (verdict) {
+      timelineNodes.push({
+        id: verdict._id,
+        type: "verdict",
+        title: `Forensic Verdict: ${verdict.verdict.toUpperCase()}`,
+        subtitle: `Analyzed and sealed by Verification Protocol`,
+        description: verdict.reason,
+        timestamp: verdict.issuedAt,
+        txHash: verdict.onChainTxHash,
+        verdictType: verdict.verdict,
+        isActive: true,
+      });
+    }
   }
 
   return (
@@ -360,37 +419,9 @@ export default function AdminCaseDetailPage() {
             )}
           </AnimatePresence>
 
-          <AnimatePresence>
-            {!isLoadingTransfers && transfers.length > 0 && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl p-6 space-y-5 shadow-xl"
-              >
-                <div className="flex items-center gap-4">
-                  <h2 className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">Custody Chain</h2>
-                  <div className="h-px flex-1 bg-dash-border" />
-                  <span className="text-[10px] font-bold text-dash-accent/40">{transfers.length}</span>
-                </div>
-                <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                  {transfers.slice().reverse().map((t, i) => (
-                    <div key={t._id} className="relative pl-6 border-l border-dash-border pb-4 last:pb-0">
-                      <div className="absolute left-[-4.5px] top-0 w-2 h-2 rounded-full bg-emerald-500/20 border border-emerald-500/40" />
-                      <div className="space-y-1">
-                        <p className="text-[11px] font-bold text-dash-text group-hover:text-dash-accent transition-colors uppercase tracking-tight">
-                          {t.fromUserId.fullName} <span className="text-dash-muted mx-1">→</span> {t.toUserId.fullName}
-                        </p>
-                        <p className="text-[10px] text-dash-muted font-medium leading-tight">{t.reason}</p>
-                        <p className="text-[9px] text-dash-muted font-mono italic tracking-tighter">
-                          {new Date(t.transferredAt).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {!isLoadingTransfers && !isLoadingCase && (
+            <CustodyTimeline nodes={timelineNodes} />
+          )}
         </div>
       </div>
     </div>

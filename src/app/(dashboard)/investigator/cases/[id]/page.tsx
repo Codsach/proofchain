@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { Share2 } from "lucide-react";
+import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 
 interface FileRecord {
   fileId: string;
@@ -22,6 +23,13 @@ interface FileRecord {
   gpsLng: number | null;
 }
 
+interface UserProfile {
+  _id: string;
+  fullName: string;
+  email: string;
+  role: string;
+}
+
 interface CaseDetail {
   caseId: string;
   title: string;
@@ -32,6 +40,26 @@ interface CaseDetail {
   tags: string[];
   files: FileRecord[];
   createdAt: string;
+  investigatorId: UserProfile | null;
+  currentCustodian: UserProfile;
+  onChainTxHash: string | null;
+}
+
+interface Verdict {
+  _id: string;
+  verdict: "verified" | "rejected";
+  reason: string;
+  analystId: string;
+  issuedAt: string;
+  onChainTxHash: string | null;
+}
+
+interface TransferEntry {
+  _id: string;
+  fromUserId: UserProfile;
+  toUserId: UserProfile;
+  reason: string;
+  transferredAt: string;
   onChainTxHash: string | null;
 }
 
@@ -48,7 +76,11 @@ export default function InvestigatorCaseDetailPage() {
   const { getToken } = useAuth();
   const { toast } = useToast();
   const [caseData, setCaseData] = useState<CaseDetail | null>(null);
+  const [verdict, setVerdict] = useState<Verdict | null>(null);
+  const [transfers, setTransfers] = useState<TransferEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
+  const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
 
   useEffect(() => {
     const load = async () => {
@@ -67,6 +99,43 @@ export default function InvestigatorCaseDetailPage() {
     };
     load();
   }, [caseId, getToken, toast]);
+
+  // Load Verdict
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`/api/cases/${caseId}/verdict`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) setVerdict(await res.json());
+      } catch {
+      } finally {
+        setIsLoadingVerdict(false);
+      }
+    };
+    load();
+  }, [caseId, getToken]);
+
+  // Load Transfers
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`/api/cases/${caseId}/transfer`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setTransfers(data.transfers ?? []);
+        }
+      } catch {
+      } finally {
+        setIsLoadingTransfers(false);
+      }
+    };
+    load();
+  }, [caseId, getToken]);
 
   const formatFileSize = (bytes: number) => {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -110,6 +179,57 @@ export default function InvestigatorCaseDetailPage() {
         </Link>
       </div>
     );
+  }
+
+  const timelineNodes: TimelineNode[] = [];
+  if (caseData) {
+    // 1. Initial Upload event (investigator already knows they uploaded it, so we show it)
+    timelineNodes.push({
+      id: "upload-" + caseData.caseId,
+      type: "upload",
+      title: "Evidence Uploaded & Sealed",
+      subtitle: caseData.files.map((f) => f.originalName).join(", "),
+      description: "Evidence files originally registered and anchored to blockchain.",
+      timestamp: caseData.createdAt,
+      txHash: caseData.onChainTxHash,
+      actorName: caseData.investigatorId?.fullName || "Investigator",
+      actorRole: "investigator",
+      isActive: transfers.length === 0 && !verdict,
+    });
+
+    // 2. Transfer events
+    transfers.forEach((t, index) => {
+      const isLastTransfer = index === transfers.length - 1;
+      timelineNodes.push({
+        id: t._id,
+        type: "transfer",
+        title: "Custody Hand-off",
+        subtitle: `${t.fromUserId?.fullName || "Custodian"} ➔ ${t.toUserId?.fullName || "Custodian"}`,
+        description: t.reason,
+        timestamp: t.transferredAt,
+        txHash: t.onChainTxHash,
+        actorName: t.fromUserId?.fullName,
+        actorRole: t.fromUserId?.role,
+        recipientName: t.toUserId?.fullName,
+        recipientRole: t.toUserId?.role,
+        isActive: isLastTransfer && !verdict,
+      });
+    });
+
+    // 3. Verdict event
+    if (verdict) {
+      timelineNodes.push({
+        id: verdict._id,
+        type: "verdict",
+        title: `Forensic Verdict: ${verdict.verdict.toUpperCase()}`,
+        subtitle: `Analyzed and sealed by Verification Protocol`,
+        description: verdict.reason,
+        timestamp: verdict.issuedAt,
+        txHash: verdict.onChainTxHash,
+        verdictType: verdict.verdict,
+        isActive: true,
+      });
+    }
   }
 
   return (
@@ -237,6 +357,10 @@ export default function InvestigatorCaseDetailPage() {
           </AnimatePresence>
         </div>
       </motion.div>
+
+      {!isLoadingTransfers && !isLoadingVerdict && (
+        <CustodyTimeline nodes={timelineNodes} />
+      )}
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}

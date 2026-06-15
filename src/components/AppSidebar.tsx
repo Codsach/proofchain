@@ -32,6 +32,7 @@ import {
 import { NotificationBell } from "@/components/NotificationBell";
 import { MfaSetupModal } from "@/components/MfaSetupModal";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = {
   investigator: [
@@ -138,13 +139,21 @@ export function AppSidebar() {
         {!isCollapsed ? (
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between px-2">
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                  Logged in as
-                </span>
-                <span className="text-xs text-zinc-300 truncate font-medium" title={user.email}>
-                  {user.email}
-                </span>
+              <div className="flex items-center gap-3 overflow-hidden">
+                <Avatar className="h-8 w-8 rounded-full border border-dash-border bg-dash-bg">
+                  <AvatarImage src={user.avatarUrl || undefined} className="object-cover" />
+                  <AvatarFallback className="bg-emerald-500/10 text-emerald-500 text-xs font-medium">
+                    {user.fullName?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
+                    Logged in as
+                  </span>
+                  <span className="text-xs text-zinc-300 truncate font-medium" title={user.email}>
+                    {user.email}
+                  </span>
+                </div>
               </div>
               <NotificationBell />
             </div>
@@ -167,6 +176,12 @@ export function AppSidebar() {
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 w-full">
+            <Avatar className="h-8 w-8 rounded-full border border-dash-border bg-dash-bg">
+              <AvatarImage src={user.avatarUrl || undefined} className="object-cover" />
+              <AvatarFallback className="bg-emerald-500/10 text-emerald-500 text-xs font-medium">
+                {user.fullName?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex justify-center w-full">
               <NotificationBell />
             </div>
