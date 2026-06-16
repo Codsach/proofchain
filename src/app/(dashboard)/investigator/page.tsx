@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Folder, Brain, Shield, FolderOpen } from "lucide-react";
+import { Folder, Brain, Shield, FolderOpen, Copy } from "lucide-react";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 type InvestigatorCase = {
   _id: string;
   caseId: string;
@@ -65,6 +66,7 @@ function getOpenCaseCount(cases: InvestigatorCase[]) {
 
 export default function InvestigatorPage() {
   const { user, getToken } = useAuth();
+  const { toast } = useToast();
   const [cases, setCases] = useState<InvestigatorCase[]>([]);
   const [isLoadingCases, setIsLoadingCases] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -329,6 +331,7 @@ export default function InvestigatorPage() {
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Review State</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Files</th>
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Digital Signage</th>
+                  <th className="px-6 py-4 text-right" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
@@ -347,9 +350,18 @@ export default function InvestigatorPage() {
                           <p className="font-bold text-white group-hover:text-dash-accent transition-colors">
                             {caseItem.title}
                           </p>
-                          <p className="text-[10px] text-white/20 font-mono tracking-tighter mt-0.5">
-                            ID::{caseItem.caseId.slice(0, 16)}
-                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(caseItem.caseId);
+                              toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                            }}
+                            className="text-[10px] text-white/20 hover:text-emerald-400 font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-black/40 hover:bg-black/80 px-1.5 py-0.5 rounded border border-dash-border/40 transition-colors w-fit"
+                            title="Copy Case ID"
+                          >
+                            <span>ID: {caseItem.caseId.slice(0, 8)}...</span>
+                            <Copy size={8} />
+                          </button>
                           {caseItem.tags && caseItem.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {caseItem.tags.map((tag) => (
@@ -380,6 +392,23 @@ export default function InvestigatorPage() {
                           <p className="text-[9px] text-white/20 font-medium uppercase tracking-tighter">
                             Incident: {formatDate(caseItem.incidentDate)}
                           </p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/verify/${caseItem.caseId}`}
+                            target="_blank"
+                            className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10"
+                          >
+                            Verify ↗
+                          </Link>
+                          <Link
+                            href={`/investigator/cases/${caseItem.caseId}`}
+                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors border border-dash-border bg-dash-hover px-4 py-1.5 rounded-lg"
+                          >
+                            Inspect →
+                          </Link>
                         </div>
                       </td>
                     </motion.tr>

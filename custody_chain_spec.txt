@@ -1,0 +1,93 @@
+================================================================================
+PROOFCHAIN: EVIDENCE CUSTODY CHAIN FEATURE SPECIFICATION
+================================================================================
+
+1. FOLDER & FILE STRUCTURE
+--------------------------
+Below is the directory tree of the files that constitute the "Case of Custody" 
+(Evidence Custody Tracking) feature:
+
+c:\MyProjects\proofchain\
+├── src\
+│   ├── app\
+│   │   ├── api\
+│   │   │   ├── cases\
+│   │   │   │   ├── [id]\
+│   │   │   │   │   ├── route.ts          # Populates current custodian/investigator
+│   │   │   │   │   ├── transfer\
+│   │   │   │   │   │   └── route.ts      # Log handler (with analyst anonymization)
+│   │   │   │   │   └── verdict\
+│   │   │   │   │       └── route.ts      # Retrieval and issuance endpoint
+│   │   │   │   └── route.ts              # Investigator list fetcher
+│   │   │   └── verify\
+│   │   │       └── [id]\
+│   │   │           └── route.ts          # Public verification endpoint (PII sanitized)
+│   │   ├── (dashboard)\
+│   │   │   ├── admin\
+│   │   │   │   └── cases\
+│   │   │   │       ├── [id]\
+│   │   │   │       │   └── page.tsx      # Admin Case view (with full CustodyTimeline)
+│   │   │   │       └── page.tsx          # Admin cases table (Verify links & click-to-copy)
+│   │   │   ├── analyst\
+│   │   │   │   ├── cases\
+│   │   │   │   │   └── [id]\
+│   │   │   │   │       └── page.tsx      # Analyst Case review (with anonymized timeline)
+│   │   │   │   └── page.tsx              # Analyst Queue table (Verify links & click-to-copy)
+│   │   │   └── investigator\
+│   │   │       ├── cases\
+│   │   │       │   └── [id]\
+│   │   │       │       └── page.tsx      # Investigator Case view (with CustodyTimeline)
+│   │   │       └── page.tsx              # Investigator list table (Verify links & click-to-copy)
+│   │   └── verify\
+│   │       ├── [caseId]\
+│   │       │   └── page.tsx              # Public Verify detail page (anonymized timeline)
+│   │       └── page.tsx                  # Public Verify lookup (Search/Session selection)
+│   └── components\
+│       ├── CustodyTimeline.tsx           # Scrolling bottom-to-top timeline component
+│       └── AppSidebar.tsx                # Sidebar nav items showing Public Verify link
+└── custody_chain_spec.txt                # This specification file
+
+
+2. FEATURE OVERVIEW & ARCHITECTURE
+----------------------------------
+The Evidence Custody Chain ensures that from the moment evidence is uploaded, 
+its cryptographic hand-offs are fully traceable, validated on-chain, and easily 
+audited without compromising identity regulations.
+
+- Custody Flow (Bottom-to-Top):
+  - Start (Bottom): Evidence is uploaded by the Investigator, hashed, and anchored to 
+    the Polygon Amoy blockchain.
+  - Middle: Case is transferred between team members. Each hand-off requires a 
+    reason, timestamps are generated, and a transfer hash is recorded on-chain.
+  - End (Top): A final verdict is issued by the Analyst, locking the case status.
+
+- Security & Anonymization (PRD REV-08):
+  - Admins can inspect real names of all handlers.
+  - Analysts see hand-off events with the Investigator's identity anonymized 
+    (replaced with "Investigator (Anonymized)").
+  - Guests on the public `/verify/[caseId]` page see zero names, seeing only roles 
+    ("Investigator" or "Analyst") mapping directly to the immutable blockchain logs.
+
+- Navigation Improvements:
+  - Copyable Case ID: Clicking the ID badge in any table copies the full UUID to the 
+    clipboard.
+  - Direct Verification: A "Verify ↗" link directly in each list row bypasses 
+    nested page clicking, taking users straight to the verify detail view.
+
+
+3. THE PLANNING: SESSION-LINKED QUICK VERIFY SELECTION
+------------------------------------------------------
+To avoid requiring users to copy-paste or search Case IDs when they are already logged 
+into the ProofChain console:
+
+- Client Session Verification:
+  - The public `/verify` lookup page will hook into `useAuth()` to check if a user is 
+    logged in.
+- Contextual Fetching:
+  - If a user is logged in, the page will query the list of cases associated with their 
+    role (Admin: `/api/admin/cases`, Analyst: `/api/cases/queue`, Investigator: `/api/cases`).
+- Dynamic Select UI:
+  - Render a drop-down selector "Quick Verify Your Cases" next to the search input.
+  - Selecting a case immediately redirects the browser to `/verify/[caseId]`.
+  - Public guests will still see the search box as a fallback.
+================================================================================

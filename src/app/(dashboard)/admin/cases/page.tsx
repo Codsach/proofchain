@@ -22,6 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import { Copy } from "lucide-react";
 
 interface CaseRow {
   caseId: string;
@@ -43,6 +45,7 @@ const INCIDENT_LABELS: Record<string, string> = {
 
 export default function AdminCasesPage() {
   const { getToken } = useAuth();
+  const { toast } = useToast();
   const [cases, setCases] = useState<CaseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -311,9 +314,18 @@ export default function AdminCasesPage() {
                           <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors truncate max-w-[200px]">
                             {c.title}
                           </p>
-                          <p className="text-[10px] text-dash-muted font-mono mt-0.5 tracking-tighter">
-                            OBJID::{c.caseId.slice(0, 12)}
-                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(c.caseId);
+                              toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                            }}
+                            className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-black/40 hover:bg-black/80 px-1.5 py-0.5 rounded border border-dash-border/40 transition-colors w-fit"
+                            title="Copy Case ID"
+                          >
+                            <span>ID: {c.caseId.slice(0, 8)}...</span>
+                            <Copy size={8} />
+                          </button>
                         </div>
                       </td>
                       <td className="px-6 py-4 hidden md:table-cell text-dash-muted text-xs">
@@ -331,13 +343,22 @@ export default function AdminCasesPage() {
                       <td className="px-6 py-4 text-dash-muted text-xs hidden sm:table-cell font-mono">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/admin/cases/${c.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 rounded-lg hover:border-emerald-500/40 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none"
-                        >
-                          Inspect →
-                        </Link>
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/verify/${c.caseId}`}
+                            target="_blank"
+                            className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-all border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10"
+                          >
+                            Verify ↗
+                          </Link>
+                          <Link
+                            href={`/admin/cases/${c.caseId}`}
+                            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-white/10 bg-white/5 px-4 py-1.5 rounded-lg hover:border-white/20 outline-none"
+                          >
+                            Inspect →
+                          </Link>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}

@@ -16,6 +16,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AnalystMetrics } from "@/components/analyst/AnalystMetrics";
+import { useToast } from "@/hooks/use-toast";
+import { Copy } from "lucide-react";
 
 interface QueueCase {
   caseId: string;
@@ -36,6 +38,7 @@ const INCIDENT_LABELS: Record<string, string> = {
 
 export default function AnalystPage() {
   const { user, getToken } = useAuth();
+  const { toast } = useToast();
   const [cases, setCases] = useState<QueueCase[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -200,9 +203,18 @@ export default function AnalystPage() {
                           <p className="font-medium text-white/90 group-hover:text-white transition-colors">
                             {c.title}
                           </p>
-                          <p className="text-[10px] text-white/40 font-mono tracking-tighter mt-0.5">
-                            ID::{c.caseId.slice(0, 16).toUpperCase()}
-                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(c.caseId);
+                              toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                            }}
+                            className="text-[10px] text-white/40 hover:text-emerald-400 font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-black/40 hover:bg-black/80 px-1.5 py-0.5 rounded border border-dash-border/40 transition-colors w-fit"
+                            title="Copy Case ID"
+                          >
+                            <span>ID: {c.caseId.slice(0, 8)}...</span>
+                            <Copy size={8} />
+                          </button>
                         </div>
                       </td>
                       <td className="px-6 py-4 hidden md:table-cell">
@@ -224,13 +236,22 @@ export default function AnalystPage() {
                       <td className="px-6 py-4 text-white/60 text-xs hidden sm:table-cell">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/analyst/cases/${c.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-white transition-colors border border-dash-border bg-dash-hover px-4 py-1.5 rounded-lg group-hover:border-dash-muted"
-                        >
-                          Review Target
-                        </Link>
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/verify/${c.caseId}`}
+                            target="_blank"
+                            className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10"
+                          >
+                            Verify ↗
+                          </Link>
+                          <Link
+                            href={`/analyst/cases/${c.caseId}`}
+                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors border border-dash-border bg-dash-hover px-4 py-1.5 rounded-lg"
+                          >
+                            Review Target
+                          </Link>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}

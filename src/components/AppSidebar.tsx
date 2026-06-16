@@ -27,7 +27,8 @@ import {
   ChevronLeft,
   Briefcase,
   User,
-  Settings
+  Settings,
+  Fingerprint
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MfaSetupModal } from "@/components/MfaSetupModal";
@@ -38,11 +39,13 @@ const navItems = {
   investigator: [
     { label: "My Cases", href: "/investigator", icon: Search },
     { label: "Submit Evidence", href: "/investigator/submit", icon: ShieldCheck },
+    { label: "Public Verify", href: "/verify", icon: Fingerprint },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ],
   analyst: [
     { label: "Case Queue", href: "/analyst", icon: Activity },
+    { label: "Public Verify", href: "/verify", icon: Fingerprint },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ],
@@ -51,6 +54,7 @@ const navItems = {
     { label: "Cases", href: "/admin/cases", icon: Briefcase },
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
+    { label: "Public Verify", href: "/verify", icon: Fingerprint },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ],
