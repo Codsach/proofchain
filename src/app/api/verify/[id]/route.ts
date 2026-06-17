@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Case from "@/lib/models/Case";
 import User from "@/lib/models/User";
-import { Transfer } from "@/lib/models/Verdict";
+import Verdict, { Transfer } from "@/lib/models/Verdict";
 import { getOnChainRecord, getOnChainTransferLog } from "@/lib/blockchain";
 import { logAction } from "@/lib/audit";
 import { fetchAndHashFromIPFS } from "@/lib/ipfs";
@@ -65,6 +65,11 @@ export async function GET(
       .populate("toUserId", "role")
       .lean();
 
+    // 1.2 Fetch verdict if it exists to get transaction hash
+    const verdictDoc = await Verdict.findOne({ caseId })
+      .select("onChainTxHash")
+      .lean();
+
     // 2. Fetch on-chain record
     const onChainRecord = await getOnChainRecord(caseId);
 
@@ -116,12 +121,14 @@ export async function GET(
       caseId,
       onChainHash: onChainRecord.fileHash,
       onChainTimestamp: new Date(onChainRecord.submittedAt * 1000).toISOString(),
+      onChainTxHash: caseDoc.onChainTxHash || null,
       ipfsCid: onChainRecord.ipfsCid,
       currentFileHash,
       hashMatch,
       fileAvailable: currentFileHash !== null,
       verdictIssued: onChainRecord.verdictIssued,
       verdictHash: onChainRecord.verdictIssued ? onChainRecord.verdictHash : null,
+      verdictTxHash: verdictDoc?.onChainTxHash || null,
       verdictAt: onChainRecord.verdictIssued
         ? new Date(onChainRecord.verdictAt * 1000).toISOString()
         : null,
@@ -135,6 +142,7 @@ export async function GET(
           transferredAt: new Date(t.transferredAt * 1000).toISOString(),
           fromRole: (dbT?.fromUserId as any)?.role || "analyst",
           toRole: (dbT?.toUserId as any)?.role || "analyst",
+          txHash: dbT?.onChainTxHash || null,
         };
       }),
     });

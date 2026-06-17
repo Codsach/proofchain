@@ -1,5 +1,6 @@
-import { TamperScoreBadge } from "./TamperScoreBadge";
 import { motion } from "framer-motion";
+import { TamperGauge } from "./TamperGauge";
+import { ScoreBreakdownChart } from "./ScoreBreakdownChart";
 
 interface ExifData {
   software: string | null;
@@ -26,6 +27,17 @@ interface AiReport {
   analysedAt: string;
   status: string;
 }
+
+export const SIGNAL_LABELS: Record<string, string> = {
+  editing_software: "Editing Software Detected",
+  modification_after_creation: "Modified After Creation",
+  gps_absent: "GPS Absent (Field Incident)",
+  gps_absent_on_field_incident: "GPS Absent (Field Incident)",
+  no_creation_timestamp: "No Creation Timestamp",
+  gemini_high: "AI Visual Analysis: High Risk",
+  gemini_medium: "AI Visual Analysis: Medium Risk",
+  pdf_no_text_layer: "PDF: No Text Layer (Scanned)",
+};
 
 interface Props {
   report: AiReport | null;
@@ -69,14 +81,11 @@ export function AiReportPanel({ report, isLoading }: Props) {
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 relative">
-        <div>
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-2">Integrity Index</p>
-          <div className="scale-110 origin-left">
-            <TamperScoreBadge score={report.tamperScore} showLabel />
-          </div>
+      <div className="flex items-center justify-between gap-4 relative">
+        <div className="-ml-3">
+          <TamperGauge score={report.tamperScore} />
         </div>
-        <div className="text-right">
+        <div className="text-right self-start pt-2">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Temporal Scan</p>
           <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
             {new Date(report.analysedAt).toLocaleString(undefined, {
@@ -98,6 +107,16 @@ export function AiReportPanel({ report, isLoading }: Props) {
           {report.plainNotesSummary}
         </p>
       </motion.div>
+
+      {/* Score Breakdown Chart */}
+      {report.scoreBreakdown && Object.keys(report.scoreBreakdown).length > 0 && (
+        <div className="space-y-3 pt-2">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+            Forensic Risk Breakdown
+          </p>
+          <ScoreBreakdownChart scoreBreakdown={report.scoreBreakdown} />
+        </div>
+      )}
 
       {/* EXIF flags */}
       {report.exifData.flags && report.exifData.flags.length > 0 && (

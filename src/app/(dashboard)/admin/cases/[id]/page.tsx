@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthContext";
 import { AiReportPanel } from "@/components/AiReportPanel";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
+import { VerifyHashButton } from "@/components/VerifyHashButton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
@@ -263,17 +264,29 @@ export default function AdminCaseDetailPage() {
 
   return (
     <div className="space-y-8 pb-10">
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
-          <span className="text-lg">←</span> Forensic Archives
-        </Link>
-        <div className="flex flex-wrap items-center gap-4 mt-4">
-          <h1 className="text-3xl font-bold text-dash-text tracking-tight">{caseData.title}</h1>
-          <CaseStatusBadge status={caseData.status} />
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div>
+          <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
+            <span className="text-lg">←</span> Forensic Archives
+          </Link>
+          <div className="flex flex-wrap items-center gap-4 mt-4">
+            <h1 className="text-3xl font-bold text-dash-text tracking-tight">{caseData.title}</h1>
+            <CaseStatusBadge status={caseData.status} />
+          </div>
+          <p className="text-[10px] text-dash-muted font-mono mt-2 tracking-widest">
+            ACCESS_TOKEN::{caseData.caseId}
+          </p>
         </div>
-        <p className="text-[10px] text-dash-muted font-mono mt-2 tracking-widest">
-          ACCESS_TOKEN::{caseData.caseId}
-        </p>
+
+        <div className="flex gap-4">
+          <AnimatePresence>
+            {caseData.onChainTxHash && (
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                <VerifyHashButton caseId={caseData.caseId} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

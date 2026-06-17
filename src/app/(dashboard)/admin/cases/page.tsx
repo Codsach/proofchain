@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { Copy } from "lucide-react";
+import { Copy, Check } from "lucide-react";
 
 interface CaseRow {
   caseId: string;
@@ -61,6 +61,7 @@ export default function AdminCasesPage() {
   const [analysts, setAnalysts] = useState<Array<{ _id: string; fullName: string }>>([]);
   const [selectedAnalystId, setSelectedAnalystId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Load analysts
   useEffect(() => {
@@ -319,12 +320,18 @@ export default function AdminCasesPage() {
                               e.stopPropagation();
                               navigator.clipboard.writeText(c.caseId);
                               toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                              setCopiedId(c.caseId);
+                              setTimeout(() => setCopiedId(null), 1500);
                             }}
-                            className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-black/40 hover:bg-black/80 px-1.5 py-0.5 rounded border border-dash-border/40 transition-colors w-fit"
-                            title="Copy Case ID"
+                            className={`text-[10px] font-mono mt-0.5 tracking-tighter flex items-center gap-1 px-1.5 py-0.5 rounded border transition-colors w-fit ${
+                              copiedId === c.caseId
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                                : "text-dash-muted hover:text-dash-accent bg-black/40 hover:bg-black/80 border-dash-border/40"
+                            }`}
+                            title={`Copy full Case ID: ${c.caseId}`}
                           >
-                            <span>ID: {c.caseId.slice(0, 8)}...</span>
-                            <Copy size={8} />
+                            <span>ID: {copiedId === c.caseId ? "Copied ✓" : `${c.caseId.slice(0, 8)}...`}</span>
+                            {copiedId === c.caseId ? <Check size={8} /> : <Copy size={8} />}
                           </button>
                         </div>
                       </td>
