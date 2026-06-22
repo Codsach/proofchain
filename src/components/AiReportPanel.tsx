@@ -37,6 +37,14 @@ export const SIGNAL_LABELS: Record<string, string> = {
   gemini_high: "AI Visual Analysis: High Risk",
   gemini_medium: "AI Visual Analysis: Medium Risk",
   pdf_no_text_layer: "PDF: No Text Layer (Scanned)",
+  thumbnail_dimension_mismatch: "Thumbnail Dimension Mismatch",
+  gps_precision_anomaly: "GPS Precision Anomaly",
+  future_timestamp: "Future Creation Timestamp",
+  software_field_contradiction: "Software Field Contradiction",
+  screenshot_tool_detected: "Screenshot Tool Detected",
+  instant_modification: "Instant Modification",
+  device_make_contradiction: "Device Make Contradiction",
+  uncalibrated_color_space: "Uncalibrated Color Space",
 };
 
 interface Props {
@@ -73,6 +81,14 @@ export function AiReportPanel({ report, isLoading }: Props) {
     modification_after_creation: "Modified after creation",
     gps_absent_on_field_incident: "GPS absent",
     no_creation_timestamp: "No creation timestamp",
+    thumbnail_dimension_mismatch: "Thumbnail dimensions mismatch",
+    gps_precision_anomaly: "GPS precision anomaly",
+    future_timestamp: "Future creation timestamp",
+    software_field_contradiction: "Software field contradiction",
+    screenshot_tool_detected: "Screenshot tool detected",
+    instant_modification: "Instant modification after creation",
+    device_make_contradiction: "Device make contradiction",
+    uncalibrated_color_space: "Uncalibrated color space",
   };
 
   return (

@@ -29,6 +29,14 @@ const SIGNAL_LABELS: Record<string, string> = {
   gemini_high: "AI Visual Analysis: High Risk",
   gemini_medium: "AI Visual Analysis: Medium Risk",
   pdf_no_text_layer: "PDF: No Text Layer (Scanned)",
+  thumbnail_dimension_mismatch: "Thumbnail Dimension Mismatch",
+  gps_precision_anomaly: "GPS Precision Anomaly",
+  future_timestamp: "Future Creation Timestamp",
+  software_field_contradiction: "Software Field Contradiction",
+  screenshot_tool_detected: "Screenshot Tool Detected",
+  instant_modification: "Instant Modification",
+  device_make_contradiction: "Device Make Contradiction",
+  uncalibrated_color_space: "Uncalibrated Color Space",
 };
 
 const CustomTooltip = ({ active, payload }: any) => {

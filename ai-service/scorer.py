@@ -10,6 +10,18 @@ from exif import ExifResult
 from gemini import GeminiResult
 
 
+FLAG_SCORES_NEW = {
+    "thumbnail_dimension_mismatch": 15,
+    "gps_precision_anomaly": 10,
+    "future_timestamp": 25,
+    "software_field_contradiction": 20,
+    "screenshot_tool_detected": 15,
+    "instant_modification": 10,
+    "device_make_contradiction": 15,
+    "uncalibrated_color_space": 10,
+}
+
+
 @dataclass
 class ScoreResult:
     score: int
@@ -73,6 +85,39 @@ def compute_score(
             "points": 10,
             "detail": "No creation timestamp found — metadata may have been stripped",
         }
+
+    # ── New EXIF signals ──────────────────────────────────────────────────────
+    for flag_name, points in FLAG_SCORES_NEW.items():
+        matching_flag = next(
+            (f for f in exif_flags if f.startswith(flag_name)), None
+        )
+        if matching_flag:
+            score += points
+            detail = matching_flag.split(":", 1)[-1] if ":" in matching_flag else ""
+            
+            if flag_name == "thumbnail_dimension_mismatch":
+                msg = f"Embedded thumbnail dimensions don't match main image: {detail}"
+            elif flag_name == "gps_precision_anomaly":
+                msg = f"GPS coordinate has suspicious precision (>6 decimals): {detail}"
+            elif flag_name == "future_timestamp":
+                msg = f"Creation timestamp is in the future: {detail}"
+            elif flag_name == "software_field_contradiction":
+                msg = f"Software field contradiction detected: {detail}"
+            elif flag_name == "screenshot_tool_detected":
+                msg = f"Screenshot tool signature detected: {detail}"
+            elif flag_name == "instant_modification":
+                msg = f"File modified within 5 seconds of creation: {detail}"
+            elif flag_name == "device_make_contradiction":
+                msg = f"Device make contradiction detected: {detail}"
+            elif flag_name == "uncalibrated_color_space":
+                msg = "Uncalibrated color space without ICC profile (synthetic image signature)"
+            else:
+                msg = f"Forensic flag triggered: {flag_name} {detail}".strip()
+
+            breakdown[flag_name] = {
+                "points": points,
+                "detail": msg,
+            }
 
     # ── Gemini signals ────────────────────────────────────────────────────────
     if gemini.manipulation_likelihood == "high":
