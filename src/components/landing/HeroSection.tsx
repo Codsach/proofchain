@@ -150,14 +150,42 @@ export default function HeroSection() {
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to right, #030307 0%, transparent 100%)",
+            background: "linear-gradient(to right, #030307 0%, rgba(3, 3, 7, 0.8) 20%, transparent 50%, rgba(3, 3, 7, 0.8) 80%, #030307 100%)",
           }}
         />
         <div
           style={{
             position: "absolute",
             inset: 0,
-            background: "linear-gradient(to top, #030307 0%, transparent 50%)",
+            background: "linear-gradient(to top, #030307 0%, transparent 70%)",
+          }}
+        />
+
+        {/* Far-left ambient glow */}
+        <div
+          style={{
+            position: "absolute",
+            top: "20%",
+            left: "-10%",
+            width: "500px",
+            height: "500px",
+            background: "radial-gradient(circle, rgba(0, 245, 155, 0.05) 0%, transparent 70%)",
+            filter: "blur(80px)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Far-right ambient glow */}
+        <div
+          style={{
+            position: "absolute",
+            top: "30%",
+            right: "-10%",
+            width: "500px",
+            height: "500px",
+            background: "radial-gradient(circle, rgba(5, 150, 105, 0.06) 0%, transparent 70%)",
+            filter: "blur(80px)",
+            pointerEvents: "none",
           }}
         />
 
@@ -204,7 +232,7 @@ export default function HeroSection() {
           willChange: "transform, opacity",
           transformOrigin: "center top",
         }}
-        className="relative w-full max-w-[1160px] mx-auto px-4 sm:px-6 md:px-8"
+        className="relative w-full max-w-[1300px] mx-auto px-4 sm:px-6 md:px-8 lg:px-12"
       >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
 

@@ -19,7 +19,6 @@ const features = [
     label: "01",
     title: "IPFS + Blockchain Anchoring",
     body: "Every submitted file is stored on IPFS and given a content-addressed CID. Its SHA-256 hash, CID, and Unix timestamp are anchored to the Polygon Amoy blockchain within 60 seconds.",
-    tag: "SUB-03 · SUB-04",
     colSpan: "md:col-span-2",
     rowSpan: "md:row-span-1",
     Icon: Database,
@@ -28,7 +27,6 @@ const features = [
     label: "02",
     title: "AI Tamper Analysis",
     body: "An automated pipeline runs on every submission: ExifTool extracts metadata. Gemini Vision API scans for lighting inconsistencies, cloning artifacts, and splicing boundaries.",
-    tag: "AI-02 · AI-04",
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-2",
     Icon: Bot,
@@ -37,7 +35,6 @@ const features = [
     label: "03",
     title: "Chain-of-Custody",
     body: "Every handoff of evidence between investigators and analysts is cryptographically signed.",
-    tag: "TRF-01 · TRF-04",
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: History,
@@ -46,7 +43,6 @@ const features = [
     label: "04",
     title: "On-Chain Verdict",
     body: "Analysts issue a signed verdict with a mandatory written reason. The verdict hash is recorded in the smart contract.",
-    tag: "REV-03 · REV-04",
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: Gavel,
@@ -55,8 +51,7 @@ const features = [
     label: "05",
     title: "Public QR Verification",
     body: "Every submission has a public verification URL requiring no login. Anyone can verify the on-chain hash, submission timestamp, transfer count, and verdict status.",
-    tag: "VER-01 · VER-02",
-    colSpan: "md:col-span-2",
+    colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: QrCode,
   },
@@ -64,8 +59,7 @@ const features = [
     label: "06",
     title: "Mobile PWA",
     body: "Investigators submit evidence directly from the field using the installed PWA. The app accesses the device camera and queues submissions offline.",
-    tag: "MOB-02 · MOB-03",
-    colSpan: "md:col-span-3", // Full width on mobile/tablet, stretches on desktop
+    colSpan: "md:col-span-2", // Fills the remaining 2 columns in Row 3
     rowSpan: "md:row-span-1",
     Icon: Smartphone,
   },
@@ -196,9 +190,6 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
         <p className="font-sans text-slate-300/80 text-sm md:text-base leading-relaxed flex-1">
           {feature.body}
         </p>
-        <span className="font-mono text-xs text-[var(--lp-accent)]/40 tracking-wider mt-4">
-          {feature.tag}
-        </span>
       </div>
     </motion.div>
   );
