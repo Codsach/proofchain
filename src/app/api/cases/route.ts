@@ -141,7 +141,9 @@ async function createCase(
       status: "pending_ai_review",
       files: fileRecords,
       tags: parsed.data.tags || [],
-      aiReportId: null,
+      aiReportIds: [],
+      overallTamperScore: null,
+      overallRiskLevel: null,
       onChainTxHash: null,
     });
 

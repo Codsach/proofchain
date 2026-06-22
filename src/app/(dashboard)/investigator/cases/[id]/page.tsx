@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { Share2 } from "lucide-react";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
+import { CommentsPanel } from "@/components/CommentsPanel";
 
 interface FileRecord {
   fileId: string;
@@ -361,6 +362,8 @@ export default function InvestigatorCaseDetailPage() {
       {!isLoadingTransfers && !isLoadingVerdict && (
         <CustodyTimeline nodes={timelineNodes} />
       )}
+
+      <CommentsPanel caseId={caseId} />
 
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}

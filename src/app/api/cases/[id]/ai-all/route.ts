@@ -4,7 +4,7 @@ import Case from "@/lib/models/Case";
 import AiReport from "@/lib/models/AiReport";
 import { withAuth, JWTPayload } from "@/lib/auth";
 
-async function getAiReport(
+async function getAiReports(
   _req: NextRequest,
   ctx: { params: Promise<{ id: string }> },
   user: JWTPayload
@@ -20,26 +20,12 @@ async function getAiReport(
       return NextResponse.json({ error: "Case not found" }, { status: 404 });
     }
 
-    if (!caseDoc.aiReportIds || caseDoc.aiReportIds.length === 0) {
-      return NextResponse.json(
-        { message: "AI analysis is still running", status: caseDoc.status },
-        { status: 202 }
-      );
-    }
-
-    const report = await AiReport.findById(caseDoc.aiReportIds[0]).lean();
-    if (!report) {
-      return NextResponse.json(
-        { error: "AI report not found" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(report);
+    const reports = await AiReport.find({ caseId }).lean();
+    return NextResponse.json(reports);
   } catch (err) {
-    console.error("[ai/get]", err);
+    console.error("[ai-all/get]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
 
-export const GET = withAuth(getAiReport, ["analyst", "admin"]);
+export const GET = withAuth(getAiReports, ["analyst", "admin"]);
