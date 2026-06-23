@@ -15,6 +15,8 @@ export interface IUser extends Document {
   lockUntil: Date | null;
   emailVerifyToken: string | null;
   emailVerifyExpires: Date | null;
+  passwordResetToken: string | null;
+  passwordResetExpires: Date | null;
   mfaEnabled: boolean;
   mfaSecret: string | null;
   trustedDevices: {
@@ -46,6 +48,8 @@ const UserSchema = new Schema<IUser>(
     lockUntil: { type: Date, default: null },
     emailVerifyToken: { type: String, default: null },
     emailVerifyExpires: { type: Date, default: null },
+    passwordResetToken: { type: String, default: null },
+    passwordResetExpires: { type: Date, default: null },
     mfaEnabled: { type: Boolean, default: false },
     mfaSecret: { type: String, default: null, select: false },
     trustedDevices: [

@@ -7,6 +7,8 @@ export type AuditActionType =
   | "user.deactivate"
   | "user.delete"
   | "user.enable_mfa"
+  | "user.reset_password_request"
+  | "user.reset_password_success"
   | "case.create"
   | "case.view"
   | "case.archive"
