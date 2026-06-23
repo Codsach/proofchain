@@ -34,6 +34,15 @@ def compute_score(
     exif: ExifResult,
     gemini: GeminiResult,
     is_pdf_no_text_layer: bool = False,
+    mime_mismatch: bool = False,
+    office_macros_detected: bool = False,
+    office_macros_malicious: bool = False,
+    video_reencoded: bool = False,
+    av_timestamp_mismatch: bool = False,
+    av_duration_mismatch: bool = False,
+    ai_gen_detected: bool = False,
+    pdf_javascript_detected: bool = False,
+    pdf_hidden_layers_detected: bool = False,
 ) -> ScoreResult:
     """
     Compute a composite tamper score from all analysis signals.
@@ -42,6 +51,9 @@ def compute_score(
         exif: Result from exif.extract_exif()
         gemini: Result from gemini.analyse_image()
         is_pdf_no_text_layer: True if PDF has no extractable text layer
+        mime_mismatch: True if detected MIME type differs from declared MIME type
+        office_macros_detected: True if VBA macros are detected in the Office document
+        office_macros_malicious: True if the macros have malicious heuristics
 
     Returns:
         ScoreResult with 0-100 score, risk level, and breakdown
@@ -142,6 +154,74 @@ def compute_score(
         breakdown["pdf_no_text_layer"] = {
             "points": 25,
             "detail": "PDF contains no extractable text layer — may be a manipulated image saved as PDF",
+        }
+
+    # ── MIME check signal ─────────────────────────────────────────────────────
+    if mime_mismatch:
+        score += 25
+        breakdown["mime_mismatch"] = {
+            "points": 25,
+            "detail": "True MIME type signature does not match declared file extension",
+        }
+
+    # ── Office Macros signal ──────────────────────────────────────────────────
+    if office_macros_detected:
+        points = 30
+        status = "suspicious"
+        if office_macros_malicious:
+            status = "malicious"
+        score += points
+        breakdown["office_macros_detected"] = {
+            "points": points,
+            "detail": f"Office document contains {status} VBA macro code or OLE triggers",
+        }
+
+    # ── Video re-encoded signal ───────────────────────────────────────────────
+    if video_reencoded:
+        score += 20
+        breakdown["video_reencoded"] = {
+            "points": 20,
+            "detail": "Video contains metadata signatures of re-encoding or editing tools",
+        }
+
+    # ── Audio/Video stream timestamp mismatch ─────────────────────────────────
+    if av_timestamp_mismatch:
+        score += 20
+        breakdown["av_timestamp_mismatch"] = {
+            "points": 20,
+            "detail": "Audio and Video stream creation dates do not match (potential stream injection/tampering)",
+        }
+
+    # ── Audio/Video track duration mismatch ───────────────────────────────────
+    if av_duration_mismatch:
+        score += 20
+        breakdown["av_duration_mismatch"] = {
+            "points": 20,
+            "detail": "Audio and Video track durations differ significantly (tampering or splicing indicator)",
+        }
+
+    # ── AI-Generated Image signal ─────────────────────────────────────────────
+    if ai_gen_detected:
+        score += 25
+        breakdown["ai_generated_image"] = {
+            "points": 25,
+            "detail": "Local open-source Vision Transformer classified this image as AI-Generated",
+        }
+
+    # ── PDF JavaScript signal ─────────────────────────────────────────────────
+    if pdf_javascript_detected:
+        score += 20
+        breakdown["pdf_javascript_detected"] = {
+            "points": 20,
+            "detail": "PDF contains embedded JavaScript code blocks (dynamic content execution risk)",
+        }
+
+    # ── PDF Hidden Layers signal ──────────────────────────────────────────────
+    if pdf_hidden_layers_detected:
+        score += 10
+        breakdown["pdf_hidden_layers_detected"] = {
+            "points": 10,
+            "detail": "PDF contains hidden optional content groups/layers",
         }
 
     # Cap at 100

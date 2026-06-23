@@ -45,6 +45,14 @@ export const SIGNAL_LABELS: Record<string, string> = {
   instant_modification: "Instant Modification",
   device_make_contradiction: "Device Make Contradiction",
   uncalibrated_color_space: "Uncalibrated Color Space",
+  mime_mismatch: "MIME Type Spoofing Detected",
+  office_macros_detected: "Office Document Macro Detected",
+  video_reencoded: "Re-encoded Video Detection",
+  av_timestamp_mismatch: "A/V Stream Timestamp Mismatch",
+  av_duration_mismatch: "A/V Stream Duration Mismatch",
+  ai_generated_image: "AI-Generated Image Analysis",
+  pdf_javascript_detected: "PDF Embedded JavaScript Risk",
+  pdf_hidden_layers_detected: "PDF Hidden Layers Detected",
 };
 
 interface Props {
@@ -89,6 +97,14 @@ export function AiReportPanel({ report, isLoading }: Props) {
     instant_modification: "Instant modification after creation",
     device_make_contradiction: "Device make contradiction",
     uncalibrated_color_space: "Uncalibrated color space",
+    mime_mismatch_detected: "MIME type signature spoofed",
+    office_macros_detected: "VBA Macro or OLE trigger detected",
+    video_reencoded_detected: "Video re-encoded multiple times / modified",
+    av_timestamp_mismatch_detected: "Audio/Video streams have timestamp mismatch",
+    av_duration_mismatch_detected: "Audio/Video stream durations differ significantly",
+    ai_generated_image_detected: "Image is likely AI-Generated (ViT Heuristics)",
+    pdf_javascript_detected: "Embedded PDF JavaScript elements detected",
+    pdf_hidden_layers_detected: "PDF Optional Content Groups (hidden layers) detected",
   };
 
   return (
