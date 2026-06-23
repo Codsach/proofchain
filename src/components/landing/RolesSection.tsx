@@ -29,10 +29,10 @@ const roles = [
     ],
     note: "Self-registration with email verification",
     accent: "#00f59b",
-    accentDim: "rgba(194, 163, 50, 0.08)",
-    accentHover: "rgba(194, 163, 50, 0.02)",
-    borderHover: "rgba(194, 163, 50, 0.35)",
-    shadowHover: "rgba(194, 163, 50, 0.15)",
+    accentDim: "rgba(0,245,155,0.08)",
+    accentHover: "rgba(0,245,155,0.025)",
+    borderHover: "rgba(0,245,155,0.3)",
+    shadowHover: "rgba(0,245,155,0.18)",
     Icon: ShieldAlert,
   },
   {
@@ -48,11 +48,11 @@ const roles = [
       "Transfer evidence custody",
     ],
     note: "Account created by Admin only",
-    accent: "#059669",
-    accentDim: "rgba(161, 133, 37, 0.08)",
-    accentHover: "rgba(161, 133, 37, 0.02)",
-    borderHover: "rgba(161, 133, 37, 0.35)",
-    shadowHover: "rgba(161, 133, 37, 0.15)",
+    accent: "#10b981",
+    accentDim: "rgba(16,185,129,0.08)",
+    accentHover: "rgba(16,185,129,0.025)",
+    borderHover: "rgba(16,185,129,0.3)",
+    shadowHover: "rgba(16,185,129,0.18)",
     Icon: FileSearch,
   },
   {
@@ -69,10 +69,10 @@ const roles = [
     ],
     note: "Seeded at deployment · No self-registration",
     accent: "#e2e2e2",
-    accentDim: "rgba(15, 23, 42, 0.06)",
-    accentHover: "rgba(15, 23, 42, 0.015)",
-    borderHover: "rgba(15, 23, 42, 0.3)",
-    shadowHover: "rgba(15, 23, 42, 0.08)",
+    accentDim: "rgba(226,226,226,0.06)",
+    accentHover: "rgba(226,226,226,0.02)",
+    borderHover: "rgba(226,226,226,0.22)",
+    shadowHover: "rgba(226,226,226,0.1)",
     Icon: Settings,
   },
 ];
@@ -85,42 +85,42 @@ export default function RolesSection() {
     offset: ["start end", "end start"],
   });
 
-  // Layer 1 — background glow (slowest)
-  const bgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
-
-  // Layer 2 — header (medium)
+  const bgY     = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const headerY = useTransform(scrollYProgress, [0, 1], ["-5%", "5%"]);
-
-  // Layer 3 — cards grid (fastest)
-  const cardsY = useTransform(scrollYProgress, [0, 1], ["-2%", "2%"]);
+  const cardsY  = useTransform(scrollYProgress, [0, 1], ["-2%", "2%"]);
 
   return (
     <div
       ref={sectionRef}
       id="roles"
-      className="bg-[#0B120D]"
       style={{
+        background: "transparent",
         padding: "120px 24px",
         position: "relative",
         overflow: "hidden",
-        backgroundImage: `
-          radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 60%),
-          radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-        `,
-        backgroundSize: "100% 100%, 32px 32px"
       }}
     >
-      {/* Layer 1 — decorative background glow (slowest) */}
+      {/* Subtle dot grid */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
+          pointerEvents: "none",
+          maskImage: "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%)",
+        }}
+      />
+
+      {/* Emerald ambient glow — top left */}
       <motion.div
-        aria-hidden={true}
+        aria-hidden
         style={{
           position: "absolute",
-          top: "15%",
-          left: "-5%",
-          width: 500,
-          height: 500,
-          background:
-            "radial-gradient(ellipse at center, rgba(161, 133, 37, 0.03) 0%, rgba(194, 163, 50, 0.01) 50%, transparent 70%)",
+          top: "10%", left: "-5%",
+          width: 500, height: 500,
+          background: "radial-gradient(ellipse at center, rgba(0,245,155,0.05) 0%, rgba(5,150,105,0.02) 50%, transparent 70%)",
+          filter: "blur(80px)",
           pointerEvents: "none",
           zIndex: 0,
           y: bgY,
@@ -128,15 +128,24 @@ export default function RolesSection() {
         }}
       />
 
-      <div style={{ maxWidth: 1120, margin: "0 auto", position: "relative", zIndex: 1 }}>
-        {/* Layer 2 — Header (medium parallax) */}
+      {/* Amber glow — bottom right */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          bottom: "5%", right: "0%",
+          width: 400, height: 400,
+          background: "radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 70%)",
+          filter: "blur(80px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
+      <div style={{ maxWidth: 1200, margin: "0 auto", position: "relative", zIndex: 1 }}>
+        {/* Header */}
         <motion.div
-          style={{
-            marginBottom: 64,
-            y: headerY,
-            willChange: "transform",
-            position: "relative",
-          }}
+          style={{ marginBottom: 64, y: headerY, willChange: "transform", position: "relative" }}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
@@ -145,29 +154,33 @@ export default function RolesSection() {
             Access Model
           </motion.p>
           <motion.h2 variants={revealVariant} custom={1} className="lp-section-h2" style={{ color: "#fff", maxWidth: 440 }}>
-            Three roles. Clear boundaries.
+            Three roles.{" "}
+            <span
+              style={{
+                backgroundImage: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Clear boundaries.
+            </span>
           </motion.h2>
           <motion.p
             variants={revealVariant}
             custom={2}
-            style={{
-              marginTop: 16,
-              fontSize: 15,
-              color: "rgba(255, 255, 255, 0.6)",
-              lineHeight: 1.7,
-              maxWidth: 480,
-            }}
+            style={{ marginTop: 16, fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, maxWidth: 480 }}
           >
-            Every action is scoped to role. No role can delete records. Investigator
-            identity is hidden from analysts to prevent bias.
+            Every action is scoped to role. No role can delete records.
+            Investigator identity is hidden from analysts to prevent bias.
           </motion.p>
         </motion.div>
 
-        {/* Layer 3 — Role cards (fastest inner layer) */}
+        {/* Role cards */}
         <motion.div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
             gap: 20,
             y: cardsY,
             willChange: "transform",
@@ -183,52 +196,56 @@ export default function RolesSection() {
               variants={revealVariant}
               custom={i}
               className="lp-role-card"
-              style={{
-                willChange: "transform, opacity",
-                borderRadius: "24px"
-              }}
+              style={{ willChange: "transform, opacity", borderRadius: 24 }}
               whileHover={{
                 y: -6,
                 scale: 1.015,
                 borderColor: role.borderHover,
-                boxShadow: `0 24px 48px -12px ${role.shadowHover}, inset 0 1px 1px ${role.accentDim}`,
-                background: `linear-gradient(180deg, ${role.accentHover} 0%, rgba(3,3,7,0) 100%)`,
-                transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const }
+                boxShadow: `0 24px 56px -12px ${role.shadowHover}, inset 0 1px 0 ${role.accentDim}`,
+                background: `linear-gradient(180deg, ${role.accentHover} 0%, rgba(0,0,0,0) 100%)`,
+                transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
               }}
             >
-              {/* Dynamic decorative top light */}
+              {/* Top accent line */}
               <div
                 style={{
-                  position: "absolute",
-                  top: 0,
-                  left: "10%",
-                  right: "10%",
-                  height: "1px",
-                  background: `linear-gradient(90deg, transparent, ${role.accent}, transparent)`,
-                  opacity: 0.3
+                  position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
+                  background: `linear-gradient(90deg, transparent, ${role.accent}60, transparent)`,
+                  opacity: 0.6,
                 }}
               />
 
               {/* Role header */}
               <div style={{ marginBottom: 20 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                  <role.Icon size={18} color={role.accent} />
-                  <span style={{ fontSize: 17, fontWeight: 700, color: "#fff" }}>{role.name}</span>
-                  <span style={{ fontSize: 12, color: role.accent, fontWeight: 500, opacity: 0.7 }}>
-                    · {role.subtitle}
-                  </span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                  <div
+                    style={{
+                      width: 34, height: 34, borderRadius: 9,
+                      background: `${role.accentDim}`,
+                      border: `1px solid ${role.accent}25`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    <role.Icon size={17} color={role.accent} />
+                  </div>
+                  <div>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{role.name}</span>
+                    <span style={{ fontSize: 11, color: role.accent, fontWeight: 500, opacity: 0.7, marginLeft: 6 }}>
+                      · {role.subtitle}
+                    </span>
+                  </div>
                 </div>
-                <p style={{ fontSize: 13.5, color: "rgba(255, 255, 255, 0.6)", lineHeight: 1.65 }}>
+                <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.68)", lineHeight: 1.7 }}>
                   {role.description}
                 </p>
               </div>
 
-              <div className="lp-divider" style={{ margin: "20px 0", background: "rgba(255, 255, 255, 0.1)" }} />
+              <div className="lp-divider" style={{ margin: "18px 0", background: "rgba(255,255,255,0.07)" }} />
 
-              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 9 }}>
                 {role.permissions.map((p) => (
-                  <li key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(255, 255, 255, 0.6)", lineHeight: 1.5 }}>
-                    <Check size={14} color={role.accent} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 2, opacity: 0.8 }} />
+                  <li key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.70)", lineHeight: 1.5 }}>
+                    <Check size={13} color={role.accent} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 2, opacity: 0.85 }} />
                     {p}
                   </li>
                 ))}
@@ -236,13 +253,11 @@ export default function RolesSection() {
 
               <div
                 style={{
-                  marginTop: 24,
-                  paddingTop: 16,
-                  borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-                  fontSize: 11,
-                  color: "rgba(255, 255, 255, 0.4)",
-                  letterSpacing: "0.06em",
-                  textTransform: "uppercase",
+                  marginTop: 22, paddingTop: 14,
+                  borderTop: "1px solid rgba(255,255,255,0.07)",
+                  fontSize: 10, color: "rgba(255,255,255,0.48)",
+                  letterSpacing: "0.07em", textTransform: "uppercase",
+                  fontFamily: "monospace",
                 }}
               >
                 {role.note}

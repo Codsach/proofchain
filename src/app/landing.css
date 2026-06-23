@@ -1,35 +1,36 @@
-/* ─── ProofChain Landing — Aero-Cyber-Obsidian & Electric Cyan-Violet Redesign ─── */
+/* ─── ProofChain Landing — Emerald × Amber on OLED Black ─── */
 
 :root {
-  --lp-bg: #030307;
-  --lp-surface: rgba(255, 255, 255, 0.02);
-  --lp-border: rgba(255, 255, 255, 0.06);
-  --lp-border-subtle: rgba(255, 255, 255, 0.03);
+  --lp-bg: #07080c;
+  --lp-surface: rgba(255, 255, 255, 0.05);      /* was 0.02 — more visible card bg */
+  --lp-border: rgba(255, 255, 255, 0.10);        /* was 0.06 — more visible borders */
+  --lp-border-subtle: rgba(255, 255, 255, 0.06); /* was 0.03 */
   --lp-white: #ffffff;
-  --lp-gray-1: rgba(255, 255, 255, 0.85);
-  --lp-gray-2: rgba(255, 255, 255, 0.55);
-  --lp-gray-3: rgba(255, 255, 255, 0.3);
-  --lp-gray-4: rgba(255, 255, 255, 0.1);
-  --lp-accent: #e2e2e2;
+  --lp-gray-1: rgba(255, 255, 255, 0.92);        /* headings — near full white */
+  --lp-gray-2: rgba(255, 255, 255, 0.72);        /* was 0.55 — body text readable */
+  --lp-gray-3: rgba(255, 255, 255, 0.48);        /* was 0.30 — muted but visible */
+  --lp-gray-4: rgba(255, 255, 255, 0.14);        /* was 0.10 */
+  --lp-accent: #00f59b;
+  --lp-accent-warm: #f59e0b;
   --lp-primary-neon: #00f59b;
-  --lp-primary-neon-dim: rgba(0, 245, 155, 0.12);
+  --lp-primary-neon-dim: rgba(0, 245, 155, 0.14);
   --lp-secondary-neon: #059669;
-  --lp-secondary-neon-dim: rgba(5, 150, 105, 0.12);
+  --lp-secondary-neon-dim: rgba(5, 150, 105, 0.14);
   --lp-accent-gradient: linear-gradient(135deg, #00f59b 0%, #059669 100%);
 }
 
-.lp-root { 
-  background: 
-    radial-gradient(circle at 15% 15%, rgba(0, 245, 155, 0.04) 0%, transparent 40%),
-    radial-gradient(circle at 85% 35%, rgba(5, 150, 105, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 25% 65%, rgba(0, 245, 155, 0.04) 0%, transparent 45%),
-    radial-gradient(circle at 75% 85%, rgba(5, 150, 105, 0.03) 0%, transparent 45%),
-    var(--lp-bg); 
-  overflow-x: hidden; 
+.lp-root {
+  background:
+    radial-gradient(circle at 15% 15%, rgba(0, 245, 155, 0.03) 0%, transparent 40%),
+    radial-gradient(circle at 85% 35%, rgba(5, 150, 105, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 25% 65%, rgba(0, 245, 155, 0.03) 0%, transparent 45%),
+    radial-gradient(circle at 75% 85%, rgba(5, 150, 105, 0.02) 0%, transparent 45%),
+    var(--lp-bg);
+  overflow-x: hidden;
   position: relative;
 }
 
-/* Horizontal Light Sweeps (Nexio Premium Glows) */
+/* Horizontal Light Sweeps */
 .lp-ambient-sweep-horizontal {
   position: absolute;
   left: -25%;
@@ -70,32 +71,38 @@
   opacity: 0.015;
 }
 
-/* ── Nav ── */
+/* ── Nav — Floating Pill Island ── */
 .lp-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
-  transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border-bottom: 1px solid transparent;
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 48px);
+  max-width: 1200px;
+  z-index: 50;
+  border-radius: 16px;
+  border: 1px solid transparent;
+  transition:
+    background 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .lp-nav.scrolled {
-  background: rgba(3, 3, 7, 0.85);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-color: var(--lp-border-subtle);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  background: rgba(7, 8, 12, 0.88);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-color: rgba(0, 245, 155, 0.14);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 245, 155, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 /* ── Hero ── */
-.lp-hero-radial {
-  position: relative;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(5,150,105,0.08) 0%, rgba(0,245,155,0.04) 50%, transparent 100%),
-    var(--lp-bg);
-}
-
 .lp-hero-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 50%, transparent 100%);
 }
@@ -116,11 +123,11 @@
 
 /* ── Glass Cards (Features & Roles) ── */
 .lp-feature-card, .lp-role-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.005) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
@@ -140,7 +147,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(0, 245, 155, 0.08) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 0%, rgba(0, 245, 155, 0.07) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -148,12 +155,12 @@
 
 .lp-feature-card:hover, .lp-role-card:hover {
   transform: translateY(-5px) scale(1.01);
-  border-color: rgba(0, 245, 155, 0.25);
-  box-shadow: 
-    0 24px 48px -12px rgba(0, 245, 155, 0.12), 
-    inset 0 1px 1px rgba(0, 245, 155, 0.15), 
+  border-color: rgba(0, 245, 155, 0.2);
+  box-shadow:
+    0 24px 48px -12px rgba(0, 245, 155, 0.1),
+    inset 0 1px 1px rgba(0, 245, 155, 0.1),
     0 0 24px rgba(5, 150, 105, 0.04);
-  background: linear-gradient(180deg, rgba(0, 245, 155, 0.02) 0%, rgba(5, 150, 105, 0.01) 100%);
+  background: linear-gradient(180deg, rgba(0, 245, 155, 0.02) 0%, rgba(5, 150, 105, 0.008) 100%);
 }
 
 .lp-feature-card:hover::before, .lp-role-card:hover::before {
@@ -179,6 +186,7 @@
   box-shadow: 0 4px 20px rgba(0, 245, 155, 0.25);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
 }
 .lp-btn-primary:hover {
   transform: translateY(-2px);
@@ -187,22 +195,6 @@
 }
 .lp-btn-primary:active { transform: scale(0.97); }
 
-.lp-btn-primary-emer {
-  background: var(--lp-accent-gradient);
-  color: #030307 !important;
-  font-weight: 600;
-  border-radius: 99px;
-  box-shadow: 0 4px 20px rgba(0, 245, 155, 0.25);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.lp-btn-primary-emer:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 245, 155, 0.45), 0 0 16px rgba(5, 150, 105, 0.25);
-  filter: brightness(1.08);
-}
-.lp-btn-primary-emer:active { transform: scale(0.97); }
-
 .lp-btn-ghost {
   color: var(--lp-gray-1);
   border: 1px solid var(--lp-border);
@@ -210,6 +202,7 @@
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   background: rgba(255, 255, 255, 0.01);
   backdrop-filter: blur(12px);
+  cursor: pointer;
 }
 .lp-btn-ghost:hover {
   color: #ffffff;
@@ -219,23 +212,6 @@
   box-shadow: 0 0 20px rgba(0, 245, 155, 0.1);
 }
 .lp-btn-ghost:active { transform: scale(0.97); }
-
-.lp-btn-ghost-emer {
-  color: var(--lp-gray-1);
-  border: 1px solid var(--lp-border);
-  border-radius: 99px;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  background: rgba(255, 255, 255, 0.01);
-  backdrop-filter: blur(12px);
-}
-.lp-btn-ghost-emer:hover {
-  color: var(--lp-primary-neon);
-  border-color: rgba(0, 245, 155, 0.35);
-  background: rgba(0, 245, 155, 0.04);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px -8px rgba(0, 245, 155, 0.2);
-}
-.lp-btn-ghost-emer:active { transform: scale(0.97); }
 
 /* Tech Section / Evidence cards */
 .glass-card-emer {
@@ -293,12 +269,6 @@
   100% { opacity: 1; transform: scale(1.15); }
 }
 
-@keyframes section-light-pan {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 /* ── Section Gradient ── */
 .lp-section-gradient {
   position: relative;
@@ -309,19 +279,23 @@
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    135deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.01) 20%, 
-    rgba(255, 255, 255, 0.05) 40%, 
-    rgba(255, 255, 255, 0.07) 50%, 
-    rgba(255, 255, 255, 0.05) 60%, 
-    rgba(255, 255, 255, 0.01) 80%, 
+    135deg,
+    transparent 0%,
+    rgba(0, 245, 155, 0.008) 30%,
+    rgba(0, 245, 155, 0.02) 50%,
+    rgba(0, 245, 155, 0.008) 70%,
     transparent 100%
   );
   background-size: 400% 400%;
-  animation: section-light-pan 14s ease-in-out infinite;
+  animation: section-light-pan 8s ease-in-out infinite;
   pointer-events: none;
   z-index: 0;
+}
+
+@keyframes section-light-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* ── CTA glow ── */
@@ -368,32 +342,23 @@
   line-height: 1.12;
 }
 
-/* ── NEW Liquid Glass & Pipeline Animations ── */
-
+/* ── Liquid Glass Card ── */
 .lp-liquid-glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.005) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 
-    0 24px 80px rgba(0, 0, 0, 0.65), 
-    inset 0 1px 0px rgba(255, 255, 255, 0.1),
-    inset 0 -1px 0px rgba(255, 255, 255, 0.03);
-  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0px rgba(255, 255, 255, 0.14),
+    inset 0 -1px 0px rgba(255, 255, 255, 0.04);
+  border-radius: 28px;
   position: relative;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.lp-liquid-glass:hover {
-  transform: translateY(-4px);
-  border-color: rgba(0, 245, 155, 0.3);
-  box-shadow: 
-    0 32px 100px rgba(0, 245, 155, 0.1), 
-    0 24px 80px rgba(0, 0, 0, 0.7), 
-    inset 0 1px 0px rgba(255, 255, 255, 0.2);
-}
-
+/* ── Glow sphere ── */
 .lp-glow-sphere {
   position: absolute;
   width: 180px;
@@ -410,6 +375,7 @@
   100% { transform: translate(30px, 20px) scale(1.15); }
 }
 
+/* ── Scanline (used in widget) ── */
 .scanline-glow {
   position: absolute;
   left: 0;
@@ -426,3 +392,91 @@
   50% { top: 100%; }
   100% { top: 0%; }
 }
+
+/* ── Bento glass (Features section) ── */
+.bento-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 24px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.bento-glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(0, 245, 155, 0.06) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.bento-glass:hover {
+  border-color: rgba(0, 245, 155, 0.2);
+  background: rgba(0, 245, 155, 0.02);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px -10px rgba(0, 245, 155, 0.12), inset 0 1px 0 rgba(0, 245, 155, 0.08);
+}
+.bento-glass:hover::before {
+  opacity: 1;
+}
+
+/* ─────────────────────────────────────────────
+   GLOBAL FIXES
+───────────────────────────────────────────── */
+
+/* Smooth scroll — required for all #anchor nav links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Scroll margin — compensates for floating pill navbar (height 56px + top 16px + gap) */
+#features,
+#how-it-works,
+#roles {
+  scroll-margin-top: 88px;
+}
+
+/* ── Footer responsive grid ── */
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 32px 40px !important;
+  }
+}
+@media (max-width: 560px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+}
+
+/* ── Mobile nav pill size ── */
+@media (max-width: 640px) {
+  .lp-nav {
+    width: calc(100% - 24px);
+    top: 10px;
+    border-radius: 12px;
+  }
+}
+
+/* ── Prefers reduced motion — accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+  .lp-glow-sphere,
+  .lp-scroll-dot,
+  .lp-badge-dot,
+  .scanline-glow,
+  .hero-shimmer {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+  .lp-feature-card,
+  .lp-role-card,
+  .bento-glass,
+  .glass-card-emer {
+    transition: none !important;
+  }
+}
+

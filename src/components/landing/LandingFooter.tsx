@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Download } from "lucide-react";
+import { Download, Smartphone } from "lucide-react";
 import { motion } from "framer-motion";
 
 const links = [
@@ -51,11 +51,9 @@ export default function LandingFooter() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') setDeferredPrompt(null);
+      if (outcome === "accepted") setDeferredPrompt(null);
       return;
     }
-
-    // Fallback if prompt is not available
     toast({
       title: "Install ProofChain",
       description: "Tap your browser's menu (⋮ or Share) and select 'Add to Home Screen' or 'Install App'.",
@@ -65,72 +63,105 @@ export default function LandingFooter() {
   return (
     <footer
       style={{
-        borderTop: "1px solid rgba(255, 255, 255, 0.06)",
+        borderTop: "1px solid rgba(255,255,255,0.05)",
         padding: "64px 24px 40px",
-        background: "#080A09",
-        backgroundImage: "radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 100%)",
+        background: "transparent",
         position: "relative",
+        overflow: "hidden",
       }}
     >
-      <div style={{ maxWidth: 1120, margin: "0 auto" }}>
+      {/* Subtle top ambient glow */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          top: 0, left: "25%", right: "25%", height: 200,
+          background: "radial-gradient(ellipse at 50% 0%, rgba(0,245,155,0.04) 0%, transparent 70%)",
+          filter: "blur(40px)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <div style={{ maxWidth: 1200, margin: "0 auto", position: "relative", zIndex: 1 }}>
         {/* Top row */}
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "1fr repeat(3, auto)",
             gap: "40px 64px",
-            marginBottom: 56,
+            marginBottom: 52,
           }}
           className="footer-grid"
         >
           {/* Brand */}
           <div>
-            <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 14 }}>
-              <img src="/icon-v2.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: 'contain' }} />
+            <Link
+              href="/"
+              style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 14 }}
+            >
+              <img src="/icon-v2.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: "contain" }} />
               <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>
                 <span style={{ color: "#ffffff" }}>Proof</span>
-                <span style={{ color: "#07A572" }}>Chain</span>
+                <span style={{ color: "#00f59b" }}>Chain</span>
               </span>
             </Link>
-            <p style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.45)", lineHeight: 1.65, maxWidth: 240, margin: 0 }}>
+
+            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.65, maxWidth: 240, margin: 0 }}>
               Tamper-proof digital forensic evidence. Blockchain-anchored. AI-analysed.
             </p>
-            <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 8 }}>
-              <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--lp-primary-neon)", boxShadow: "0 0 8px var(--lp-primary-neon)", display: "inline-block" }} />
-              <span style={{ fontSize: 12, color: "rgba(255, 255, 255, 0.3)" }}>Polygon Amoy Testnet</span>
+
+            {/* Live network indicator */}
+            <div style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 8 }}>
+              <span
+                style={{
+                  width: 6, height: 6, borderRadius: "50%",
+                  background: "var(--lp-primary-neon)",
+                  boxShadow: "0 0 8px var(--lp-primary-neon)",
+                  display: "inline-block",
+                  flexShrink: 0,
+                  animation: "badge-glow 2s infinite alternate",
+                }}
+              />
+              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
+                Polygon Amoy Testnet
+              </span>
             </div>
-            <motion.button 
+
+            {/* Install button — hover only, no continuous animation */}
+            <motion.button
               onClick={handleInstallClick}
-              animate={{ 
-                scale: [1, 1.02, 1],
-                boxShadow: [
-                  "0 4px 14px rgba(7, 165, 114, 0.2)",
-                  "0 8px 24px rgba(7, 165, 114, 0.4)",
-                  "0 4px 14px rgba(7, 165, 114, 0.2)"
-                ]
+              whileHover={{
+                scale: 1.04,
+                boxShadow: "0 8px 24px rgba(0,245,155,0.25)",
               }}
-              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-              style={{ 
-                marginTop: 24, 
-                background: "linear-gradient(135deg, #07A572 0%, #047857 100%)",
-                border: "1px solid rgba(255, 255, 255, 0.1)", 
-                color: "#ffffff", 
-                padding: "8px 16px", 
-                borderRadius: 12, 
-                cursor: "pointer", 
+              whileTap={{ scale: 0.97 }}
+              style={{
+                marginTop: 20,
+                background: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                border: "1px solid rgba(255,255,255,0.1)",
+                color: "#030307",
+                padding: "9px 16px",
+                borderRadius: 12,
+                cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
+                gap: 10,
+                boxShadow: "0 4px 16px rgba(0,245,155,0.2)",
+                transition: "box-shadow 0.3s ease",
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
             >
-              <Download className="w-6 h-6" />
+              <Smartphone size={18} style={{ color: "#030307", flexShrink: 0 }} />
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left" }}>
-                <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "rgba(255,255,255,0.8)", lineHeight: 1, marginBottom: 3 }}>
+                <span
+                  style={{
+                    fontSize: 9, fontWeight: 600, textTransform: "uppercase",
+                    letterSpacing: "0.07em", color: "rgba(3,3,7,0.65)",
+                    lineHeight: 1, marginBottom: 2,
+                  }}
+                >
                   Available Now
                 </span>
-                <span style={{ fontSize: 15, fontWeight: 700, lineHeight: 1 }}>
+                <span style={{ fontSize: 14, fontWeight: 700, color: "#030307", lineHeight: 1 }}>
                   Install Web App
                 </span>
               </div>
@@ -142,17 +173,15 @@ export default function LandingFooter() {
             <div key={col.heading}>
               <p
                 style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  letterSpacing: "0.14em",
-                  textTransform: "uppercase",
-                  color: "rgba(255, 255, 255, 0.3)",
-                  marginBottom: 16,
+                  fontSize: 10, fontWeight: 600,
+                  letterSpacing: "0.18em", textTransform: "uppercase",
+                  color: "rgba(255,255,255,0.28)", marginBottom: 18,
+                  fontFamily: "monospace",
                 }}
               >
                 {col.heading}
               </p>
-              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 10 }}>
+              <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 11 }}>
                 {col.items.map((item) => (
                   <li key={item.label}>
                     {"external" in item && item.external ? (
@@ -160,18 +189,26 @@ export default function LandingFooter() {
                         href={item.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.45)", textDecoration: "none", transition: "all 0.2s" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255, 255, 255, 0.45)")}
+                        style={{
+                          fontSize: 13, color: "rgba(255,255,255,0.4)",
+                          textDecoration: "none", transition: "color 0.2s ease",
+                          display: "inline-flex", alignItems: "center", gap: 4,
+                        }}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#00f59b")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
                       >
-                        {item.label} ↗
+                        {item.label}
+                        <span style={{ fontSize: 10, opacity: 0.5 }}>↗</span>
                       </a>
                     ) : (
                       <Link
                         href={item.href}
-                        style={{ fontSize: 13, color: "rgba(255, 255, 255, 0.45)", textDecoration: "none", transition: "all 0.2s" }}
+                        style={{
+                          fontSize: 13, color: "rgba(255,255,255,0.4)",
+                          textDecoration: "none", transition: "color 0.2s ease",
+                        }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255, 255, 255, 0.45)")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
                       >
                         {item.label}
                       </Link>
@@ -183,23 +220,23 @@ export default function LandingFooter() {
           ))}
         </div>
 
-        {/* Bottom */}
+        {/* Bottom bar */}
         <div
           style={{
-            borderTop: "1px solid rgba(255, 255, 255, 0.05)",
-            paddingTop: 24,
+            borderTop: "1px solid rgba(255,255,255,0.05)",
+            paddingTop: 22,
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: 12,
+            gap: 10,
           }}
         >
-          <p style={{ fontSize: 12, color: "rgba(255, 255, 255, 0.25)", margin: 0 }}>
+          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.22)", margin: 0, fontFamily: "monospace" }}>
             © 2026 ProofChain · Sachin R — MCA241221
           </p>
-          <p style={{ fontSize: 12, color: "rgba(255, 255, 255, 0.2)", margin: 0 }}>
-            Not a court-admissible evidence system · For academic and forensic demonstration
+          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.18)", margin: 0, fontFamily: "monospace" }}>
+            Not a court-admissible system · Academic & forensic demonstration
           </p>
         </div>
       </div>

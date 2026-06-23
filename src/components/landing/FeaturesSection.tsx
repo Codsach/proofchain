@@ -22,6 +22,8 @@ const features = [
     colSpan: "md:col-span-2",
     rowSpan: "md:row-span-1",
     Icon: Database,
+    color: "#00f59b",
+    glowColor: "rgba(0,245,155,0.1)",
   },
   {
     label: "02",
@@ -30,6 +32,8 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-2",
     Icon: Bot,
+    color: "#f59e0b",
+    glowColor: "rgba(245,158,11,0.1)",
   },
   {
     label: "03",
@@ -38,6 +42,8 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: History,
+    color: "#10b981",
+    glowColor: "rgba(16,185,129,0.1)",
   },
   {
     label: "04",
@@ -46,6 +52,8 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: Gavel,
+    color: "#00f59b",
+    glowColor: "rgba(0,245,155,0.1)",
   },
   {
     label: "05",
@@ -54,14 +62,18 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: QrCode,
+    color: "#d97706",
+    glowColor: "rgba(217,119,6,0.1)",
   },
   {
     label: "06",
     title: "Mobile PWA",
     body: "Investigators submit evidence directly from the field using the installed PWA. The app accesses the device camera and queues submissions offline.",
-    colSpan: "md:col-span-2", // Fills the remaining 2 columns in Row 3
+    colSpan: "md:col-span-2",
     rowSpan: "md:row-span-1",
     Icon: Smartphone,
+    color: "#059669",
+    glowColor: "rgba(5,150,105,0.1)",
   },
 ];
 
@@ -81,37 +93,23 @@ export default function FeaturesSection() {
     <section
       ref={sectionRef}
       id="features"
-      className="bg-[#041a11] py-[120px] px-6 relative overflow-hidden font-sans"
+      className="py-[120px] px-6 relative overflow-hidden font-sans"
+      style={{ background: "transparent" }}
     >
-      <style>
-        {`
-          .bento-glass {
-             background: rgba(255, 255, 255, 0.03);
-             backdrop-filter: blur(12px);
-             -webkit-backdrop-filter: blur(12px);
-             border: 1px solid rgba(255, 255, 255, 0.08);
-             border-radius: 24px;
-          }
-          .bento-glass:hover {
-             border-color: rgba(194, 163, 50, 0.3);
-             background: rgba(194, 163, 50, 0.05);
-          }
-        `}
-      </style>
-
-      {/* Layer 1 — decorative background glow (slowest) */}
+      {/* Ambient emerald glow */}
       <motion.div
         aria-hidden
         style={{
           position: "absolute",
-          top: "10%",
+          top: "5%",
           left: "50%",
           translateX: "-50%",
-          width: "60%",
-          maxWidth: 700,
-          height: 400,
+          width: "65%",
+          maxWidth: 800,
+          height: 500,
           background:
-            "radial-gradient(ellipse at center, rgba(194, 163, 50, 0.05) 0%, rgba(161, 133, 37, 0.03) 50%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(0, 245, 155, 0.06) 0%, rgba(5, 150, 105, 0.03) 50%, transparent 70%)",
+          filter: "blur(60px)",
           pointerEvents: "none",
           zIndex: 0,
           y: bgY,
@@ -119,38 +117,52 @@ export default function FeaturesSection() {
         }}
       />
 
-      <div className="max-w-[1120px] mx-auto relative z-10">
-        {/* Layer 2 — Header (medium parallax) */}
+      <div className="max-w-[1200px] mx-auto relative z-10">
+        {/* Header */}
         <motion.div
-          style={{
-            marginBottom: 80,
-            y: headerY,
-            willChange: "transform",
-          }}
+          style={{ marginBottom: 72, y: headerY, willChange: "transform" }}
           className="flex flex-col items-center text-center"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
         >
-          <motion.p variants={revealVariant} custom={0} className="text-[var(--lp-accent)] font-semibold text-sm tracking-wider uppercase mb-4">
+          <motion.p
+            variants={revealVariant}
+            custom={0}
+            className="lp-section-label mb-4"
+          >
             Platform Features
           </motion.p>
           <motion.h2
             variants={revealVariant}
             custom={1}
-            className="font-heading text-4xl md:text-5xl font-bold text-white max-w-[520px]"
+            className="font-heading text-4xl md:text-5xl font-bold text-white max-w-[600px] leading-tight"
           >
-            Bento Grid Showcase
+            Every Layer.{" "}
+            <span
+              style={{
+                backgroundImage: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Cryptographically Proven.
+            </span>
           </motion.h2>
+          <motion.p
+            variants={revealVariant}
+            custom={2}
+            className="font-sans text-white/55 text-base mt-4 max-w-[480px] leading-relaxed"
+          >
+            Six interlocking layers from capture to verdict — each one immutable, each one verifiable.
+          </motion.p>
         </motion.div>
 
-        {/* Layer 3 — Bento Card grid */}
+        {/* Bento grid */}
         <motion.div
-          style={{
-            y: gridY,
-            willChange: "transform",
-          }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-min"
+          style={{ y: gridY, willChange: "transform" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 auto-rows-min"
         >
           {features.map((f, i) => (
             <FeatureCell key={f.label} feature={f} index={i} />
@@ -171,23 +183,42 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
       viewport={{ once: true, margin: "-60px" }}
       variants={revealVariant}
       custom={col}
-      className={`bento-glass relative p-8 md:p-10 flex flex-col gap-4 transition-colors duration-300 ${feature.colSpan} ${feature.rowSpan}`}
+      className={`bento-glass relative p-8 md:p-10 flex flex-col gap-4 ${feature.colSpan} ${feature.rowSpan}`}
       whileHover={{
         y: -6,
-        scale: 1.02,
-        boxShadow: "0 24px 48px -12px rgba(194, 163, 50, 0.15), inset 0 1px 1px rgba(194, 163, 50, 0.3)",
+        scale: 1.015,
+        borderColor: `${feature.color}35`,
+        boxShadow: `0 24px 48px -12px ${feature.glowColor}, inset 0 1px 0 ${feature.color}20`,
         transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
       }}
     >
+      {/* Top accent light — per card colour */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0, left: "15%", right: "15%", height: 1,
+          background: `linear-gradient(90deg, transparent, ${feature.color}60, transparent)`,
+          borderRadius: "50%",
+        }}
+      />
+
       <div className="relative z-10 flex flex-col gap-4 h-full">
         <div className="flex items-center justify-between">
-          <span className="text-[var(--lp-accent)]/80 font-mono text-sm tracking-widest">{feature.label}</span>
-          <feature.Icon className="text-[var(--lp-accent)]/60" size={24} />
+          <span
+            className="font-mono text-sm tracking-widest"
+            style={{ color: `${feature.color}90` }}
+          >
+            {feature.label}
+          </span>
+          <feature.Icon
+            size={22}
+            style={{ color: feature.color, opacity: 0.88 }}
+          />
         </div>
         <h3 className="font-heading text-xl md:text-2xl font-bold text-white leading-tight">
           {feature.title}
         </h3>
-        <p className="font-sans text-slate-300/80 text-sm md:text-base leading-relaxed flex-1">
+        <p className="font-sans text-white/65 text-sm md:text-base leading-relaxed flex-1">
           {feature.body}
         </p>
       </div>

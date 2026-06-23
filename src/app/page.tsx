@@ -8,6 +8,7 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import RolesSection from "@/components/landing/RolesSection";
 import CTASection from "@/components/landing/CTASection";
 import LandingFooter from "@/components/landing/LandingFooter";
+import TrustSection from "@/components/landing/TrustSection";
 
 export const metadata: Metadata = {
   title: "ProofChain — Tamper-Proof Digital Forensic Evidence Platform",
@@ -38,6 +39,7 @@ export default function LandingPage() {
       <main style={{ position: "relative" }}>
         <HeroSection />
         <FeaturesSection />
+        <TrustSection />
         <HowItWorks />
         <RolesSection />
         <CTASection />
