@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { getServerSessionUser } from "@/lib/server-session";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
 import { SettingsTabs } from "@/components/settings/SettingsTabs";
@@ -34,13 +35,13 @@ export default async function SettingsPage() {
   };
 
   return (
-    <div className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-8 space-y-6">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight text-[var(--dash-text)] uppercase font-mono">Control Room</h1>
-        <p className="text-[var(--dash-muted)] font-mono text-sm uppercase">System Preferences & Security</p>
-      </div>
+    <Card className="flex-1 w-full max-w-4xl mx-auto p-4 md:p-8 space-y-6 bg-transparent border-none shadow-none ring-0">
+      <CardHeader className="flex flex-col gap-2 p-0">
+        <CardTitle className="text-3xl font-bold tracking-tight text-[var(--dash-text)] uppercase font-mono">Control Room</CardTitle>
+        <CardDescription className="text-[var(--dash-muted)] font-mono text-sm uppercase">System Preferences & Security</CardDescription>
+      </CardHeader>
 
       <SettingsTabs user={serializedUser} />
-    </div>
+    </Card>
   );
 }

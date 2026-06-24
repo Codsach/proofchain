@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardContainer } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle, AlertTriangle, FileSearch, ShieldAlert } from "lucide-react";
 
@@ -27,14 +27,14 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
       </TabsList>
 
       <TabsContent value="overview" className="mt-6 space-y-6">
-        <div className="grid gap-6 md:grid-cols-3">
+        <CardContainer className="grid gap-6 md:grid-cols-3">
           <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] border-t-2 border-t-cyan-500 rounded-sm hover:bg-[var(--dash-hover)] hover:border-cyan-500/50 transition-all cursor-pointer group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-mono uppercase text-[var(--dash-muted)]">Pending Reviews</CardTitle>
               <FileSearch className="h-4 w-4 text-cyan-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.pendingReviews}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.pendingReviews}</CardContainer>
             </CardContent>
           </Card>
           
@@ -44,7 +44,7 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
               <CheckCircle className="h-4 w-4 text-cyan-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.verdictsIssued}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.verdictsIssued}</CardContainer>
             </CardContent>
           </Card>
 
@@ -54,10 +54,10 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
               <ShieldAlert className="h-4 w-4 text-cyan-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.authenticReviews} <span className="text-[var(--dash-muted)] text-xl">/</span> {stats.tamperedReviews}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.authenticReviews} <span className="text-[var(--dash-muted)] text-xl">/</span> {stats.tamperedReviews}</CardContainer>
             </CardContent>
           </Card>
-        </div>
+        </CardContainer>
       </TabsContent>
 
       <TabsContent value="log" className="mt-6">
@@ -70,32 +70,32 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
           </CardHeader>
           <CardContent>
             {recentVerdicts.length === 0 ? (
-              <div className="text-center py-8 text-[var(--dash-muted)] font-mono text-sm uppercase">
+              <CardContainer className="text-center py-8 text-[var(--dash-muted)] font-mono text-sm uppercase">
                 No verdicts recorded.
-              </div>
+              </CardContainer>
             ) : (
-              <div className="space-y-4">
+              <CardContainer className="space-y-4">
                 {recentVerdicts.map((verdict, i) => {
                   const isAuthentic = verdict.status === "authentic";
                   return (
-                    <div key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-cyan-500/50 transition-all cursor-pointer group">
+                    <CardContainer key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-cyan-500/50 transition-all cursor-pointer group">
                       {isAuthentic ? (
                         <CheckCircle className="h-5 w-5 text-emerald-500 mt-0.5" />
                       ) : (
                         <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
                       )}
-                      <div>
+                      <CardContainer>
                         <p className="font-mono text-sm text-[var(--dash-text)] uppercase">
                           Verdict: <span className={isAuthentic ? "text-emerald-500" : "text-red-500"}>{verdict.status}</span>
                         </p>
                         <p className="font-mono text-xs text-[var(--dash-muted)] mt-1">
                           {new Date(verdict.createdAt).toLocaleString()} • Item: {verdict.evidenceId?.toString()?.substring(0, 12)}...
                         </p>
-                      </div>
-                    </div>
+                      </CardContainer>
+                    </CardContainer>
                   );
                 })}
-              </div>
+              </CardContainer>
             )}
           </CardContent>
         </Card>

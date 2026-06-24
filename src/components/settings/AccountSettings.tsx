@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { User, Mail, Loader2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardContainer, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -49,8 +49,8 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
   };
 
   return (
-    <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-      <div className="absolute top-0 left-0 h-[2px] w-full bg-[var(--dash-accent)] shadow-[0_0_8px_var(--dash-accent)]" />
+    <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] relative overflow-hidden">
+      <CardContainer className="absolute top-0 left-0 h-[2px] w-full bg-[var(--dash-accent)] shadow-[0_0_8px_var(--dash-accent)]" />
       <CardHeader>
         <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
           <User className="h-5 w-5 text-[var(--dash-accent)]" />
@@ -63,7 +63,7 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="fullName"
@@ -88,21 +88,21 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
                   <FormItem>
                     <FormLabel className="text-[var(--dash-muted)] font-mono text-xs uppercase">Email Address</FormLabel>
                     <FormControl>
-                      <div className="relative">
+                      <CardContainer className="relative">
                         <Mail className="absolute left-3 top-3 h-4 w-4 text-[var(--dash-muted)]" />
                         <Input
                           placeholder="john.doe@example.com"
                           className="pl-9 bg-[var(--dash-bg)] border-[var(--dash-border)] text-white font-mono"
                           {...field}
                         />
-                      </div>
+                      </CardContainer>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="flex justify-end pt-4 border-t border-[var(--dash-border)]">
+            </CardContainer>
+            <CardFooter className="flex justify-end pt-4 border-t border-[var(--dash-border)] bg-transparent p-0">
               <Button 
                 type="submit" 
                 disabled={isSubmitting || !form.formState.isDirty}
@@ -111,7 +111,7 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {isSubmitting ? "Processing..." : "Save Identity"}
               </Button>
-            </div>
+            </CardFooter>
           </form>
         </Form>
       </CardContent>

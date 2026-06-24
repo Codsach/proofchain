@@ -92,6 +92,16 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+function CardContainer({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="card-container"
+      className={cn(className)}
+      {...props}
+    />
+  )
+}
+
 export {
   Card,
   CardHeader,
@@ -100,4 +110,5 @@ export {
   CardAction,
   CardDescription,
   CardContent,
+  CardContainer,
 }

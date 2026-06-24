@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { CardContainer, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -116,7 +117,7 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
               </TabsList>
 
               <TabsContent value="general" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
+                <CardContainer className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="phoneNumber" render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Phone Number</FormLabel>
@@ -135,7 +136,7 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
                       <FormMessage />
                     </FormItem>
                   )} />
-                </div>
+                </CardContainer>
                 
                 <FormField control={form.control} name="location" render={({ field }) => (
                   <FormItem>
@@ -203,12 +204,12 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
               </TabsContent>
             </Tabs>
 
-            <div className="flex justify-end pt-4 border-t border-[var(--dash-border)]">
+            <CardFooter className="flex justify-end pt-4 border-t border-[var(--dash-border)] bg-transparent p-0">
               <Button type="submit" disabled={isSubmitting} className="bg-[var(--dash-accent)] text-black hover:bg-emerald-600 font-mono font-bold">
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {isSubmitting ? "UPDATING..." : "SAVE DOSSIER"}
               </Button>
-            </div>
+            </CardFooter>
           </form>
         </Form>
       </DialogContent>

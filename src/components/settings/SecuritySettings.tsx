@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Lock, Shield, ShieldCheck, Laptop, Smartphone, Loader2, KeyRound } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardContainer, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -77,10 +77,10 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
   };
 
   return (
-    <div className="space-y-6">
+    <CardContainer className="space-y-6">
       {/* Password Reset */}
-      <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-        <div className="absolute top-0 left-0 h-[2px] w-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+      <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] relative overflow-hidden">
+        <CardContainer className="absolute top-0 left-0 h-[2px] w-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
         <CardHeader>
           <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
             <KeyRound className="h-5 w-5 text-cyan-600" />
@@ -110,22 +110,22 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
                   </FormItem>
                 )}
               />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
                   name="newPassword"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-[var(--dash-muted)] font-mono text-xs uppercase">New Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="password"
-                          className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white font-mono"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
+                     <FormItem>
+                       <FormLabel className="text-[var(--dash-muted)] font-mono text-xs uppercase">New Password</FormLabel>
+                       <FormControl>
+                         <Input
+                           type="password"
+                           className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white font-mono"
+                           {...field}
+                         />
+                       </FormControl>
+                       <FormMessage />
+                     </FormItem>
                   )}
                 />
                 <FormField
@@ -145,8 +145,8 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
                     </FormItem>
                   )}
                 />
-              </div>
-              <div className="flex justify-end pt-4 border-t border-[var(--dash-border)]">
+              </CardContainer>
+              <CardFooter className="flex justify-end pt-4 border-t border-[var(--dash-border)] bg-transparent p-0">
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || !form.formState.isDirty}
@@ -155,17 +155,17 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
                   {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   {isSubmitting ? "Encrypting..." : "Update Password"}
                 </Button>
-              </div>
+              </CardFooter>
             </form>
           </Form>
         </CardContent>
       </Card>
 
       {/* Two-Factor Auth */}
-      <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-        <div className="absolute top-0 left-0 h-[2px] w-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+      <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] relative overflow-hidden">
+        <CardContainer className="absolute top-0 left-0 h-[2px] w-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
         <CardHeader className="flex flex-row items-center justify-between pb-4">
-          <div className="space-y-1">
+          <CardContainer className="space-y-1">
             <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-500" />
               Two-Factor Authentication
@@ -173,7 +173,7 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
             <CardDescription className="text-[var(--dash-muted)] font-mono text-xs uppercase">
               Add an extra layer of security to your account.
             </CardDescription>
-          </div>
+          </CardContainer>
           {user.mfaEnabled ? (
             <Badge variant="outline" className="rounded-sm font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
               <ShieldCheck size={12} className="mr-1" /> Active
@@ -185,11 +185,11 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
           )}
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between p-4 bg-[var(--dash-bg)] border border-[var(--dash-border)] rounded-md">
-            <div className="space-y-1">
+          <CardContainer className="flex items-center justify-between p-4 bg-[var(--dash-bg)] border border-[var(--dash-border)] rounded-md">
+            <CardContainer className="space-y-1">
               <p className="text-sm font-medium text-white font-mono uppercase">Authenticator App</p>
               <p className="text-xs text-[var(--dash-muted)] font-mono">Use an app like Google Authenticator or Authy to generate security codes.</p>
-            </div>
+            </CardContainer>
             {!user.mfaEnabled && (
               <Button 
                 onClick={() => setIsMfaOpen(true)}
@@ -198,13 +198,13 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
                 Enable 2FA
               </Button>
             )}
-          </div>
+          </CardContainer>
         </CardContent>
       </Card>
 
       {/* Trusted Devices */}
-      <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-        <div className="absolute top-0 left-0 h-[2px] w-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+      <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] relative overflow-hidden">
+        <CardContainer className="absolute top-0 left-0 h-[2px] w-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
         <CardHeader>
           <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
             <Laptop className="h-5 w-5 text-purple-500" />
@@ -216,22 +216,22 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
         </CardHeader>
         <CardContent>
           {devices.length === 0 ? (
-            <div className="p-4 text-center text-[var(--dash-muted)] font-mono text-xs uppercase bg-[var(--dash-bg)] border border-[var(--dash-border)]">
+            <CardContainer className="p-4 text-center text-[var(--dash-muted)] font-mono text-xs uppercase bg-[var(--dash-bg)] border border-[var(--dash-border)]">
               No active sessions found.
-            </div>
+            </CardContainer>
           ) : (
-            <div className="space-y-2">
+            <CardContainer className="space-y-2">
               {devices.map((device, idx) => (
-                <div key={idx} className="flex items-center justify-between p-4 bg-[var(--dash-bg)] border border-[var(--dash-border)] rounded-md">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-purple-500/10 rounded-md">
+                <CardContainer key={idx} className="flex items-center justify-between p-4 bg-[var(--dash-bg)] border border-[var(--dash-border)] rounded-md">
+                  <CardContainer className="flex items-center gap-4">
+                    <CardContainer className="p-2 bg-purple-500/10 rounded-md">
                       <Smartphone className="h-5 w-5 text-purple-500" />
-                    </div>
-                    <div>
+                    </CardContainer>
+                    <CardContainer>
                       <p className="text-sm font-medium text-white font-mono uppercase">Session Token</p>
                       <p className="text-xs text-[var(--dash-muted)] font-mono">Expires: {new Date(device.expiresAt).toLocaleString()}</p>
-                    </div>
-                  </div>
+                    </CardContainer>
+                  </CardContainer>
                   <Button 
                     variant="outline"
                     size="sm"
@@ -240,9 +240,9 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
                   >
                     Revoke
                   </Button>
-                </div>
+                </CardContainer>
               ))}
-            </div>
+            </CardContainer>
           )}
         </CardContent>
       </Card>
@@ -253,6 +253,6 @@ export function SecuritySettings({ user }: { user: { mfaEnabled: boolean; truste
         // we can just force a reload or rely on optimistic UI if we wanted.
         window.location.reload();
       }} />
-    </div>
+    </CardContainer>
   );
 }

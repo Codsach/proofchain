@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardContainer } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Users, ServerCrash, TerminalSquare, Shield } from "lucide-react";
 
@@ -25,14 +25,14 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
       </TabsList>
 
       <TabsContent value="overview" className="mt-6 space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
+        <CardContainer className="grid gap-6 md:grid-cols-2">
           <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] border-t-2 border-t-purple-500 rounded-sm hover:bg-[var(--dash-hover)] hover:border-purple-500/50 transition-all cursor-pointer group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-mono uppercase text-[var(--dash-muted)]">Total System Users</CardTitle>
               <Users className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.totalUsers}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.totalUsers}</CardContainer>
             </CardContent>
           </Card>
           
@@ -42,10 +42,10 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
               <ServerCrash className="h-4 w-4 text-purple-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.recentAudits}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.recentAudits}</CardContainer>
             </CardContent>
           </Card>
-        </div>
+        </CardContainer>
       </TabsContent>
 
       <TabsContent value="log" className="mt-6">
@@ -58,23 +58,23 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
           </CardHeader>
           <CardContent>
             {recentActions.length === 0 ? (
-              <div className="text-center py-8 text-[var(--dash-muted)] font-mono text-sm uppercase">
+              <CardContainer className="text-center py-8 text-[var(--dash-muted)] font-mono text-sm uppercase">
                 No administrative actions recorded.
-              </div>
+              </CardContainer>
             ) : (
-              <div className="space-y-4">
+              <CardContainer className="space-y-4">
                 {recentActions.map((action, i) => (
-                  <div key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-purple-500/50 transition-all cursor-pointer group">
+                  <CardContainer key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-purple-500/50 transition-all cursor-pointer group">
                     <Shield className="h-5 w-5 text-purple-500 mt-0.5" />
-                    <div>
+                    <CardContainer>
                       <p className="font-mono text-sm text-[var(--dash-text)] uppercase">{action.action}</p>
                       <p className="font-mono text-xs text-[var(--dash-muted)] mt-1">
                         {new Date(action.createdAt).toLocaleString()} • Target: {action.targetId?.toString()?.substring(0, 12) || "SYSTEM"}
                       </p>
-                    </div>
-                  </div>
+                    </CardContainer>
+                  </CardContainer>
                 ))}
-              </div>
+              </CardContainer>
             )}
           </CardContent>
         </Card>

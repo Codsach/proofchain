@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardContainer } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FileText, Briefcase, Activity, ShieldCheck } from "lucide-react";
 
@@ -25,14 +25,14 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
       </TabsList>
 
       <TabsContent value="overview" className="mt-6 space-y-6">
-        <div className="grid gap-6 md:grid-cols-2">
+        <CardContainer className="grid gap-6 md:grid-cols-2">
           <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] border-t-2 border-t-[var(--dash-accent)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-[var(--dash-accent)] transition-all cursor-pointer group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-mono uppercase text-[var(--dash-muted)]">Evidence Submitted</CardTitle>
               <FileText className="h-4 w-4 text-[var(--dash-accent)]" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.evidenceSubmitted}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.evidenceSubmitted}</CardContainer>
             </CardContent>
           </Card>
           
@@ -42,10 +42,10 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
               <Briefcase className="h-4 w-4 text-[var(--dash-accent)]" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.activeCases}</div>
+              <CardContainer className="text-3xl font-bold text-[var(--dash-text)] font-mono">{stats.activeCases}</CardContainer>
             </CardContent>
           </Card>
-        </div>
+        </CardContainer>
       </TabsContent>
 
       <TabsContent value="log" className="mt-6">
@@ -58,23 +58,23 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
           </CardHeader>
           <CardContent>
             {recentSubmissions.length === 0 ? (
-              <div className="text-center py-8 text-[var(--dash-muted)] font-mono text-sm uppercase">
+              <CardContainer className="text-center py-8 text-[var(--dash-muted)] font-mono text-sm uppercase">
                 No recent activity logged.
-              </div>
+              </CardContainer>
             ) : (
-              <div className="space-y-4">
+              <CardContainer className="space-y-4">
                 {recentSubmissions.map((sub, i) => (
-                  <div key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-[var(--dash-accent)] transition-all cursor-pointer group">
+                  <CardContainer key={i} className="flex items-start gap-4 p-3 border border-[var(--dash-border)] bg-[var(--dash-bg)] rounded-sm hover:bg-[var(--dash-hover)] hover:border-[var(--dash-accent)] transition-all cursor-pointer group">
                     <ShieldCheck className="h-5 w-5 text-[var(--dash-accent)] mt-0.5" />
-                    <div>
+                    <CardContainer>
                       <p className="font-mono text-sm text-[var(--dash-text)] truncate">{sub.title || "Unknown Evidence"}</p>
                       <p className="font-mono text-xs text-[var(--dash-muted)] mt-1">
                         {new Date(sub.createdAt).toLocaleString()} • Hash: {sub.fileHash?.substring(0, 16)}...
                       </p>
-                    </div>
-                  </div>
+                    </CardContainer>
+                  </CardContainer>
                 ))}
-              </div>
+              </CardContainer>
             )}
           </CardContent>
         </Card>
