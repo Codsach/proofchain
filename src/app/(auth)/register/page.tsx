@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { NetworkParticles } from "@/components/ui/network-particles";
 
 // Add confirm password to schema for the form only
 const RegisterFormSchema = RegisterSchema.extend({
@@ -82,9 +81,8 @@ export default function RegisterPage() {
     return (
       <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
         <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
-        <NetworkParticles className="opacity-70 z-[1]" />
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="relative z-10 w-full max-w-sm text-center space-y-6"
@@ -103,8 +101,8 @@ export default function RegisterPage() {
                 Click the link to activate your account.
               </p>
             </div>
-            <Link 
-              href="/login" 
+            <Link
+              href="/login"
               className="inline-flex h-11 items-center justify-center rounded-md bg-emerald-500 px-8 text-sm font-bold text-black transition-all hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
             >
               Back to sign in
@@ -119,9 +117,8 @@ export default function RegisterPage() {
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
       {/* Background Network Nodes */}
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
-      <NetworkParticles className="opacity-70 z-[1]" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -132,15 +129,15 @@ export default function RegisterPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.5, rotate: -20, filter: "blur(10px)" }}
               animate={{ opacity: 1, scale: 1, rotate: 0, filter: "blur(0px)" }}
-              transition={{ 
+              transition={{
                 type: "spring",
                 stiffness: 260,
                 damping: 20,
-                delay: 0.1 
+                delay: 0.1
               }}
             >
               <motion.div
-                animate={{ 
+                animate={{
                   y: [0, -3, 0],
                   filter: [
                     "drop-shadow(0px 0px 4px rgba(7, 165, 114, 0.1))",
@@ -148,9 +145,9 @@ export default function RegisterPage() {
                     "drop-shadow(0px 0px 4px rgba(7, 165, 114, 0.1))"
                   ]
                 }}
-                transition={{ 
-                  repeat: Infinity, 
-                  duration: 4, 
+                transition={{
+                  repeat: Infinity,
+                  duration: 4,
                   ease: "easeInOut",
                   delay: 0.5 // Start after entrance
                 }}
@@ -177,7 +174,7 @@ export default function RegisterPage() {
               </motion.span>
             </div>
           </div>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
@@ -187,7 +184,7 @@ export default function RegisterPage() {
           </motion.p>
         </div>
 
-        <motion.div 
+        <motion.div
           whileHover={{ y: -2 }}
           className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 space-y-6 shadow-2xl transition-colors hover:border-emerald-500/30 group"
         >
@@ -207,12 +204,12 @@ export default function RegisterPage() {
                     <FormControl>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                        <Input 
-                          placeholder="Jane Smith" 
+                        <Input
+                          placeholder="Jane Smith"
                           className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                          autoComplete="name" 
+                          autoComplete="name"
                           disabled={isSubmitting}
-                          {...field} 
+                          {...field}
                         />
                       </div>
                     </FormControl>
@@ -309,7 +306,7 @@ export default function RegisterPage() {
           </Form>
         </motion.div>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}

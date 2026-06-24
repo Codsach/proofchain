@@ -4,7 +4,6 @@ import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { ArrowRight, Shield, Zap, Lock, Database } from "lucide-react";
-import { DottedSurface } from "@/components/ui/dotted-surface";
 import HeroInteractiveWidget from "./HeroInteractiveWidget";
 
 const fadeUp: Variants = {
@@ -112,9 +111,6 @@ export default function HeroSection() {
           style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.22 }}
         />
       </motion.div>
-
-      {/* ─── User's Custom 3D Background Animation ─── */}
-      <DottedSurface className="opacity-[0.35] z-[1]" />
 
       {/* ─── Layer 2: Ambient glows ─── */}
       <motion.div

@@ -22,8 +22,6 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 
-import { NetworkParticles } from "@/components/ui/network-particles";
-
 import { Suspense } from "react";
 
 function LoginForm() {
@@ -145,7 +143,7 @@ function LoginForm() {
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
       {/* Background Network Nodes */}
       <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
-      <NetworkParticles className="opacity-70 z-[1]" />
+      
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
