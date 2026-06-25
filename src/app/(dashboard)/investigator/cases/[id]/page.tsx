@@ -79,9 +79,14 @@ export default function InvestigatorCaseDetailPage() {
   const [caseData, setCaseData] = useState<CaseDetail | null>(null);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [transfers, setTransfers] = useState<TransferEntry[]>([]);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
   const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
+
+  useEffect(() => {
+    getToken().then(setToken);
+  }, [getToken]);
 
   useEffect(() => {
     const load = async () => {
@@ -239,9 +244,22 @@ export default function InvestigatorCaseDetailPage() {
         <Link href="/investigator" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-dash-accent transition-colors flex items-center gap-2 mb-6">
           <span className="text-lg">←</span> Operative Registry
         </Link>
-        <div className="flex flex-wrap items-center gap-4">
-          <h1 className="text-3xl font-bold text-white tracking-tight">{caseData.title}</h1>
-          <CaseStatusBadge status={caseData.status} />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-4">
+            <h1 className="text-3xl font-bold text-white tracking-tight">{caseData.title}</h1>
+            <CaseStatusBadge status={caseData.status} />
+          </div>
+          {caseData.status === "verified" && token && (
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              href={`/api/cases/${caseData.caseId}/certificate?token=${token}`}
+              download
+              className="flex items-center gap-2 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg hover:bg-emerald-500/10 transition-colors text-xs font-bold uppercase tracking-wider self-start sm:self-auto"
+            >
+              ↓ Download Forensic Certificate
+            </motion.a>
+          )}
         </div>
         <p className="text-[10px] text-white/20 font-mono mt-2 tracking-widest">
           SYSTEM_UID::{caseData.caseId}

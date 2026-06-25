@@ -12,6 +12,7 @@ export type AuditActionType =
   | "case.create"
   | "case.view"
   | "case.archive"
+  | "case.export_pdf"
   | "file.upload"
   | "evidence.submit"
   | "file.ipfs_pin"

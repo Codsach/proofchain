@@ -114,11 +114,16 @@ export default function AdminCaseDetailPage() {
   const [aiReports, setAiReports] = useState<AiReport[]>([]);
   const [verdict, setVerdict] = useState<Verdict | null>(null);
   const [transfers, setTransfers] = useState<TransferEntry[]>([]);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoadingCase, setIsLoadingCase] = useState(true);
   const [isLoadingAi, setIsLoadingAi] = useState(true);
   const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
   const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
+
+  useEffect(() => {
+    getToken().then(setToken);
+  }, [getToken]);
 
   useEffect(() => {
     const load = async () => {
@@ -293,6 +298,17 @@ export default function AdminCaseDetailPage() {
               </motion.div>
             )}
           </AnimatePresence>
+          {caseData.status === "verified" && token && (
+            <motion.a
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              href={`/api/cases/${caseData.caseId}/certificate?token=${token}`}
+              download
+              className="flex items-center gap-2 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg hover:bg-emerald-500/10 transition-colors text-xs font-bold uppercase tracking-wider h-11"
+            >
+              ↓ Download Forensic Certificate
+            </motion.a>
+          )}
         </div>
       </motion.div>
 
