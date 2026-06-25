@@ -204,21 +204,22 @@ export default function InvestigatorPage() {
         ].map((stat, idx) => {
           const Icon = stat.icon;
           return (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-            className={`rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl group transition-all hover:bg-dash-hover ${stat.hoverBorder}`}
-          >
-            <div className="flex justify-between items-start mb-4">
-              <Icon className={`w-6 h-6 text-dash-muted transition-colors ${stat.hoverText}`} />
-              <p className={`text-[10px] font-bold text-dash-accent/40 uppercase tracking-widest transition-colors ${stat.hoverText}`}>{stat.label}</p>
-            </div>
-            <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-            <p className="text-[10px] text-white/20 font-bold uppercase tracking-tight group-hover:text-dash-muted transition-colors italic">{stat.desc}</p>
-          </motion.div>
-        )})}
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className={`rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl group transition-all hover:bg-dash-hover ${stat.hoverBorder}`}
+            >
+              <div className="flex justify-between items-start mb-4">
+                <Icon className={`w-6 h-6 text-dash-muted transition-colors ${stat.hoverText}`} />
+                <p className={`text-[10px] font-bold text-dash-accent/40 uppercase tracking-widest transition-colors ${stat.hoverText}`}>{stat.label}</p>
+              </div>
+              <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
+              <p className="text-[10px] text-white/20 font-bold uppercase tracking-tight group-hover:text-dash-muted transition-colors italic">{stat.desc}</p>
+            </motion.div>
+          )
+        })}
       </div>
 
       <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl">
@@ -309,12 +310,12 @@ export default function InvestigatorPage() {
           </Button>
         </div>
       ) : (
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl"
-          >
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl"
+        >
           <div className="p-6 border-b border-dash-border bg-dash-card flex items-center justify-between">
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Operational Stream</h2>
@@ -337,7 +338,7 @@ export default function InvestigatorPage() {
               <tbody className="divide-y divide-white/5">
                 <AnimatePresence>
                   {cases.map((caseItem, idx) => (
-                    <motion.tr 
+                    <motion.tr
                       key={caseItem._id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -375,7 +376,7 @@ export default function InvestigatorPage() {
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-[10px] font-bold text-dash-muted uppercase tracking-tight">
-                        {INCIDENT_TYPE_LABELS[caseItem.incidentType] ?? "N/A"}
+                          {INCIDENT_TYPE_LABELS[caseItem.incidentType] ?? "N/A"}
                         </span>
                       </td>
                       <td className="px-6 py-4">

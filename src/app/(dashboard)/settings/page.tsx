@@ -28,6 +28,7 @@ export default async function SettingsPage() {
  email: user.email as string,
  mfaEnabled: user.mfaEnabled as boolean,
  isActive: user.isActive as boolean,
+ role: user.role as "investigator" | "analyst" | "admin",
  trustedDevices: (user.trustedDevices || []).map((device: any) => ({
  deviceTokenHash: device.deviceTokenHash as string,
  expiresAt: (device.expiresAt as Date).toISOString()

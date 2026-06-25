@@ -11,51 +11,58 @@ interface Device {
 }
 
 interface SettingsTabsProps {
- user: {
- id: string;
- fullName: string;
- email: string;
- mfaEnabled: boolean;
- isActive: boolean;
- trustedDevices: Device[];
- };
+  user: {
+    id: string;
+    fullName: string;
+    email: string;
+    mfaEnabled: boolean;
+    isActive: boolean;
+    role: "investigator" | "analyst" | "admin";
+    trustedDevices: Device[];
+  };
 }
 
 export function SettingsTabs({ user }: SettingsTabsProps) {
- return (
- <Tabs defaultValue="account" className="w-full">
- <TabsList className="grid w-full grid-cols-3 border mb-6">
- <TabsTrigger 
- value="account" 
- className="font-mono text-xs uppercase text-muted-foreground data-[state=active]: data-[state=active]:text-[var(--dash-accent)]"
- >
- Account
- </TabsTrigger>
- <TabsTrigger 
- value="security" 
- className="font-mono text-xs uppercase text-muted-foreground data-[state=active]: data-[state=active]:text-[var(--dash-accent)]"
- >
- Security
- </TabsTrigger>
- <TabsTrigger 
- value="danger" 
- className="font-mono text-xs uppercase text-muted-foreground data-[state=active]:bg-rose-950/20 data-[state=active]:text-rose-500"
- >
- Danger Zone
- </TabsTrigger>
- </TabsList>
+  const roleTabsActive = {
+    investigator: "data-[state=active]:bg-dash-hover data-[state=active]:text-emerald-400",
+    analyst: "data-[state=active]:bg-dash-hover data-[state=active]:text-cyan-400",
+    admin: "data-[state=active]:bg-dash-hover data-[state=active]:text-purple-400",
+  }[user.role];
 
- <TabsContent value="account" className="mt-0 outline-none">
- <AccountSettings user={{ fullName: user.fullName, email: user.email }} />
- </TabsContent>
+  return (
+    <Tabs defaultValue="account" className="w-full">
+      <TabsList className="grid w-full grid-cols-3 bg-dash-card border border-dash-border p-1 rounded-xl mb-6 shadow-md">
+        <TabsTrigger 
+          value="account" 
+          className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}
+        >
+          Account
+        </TabsTrigger>
+        <TabsTrigger 
+          value="security" 
+          className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}
+        >
+          Security
+        </TabsTrigger>
+        <TabsTrigger 
+          value="danger" 
+          className="font-mono text-xs uppercase rounded-lg text-dash-muted transition-all data-[state=active]:bg-rose-950/20 data-[state=active]:text-rose-500"
+        >
+          Danger Zone
+        </TabsTrigger>
+      </TabsList>
 
- <TabsContent value="security" className="mt-0 outline-none">
- <SecuritySettings user={{ mfaEnabled: user.mfaEnabled, trustedDevices: user.trustedDevices }} />
- </TabsContent>
+      <TabsContent value="account" className="mt-0 outline-none">
+        <AccountSettings role={user.role} user={{ fullName: user.fullName, email: user.email }} />
+      </TabsContent>
 
- <TabsContent value="danger" className="mt-0 outline-none">
- <DangerZone />
- </TabsContent>
- </Tabs>
- );
+      <TabsContent value="security" className="mt-0 outline-none">
+        <SecuritySettings role={user.role} user={{ mfaEnabled: user.mfaEnabled, trustedDevices: user.trustedDevices }} />
+      </TabsContent>
+
+      <TabsContent value="danger" className="mt-0 outline-none">
+        <DangerZone />
+      </TabsContent>
+    </Tabs>
+  );
 }
