@@ -44,6 +44,8 @@ interface CaseDetail {
   investigatorId: UserProfile | null;
   currentCustodian: UserProfile;
   onChainTxHash: string | null;
+  overallTamperScore: number | null;
+  overallRiskLevel: "low" | "medium" | "high" | null;
 }
 
 interface Verdict {
@@ -327,6 +329,87 @@ export default function InvestigatorCaseDetailPage() {
         </div>
       </motion.div>
 
+      {/* Neural Scan Diagnostics */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15 }}
+        className="space-y-4"
+      >
+        <div className="flex items-center gap-4">
+          <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Neural Intelligence</h2>
+          <div className="h-px flex-1 bg-dash-border" />
+        </div>
+
+        {caseData.status === "pending_ai_review" ? (
+          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 relative overflow-hidden group shadow-lg">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-1.5 flex-1">
+                <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                  </span>
+                  Neural Diagnostics Scanning in Progress
+                </p>
+                <p className="text-xs text-white/60 leading-relaxed font-normal">
+                  The automated AI system is executing deep forensic scans on metadata, EXIF profiles, software fingerprints, and spatial geotags for all uploaded assets. Please stand by...
+                </p>
+              </div>
+              <div className="shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-black/45 border border-blue-500/10">
+                <span className="text-xs font-bold text-blue-400 animate-pulse">SCAN</span>
+              </div>
+            </div>
+            {/* Animated scanning bar overlay */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500/20">
+              <div className="h-full bg-blue-500 w-1/3 rounded-full animate-pulse" />
+            </div>
+          </div>
+        ) : caseData.overallRiskLevel ? (
+          <div className={`rounded-2xl border p-6 relative overflow-hidden group shadow-lg transition-all duration-300 ${
+            caseData.overallRiskLevel === "high"
+              ? "bg-red-500/5 border-red-500/20"
+              : caseData.overallRiskLevel === "medium"
+              ? "bg-amber-500/5 border-amber-500/20"
+              : "bg-emerald-500/5 border-emerald-500/20"
+          }`}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="space-y-1.5 flex-1">
+                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+                  Overall Risk Assessment
+                </p>
+                <h3 className="text-base font-bold text-white tracking-tight">
+                  <span className="uppercase">{caseData.overallRiskLevel} RISK IDENTIFIED</span>
+                </h3>
+                <p className="text-xs text-white/60 leading-relaxed font-normal">
+                  {caseData.overallRiskLevel === "high"
+                    ? "High probability of image/metadata manipulation detected. Discrepancies found in file structures."
+                    : caseData.overallRiskLevel === "medium"
+                    ? "Minor anomalies flagged in file structures or metadata edits. Manual analyst review suggested."
+                    : "Digital signatures, EXIF timestamps, and structure formats verified authentic with low tamper flags."}
+                </p>
+              </div>
+              <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-black/35 border border-white/5 min-w-[75px]">
+                <span className="text-[8px] font-bold text-white/30 uppercase tracking-wider mb-0.5">SCORE</span>
+                <span className={`text-base font-extrabold ${
+                  caseData.overallRiskLevel === "high"
+                    ? "text-red-400"
+                    : caseData.overallRiskLevel === "medium"
+                    ? "text-amber-400"
+                    : "text-emerald-400"
+                }`}>
+                  {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "--"}
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
+            <p className="text-xs text-white/30">AI Analysis not executed or awaiting upload process.</p>
+          </div>
+        )}
+      </motion.div>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -370,6 +453,14 @@ export default function InvestigatorCaseDetailPage() {
                   <p className="text-[10px] font-mono text-dash-accent/40 break-all bg-black/40 rounded-xl px-4 py-2 border border-dash-border">
                     {file.sha256Hash}
                   </p>
+                  {file.gpsLat !== null && file.gpsLng !== null && (
+                    <div className="pt-2 flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
+                      <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+                        Geotag Signature: {file.gpsLat.toFixed(5)}°, {file.gpsLng.toFixed(5)}°
+                      </span>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
