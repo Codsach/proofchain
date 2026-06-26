@@ -1,25 +1,375 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
+import type {
+  VolumeDataPoint,
+  RiskDataPoint,
+  StatusDataPoint,
+  TamperDataPoint,
+  UserCounts,
+  AuditLogEntry,
+} from "@/components/admin/DashboardCharts";
+import {
+  Database,
+  Cpu,
+  Link2,
+  RefreshCw,
+  Users,
+  FileText,
+  Briefcase,
+  TrendingUp,
+  Clock,
+  ShieldAlert,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
+} from "lucide-react";
 
-interface Stats {
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+interface CaseStats {
   total: number;
   pending: number;
   highRisk: number;
   verified: number;
 }
 
+interface ServiceStatus {
+  ok: boolean;
+  latencyMs: number;
+}
+
+interface SystemStatus {
+  timestamp: string;
+  services: {
+    database: ServiceStatus;
+    aiService: ServiceStatus;
+    blockchain: ServiceStatus;
+  };
+}
+
+interface ChartData {
+  volumeData: VolumeDataPoint[];
+  riskData: RiskDataPoint[];
+  statusData: StatusDataPoint[];
+  tamperData: TamperDataPoint[];
+  userCounts: UserCounts;
+}
+
+// ─── Animation variants ──────────────────────────────────────────────────────
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+};
+
+// ─── System Health Bar ───────────────────────────────────────────────────────
+
+function ServiceDot({
+  label,
+  icon: Icon,
+  status,
+  isLoading,
+}: {
+  label: string;
+  icon: React.ElementType;
+  status?: ServiceStatus;
+  isLoading: boolean;
+}) {
+  const ok = status?.ok ?? false;
+  const latency = status?.latencyMs ?? 0;
+
+  return (
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center gap-2 cursor-default">
+            <Icon size={13} className="text-dash-muted shrink-0" />
+            {isLoading ? (
+              <Skeleton className="h-2 w-2 rounded-full bg-dash-border" />
+            ) : (
+              <span
+                className={`relative inline-flex h-2 w-2 rounded-full ${
+                  ok ? "bg-emerald-500" : "bg-rose-500"
+                }`}
+              >
+                {ok && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
+                )}
+              </span>
+            )}
+            <span className="text-xs text-dash-muted font-medium hidden sm:block">{label}</span>
+            {!isLoading && latency > 0 && (
+              <span className="text-[10px] text-dash-muted/60 hidden md:block">
+                {latency}ms
+              </span>
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          className="bg-dash-card border-dash-border text-dash-text text-xs"
+        >
+          {isLoading
+            ? "Checking…"
+            : ok
+            ? `${label} operational · ${latency}ms`
+            : `${label} unreachable`}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
+function SystemHealthBar({
+  status,
+  isLoading,
+  onRefresh,
+  isRefreshing,
+}: {
+  status: SystemStatus | null;
+  isLoading: boolean;
+  onRefresh: () => void;
+  isRefreshing: boolean;
+}) {
+  const services = [
+    { label: "Database", icon: Database, key: "database" as const },
+    { label: "AI Service", icon: Cpu, key: "aiService" as const },
+    { label: "Blockchain", icon: Link2, key: "blockchain" as const },
+  ];
+
+  const allOk =
+    status?.services &&
+    Object.values(status.services).every((s) => s.ok);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: -8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex items-center justify-between rounded-xl border border-dash-border bg-dash-card/60 backdrop-blur-sm px-4 py-2.5 gap-4"
+    >
+      <div className="flex items-center gap-1.5">
+        <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em] hidden sm:block">
+          System Status
+        </span>
+        {!isLoading && status && (
+          <Badge
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0 h-5 border ${
+              allOk
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+            }`}
+          >
+            {allOk ? "Nominal" : "Degraded"}
+          </Badge>
+        )}
+      </div>
+
+      <div className="flex items-center gap-4 sm:gap-6 flex-1 justify-center">
+        {services.map(({ label, icon, key }) => (
+          <ServiceDot
+            key={key}
+            label={label}
+            icon={icon}
+            status={status?.services[key]}
+            isLoading={isLoading}
+          />
+        ))}
+      </div>
+
+      <button
+        onClick={onRefresh}
+        disabled={isRefreshing || isLoading}
+        className="flex items-center gap-1.5 text-[10px] font-bold text-dash-muted hover:text-dash-text uppercase tracking-wider transition-colors disabled:opacity-40"
+      >
+        <RefreshCw
+          size={12}
+          className={isRefreshing ? "animate-spin" : ""}
+        />
+        <span className="hidden sm:block">Refresh</span>
+      </button>
+    </motion.div>
+  );
+}
+
+// ─── Stat Card ───────────────────────────────────────────────────────────────
+
+interface StatCardProps {
+  label: string;
+  value?: number;
+  icon: React.ElementType;
+  color: string;
+  glowColor: string;
+  borderColor: string;
+  trend?: string;
+  isLoading: boolean;
+}
+
+function StatCard({
+  label,
+  value,
+  icon: Icon,
+  color,
+  glowColor,
+  borderColor,
+  trend,
+  isLoading,
+}: StatCardProps) {
+  return (
+    <motion.div
+      variants={itemVariants}
+      whileHover={{ y: -4, scale: 1.02 }}
+      className={`relative overflow-hidden rounded-2xl border bg-dash-card backdrop-blur-xl p-6 space-y-3 group transition-all duration-300 hover:border-opacity-60 ${borderColor}`}
+    >
+      {/* Background glow blob */}
+      <div
+        className={`absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl ${glowColor}`}
+      />
+
+      <div className="flex items-start justify-between">
+        <div className={`inline-flex p-2 rounded-lg bg-dash-border/60`}>
+          <Icon size={16} className={color} />
+        </div>
+        {trend && !isLoading && (
+          <span className={`text-[10px] font-bold ${color} flex items-center gap-0.5`}>
+            <TrendingUp size={10} />
+            {trend}
+          </span>
+        )}
+      </div>
+
+      <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest leading-none">
+        {label}
+      </p>
+
+      {isLoading ? (
+        <Skeleton className="h-10 w-16 bg-dash-border" />
+      ) : (
+        <p className={`text-4xl font-black tracking-tight ${color}`}>
+          {value ?? 0}
+        </p>
+      )}
+
+      {/* Bottom accent bar */}
+      <div
+        className={`absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 ${glowColor.replace("bg-", "bg-").replace("/20", "")}`}
+      />
+    </motion.div>
+  );
+}
+
+// ─── Quick Link Card ─────────────────────────────────────────────────────────
+
+interface QuickLinkProps {
+  label: string;
+  desc: string;
+  href: string;
+  icon: React.ElementType;
+  accentColor: string;
+  hoverBorder: string;
+  hoverText: string;
+  btnHover: string;
+  delay: number;
+}
+
+function QuickLinkCard({
+  label,
+  desc,
+  href,
+  icon: Icon,
+  accentColor,
+  hoverBorder,
+  hoverText,
+  btnHover,
+  delay,
+}: QuickLinkProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.35 }}
+      whileHover={{ y: -3 }}
+      className={`group relative rounded-2xl border border-dash-border bg-dash-card p-1 transition-all duration-300 shadow-xl ${hoverBorder}`}
+    >
+      <div className="p-5 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className={`inline-flex p-2.5 rounded-xl ${accentColor} transition-colors`}>
+            <Icon size={18} className="text-dash-text" />
+          </div>
+          <div>
+            <p className={`text-sm font-bold text-dash-text transition-colors ${hoverText}`}>
+              {label}
+            </p>
+            <p className="text-xs text-dash-muted leading-relaxed mt-0.5">{desc}</p>
+          </div>
+        </div>
+
+        <Button
+          asChild
+          variant="ghost"
+          className={`w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:text-[#050505] text-dash-text transition-all rounded-xl ${btnHover}`}
+        >
+          <Link href={href}>
+            <span className="text-[10px] font-bold uppercase tracking-wider">Access Module</span>
+            <span className="text-lg opacity-50 group-hover:translate-x-1 transition-transform inline-block">
+              →
+            </span>
+          </Link>
+        </Button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
+
+const DEFAULT_USER_COUNTS: UserCounts = {
+  investigator: { total: 0, active: 0 },
+  analyst: { total: 0, active: 0 },
+  admin: { total: 0, active: 0 },
+};
+
+const EMPTY_VOLUME: VolumeDataPoint[] = [];
+const EMPTY_RISK: RiskDataPoint[] = [];
+const EMPTY_STATUS: StatusDataPoint[] = [];
+const EMPTY_TAMPER: TamperDataPoint[] = [];
+
 export default function AdminPage() {
   const { user, getToken } = useAuth();
-  const [stats, setStats] = useState<Stats | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
+  const [caseStats, setCaseStats] = useState<CaseStats | null>(null);
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
+  const [chartData, setChartData] = useState<ChartData | null>(null);
+  const [recentActivity, setRecentActivity] = useState<AuditLogEntry[]>([]);
+
+  const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isLoadingSystem, setIsLoadingSystem] = useState(true);
+  const [isLoadingCharts, setIsLoadingCharts] = useState(true);
+  const [isRefreshingSystem, setIsRefreshingSystem] = useState(false);
+
+  // ── Fetch case stats ──
   useEffect(() => {
     const load = async () => {
       try {
@@ -27,133 +377,237 @@ export default function AdminPage() {
         const res = await fetch("/api/admin/cases/stats", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.ok) setStats(await res.json());
+        if (res.ok) setCaseStats(await res.json());
       } catch {
-        // Stats are non-critical
+        /* non-critical */
       } finally {
-        setIsLoading(false);
+        setIsLoadingStats(false);
       }
     };
     load();
   }, [getToken]);
 
-  const statCards = [
-    { label: "Total Cases", value: stats?.total, color: "text-dash-text", glow: "emerald" },
-    { label: "Pending Review", value: stats?.pending, color: "text-amber-400", glow: "amber" },
-    { label: "High Risk", value: stats?.highRisk, color: "text-rose-500", glow: "rose" },
-    { label: "Verified Data", value: stats?.verified, color: "text-dash-accent", glow: "emerald" },
+  // ── Fetch system status ──
+  const loadSystemStatus = useCallback(
+    async (isManualRefresh = false) => {
+      if (isManualRefresh) setIsRefreshingSystem(true);
+      else setIsLoadingSystem(true);
+      try {
+        const token = await getToken();
+        const res = await fetch("/api/admin/system-status", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) setSystemStatus(await res.json());
+      } catch {
+        /* non-critical */
+      } finally {
+        setIsLoadingSystem(false);
+        setIsRefreshingSystem(false);
+      }
+    },
+    [getToken]
+  );
+
+  useEffect(() => {
+    loadSystemStatus();
+  }, [loadSystemStatus]);
+
+  // ── Fetch chart data + recent activity ──
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const token = await getToken();
+        const [chartsRes, activityRes] = await Promise.all([
+          fetch("/api/admin/stats/charts", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          fetch("/api/admin/audit-log?limit=8", {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+        if (chartsRes.ok) setChartData(await chartsRes.json());
+        if (activityRes.ok) {
+          const data = await activityRes.json();
+          setRecentActivity(data.logs ?? []);
+        }
+      } catch {
+        /* non-critical */
+      } finally {
+        setIsLoadingCharts(false);
+      }
+    };
+    load();
+  }, [getToken]);
+
+  const isChartsLoading = isLoadingCharts;
+
+  const statCards: StatCardProps[] = [
+    {
+      label: "Total Cases",
+      value: caseStats?.total,
+      icon: Briefcase,
+      color: "text-emerald-400",
+      glowColor: "bg-emerald-500/20",
+      borderColor: "border-emerald-500/10 hover:border-emerald-500/30",
+      isLoading: isLoadingStats,
+    },
+    {
+      label: "Pending Review",
+      value: caseStats?.pending,
+      icon: Clock,
+      color: "text-amber-400",
+      glowColor: "bg-amber-500/20",
+      borderColor: "border-amber-500/10 hover:border-amber-500/30",
+      isLoading: isLoadingStats,
+    },
+    {
+      label: "High Risk",
+      value: caseStats?.highRisk,
+      icon: ShieldAlert,
+      color: "text-rose-400",
+      glowColor: "bg-rose-500/20",
+      borderColor: "border-rose-500/10 hover:border-rose-500/30",
+      isLoading: isLoadingStats,
+    },
+    {
+      label: "Verified",
+      value: caseStats?.verified,
+      icon: CheckCircle2,
+      color: "text-dash-accent",
+      glowColor: "bg-emerald-500/20",
+      borderColor: "border-dash-border hover:border-emerald-500/20",
+      isLoading: isLoadingStats,
+    },
   ];
 
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
-  };
+  const quickLinks: QuickLinkProps[] = [
+    {
+      label: "Identity & Access",
+      desc: "Manage analysts, investigators and admin accounts",
+      href: "/admin/users",
+      icon: Users,
+      accentColor: "bg-blue-500/15 group-hover:bg-blue-500/25",
+      hoverBorder: "hover:border-blue-500/30",
+      hoverText: "group-hover:text-blue-400",
+      btnHover: "hover:bg-blue-500 hover:border-blue-500 hover:text-black group-hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]",
+      delay: 0.4,
+    },
+    {
+      label: "Operational Audit",
+      desc: "Cryptographically signed log of all system events",
+      href: "/admin/audit",
+      icon: FileText,
+      accentColor: "bg-amber-500/15 group-hover:bg-amber-500/25",
+      hoverBorder: "hover:border-amber-500/30",
+      hoverText: "group-hover:text-amber-400",
+      btnHover: "hover:bg-amber-500 hover:border-amber-500 hover:text-black group-hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]",
+      delay: 0.5,
+    },
+    {
+      label: "Global Repository",
+      desc: "Full access to all evidence cases and metadata",
+      href: "/admin/cases",
+      icon: Briefcase,
+      accentColor: "bg-emerald-500/15 group-hover:bg-emerald-500/25",
+      hoverBorder: "hover:border-emerald-500/30",
+      hoverText: "group-hover:text-emerald-400",
+      btnHover: "hover:bg-emerald-500 hover:border-emerald-500 hover:text-black group-hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]",
+      delay: 0.6,
+    },
+  ];
 
   return (
-    <div className="space-y-10">
-      <div className="relative">
+    <div className="space-y-8 pb-10">
+
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="relative"
+      >
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-dash-accent/50" />
-          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">System Overview</p>
+          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">
+            System Overview
+          </p>
         </div>
-        <h1 className="text-4xl font-bold text-dash-text tracking-tight">Admin Dashboard</h1>
-        <p className="text-dash-muted mt-2 font-medium">
-          Welcome back, <span className="text-dash-text">{user?.fullName}</span>. Operational status is nominal.
-        </p>
-      </div>
+        <div className="flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-dash-text tracking-tight">Admin Dashboard</h1>
+            <p className="text-dash-muted mt-1.5 font-medium text-sm">
+              Welcome back,{" "}
+              <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.
+              Here&apos;s your operational overview.
+            </p>
+          </div>
+          <AnimatePresence>
+            {!isLoadingStats && caseStats && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2"
+              >
+                <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest px-3 h-7">
+                  <span className="relative flex h-2 w-2 mr-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  Live
+                </Badge>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
 
-      {/* Stats */}
-      <motion.div 
-        variants={container}
+      {/* System Health Bar */}
+      <SystemHealthBar
+        status={systemStatus}
+        isLoading={isLoadingSystem}
+        onRefresh={() => loadSystemStatus(true)}
+        isRefreshing={isRefreshingSystem}
+      />
+
+      {/* Stat Cards */}
+      <motion.div
+        variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-2 lg:grid-cols-4 gap-5"
       >
         {statCards.map((card) => (
-          <motion.div 
-            variants={item}
-            key={card.label} 
-            whileHover={{ y: -4, scale: 1.02 }}
-            className="relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-3 group transition-all hover:border-dash-muted/20"
-          >
-            <div className="absolute top-0 right-0 w-24 h-24 bg-dash-hover rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-700" />
-            <p className="text-xs font-bold text-dash-muted uppercase tracking-widest leading-none">{card.label}</p>
-            <div className="flex items-baseline gap-2">
-              {isLoading ? (
-                <Skeleton className="h-10 w-16 bg-dash-border" />
-              ) : (
-                <p className={`text-4xl font-bold tracking-tight ${card.color}`}>
-                  {card.value ?? "0"}
-                </p>
-              )}
-            </div>
-            <div className={`h-1 w-8 rounded-full transition-all duration-500 group-hover:w-full ${
-              card.glow === "emerald" ? "bg-dash-accent shadow-[0_0_10px_var(--dash-accent-glow)]" :
-              card.glow === "amber" ? "bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" :
-              "bg-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]"
-            }`} />
-          </motion.div>
+          <StatCard key={card.label} {...card} />
         ))}
       </motion.div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-        {[
-          { 
-            label: "Identity & Access", desc: "Manage system analysts and investigator accounts", href: "/admin/users",
-            hoverBorder: "hover:border-blue-500/30",
-            hoverText: "group-hover:text-blue-400",
-            btnHover: "hover:bg-blue-500 hover:border-blue-500 group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]"
-          },
-          { 
-            label: "Operational Audit", desc: "Cryptographically signed history of all system events", href: "/admin/audit",
-            hoverBorder: "hover:border-amber-500/30",
-            hoverText: "group-hover:text-amber-400",
-            btnHover: "hover:bg-amber-500 hover:border-amber-500 group-hover:shadow-[0_0_20px_rgba(245,158,11,0.3)]"
-          },
-          { 
-            label: "Global Repository", desc: "Universal access to all evidence cases and metadata", href: "/admin/cases",
-            hoverBorder: "hover:border-emerald-500/30",
-            hoverText: "group-hover:text-emerald-400",
-            btnHover: "hover:bg-emerald-500 hover:border-emerald-500 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-          },
-        ].map((link, idx) => (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 + (idx * 0.1) }}
-            key={link.href}
-            className={`group relative rounded-2xl border border-dash-border bg-dash-card hover:bg-dash-hover p-1 transition-all duration-300 shadow-2xl ${link.hoverBorder}`}
-          >
-            <div className="p-6 space-y-4">
-              <div className="space-y-1">
-                <p className={`text-sm font-bold text-dash-text transition-colors ${link.hoverText}`}>{link.label}</p>
-                <p className="text-xs text-dash-muted leading-relaxed font-medium">{link.desc}</p>
-              </div>
-              
-              <Button asChild variant="ghost" className={`w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:text-[#050505] text-dash-text transition-all rounded-xl ${link.btnHover}`}>
-                <Link href={link.href}>
-                  <span className="text-[10px] font-bold uppercase tracking-wider">Access Module</span>
-                  <span className="text-lg opacity-50 group-hover:translate-x-1 transition-transform">→</span>
-                </Link>
-              </Button>
-            </div>
-          </motion.div>
+      {/* Quick Links */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {quickLinks.map((link) => (
+          <QuickLinkCard key={link.href} {...link} />
         ))}
       </div>
 
-      {/* Analytics Charts */}
-      <DashboardCharts />
+      {/* Divider */}
+      <div className="flex items-center gap-4">
+        <div className="h-px flex-1 bg-dash-border" />
+        <p className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.3em] flex items-center gap-2">
+          {isChartsLoading && <Loader2 size={10} className="animate-spin" />}
+          Analytics
+        </p>
+        <div className="h-px flex-1 bg-dash-border" />
+      </div>
+
+      {/* Charts Section */}
+      <DashboardCharts
+        volumeData={chartData?.volumeData ?? EMPTY_VOLUME}
+        riskData={chartData?.riskData ?? EMPTY_RISK}
+        statusData={chartData?.statusData ?? EMPTY_STATUS}
+        tamperData={chartData?.tamperData ?? EMPTY_TAMPER}
+        userCounts={chartData?.userCounts ?? DEFAULT_USER_COUNTS}
+        recentActivity={recentActivity}
+        isLoading={isChartsLoading}
+      />
     </div>
   );
-}
+}
