@@ -78,13 +78,13 @@ export function AnalystMetrics() {
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Queue Status</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Queue Status</p>
             {isLoading ? (
               <Skeleton className="h-8 w-24 bg-dash-hover" />
             ) : (
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-white">{metrics?.assignedThisWeek ?? 0}</span>
-                <span className="text-xs text-white/50">pending</span>
+                <span className="text-3xl font-bold text-dash-text">{metrics?.assignedThisWeek ?? 0}</span>
+                <span className="text-xs text-dash-muted">pending</span>
               </div>
             )}
           </div>
@@ -93,9 +93,9 @@ export function AnalystMetrics() {
           </div>
         </div>
         {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-white/5 flex justify-between items-center text-xs">
-            <span className="text-white/40">Completed this week</span>
-            <span className="font-bold text-emerald-400">+{metrics?.completedThisWeek ?? 0}</span>
+          <div className="mt-4 pt-4 border-t border-dash-border flex justify-between items-center text-xs">
+            <span className="text-dash-muted">Completed this week</span>
+            <span className="font-bold text-emerald-500">+{metrics?.completedThisWeek ?? 0}</span>
           </div>
         )}
       </motion.div>
@@ -109,13 +109,13 @@ export function AnalystMetrics() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Accuracy Rate</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Accuracy Rate</p>
             {isLoading ? (
               <Skeleton className="h-8 w-24 bg-dash-hover" />
             ) : (
               <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-white">{metrics?.verdictAccuracyRate ?? 100}</span>
-                <span className="text-xl text-white/50">%</span>
+                <span className="text-3xl font-bold text-dash-text">{metrics?.verdictAccuracyRate ?? 100}</span>
+                <span className="text-xl text-dash-muted">%</span>
               </div>
             )}
           </div>
@@ -124,8 +124,8 @@ export function AnalystMetrics() {
           </div>
         </div>
         {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-white/5 text-xs">
-            <span className="text-white/40">Alignment with AI consensus</span>
+          <div className="mt-4 pt-4 border-t border-dash-border text-xs">
+            <span className="text-dash-muted">Alignment with AI consensus</span>
           </div>
         )}
       </motion.div>
@@ -139,16 +139,16 @@ export function AnalystMetrics() {
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">Avg Review Time</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Avg Review Time</p>
             {isLoading ? (
               <Skeleton className="h-8 w-24 bg-dash-hover" />
             ) : (
               <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-white">
+                <span className="text-3xl font-bold text-dash-text">
                   {metrics?.completedThisWeek === 0 ? "N/A" : (metrics?.averageReviewTimeHours ?? 0)}
                 </span>
                 {metrics?.completedThisWeek !== 0 && (
-                  <span className="text-xs text-white/50">hrs / case</span>
+                  <span className="text-xs text-dash-muted">hrs / case</span>
                 )}
               </div>
             )}
@@ -158,8 +158,8 @@ export function AnalystMetrics() {
           </div>
         </div>
         {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-white/5 text-xs">
-            <span className="text-white/40">Time from ingest to verdict</span>
+          <div className="mt-4 pt-4 border-t border-dash-border text-xs">
+            <span className="text-dash-muted">Time from ingest to verdict</span>
           </div>
         )}
       </motion.div>
@@ -172,13 +172,13 @@ export function AnalystMetrics() {
         <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-rose-400/70">High-Risk Alert</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500 dark:text-rose-400/90">High-Risk Alert</p>
             {isLoading ? (
               <Skeleton className="h-8 w-24 bg-dash-hover" />
             ) : (
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-rose-400">{metrics?.highRiskAlerts ?? 0}</span>
-                <span className="text-xs text-rose-400/50">critical</span>
+                <span className="text-3xl font-bold text-rose-500 dark:text-rose-400">{metrics?.highRiskAlerts ?? 0}</span>
+                <span className="text-xs text-rose-500/80 dark:text-rose-400/50">critical</span>
               </div>
             )}
           </div>
@@ -187,8 +187,8 @@ export function AnalystMetrics() {
           </div>
         </div>
         {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-rose-500/10 text-xs">
-            <span className="text-rose-400/60">Tamper score {'>'} 70 pending</span>
+          <div className="mt-4 pt-4 border-t border-rose-500/10 dark:border-rose-500/20 text-xs">
+            <span className="text-rose-600 dark:text-rose-400/60">Tamper score {'>'} 70 pending</span>
           </div>
         )}
       </motion.div>

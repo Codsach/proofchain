@@ -44,7 +44,7 @@ export default function DashboardLayout({
         <main className="relative z-10 flex-1 h-full flex flex-col overflow-hidden">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-sidebar)]/50 backdrop-blur-xl px-4 w-full">
             <SidebarTrigger className="-ml-1 text-dash-muted hover:text-dash-accent transition-colors" />
-            {user.role === "admin" && (
+            {(user.role === "admin" || user.role === "analyst" || user.role === "investigator") && (
               <div className="ml-auto">
                 <ThemeToggle />
               </div>

@@ -180,8 +180,8 @@ export default function InvestigatorCaseDetailPage() {
 
   if (!caseData) {
     return (
-      <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-24 text-center backdrop-blur-2xl">
-        <p className="text-white/30 text-sm font-medium">Forensic record not located.</p>
+      <div className="rounded-3xl border border-dash-border bg-dash-card p-24 text-center backdrop-blur-2xl">
+        <p className="text-dash-muted text-sm font-medium">Forensic record not located.</p>
         <Link href="/investigator" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
           ← Back to Registry
         </Link>
@@ -243,12 +243,12 @@ export default function InvestigatorCaseDetailPage() {
   return (
     <div className="space-y-10 pb-10 max-w-3xl">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-        <Link href="/investigator" className="text-[10px] font-bold uppercase tracking-widest text-white/30 hover:text-dash-accent transition-colors flex items-center gap-2 mb-6">
+        <Link href="/investigator" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2 mb-6">
           <span className="text-lg">←</span> Operative Registry
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4">
-            <h1 className="text-3xl font-bold text-white tracking-tight">{caseData.title}</h1>
+            <h1 className="text-3xl font-bold text-dash-text tracking-tight">{caseData.title}</h1>
             <CaseStatusBadge status={caseData.status} />
           </div>
           {caseData.status === "verified" && token && (
@@ -263,7 +263,7 @@ export default function InvestigatorCaseDetailPage() {
             </motion.a>
           )}
         </div>
-        <p className="text-[10px] text-white/20 font-mono mt-2 tracking-widest">
+        <p className="text-[10px] text-dash-muted/60 font-mono mt-2 tracking-widest">
           SYSTEM_UID::{caseData.caseId}
         </p>
       </motion.div>
@@ -280,19 +280,19 @@ export default function InvestigatorCaseDetailPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 text-sm">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Incident Taxonomy</p>
-            <p className="text-white font-medium">{INCIDENT_LABELS[caseData.incidentType] ?? caseData.incidentType}</p>
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Incident Taxonomy</p>
+            <p className="text-dash-text font-medium">{INCIDENT_LABELS[caseData.incidentType] ?? caseData.incidentType}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Temporal Log (Origin)</p>
-            <p className="text-white font-medium">{new Date(caseData.incidentDate).toLocaleDateString()}</p>
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Temporal Log (Origin)</p>
+            <p className="text-dash-text font-medium">{new Date(caseData.incidentDate).toLocaleDateString()}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Submission Sequence</p>
-            <p className="text-white font-medium">{new Date(caseData.createdAt).toLocaleString()}</p>
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Submission Sequence</p>
+            <p className="text-dash-text font-medium">{new Date(caseData.createdAt).toLocaleString()}</p>
           </div>
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">On-Chain Anchor</p>
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">On-Chain Anchor</p>
             {caseData.onChainTxHash ? (
               <a
                 href={`https://amoy.polygonscan.com/tx/${caseData.onChainTxHash}`}
@@ -304,28 +304,28 @@ export default function InvestigatorCaseDetailPage() {
                 <span className="text-[10px] opacity-0 group-hover/link:opacity-100 transition-opacity">↗</span>
               </a>
             ) : (
-              <p className="text-white/20 italic font-medium">Awaiting cryptographic anchoring…</p>
+              <p className="text-dash-muted/40 italic font-medium">Awaiting cryptographic anchoring…</p>
             )}
           </div>
           <div className="space-y-1">
-            <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Tags / Labels</p>
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Tags / Labels</p>
             {caseData.tags && caseData.tags.length > 0 ? (
               <div className="flex flex-wrap gap-2 mt-1">
                 {caseData.tags.map((tag) => (
-                  <span key={tag} className="text-[10px] font-bold uppercase tracking-widest bg-dash-border/30 text-white/60 px-2 py-1 rounded border border-dash-border/50">
+                  <span key={tag} className="text-[10px] font-bold uppercase tracking-widest bg-dash-input text-dash-muted px-2 py-1 rounded border border-dash-border">
                     {tag}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-white/20 italic font-medium text-sm">None assigned</p>
+              <p className="text-dash-muted italic font-medium text-sm">None assigned</p>
             )}
           </div>
         </div>
 
         <div className="pt-4 border-t border-dash-border space-y-2">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Operational Intel</p>
-          <p className="text-sm text-white/70 leading-relaxed font-normal">{caseData.description}</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Operational Intel</p>
+          <p className="text-sm text-dash-muted leading-relaxed font-normal">{caseData.description}</p>
         </div>
       </motion.div>
 
@@ -337,7 +337,7 @@ export default function InvestigatorCaseDetailPage() {
         className="space-y-4"
       >
         <div className="flex items-center gap-4">
-          <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Neural Intelligence</h2>
+          <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Intelligence</h2>
           <div className="h-px flex-1 bg-dash-border" />
         </div>
 
@@ -352,11 +352,11 @@ export default function InvestigatorCaseDetailPage() {
                   </span>
                   Neural Diagnostics Scanning in Progress
                 </p>
-                <p className="text-xs text-white/60 leading-relaxed font-normal">
+                <p className="text-xs text-dash-muted leading-relaxed font-normal">
                   The automated AI system is executing deep forensic scans on metadata, EXIF profiles, software fingerprints, and spatial geotags for all uploaded assets. Please stand by...
                 </p>
               </div>
-              <div className="shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-black/45 border border-blue-500/10">
+              <div className="shrink-0 flex items-center justify-center h-12 w-12 rounded-xl bg-dash-input border border-blue-500/20">
                 <span className="text-xs font-bold text-blue-400 animate-pulse">SCAN</span>
               </div>
             </div>
@@ -375,13 +375,13 @@ export default function InvestigatorCaseDetailPage() {
           }`}>
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-1.5 flex-1">
-                <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+                <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">
                   Overall Risk Assessment
                 </p>
-                <h3 className="text-base font-bold text-white tracking-tight">
+                <h3 className="text-base font-bold text-dash-text tracking-tight">
                   <span className="uppercase">{caseData.overallRiskLevel} RISK IDENTIFIED</span>
                 </h3>
-                <p className="text-xs text-white/60 leading-relaxed font-normal">
+                <p className="text-xs text-dash-muted leading-relaxed font-normal">
                   {caseData.overallRiskLevel === "high"
                     ? "High probability of image/metadata manipulation detected. Discrepancies found in file structures."
                     : caseData.overallRiskLevel === "medium"
@@ -389,8 +389,8 @@ export default function InvestigatorCaseDetailPage() {
                     : "Digital signatures, EXIF timestamps, and structure formats verified authentic with low tamper flags."}
                 </p>
               </div>
-              <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-black/35 border border-white/5 min-w-[75px]">
-                <span className="text-[8px] font-bold text-white/30 uppercase tracking-wider mb-0.5">SCORE</span>
+              <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-dash-bg border border-dash-border min-w-[75px]">
+                <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-0.5">SCORE</span>
                 <span className={`text-base font-extrabold ${
                   caseData.overallRiskLevel === "high"
                     ? "text-red-400"
@@ -404,8 +404,8 @@ export default function InvestigatorCaseDetailPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 text-center">
-            <p className="text-xs text-white/30">AI Analysis not executed or awaiting upload process.</p>
+          <div className="rounded-2xl border border-dash-border bg-dash-input/50 p-6 text-center">
+            <p className="text-xs text-dash-muted">AI Analysis not executed or awaiting upload process.</p>
           </div>
         )}
       </motion.div>
@@ -417,9 +417,9 @@ export default function InvestigatorCaseDetailPage() {
         className="space-y-6"
       >
         <div className="flex items-center gap-4">
-          <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Enclosed Artifacts</h2>
+          <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Enclosed Artifacts</h2>
           <div className="h-px flex-1 bg-dash-border" />
-          <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">{caseData.files.length} Modules</span>
+          <span className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">{caseData.files.length} Modules</span>
         </div>
 
         <div className="grid grid-cols-1 gap-4">
@@ -430,12 +430,12 @@ export default function InvestigatorCaseDetailPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + idx * 0.05 }}
-                className="rounded-2xl border border-dash-border bg-dash-sidebar hover:bg-dash-hover transition-all p-5 space-y-4 group/file"
+                className="rounded-2xl border border-dash-border bg-dash-card hover:bg-dash-hover transition-all p-5 space-y-4 group/file"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-white truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
-                    <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-0.5">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
+                    <p className="text-sm font-bold text-dash-text truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
+                    <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
                   </div>
                   <motion.a
                     whileHover={{ scale: 1.05 }}
@@ -449,14 +449,14 @@ export default function InvestigatorCaseDetailPage() {
                   </motion.a>
                 </div>
                 <div className="space-y-1.5 pt-1">
-                  <p className="text-[9px] font-bold text-white/20 uppercase tracking-widest">Digital Fingerprint (SHA-256)</p>
-                  <p className="text-[10px] font-mono text-dash-accent/40 break-all bg-black/40 rounded-xl px-4 py-2 border border-dash-border">
+                  <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">Digital Fingerprint (SHA-256)</p>
+                  <p className="text-[10px] font-mono text-dash-accent/80 dark:text-dash-accent/40 break-all bg-dash-input rounded-xl px-4 py-2 border border-dash-border">
                     {file.sha256Hash}
                   </p>
                   {file.gpsLat !== null && file.gpsLng !== null && (
                     <div className="pt-2 flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
-                      <span className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+                      <span className="text-[9px] font-bold text-dash-muted/70 uppercase tracking-widest">
                         Geotag Signature: {file.gpsLat.toFixed(5)}°, {file.gpsLng.toFixed(5)}°
                       </span>
                     </div>
@@ -481,7 +481,7 @@ export default function InvestigatorCaseDetailPage() {
         className="rounded-2xl bg-emerald-500/5 border border-emerald-500/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-6"
       >
         <div className="space-y-1">
-          <p className="text-xs font-bold text-white uppercase tracking-tight text-center sm:text-left">Public Verification Signal</p>
+          <p className="text-xs font-bold text-dash-text uppercase tracking-tight text-center sm:text-left">Public Verification Signal</p>
           <p className="text-[10px] text-dash-muted font-medium text-center sm:text-left">Distribute this secure link for third-party blockchain validation protocol.</p>
         </div>
         <div className="flex items-center gap-4">

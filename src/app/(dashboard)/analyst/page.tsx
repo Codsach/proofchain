@@ -87,9 +87,9 @@ export default function AnalystPage() {
           <div className="h-px w-8 bg-emerald-500/50" />
           <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Forensic Authentication Center</p>
         </div>
-        <h1 className="text-4xl font-bold text-white tracking-tight">Case Queue</h1>
+        <h1 className="text-4xl font-bold text-dash-text tracking-tight">Case Queue</h1>
         <p className="mt-3 text-sm text-dash-muted font-medium max-w-lg leading-relaxed">
-          Welcome back, <span className="text-white/70">{user?.fullName}</span>. Please review the pending evidence submissions for cryptographic and visual integrity.
+          Welcome back, <span className="text-dash-text">{user?.fullName}</span>. Please review the pending evidence submissions for cryptographic and visual integrity.
         </p>
       </motion.div>
 
@@ -103,22 +103,22 @@ export default function AnalystPage() {
         className="flex gap-4 flex-wrap bg-dash-card/50 border border-dash-border p-5 rounded-2xl"
       >
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Search Queue</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Search Queue</p>
           <Input
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-bg border-dash-border hover:border-dash-muted focus-visible:ring-dash-muted transition-all text-white h-11 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-dash-text h-11 rounded-xl"
           />
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Lifecycle State</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle State</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-52 h-11 bg-dash-bg border-dash-border hover:border-dash-muted transition-all rounded-xl text-white/70">
+            <SelectTrigger className="w-52 h-11 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="System status" />
             </SelectTrigger>
-            <SelectContent className="bg-dash-card border-dash-border text-white font-medium">
+            <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
               <SelectItem value="all">Global (All States)</SelectItem>
               <SelectItem value="pending_review">Awaiting Review</SelectItem>
               <SelectItem value="ai_timeout">Internal Error (Timeout)</SelectItem>
@@ -128,12 +128,12 @@ export default function AnalystPage() {
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Taxonomy</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Taxonomy</p>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
-            <SelectTrigger className="w-52 h-11 bg-dash-bg border-dash-border hover:border-dash-muted transition-all rounded-xl text-white/70">
+            <SelectTrigger className="w-52 h-11 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="Classification" />
             </SelectTrigger>
-            <SelectContent className="bg-dash-card border-dash-border text-white font-medium">
+            <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
               <SelectItem value="all">Global (All Types)</SelectItem>
               {Object.entries(INCIDENT_LABELS).map(([v, l]) => (
                 <SelectItem key={v} value={v}>{l}</SelectItem>
@@ -165,7 +165,7 @@ export default function AnalystPage() {
           animate={{ opacity: 1 }}
           className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center backdrop-blur-2xl shadow-2xl"
         >
-          <p className="text-white/30 text-sm font-medium tracking-tight">
+          <p className="text-dash-muted text-sm font-medium tracking-tight">
             Queue empty. No subjects currently match the selected filtering protocols.
           </p>
         </motion.div>
@@ -179,15 +179,15 @@ export default function AnalystPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Case Target</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest hidden md:table-cell">Category</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Neural Score</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Review Protocol</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest hidden sm:table-cell">Temporal Log</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Case Target</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest hidden md:table-cell">Category</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Neural Score</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Review Protocol</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest hidden sm:table-cell">Temporal Log</th>
                   <th className="px-6 py-4" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-dash-border">
                 <AnimatePresence>
                   {cases.map((c, idx) => (
                     <motion.tr 
@@ -200,7 +200,7 @@ export default function AnalystPage() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <p className="font-medium text-white/90 group-hover:text-white transition-colors">
+                          <p className="font-medium text-dash-text transition-colors">
                             {c.title}
                           </p>
                           <button
@@ -209,7 +209,7 @@ export default function AnalystPage() {
                               navigator.clipboard.writeText(c.caseId);
                               toast({ title: "Copied", description: "Case ID copied to clipboard." });
                             }}
-                            className="text-[10px] text-white/40 hover:text-emerald-400 font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-black/40 hover:bg-black/80 px-1.5 py-0.5 rounded border border-dash-border/40 transition-colors w-fit"
+                            className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-dash-input hover:bg-dash-hover px-1.5 py-0.5 rounded border border-dash-border transition-colors w-fit"
                             title="Copy Case ID"
                           >
                             <span>ID: {c.caseId.slice(0, 8)}...</span>
@@ -233,7 +233,7 @@ export default function AnalystPage() {
                       <td className="px-6 py-4">
                         <CaseStatusBadge status={c.status} />
                       </td>
-                      <td className="px-6 py-4 text-white/60 text-xs hidden sm:table-cell">
+                      <td className="px-6 py-4 text-dash-muted text-xs hidden sm:table-cell">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
@@ -247,7 +247,7 @@ export default function AnalystPage() {
                           </Link>
                           <Link
                             href={`/analyst/cases/${c.caseId}`}
-                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors border border-dash-border bg-dash-hover px-4 py-1.5 rounded-lg"
+                            className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text transition-colors border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg"
                           >
                             Review Target
                           </Link>

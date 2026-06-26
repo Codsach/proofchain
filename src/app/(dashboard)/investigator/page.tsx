@@ -166,7 +166,7 @@ export default function InvestigatorPage() {
             <div className="h-px w-8 bg-emerald-500/50" />
             <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Operative Field Dashboard</p>
           </div>
-          <h1 className="text-4xl font-bold text-white tracking-tight">Case Modules</h1>
+          <h1 className="text-4xl font-bold text-dash-text tracking-tight">Case Modules</h1>
           <p className="mt-2 text-dash-muted font-medium max-w-lg">
             Monitor evidence submission queues, cryptographic review status, and real-time chain of custody integrity.
           </p>
@@ -215,8 +215,8 @@ export default function InvestigatorPage() {
                 <Icon className={`w-6 h-6 text-dash-muted transition-colors ${stat.hoverText}`} />
                 <p className={`text-[10px] font-bold text-dash-accent/40 uppercase tracking-widest transition-colors ${stat.hoverText}`}>{stat.label}</p>
               </div>
-              <p className="text-3xl font-bold text-white mb-1">{stat.value}</p>
-              <p className="text-[10px] text-white/20 font-bold uppercase tracking-tight group-hover:text-dash-muted transition-colors italic">{stat.desc}</p>
+              <p className="text-3xl font-bold text-dash-text mb-1">{stat.value}</p>
+              <p className="text-[10px] text-dash-muted/70 font-bold uppercase tracking-tight group-hover:text-dash-muted transition-colors italic">{stat.desc}</p>
             </motion.div>
           )
         })}
@@ -224,22 +224,22 @@ export default function InvestigatorPage() {
 
       <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl">
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Search Cases</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Search Cases</p>
           <Input
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-11 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-dash-text h-11 rounded-xl"
           />
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Taxonomy</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Taxonomy</p>
           <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
-            <SelectTrigger className="w-48 h-11 bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
+            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
-            <SelectContent className="bg-dash-bg border-dash-border text-white font-medium">
+            <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
               <SelectItem value="all">All Types</SelectItem>
               {Object.entries(INCIDENT_TYPE_LABELS).map(([v, l]) => (
                 <SelectItem key={v} value={v}>{l}</SelectItem>
@@ -249,12 +249,12 @@ export default function InvestigatorPage() {
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Lifecycle State</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle State</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48 h-11 bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-white/70">
+            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="System status" />
             </SelectTrigger>
-            <SelectContent className="bg-dash-bg border-dash-border text-white font-medium">
+            <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
               <SelectItem value="all">All States</SelectItem>
               <SelectItem value="pending_ai_review">AI Scanning</SelectItem>
               <SelectItem value="pending_review">Pending Review</SelectItem>
@@ -268,12 +268,12 @@ export default function InvestigatorPage() {
         </div>
 
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">Tag Filter</p>
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Tag Filter</p>
           <Input
             placeholder="Filter by exact tag..."
             value={tagFilter === "all" ? "" : tagFilter}
             onChange={(e) => setTagFilter(e.target.value || "all")}
-            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-11 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-dash-text h-11 rounded-xl"
           />
         </div>
       </div>
@@ -296,12 +296,12 @@ export default function InvestigatorPage() {
           </Button>
         </div>
       ) : cases.length === 0 ? (
-        <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center backdrop-blur-2xl shadow-2xl">
+        <div className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center backdrop-blur-2xl shadow-2xl">
           <div className="w-16 h-16 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-6 border border-dash-border">
             <FolderOpen className="w-8 h-8 text-dash-muted" />
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Registry Empty</h2>
-          <p className="text-white/30 mb-8 max-w-xs mx-auto text-sm font-medium">No forensic records detected. Deploy your first evidence package to begin tracking.</p>
+          <h2 className="text-xl font-bold text-dash-text mb-2">Registry Empty</h2>
+          <p className="text-dash-muted mb-8 max-w-xs mx-auto text-sm font-medium">No forensic records detected. Deploy your first evidence package to begin tracking.</p>
           <Button
             asChild
             className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-11 px-8 rounded-xl"
@@ -318,8 +318,8 @@ export default function InvestigatorPage() {
         >
           <div className="p-6 border-b border-dash-border bg-dash-card flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">Operational Stream</h2>
-              <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest mt-1 italic">Sorted by temporal priority</p>
+              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Operational Stream</h2>
+              <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1 italic">Sorted by temporal priority</p>
             </div>
             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
           </div>
@@ -327,15 +327,15 @@ export default function InvestigatorPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Target Subject</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Taxonomy</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Review State</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Files</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-white/20 uppercase tracking-widest">Digital Signage</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Target Subject</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Taxonomy</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Review State</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Files</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Digital Signage</th>
                   <th className="px-6 py-4 text-right" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-dash-border">
                 <AnimatePresence>
                   {cases.map((caseItem, idx) => (
                     <motion.tr
@@ -343,12 +343,12 @@ export default function InvestigatorPage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.4 + idx * 0.03 }}
-                      className="hover:bg-dash-accent/[0.02] transition-colors group cursor-pointer"
+                      className="hover:bg-dash-hover/50 transition-colors group cursor-pointer"
                       onClick={() => window.location.href = `/investigator/cases/${caseItem.caseId}`}
                     >
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <p className="font-bold text-white group-hover:text-dash-accent transition-colors">
+                          <p className="font-bold text-dash-text group-hover:text-dash-accent transition-colors">
                             {caseItem.title}
                           </p>
                           <button
@@ -357,7 +357,7 @@ export default function InvestigatorPage() {
                               navigator.clipboard.writeText(caseItem.caseId);
                               toast({ title: "Copied", description: "Case ID copied to clipboard." });
                             }}
-                            className="text-[10px] text-white/20 hover:text-emerald-400 font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-black/40 hover:bg-black/80 px-1.5 py-0.5 rounded border border-dash-border/40 transition-colors w-fit"
+                            className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-dash-input hover:bg-dash-hover px-1.5 py-0.5 rounded border border-dash-border transition-colors w-fit"
                             title="Copy Case ID"
                           >
                             <span>ID: {caseItem.caseId.slice(0, 8)}...</span>
@@ -366,7 +366,7 @@ export default function InvestigatorPage() {
                           {caseItem.tags && caseItem.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
                               {caseItem.tags.map((tag) => (
-                                <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-border/50 text-white/40 px-1.5 py-0.5 rounded">
+                                <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-input text-dash-muted px-1.5 py-0.5 rounded border border-dash-border">
                                   {tag}
                                 </span>
                               ))}
@@ -383,14 +383,14 @@ export default function InvestigatorPage() {
                         <CaseStatusBadge status={caseItem.status} />
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-[10px] font-bold text-dash-muted bg-dash-border border border-dash-border px-2 py-0.5 rounded italic">
+                        <span className="text-[10px] font-bold text-dash-muted bg-dash-card border border-dash-border px-2 py-0.5 rounded italic">
                           {caseItem.files.length} ITEMS
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <p className="text-[10px] font-bold text-white/50 tracking-tight">{formatDate(caseItem.createdAt)}</p>
-                          <p className="text-[9px] text-white/20 font-medium uppercase tracking-tighter">
+                          <p className="text-[10px] font-bold text-dash-muted tracking-tight">{formatDate(caseItem.createdAt)}</p>
+                          <p className="text-[9px] text-dash-muted/70 font-medium uppercase tracking-tighter">
                             Incident: {formatDate(caseItem.incidentDate)}
                           </p>
                         </div>
@@ -406,7 +406,7 @@ export default function InvestigatorPage() {
                           </Link>
                           <Link
                             href={`/investigator/cases/${caseItem.caseId}`}
-                            className="text-[10px] font-bold uppercase tracking-widest text-zinc-300 hover:text-white transition-colors border border-dash-border bg-dash-hover px-4 py-1.5 rounded-lg"
+                            className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text transition-colors border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg"
                           >
                             Inspect →
                           </Link>
