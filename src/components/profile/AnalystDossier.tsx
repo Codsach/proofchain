@@ -40,7 +40,7 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
               <FileSearch className="h-4 w-4 text-cyan-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">{stats.pendingReviews}</CardContainer>
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">{stats.pendingReviews}</CardContainer>
             </CardContent>
           </Card>
           
@@ -50,7 +50,7 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
               <CheckCircle className="h-4 w-4 text-cyan-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">{stats.verdictsIssued}</CardContainer>
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">{stats.verdictsIssued}</CardContainer>
             </CardContent>
           </Card>
 
@@ -60,7 +60,7 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
               <ShieldAlert className="h-4 w-4 text-cyan-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">
                 <span className="text-emerald-400">{stats.authenticReviews}</span>
                 <span className="text-dash-muted text-xl mx-1">/</span>
                 <span className="text-rose-400">{stats.tamperedReviews}</span>
@@ -98,11 +98,11 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
                         <AlertTriangle className="h-5 w-5 text-rose-400 mt-0.5" />
                       )}
                       <CardContainer>
-                        <p className="font-mono text-sm uppercase text-white">
+                        <p className="font-mono text-sm uppercase text-dash-text">
                           Verdict: <span className={isAuthentic ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{verdict.status}</span>
                         </p>
                         <p className="font-mono text-xs text-dash-muted mt-1">
-                          {new Date(verdict.createdAt).toLocaleString()} • Item: <span className="text-zinc-300">{verdict.evidenceId?.toString()?.substring(0, 12)}...</span>
+                          {new Date(verdict.createdAt).toLocaleString()} • Item: <span className="text-dash-muted">{verdict.evidenceId?.toString()?.substring(0, 12)}...</span>
                         </p>
                       </CardContainer>
                     </CardContainer>

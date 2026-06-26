@@ -38,7 +38,7 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
               <Users className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">{stats.totalUsers}</CardContainer>
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">{stats.totalUsers}</CardContainer>
             </CardContent>
           </Card>
           
@@ -48,7 +48,7 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
               <ServerCrash className="h-4 w-4 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">{stats.recentAudits}</CardContainer>
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">{stats.recentAudits}</CardContainer>
             </CardContent>
           </Card>
         </CardContainer>
@@ -76,9 +76,9 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
                   >
                     <Shield className="h-5 w-5 text-purple-400 mt-0.5" />
                     <CardContainer>
-                      <p className="font-mono text-sm uppercase text-white">{action.action}</p>
+                      <p className="font-mono text-sm uppercase text-dash-text">{action.action}</p>
                       <p className="font-mono text-xs text-dash-muted mt-1">
-                        {new Date(action.createdAt).toLocaleString()} • Target: <span className="text-zinc-300">{action.targetId?.toString()?.substring(0, 12) || "SYSTEM"}</span>
+                        {new Date(action.createdAt).toLocaleString()} • Target: <span className="text-dash-muted">{action.targetId?.toString()?.substring(0, 12) || "SYSTEM"}</span>
                       </p>
                     </CardContainer>
                   </CardContainer>

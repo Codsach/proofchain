@@ -135,7 +135,7 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
           {/* Identity Section */}
           <CardContainer className="flex-1 space-y-2">
             <CardContainer className="flex items-center gap-3 flex-wrap">
-              <h1 className="text-2xl font-bold tracking-tight uppercase font-heading text-white">
+              <h1 className="text-2xl font-bold tracking-tight uppercase font-heading text-dash-text">
                 {user.fullName}
               </h1>
               <Badge variant="outline" className={`rounded-md font-mono uppercase tracking-wider px-2 py-0.5 text-xs ${roleColor}`}>
@@ -157,18 +157,18 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
           </CardContainer>
 
           {/* Official Data Grid */}
-          <CardContainer className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs w-full md:w-auto bg-black/20 p-4 border border-dash-border/60 rounded-xl">
+          <CardContainer className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs w-full md:w-auto bg-dash-input/30 p-4 border border-dash-border/60 rounded-xl">
             <CardContainer className="flex items-center gap-2 text-dash-muted">
               <Mail className={`h-3.5 w-3.5 ${roleAccent}`} />
-              <span className="truncate max-w-[150px] text-white/95">{user.email}</span>
+              <span className="truncate max-w-[150px] text-dash-text">{user.email}</span>
             </CardContainer>
             <CardContainer className="flex items-center gap-2 text-dash-muted">
               <Phone className={`h-3.5 w-3.5 ${roleAccent}`} />
-              <span className="text-white/95">{profile?.phoneNumber || "Not Provided"}</span>
+              <span className="text-dash-text">{profile?.phoneNumber || "Not Provided"}</span>
             </CardContainer>
             <CardContainer className="flex items-center gap-2 text-dash-muted sm:col-span-2">
               <MapPin className={`h-3.5 w-3.5 ${roleAccent}`} />
-              <span className="text-white/95">{profile?.department || "Not Provided"} - {profile?.location || "Not Provided"}</span>
+              <span className="text-dash-text">{profile?.department || "Not Provided"} - {profile?.location || "Not Provided"}</span>
             </CardContainer>
           </CardContainer>
         </CardContainer>
@@ -176,29 +176,29 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
         {/* Metadata Row */}
         <CardContainer className="flex flex-col sm:flex-row sm:items-center gap-4 mt-2 text-[10px] text-dash-muted/70 font-mono uppercase w-full border-t border-dash-border/40 pt-4">
           <CardContainer className="flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5" /> Member Since: <span className="text-white">{formattedDate}</span>
+            <Calendar className="h-3.5 w-3.5" /> Member Since: <span className="text-dash-text">{formattedDate}</span>
           </CardContainer>
           <CardContainer className="flex items-center gap-2">
-            <Clock className="h-3.5 w-3.5" /> Last Login: <span className="text-white">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</span>
+            <Clock className="h-3.5 w-3.5" /> Last Login: <span className="text-dash-text">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</span>
           </CardContainer>
         </CardContainer>
 
         {/* Extended Dossier Data */}
         <CardContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-dash-border w-full">
           <CardContainer className="md:col-span-2 space-y-6">
-            <CardContainer className="bg-dash-hover/10 border border-dash-border p-5 rounded-xl">
+            <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
               <CardTitle className="text-xs font-mono uppercase text-dash-muted mb-2 tracking-wider">Duty Notes / Bio</CardTitle>
-              <p className="text-sm font-mono text-zinc-300 whitespace-pre-wrap leading-relaxed">
+              <p className="text-sm font-mono text-dash-text/80 whitespace-pre-wrap leading-relaxed">
                 {profile?.bio || "No duty notes recorded."}
               </p>
             </CardContainer>
 
             {profile?.skills && profile.skills.length > 0 && (
-              <CardContainer className="bg-dash-hover/10 border border-dash-border p-5 rounded-xl">
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
                 <CardTitle className="text-xs font-mono uppercase text-dash-muted mb-3 tracking-wider">Certifications & Skills</CardTitle>
                 <CardContainer className="flex flex-wrap gap-2">
                   {profile.skills.map((skill, i) => (
-                    <Badge key={i} variant="outline" className="text-zinc-300 bg-dash-hover border-dash-border hover:bg-dash-hover/80 hover:text-white transition-colors font-mono text-[10px] uppercase rounded-md px-2 py-0.5">
+                    <Badge key={i} variant="outline" className="text-dash-muted bg-dash-input border-dash-border hover:bg-dash-hover hover:text-dash-text transition-colors font-mono text-[10px] uppercase rounded-md px-2 py-0.5">
                       {skill}
                     </Badge>
                   ))}
@@ -209,19 +209,19 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
           
           <CardContainer className="space-y-6">
             {(profile?.emergencyContactName || profile?.emergencyContactPhone) && (
-              <CardContainer className="bg-dash-hover/10 border border-dash-border p-5 rounded-xl">
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
                 <CardTitle className="text-xs font-mono uppercase text-dash-muted mb-2 tracking-wider">Emergency Contact</CardTitle>
-                <p className="text-sm font-mono text-white font-bold">{profile.emergencyContactName || "Unknown"}</p>
+                <p className="text-sm font-mono text-dash-text font-bold">{profile.emergencyContactName || "Unknown"}</p>
                 <p className="text-xs text-dash-muted font-mono mt-1">{profile.emergencyContactPhone || "No number listed"}</p>
               </CardContainer>
             )}
 
             {profile?.assignedDevices && profile.assignedDevices.length > 0 && (
-              <CardContainer className="bg-dash-hover/10 border border-dash-border p-5 rounded-xl">
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
                 <CardTitle className="text-xs font-mono uppercase text-dash-muted mb-3 tracking-wider">Assigned Hardware</CardTitle>
                 <CardContainer className="flex flex-col gap-2">
                   {profile.assignedDevices.map((device, i) => (
-                    <CardContainer key={i} className="text-xs text-zinc-300 font-mono flex items-center gap-2">
+                    <CardContainer key={i} className="text-xs text-dash-text/80 font-mono flex items-center gap-2">
                       <CardContainer className={`w-1.5 h-1.5 rounded-full ${roleBgAccent}`} />
                       <span>{device}</span>
                     </CardContainer>

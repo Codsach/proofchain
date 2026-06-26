@@ -14,7 +14,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateDossier } from "@/app/(dashboard)/profile/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Edit, Loader2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const dossierSchema = z.object({
  phoneNumber: z.string().optional().nullable(),
@@ -127,7 +126,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] bg-dash-modal border border-dash-border rounded-2xl shadow-2xl ring-0">
         <DialogHeader>
-          <DialogTitle className="text-xl font-heading tracking-wider uppercase text-white">Update Dossier</DialogTitle>
+          <DialogTitle className="text-xl font-heading tracking-wider uppercase text-dash-text">Update Dossier</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -145,7 +144,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                     <FormItem>
                       <FormLabel className="text-dash-muted font-mono text-xs uppercase">Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1..." className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                        <Input placeholder="+1..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -154,7 +153,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                     <FormItem>
                       <FormLabel className="text-dash-muted font-mono text-xs uppercase">Department</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Cyber Forensics" className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                        <Input placeholder="e.g. Cyber Forensics" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -165,7 +164,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   <FormItem>
                     <FormLabel className="text-dash-muted font-mono text-xs uppercase">Location / Precinct</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. HQ - Sector 7" className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                      <Input placeholder="e.g. HQ - Sector 7" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -175,7 +174,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   <FormItem>
                     <FormLabel className="text-dash-muted font-mono text-xs uppercase">Duty Notes / Bio</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Professional summary or active duty notes..." className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl p-3 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all resize-none h-24 ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                      <Textarea placeholder="Professional summary or active duty notes..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl p-3 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all resize-none h-24 ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,7 +186,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   <FormItem>
                     <FormLabel className="text-dash-muted font-mono text-xs uppercase">Skills & Certifications (Comma Separated)</FormLabel>
                     <FormControl>
-                      <Input placeholder="OSINT, Network Forensics, CEH..." className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                      <Input placeholder="OSINT, Network Forensics, CEH..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -197,7 +196,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   <FormItem>
                     <FormLabel className="text-dash-muted font-mono text-xs uppercase">Assigned Devices (Comma Separated)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Laptop-AX12, Mobile-Z9..." className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                      <Input placeholder="Laptop-AX12, Mobile-Z9..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -209,7 +208,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   <FormItem>
                     <FormLabel className="text-dash-muted font-mono text-xs uppercase">Emergency Contact Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Full Name" className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                      <Input placeholder="Full Name" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -219,7 +218,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   <FormItem>
                     <FormLabel className="text-dash-muted font-mono text-xs uppercase">Emergency Contact Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="+1..." className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
+                      <Input placeholder="+1..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

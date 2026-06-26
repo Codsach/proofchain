@@ -38,7 +38,7 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
               <FileText className="h-4 w-4 text-emerald-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">{stats.evidenceSubmitted}</CardContainer>
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">{stats.evidenceSubmitted}</CardContainer>
             </CardContent>
           </Card>
           
@@ -48,7 +48,7 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
               <Briefcase className="h-4 w-4 text-emerald-400" />
             </CardHeader>
             <CardContent>
-              <CardContainer className="text-3xl font-bold font-mono text-white">{stats.activeCases}</CardContainer>
+              <CardContainer className="text-3xl font-bold font-mono text-dash-text">{stats.activeCases}</CardContainer>
             </CardContent>
           </Card>
         </CardContainer>
@@ -76,7 +76,7 @@ export function InvestigatorDossier({ stats, recentSubmissions }: InvestigatorDo
                   >
                     <ShieldCheck className="h-5 w-5 text-emerald-400 mt-0.5" />
                     <CardContainer>
-                      <p className="font-mono text-sm truncate text-white group-hover:text-emerald-400 transition-colors">
+                      <p className="font-mono text-sm truncate text-dash-text group-hover:text-emerald-400 transition-colors">
                         {sub.title || "Unknown Evidence"}
                       </p>
                       <p className="font-mono text-xs text-dash-muted mt-1">
