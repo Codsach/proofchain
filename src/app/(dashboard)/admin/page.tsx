@@ -223,6 +223,7 @@ interface StatCardProps {
   color: string;
   glowColor: string;
   borderColor: string;
+  iconBg: string;
   trend?: string;
   isLoading: boolean;
 }
@@ -234,6 +235,7 @@ function StatCard({
   color,
   glowColor,
   borderColor,
+  iconBg,
   trend,
   isLoading,
 }: StatCardProps) {
@@ -241,40 +243,47 @@ function StatCard({
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -4, scale: 1.02 }}
-      className={`relative overflow-hidden rounded-2xl border bg-dash-card backdrop-blur-xl p-6 space-y-3 group transition-all duration-300 hover:border-opacity-60 ${borderColor}`}
+      className={`relative overflow-hidden rounded-2xl border bg-dash-card backdrop-blur-xl p-6 space-y-3 group transition-all duration-300 ${borderColor}`}
     >
-      {/* Background glow blob */}
+      {/* Left accent bar — always visible, not just on hover */}
       <div
-        className={`absolute top-0 right-0 w-28 h-28 rounded-full -mr-14 -mt-14 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl ${glowColor}`}
+        className={`absolute left-0 top-4 bottom-4 w-[3px] rounded-full ${glowColor.replace("/20", "")}`}
       />
 
-      <div className="flex items-start justify-between">
-        <div className={`inline-flex p-2 rounded-lg bg-dash-border/60`}>
-          <Icon size={16} className={color} />
+      {/* Corner glow blob — appears on hover */}
+      <div
+        className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl ${glowColor}`}
+      />
+
+      <div className="flex items-start justify-between pl-3">
+        <div className={`inline-flex p-2.5 rounded-xl ${iconBg}`}>
+          <Icon size={17} className={color} />
         </div>
         {trend && !isLoading && (
-          <span className={`text-[10px] font-bold ${color} flex items-center gap-0.5`}>
+          <span className={`text-[10px] font-bold ${color} flex items-center gap-0.5 bg-current/10 px-2 py-1 rounded-full`}>
             <TrendingUp size={10} />
             {trend}
           </span>
         )}
       </div>
 
-      <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest leading-none">
-        {label}
-      </p>
-
-      {isLoading ? (
-        <Skeleton className="h-10 w-16 bg-dash-border" />
-      ) : (
-        <p className={`text-4xl font-black tracking-tight ${color}`}>
-          {value ?? 0}
+      <div className="pl-3 space-y-1">
+        <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest leading-none">
+          {label}
         </p>
-      )}
 
-      {/* Bottom accent bar */}
+        {isLoading ? (
+          <Skeleton className="h-10 w-16 bg-dash-hover" />
+        ) : (
+          <p className={`text-4xl font-black tracking-tight ${color}`}>
+            {value ?? 0}
+          </p>
+        )}
+      </div>
+
+      {/* Bottom accent line — always visible at low opacity, full on hover */}
       <div
-        className={`absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-all duration-500 ${glowColor.replace("bg-", "bg-").replace("/20", "")}`}
+        className={`absolute bottom-0 left-4 right-4 h-[1px] opacity-20 group-hover:opacity-60 transition-opacity duration-500 ${glowColor.replace("/20", "")}`}
       />
     </motion.div>
   );
@@ -448,7 +457,8 @@ export default function AdminPage() {
       icon: Briefcase,
       color: "text-emerald-400",
       glowColor: "bg-emerald-500/20",
-      borderColor: "border-emerald-500/10 hover:border-emerald-500/30",
+      borderColor: "border-emerald-500/10 hover:border-emerald-500/40",
+      iconBg: "bg-emerald-500/10",
       isLoading: isLoadingStats,
     },
     {
@@ -457,7 +467,8 @@ export default function AdminPage() {
       icon: Clock,
       color: "text-amber-400",
       glowColor: "bg-amber-500/20",
-      borderColor: "border-amber-500/10 hover:border-amber-500/30",
+      borderColor: "border-amber-500/10 hover:border-amber-500/40",
+      iconBg: "bg-amber-500/10",
       isLoading: isLoadingStats,
     },
     {
@@ -466,7 +477,8 @@ export default function AdminPage() {
       icon: ShieldAlert,
       color: "text-rose-400",
       glowColor: "bg-rose-500/20",
-      borderColor: "border-rose-500/10 hover:border-rose-500/30",
+      borderColor: "border-rose-500/10 hover:border-rose-500/40",
+      iconBg: "bg-rose-500/10",
       isLoading: isLoadingStats,
     },
     {
@@ -475,7 +487,8 @@ export default function AdminPage() {
       icon: CheckCircle2,
       color: "text-dash-accent",
       glowColor: "bg-emerald-500/20",
-      borderColor: "border-dash-border hover:border-emerald-500/20",
+      borderColor: "border-emerald-500/10 hover:border-emerald-500/40",
+      iconBg: "bg-emerald-500/10",
       isLoading: isLoadingStats,
     },
   ];
