@@ -115,13 +115,13 @@ export function TamperGauge({ score }: Props) {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-4xl font-black font-heading text-white tracking-tighter"
+            className="text-4xl font-black font-heading text-dash-text tracking-tighter"
           >
             {score}
           </motion.span>
           
           {/* Scale Label */}
-          <span className="text-[9px] text-white/30 uppercase tracking-[0.15em] font-bold mt-0.5">
+          <span className="text-[9px] text-dash-muted uppercase tracking-[0.15em] font-bold mt-0.5">
             integrity score
           </span>
           

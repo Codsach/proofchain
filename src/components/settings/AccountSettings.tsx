@@ -75,7 +75,7 @@ export function AccountSettings({ role, user }: { role: "investigator" | "analys
     <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-2xl rounded-2xl">
       <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
       <CardHeader>
-        <CardTitle className="text-xl font-heading tracking-wider uppercase text-white flex items-center gap-2">
+        <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
           <User className={`h-5 w-5 ${roleAccent}`} />
           Identity Protocol
         </CardTitle>
@@ -96,7 +96,7 @@ export function AccountSettings({ role, user }: { role: "investigator" | "analys
                     <FormControl>
                       <Input
                         placeholder="John Doe"
-                        className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                        className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                         {...field}
                       />
                     </FormControl>
@@ -115,7 +115,7 @@ export function AccountSettings({ role, user }: { role: "investigator" | "analys
                         <Mail className={`absolute left-3.5 top-3.5 h-4 w-4 ${roleAccent}`} />
                         <Input
                           placeholder="john.doe@example.com"
-                          className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 pl-10 pr-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                          className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 pl-10 pr-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                           {...field}
                         />
                       </CardContainer>

@@ -334,7 +334,7 @@ export default function AdminCaseDetailPage() {
             </div>
             <div className="mt-8 space-y-2">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Description</p>
-              <p className="text-sm text-white/70 leading-relaxed font-normal">{caseData.description}</p>
+              <p className="text-sm text-dash-text/80 leading-relaxed font-normal">{caseData.description}</p>
             </div>
           </motion.div>
 
@@ -427,21 +427,21 @@ export default function AdminCaseDetailPage() {
                 ? "bg-amber-500/5 border-amber-500/20"
                 : caseData.overallRiskLevel === "low"
                 ? "bg-emerald-500/5 border-emerald-500/20"
-                : "bg-white/[0.02] border-white/5 animate-pulse"
+                : "bg-dash-input/30 border-dash-border animate-pulse"
             }`}>
               <div className="flex items-center justify-between gap-4">
                 <div className="space-y-1">
-                  <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest">
+                  <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">
                     Overall Risk Assessment
                   </p>
-                  <h3 className="text-base font-bold text-white tracking-tight">
+                  <h3 className="text-base font-bold text-dash-text tracking-tight">
                     {caseData.overallRiskLevel ? (
                       <span className="uppercase">{caseData.overallRiskLevel} RISK</span>
                     ) : (
                       <span>PENDING SCAN</span>
                     )}
                   </h3>
-                  <p className="text-[11px] text-white/50 leading-relaxed font-normal">
+                  <p className="text-[11px] text-dash-muted leading-relaxed font-normal">
                     {caseData.overallRiskLevel === "high"
                       ? "High probability of image/metadata manipulation detected. Exercise extreme caution."
                       : caseData.overallRiskLevel === "medium"
@@ -451,8 +451,8 @@ export default function AdminCaseDetailPage() {
                       : "Forensic scanner is conducting deep neural scan on uploaded assets..."}
                   </p>
                 </div>
-                <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-black/35 border border-white/5 min-w-[70px]">
-                  <span className="text-[8px] font-bold text-white/30 uppercase tracking-wider mb-0.5">SCORE</span>
+                <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-dash-bg border border-dash-border min-w-[70px]">
+                  <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-0.5">SCORE</span>
                   <span className={`text-lg font-extrabold ${
                     caseData.overallRiskLevel === "high"
                       ? "text-red-400"
@@ -460,7 +460,7 @@ export default function AdminCaseDetailPage() {
                       ? "text-amber-400"
                       : caseData.overallRiskLevel === "low"
                       ? "text-emerald-400"
-                      : "text-white/20"
+                      : "text-dash-muted"
                   }`}>
                     {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "--"}
                   </span>
@@ -476,19 +476,19 @@ export default function AdminCaseDetailPage() {
                 return (
                   <div
                     key={file.fileId}
-                    className="rounded-xl border border-white/5 bg-white/[0.01] overflow-hidden transition-all duration-300"
+                    className="rounded-xl border border-dash-border bg-dash-card/50 overflow-hidden transition-all duration-300"
                   >
                     {/* Header */}
                     <button
                       type="button"
                       onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
-                      className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-white/[0.03] transition-colors cursor-pointer focus:outline-none"
+                      className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover transition-colors cursor-pointer focus:outline-none"
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-white truncate uppercase tracking-tight">
+                        <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
                           {file.originalName}
                         </p>
-                        <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest mt-0.5">
+                        <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
                           {file.mimeType}
                         </p>
                       </div>
@@ -496,20 +496,20 @@ export default function AdminCaseDetailPage() {
                         {report ? (
                           <TamperScoreBadge score={report.tamperScore} />
                         ) : isLoadingAi ? (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] text-white/30 animate-pulse uppercase tracking-wider">
+                          <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                             Scanning
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 text-[10px] text-white/20 uppercase tracking-wider">
-                            <span className="w-1.5 h-1.5 rounded-full bg-white/10" />
+                          <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted/70 uppercase tracking-wider">
+                            <span className="w-1.5 h-1.5 rounded-full bg-dash-muted/30" />
                             Pending
                           </span>
                         )}
                         {isOpen ? (
-                          <ChevronUp className="w-4 h-4 text-white/30" />
+                          <ChevronUp className="w-4 h-4 text-dash-muted" />
                         ) : (
-                          <ChevronDown className="w-4 h-4 text-white/30" />
+                          <ChevronDown className="w-4 h-4 text-dash-muted" />
                         )}
                       </div>
                     </button>
@@ -523,7 +523,7 @@ export default function AdminCaseDetailPage() {
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <div className="border-t border-white/5 p-4 bg-black/20">
+                          <div className="border-t border-dash-border p-4 bg-dash-bg/40">
                             {report ? (
                               <AiReportPanel report={report} isLoading={false} />
                             ) : (
@@ -559,7 +559,7 @@ export default function AdminCaseDetailPage() {
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <p className="text-sm text-white/70 leading-relaxed font-medium italic border-l-2 border-emerald-500/30 pl-4">
+                  <p className="text-sm text-dash-text/80 leading-relaxed font-medium italic border-l-2 border-emerald-500/30 pl-4">
                     "{verdict.reason}"
                   </p>
                   <div className="flex items-center justify-between pt-2">

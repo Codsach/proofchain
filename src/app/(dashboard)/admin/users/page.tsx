@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
                   <th className="px-6 py-4" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-dash-border">
                 <AnimatePresence>
                   {users.map((u, idx) => (
                     <motion.tr 
@@ -240,7 +240,7 @@ export default function AdminUsersPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-dash-accent animate-pulse" : "bg-white/20"}`} />
+                          <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-dash-accent animate-pulse" : "bg-dash-muted/20"}`} />
                           <span
                             className={`text-[10px] font-bold uppercase tracking-widest ${
                               u.isActive ? "text-dash-accent" : "text-dash-muted"

@@ -347,9 +347,9 @@ export function DashboardCharts({
                         <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                    <XAxis dataKey="name" stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                    <XAxis dataKey="name" stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Line
                       type="monotone"
@@ -408,7 +408,7 @@ export function DashboardCharts({
                           borderColor: "var(--dash-border)",
                           borderRadius: "8px",
                         }}
-                        itemStyle={{ color: "#fff" }}
+                        itemStyle={{ color: "var(--dash-text)" }}
                       />
                     </PieChart>
                   </ResponsiveContainer>
@@ -483,9 +483,9 @@ export function DashboardCharts({
                 >
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={statusData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                      <XAxis dataKey="date" stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
-                      <YAxis stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                      <XAxis dataKey="date" stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
                       <ChartTooltip content={<ChartTooltipContent />} />
                       <Bar dataKey="verified" stackId="a" fill="#10b981" radius={[0, 0, 4, 4]} maxBarSize={36} />
                       <Bar dataKey="pending" stackId="a" fill="#f59e0b" maxBarSize={36} />
@@ -541,9 +541,9 @@ export function DashboardCharts({
                     margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
                     barCategoryGap={3}
                   >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                    <XAxis dataKey="range" stroke="#4b5563" fontSize={10} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#4b5563" fontSize={12} tickLine={false} axisLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                    <XAxis dataKey="range" stroke="var(--dash-muted)" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Bar dataKey="count" radius={[3, 3, 0, 0]} maxBarSize={40}>
                       {tamperData.map((entry, index) => {

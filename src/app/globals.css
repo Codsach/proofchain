@@ -61,55 +61,57 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  /* ── Shadcn base tokens (Light / Warm Slate) ── */
+  --background: oklch(0.945 0.006 240);    /* #F0F2F5 warm cool-gray */
+  --foreground: oklch(0.175 0.020 255);    /* #1A2033 deep navy text */
+  --card: oklch(0.965 0.005 240);          /* #F5F7FA elevated off-white */
+  --card-foreground: oklch(0.175 0.020 255);
+  --popover: oklch(0.965 0.005 240);
+  --popover-foreground: oklch(0.175 0.020 255);
+  --primary: oklch(0.620 0.155 162);       /* Deeper emerald on light bg */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --secondary: oklch(0.920 0.007 240);     /* #ECEEF3 input surface */
+  --secondary-foreground: oklch(0.175 0.020 255);
+  --muted: oklch(0.912 0.007 240);         /* #E8EBF0 muted surface */
+  --muted-foreground: oklch(0.430 0.015 240); /* #556070 readable mid-tone */
+  --accent: oklch(0.900 0.007 240);        /* #E2E6ED hover */
+  --accent-foreground: oklch(0.175 0.020 255);
+  --destructive: oklch(0.580 0.230 15);    /* Rose */
+  --border: oklch(0.840 0.010 240);        /* #D1D7E0 soft visible border */
+  --input: oklch(0.920 0.007 240);         /* #ECEEF3 */
+  --ring: oklch(0.620 0.155 162 / 50%);
+  --chart-1: oklch(0.620 0.155 162);       /* emerald */
+  --chart-2: oklch(0.590 0.155 210);       /* cyan */
+  --chart-3: oklch(0.720 0.160 80);        /* amber */
+  --chart-4: oklch(0.580 0.190 295);       /* purple */
+  --chart-5: oklch(0.580 0.210 15);        /* rose */
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar: oklch(0.912 0.007 240);       /* #E8EBF0 */
+  --sidebar-foreground: oklch(0.175 0.020 255);
+  --sidebar-primary: oklch(0.620 0.155 162);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.900 0.007 240);
+  --sidebar-accent-foreground: oklch(0.175 0.020 255);
+  --sidebar-border: oklch(0.840 0.010 240 / 80%);
+  --sidebar-ring: oklch(0.620 0.155 162 / 40%);
 
-  /* Dashboard variables — Deep Navy layered system */
-  --dash-bg:          #0C0E14;  /* Layer 0: page background     */
-  --dash-sidebar:     #10121A;  /* Layer 1: sidebar surface      */
-  --dash-card:        #161923;  /* Layer 2: card / panel surface */
-  --dash-input:       #1E2130;  /* Layer 3: form input surface   */
-  --dash-modal:       #1A1D2B;  /* Layer 3: modal / dialog       */
-  --dash-table:       #10121A;  /* Layer 1: table row surface    */
-  --dash-hover:       #252838;  /* Layer 4: hover / interactive  */
-  --dash-border:      #252838;  /* Subtle border                 */
-  --dash-text:        #F1F5F9;  /* Primary text (slate-100)      */
-  --dash-muted:       #8B95A8;  /* Secondary / muted text        */
-  --dash-accent:      #10B981;  /* Brand emerald                 */
-  --dash-danger:      #F43F5E;  /* Danger / rose                 */
-  --dash-info:        #06B6D4;  /* Info / cyan                   */
-  --dash-accent-glow: rgba(16, 185, 129, 0.45);
+  /* ── Dashboard variables — Warm Slate (Light Mode) ── */
+  --dash-bg:          #F0F2F5;  /* Layer 0: warm cool-gray page bg  */
+  --dash-sidebar:     #E8EBF0;  /* Layer 1: sidebar surface          */
+  --dash-card:        #F5F7FA;  /* Layer 2: card / panel surface     */
+  --dash-input:       #ECEEF3;  /* Layer 3: form input surface       */
+  --dash-modal:       #F5F7FA;  /* Layer 3: modal / dialog           */
+  --dash-table:       #E8EBF0;  /* Layer 1: table rows               */
+  --dash-hover:       #E2E6ED;  /* Layer 4: hover / interactive      */
+  --dash-border:      #D1D7E0;  /* Soft visible border               */
+  --dash-text:        #1A2033;  /* Primary text (deep navy)          */
+  --dash-muted:       #556070;  /* Secondary / muted text            */
+  --dash-accent:      #0D9E6E;  /* Deeper emerald — pops on light bg */
+  --dash-danger:      #E0284A;  /* Danger / rose                     */
+  --dash-info:        #0597AE;  /* Info / cyan                       */
+  --dash-accent-glow: rgba(13, 158, 110, 0.30);
 }
+
 
 .dark {
   /* Base surfaces mapped to Deep Navy system */
@@ -144,11 +146,28 @@
   --sidebar-accent-foreground: oklch(0.940 0.008 255);
   --sidebar-border:           oklch(0.175 0.012 255 / 60%);
   --sidebar-ring:             oklch(0.696 0.170 162 / 40%);
+
+  /* ── Dashboard variables — Deep Navy (Dark Mode) ── */
+  --dash-bg:          #0C0E14;
+  --dash-sidebar:     #10121A;
+  --dash-card:        #161923;
+  --dash-input:       #1E2130;
+  --dash-modal:       #1A1D2B;
+  --dash-table:       #10121A;
+  --dash-hover:       #252838;
+  --dash-border:      #252838;
+  --dash-text:        #F1F5F9;
+  --dash-muted:       #8B95A8;
+  --dash-accent:      #10B981;
+  --dash-danger:      #F43F5E;
+  --dash-info:        #06B6D4;
+  --dash-accent-glow: rgba(16, 185, 129, 0.45);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
   }
 
   body {
@@ -158,4 +177,4 @@
   html {
     @apply font-sans;
   }
-}
+}

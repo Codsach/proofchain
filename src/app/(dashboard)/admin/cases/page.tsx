@@ -186,14 +186,14 @@ export default function AdminCasesPage() {
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-10 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-dash-text h-10 rounded-xl"
           />
         </div>
 
         <div className="space-y-1.5 sm:min-w-[180px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Incident Type</p>
           <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
-            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -208,7 +208,7 @@ export default function AdminCasesPage() {
         <div className="space-y-1.5 sm:min-w-[180px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle Status</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl">
               <SelectValue placeholder="All states" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -240,7 +240,7 @@ export default function AdminCasesPage() {
               <Button
                 variant="ghost"
                 onClick={() => setSelectedCases([])}
-                className="text-white/60 hover:text-white"
+                className="text-dash-muted hover:text-dash-text"
               >
                 Clear
               </Button>
@@ -290,7 +290,7 @@ export default function AdminCasesPage() {
                   <th className="px-6 py-4" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 font-medium">
+              <tbody className="divide-y divide-dash-border font-medium">
                 <AnimatePresence>
                   {cases.map((c, idx) => (
                     <motion.tr 
@@ -326,7 +326,7 @@ export default function AdminCasesPage() {
                             className={`text-[10px] font-mono mt-0.5 tracking-tighter flex items-center gap-1 px-1.5 py-0.5 rounded border transition-colors w-fit ${
                               copiedId === c.caseId
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                                : "text-dash-muted hover:text-dash-accent bg-black/40 hover:bg-black/80 border-dash-border/40"
+                                : "text-dash-muted hover:text-dash-accent bg-dash-input hover:bg-dash-hover border-dash-border"
                             }`}
                             title={`Copy full Case ID: ${c.caseId}`}
                           >
@@ -361,7 +361,7 @@ export default function AdminCasesPage() {
                           </Link>
                           <Link
                             href={`/admin/cases/${c.caseId}`}
-                            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-white/10 bg-white/5 px-4 py-1.5 rounded-lg hover:border-white/20 outline-none"
+                            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg hover:bg-dash-hover outline-none"
                           >
                             Inspect →
                           </Link>
@@ -389,11 +389,11 @@ export default function AdminCasesPage() {
             ← Previous Channel
           </Button>
           <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-white/10" />
+            <div className="h-px w-8 bg-dash-border" />
             <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">
               Sector <span className="text-dash-text">{page}</span> of {totalPages}
             </span>
-            <div className="h-px w-8 bg-white/10" />
+            <div className="h-px w-8 bg-dash-border" />
           </div>
           <Button
             variant="ghost"
@@ -409,7 +409,7 @@ export default function AdminCasesPage() {
 
       {/* Bulk Assign Modal */}
       <Dialog open={isAssignModalOpen} onOpenChange={setIsAssignModalOpen}>
-        <DialogContent className="bg-dash-card border-dash-border text-white p-6 max-w-md">
+        <DialogContent className="bg-dash-card border-dash-border text-dash-text p-6 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold tracking-tight">Assign {selectedCases.length} Cases</DialogTitle>
           </DialogHeader>
@@ -417,10 +417,10 @@ export default function AdminCasesPage() {
             <div className="space-y-2">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Select Analyst</p>
               <Select value={selectedAnalystId} onValueChange={setSelectedAnalystId}>
-                <SelectTrigger className="bg-dash-hover border-dash-border focus-visible:ring-emerald-500/30 transition-all text-white h-12 rounded-xl">
+                <SelectTrigger className="bg-dash-input border-dash-border focus-visible:ring-emerald-500/30 transition-all text-dash-text h-12 rounded-xl">
                   <SelectValue placeholder="Choose an analyst" />
                 </SelectTrigger>
-                <SelectContent className="bg-dash-bg border-dash-border text-white">
+                <SelectContent className="bg-dash-card border-dash-border text-dash-text">
                   {analysts.map((analyst) => (
                     <SelectItem key={analyst._id} value={analyst._id}>
                       {analyst.fullName}
@@ -433,7 +433,7 @@ export default function AdminCasesPage() {
               <Button
                 variant="ghost"
                 onClick={() => setIsAssignModalOpen(false)}
-                className="text-white/60 hover:text-white"
+                className="text-dash-muted hover:text-dash-text"
                 disabled={isSubmitting}
               >
                 Cancel

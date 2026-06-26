@@ -54,7 +54,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${orbitron.variable} ${exo2.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${orbitron.variable} ${exo2.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA iOS meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -64,12 +64,11 @@ export default function RootLayout({
         {/* Required for camera access on iOS PWA */}
         <meta name="allow" content="camera; geolocation; microphone" />
       </head>
-      <body className="font-sans antialiased bg-black selection:bg-emerald-500/30">
+      <body className="font-sans antialiased bg-background selection:bg-emerald-500/30">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
-          disableTransitionOnChange
         >
           <ServiceWorkerProvider>
             <AuthProvider>

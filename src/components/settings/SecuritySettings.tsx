@@ -106,7 +106,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-2xl rounded-2xl">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader>
-          <CardTitle className="text-xl font-heading tracking-wider uppercase text-white flex items-center gap-2">
+          <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
             <KeyRound className={`h-5 w-5 ${roleAccent}`} />
             Authentication Key
           </CardTitle>
@@ -126,7 +126,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                     <FormControl>
                       <Input
                         type="password"
-                        className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                        className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                         {...field}
                       />
                     </FormControl>
@@ -144,7 +144,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                       <FormControl>
                         <Input
                           type="password"
-                          className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                          className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                           {...field}
                         />
                       </FormControl>
@@ -161,7 +161,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                       <FormControl>
                         <Input
                           type="password"
-                          className={`bg-dash-hover border border-dash-border text-white placeholder:text-zinc-600 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                          className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                           {...field}
                         />
                       </FormControl>
@@ -190,7 +190,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="flex flex-row items-center justify-between pb-4 flex-wrap gap-4">
           <CardContainer className="space-y-1">
-            <CardTitle className="text-xl font-heading tracking-wider uppercase text-white flex items-center gap-2">
+            <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
               <Shield className={`h-5 w-5 ${roleAccent}`} />
               Two-Factor Authentication
             </CardTitle>
@@ -209,9 +209,9 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
           )}
         </CardHeader>
         <CardContent>
-          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-dash-border bg-dash-hover/20 rounded-xl gap-4">
+          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-dash-border bg-dash-input/30 rounded-xl gap-4">
             <CardContainer className="space-y-1">
-              <p className="text-sm font-medium font-mono uppercase text-white">Authenticator App</p>
+              <p className="text-sm font-medium font-mono uppercase text-dash-text">Authenticator App</p>
               <p className="text-xs text-dash-muted font-mono leading-relaxed">Use an app like Google Authenticator or Authy to generate security codes.</p>
             </CardContainer>
             {!user.mfaEnabled && (
@@ -230,7 +230,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-2xl rounded-2xl">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader>
-          <CardTitle className="text-xl font-heading tracking-wider uppercase text-white flex items-center gap-2">
+          <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
             <Laptop className={`h-5 w-5 ${roleAccent}`} />
             Active Sessions
           </CardTitle>
@@ -240,19 +240,19 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
         </CardHeader>
         <CardContent>
           {devices.length === 0 ? (
-            <CardContainer className="p-4 text-center text-dash-muted font-mono text-xs uppercase border border-dash-border rounded-xl bg-dash-hover/10">
+            <CardContainer className="p-4 text-center text-dash-muted font-mono text-xs uppercase border border-dash-border rounded-xl bg-dash-input/10">
               No active sessions found.
             </CardContainer>
           ) : (
             <CardContainer className="space-y-3">
               {devices.map((device, idx) => (
-                <CardContainer key={idx} className="flex items-center justify-between p-4 border border-dash-border bg-dash-hover/20 rounded-xl gap-4">
+                <CardContainer key={idx} className="flex items-center justify-between p-4 border border-dash-border bg-dash-input/30 rounded-xl gap-4">
                   <CardContainer className="flex items-center gap-4">
-                    <CardContainer className={`p-2.5 bg-dash-hover border border-dash-border/60 rounded-xl ${roleAccent}`}>
+                    <CardContainer className={`p-2.5 bg-dash-input border border-dash-border/60 rounded-xl ${roleAccent}`}>
                       <Smartphone className="h-5 w-5" />
                     </CardContainer>
                     <CardContainer>
-                      <p className="text-sm font-medium font-mono uppercase text-white">Session Token</p>
+                      <p className="text-sm font-medium font-mono uppercase text-dash-text">Session Token</p>
                       <p className="text-xs text-dash-muted font-mono mt-1">Expires: {new Date(device.expiresAt).toLocaleString()}</p>
                     </CardContainer>
                   </CardContainer>
