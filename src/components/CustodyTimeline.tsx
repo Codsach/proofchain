@@ -69,7 +69,7 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
       {/* Widget Header with Pulse */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="text-sm font-bold text-white uppercase tracking-[0.2em]">
+          <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">
             Custody Chain Flow
           </h2>
           <span className="flex h-2 w-2 relative">
@@ -85,11 +85,11 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
       {/* Timeline Scroll Container */}
       <div className="max-h-[480px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
         {nodes.length === 0 ? (
-          <div className="text-center py-12 text-xs text-white/30">
+          <div className="text-center py-12 text-xs text-dash-muted/40">
             No custody events recorded.
           </div>
         ) : (
-          <div className="relative pl-6 border-l border-white/10 space-y-6 py-2">
+          <div className="relative pl-6 border-l border-dash-border/30 space-y-6 py-2">
             {nodes.slice().reverse().map((node, index) => {
               const isExpanded = expandedNodes[node.id];
               const isLatest = index === 0;
@@ -97,10 +97,10 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
               return (
                 <div key={node.id} className="relative group">
                   {/* Timeline Node Point */}
-                  <div className={`absolute -left-[30px] top-1.5 flex items-center justify-center w-5 h-5 rounded-full border bg-black/80 transition-all ${
+                  <div className={`absolute -left-[30px] top-1.5 flex items-center justify-center w-5 h-5 rounded-full border bg-dash-bg transition-all ${
                     isLatest 
                       ? "border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] scale-110" 
-                      : "border-white/20 group-hover:border-white/40"
+                      : "border-dash-border/60 group-hover:border-dash-accent/50"
                   }`}>
                     {getIcon(node.type, node.verdictType)}
                   </div>
@@ -126,12 +126,12 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
                           }`}>
                             {node.type}
                           </span>
-                          <span className="text-[10px] text-white/40 font-medium">
+                          <span className="text-[10px] text-dash-muted font-medium">
                             {new Date(node.timestamp).toLocaleString()}
                           </span>
                         </div>
 
-                        <p className="text-xs font-bold text-white uppercase tracking-tight mt-1.5">
+                        <p className="text-xs font-bold text-dash-text uppercase tracking-tight mt-1.5">
                           {node.title}
                         </p>
                       </div>
@@ -140,7 +140,7 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
                       {(node.description || node.txHash || node.subtitle) && (
                         <button
                           onClick={() => toggleExpand(node.id)}
-                          className="text-white/40 hover:text-white transition-colors p-1"
+                          className="text-dash-muted hover:text-dash-text transition-colors p-1"
                         >
                           {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
@@ -155,35 +155,35 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          className="overflow-hidden mt-3 pt-3 border-t border-white/5 space-y-3"
+                          className="overflow-hidden mt-3 pt-3 border-t border-dash-border/40 space-y-3"
                         >
                           {node.subtitle && (
-                            <p className="text-[11px] font-medium text-white/80">
+                            <p className="text-[11px] font-medium text-dash-text/80">
                               {node.subtitle}
                             </p>
                           )}
 
                           {node.description && (
-                            <p className="text-[11px] text-white/50 leading-relaxed italic">
+                            <p className="text-[11px] text-dash-muted leading-relaxed italic">
                               "{node.description}"
                             </p>
                           )}
 
                           {/* Actors info */}
                           {!isPublic && (node.actorName || node.recipientName) && (
-                            <div className="grid grid-cols-2 gap-4 text-[10px] bg-black/20 p-2.5 rounded-lg border border-white/5">
+                            <div className="grid grid-cols-2 gap-4 text-[10px] bg-dash-bg/40 p-2.5 rounded-lg border border-dash-border">
                               {node.actorName && (
                                 <div>
-                                  <span className="text-white/30 uppercase font-bold tracking-wider block">Actor</span>
-                                  <span className="text-white font-medium">{node.actorName}</span>
-                                  <span className="text-white/40 block mt-0.5">{formatRole(node.actorRole)}</span>
+                                  <span className="text-dash-muted/80 uppercase font-bold tracking-wider block">Actor</span>
+                                  <span className="text-dash-text font-medium">{node.actorName}</span>
+                                  <span className="text-dash-muted block mt-0.5">{formatRole(node.actorRole)}</span>
                                 </div>
                               )}
                               {node.recipientName && (
                                 <div>
-                                  <span className="text-white/30 uppercase font-bold tracking-wider block">Recipient</span>
-                                  <span className="text-white font-medium">{node.recipientName}</span>
-                                  <span className="text-white/40 block mt-0.5">{formatRole(node.recipientRole)}</span>
+                                  <span className="text-dash-muted/80 uppercase font-bold tracking-wider block">Recipient</span>
+                                  <span className="text-dash-text font-medium">{node.recipientName}</span>
+                                  <span className="text-dash-muted block mt-0.5">{formatRole(node.recipientRole)}</span>
                                 </div>
                               )}
                             </div>
@@ -191,8 +191,8 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
 
                           {/* Transaction hash link */}
                           {node.txHash && (
-                            <div className="flex items-center justify-between text-[9px] bg-black/40 p-2 rounded-lg border border-white/5 font-mono">
-                              <span className="text-white/30 uppercase font-bold tracking-wider">Anchor Tx</span>
+                            <div className="flex items-center justify-between text-[9px] bg-dash-bg/50 p-2 rounded-lg border border-dash-border font-mono">
+                              <span className="text-dash-muted/80 uppercase font-bold tracking-wider">Anchor Tx</span>
                               <a
                                 href={`https://amoy.polygonscan.com/tx/${node.txHash}`}
                                 target="_blank"

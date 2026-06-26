@@ -203,12 +203,12 @@ export default function CreateCasePage() {
           </button>
         </div>
         <style jsx>{`
-          .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: #0f1117; }
-          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 16px; border: 1px solid rgba(74,222,128,0.2); background: rgba(74,222,128,0.05); }
+          .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: transparent; }
+          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 16px; border: 1px solid var(--dash-border); background: var(--dash-card); }
           .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(74,222,128,0.1); display: flex; align-items: center; justify-content: center; }
-          h2 { color: #f0fdf4; font-size: 20px; margin: 0 0 8px; }
-          p { color: #9ca3af; font-size: 14px; margin: 0 0 24px; }
-          .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+          h2 { color: var(--dash-text); font-size: 20px; margin: 0 0 8px; }
+          p { color: var(--dash-muted); font-size: 14px; margin: 0 0 24px; }
+          .btn-primary { background: var(--dash-accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
         `}</style>
       </div>
     );
@@ -305,7 +305,7 @@ export default function CreateCasePage() {
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-dash-border/40 text-xs font-bold text-white/70 uppercase tracking-wider">
+                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-dash-border/40 text-xs font-bold text-dash-text uppercase tracking-wider">
                     {tag}
                     <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400">×</button>
                   </span>
@@ -512,9 +512,9 @@ export default function CreateCasePage() {
       <style jsx>{`
         .page {
           min-height: 100vh;
-          background: #0f1117;
+          background: transparent;
           padding: 24px 16px 48px;
-          color: white;
+          color: var(--dash-text);
         }
         .container {
           max-width: 560px;
@@ -524,16 +524,16 @@ export default function CreateCasePage() {
           gap: 20px;
         }
         .page-header { padding-bottom: 4px; }
-        .page-header h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; color: #f9fafb; }
-        .page-header p { font-size: 13px; color: #6b7280; margin: 0; }
+        .page-header h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px; color: var(--dash-text); }
+        .page-header p { font-size: 13px; color: var(--dash-muted); margin: 0; }
         .form { display: flex; flex-direction: column; gap: 16px; }
         .field { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 13px; font-weight: 500; color: #9ca3af; }
+        label { font-size: 13px; font-weight: 500; color: var(--dash-muted); }
         input[type="text"], textarea {
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: var(--dash-input);
+          border: 1px solid var(--dash-border);
           border-radius: 8px;
-          color: white;
+          color: var(--dash-text);
           padding: 10px 12px;
           font-size: 14px;
           outline: none;
@@ -551,24 +551,24 @@ export default function CreateCasePage() {
           position: absolute;
           left: 12px;
           top: 10px;
-          color: #9ca3af;
+          color: var(--dash-muted);
           width: 18px;
           height: 18px;
           pointer-events: none;
         }
         .custom-select {
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(255,255,255,0.1);
+          background: var(--dash-input);
+          border: 1px solid var(--dash-border);
           border-radius: 8px;
-          color: white;
+          color: var(--dash-text);
           padding: 10px 12px;
           font-size: 14px;
           outline: none;
           width: 100%;
         }
-        .custom-select option { background: #111827; color: white; }
-        input:focus, textarea:focus, .custom-select:focus { border-color: rgba(59,130,246,0.6); }
-        input::placeholder, textarea::placeholder { color: #4b5563; }
+        .custom-select option { background: var(--dash-bg); color: var(--dash-text); }
+        input:focus, textarea:focus, .custom-select:focus { border-color: var(--dash-accent); }
+        input::placeholder, textarea::placeholder { color: var(--dash-muted); opacity: 0.5; }
         .template-cards {
           display: flex;
           gap: 8px;
@@ -578,9 +578,9 @@ export default function CreateCasePage() {
           display: flex;
           align-items: center;
           gap: 6px;
-          background: rgba(16, 185, 129, 0.1);
-          border: 1px solid rgba(16, 185, 129, 0.2);
-          color: #10b981;
+          background: rgba(13, 158, 110, 0.1);
+          border: 1px solid rgba(13, 158, 110, 0.2);
+          color: var(--dash-accent);
           padding: 6px 12px;
           border-radius: 6px;
           font-size: 12px;
@@ -589,7 +589,7 @@ export default function CreateCasePage() {
           transition: all 0.2s;
         }
         .template-btn:hover {
-          background: rgba(16, 185, 129, 0.2);
+          background: rgba(13, 158, 110, 0.2);
         }
         .method-tabs { display: flex; gap: 8px; }
         .method-tab {
@@ -600,33 +600,33 @@ export default function CreateCasePage() {
           gap: 7px;
           padding: 10px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.1);
-          background: rgba(255,255,255,0.04);
-          color: #9ca3af;
+          border: 1px solid var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.15s;
         }
         .method-tab.active {
-          border-color: rgba(59,130,246,0.5);
-          background: rgba(59,130,246,0.1);
-          color: #60a5fa;
+          border-color: var(--dash-accent);
+          background: rgba(13, 158, 110, 0.1);
+          color: var(--dash-accent);
         }
         .capture-type-row { display: flex; gap: 6px; margin-bottom: 10px; }
         .capture-type-btn {
           padding: 5px 14px;
           border-radius: 6px;
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid var(--dash-border);
           background: transparent;
-          color: #6b7280;
+          color: var(--dash-muted);
           font-size: 13px;
           cursor: pointer;
         }
         .capture-type-btn.active {
-          border-color: rgba(59,130,246,0.4);
-          background: rgba(59,130,246,0.1);
-          color: #60a5fa;
+          border-color: var(--dash-accent);
+          background: rgba(13, 158, 110, 0.1);
+          color: var(--dash-accent);
         }
         .open-camera-btn {
           display: flex;
@@ -636,18 +636,18 @@ export default function CreateCasePage() {
           width: 100%;
           padding: 14px;
           border-radius: 10px;
-          border: 1.5px dashed rgba(255,255,255,0.15);
-          background: rgba(255,255,255,0.03);
-          color: #9ca3af;
+          border: 1.5px dashed var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.15s;
         }
         .open-camera-btn:hover {
-          border-color: rgba(59,130,246,0.4);
-          color: #60a5fa;
-          background: rgba(59,130,246,0.05);
+          border-color: var(--dash-accent);
+          color: var(--dash-accent);
+          background: var(--dash-hover);
         }
         .upload-zone {
           display: flex;
@@ -658,14 +658,14 @@ export default function CreateCasePage() {
           width: 100%;
           padding: 24px;
           border-radius: 10px;
-          border: 1.5px dashed rgba(255,255,255,0.15);
-          background: rgba(255,255,255,0.03);
-          color: #9ca3af;
+          border: 1.5px dashed var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           cursor: pointer;
           text-align: center;
         }
-        .upload-zone span { font-size: 14px; font-weight: 500; color: #d1d5db; }
-        .upload-zone small { font-size: 12px; color: #4b5563; }
+        .upload-zone span { font-size: 14px; font-weight: 500; color: var(--dash-text); }
+        .upload-zone small { font-size: 12px; color: var(--dash-muted); }
         .hidden-input { display: none; }
         .file-preview-row {
           display: flex;
@@ -673,8 +673,8 @@ export default function CreateCasePage() {
           align-items: center;
           padding: 10px;
           border-radius: 8px;
-          border: 1px solid rgba(255,255,255,0.08);
-          background: rgba(255,255,255,0.03);
+          border: 1px solid var(--dash-border);
+          background: var(--dash-input);
         }
         .file-thumb {
           width: 64px;
@@ -689,17 +689,17 @@ export default function CreateCasePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(255,255,255,0.06);
+          background: var(--dash-bg);
           border-radius: 6px;
-          color: #6b7280;
+          color: var(--dash-muted);
           flex-shrink: 0;
         }
         .file-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-        .file-name { font-size: 13px; color: #e5e7eb; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-size, .file-time { font-size: 11px; color: #6b7280; }
+        .file-name { font-size: 13px; color: var(--dash-text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size, .file-time { font-size: 11px; color: var(--dash-muted); }
         .reopen-camera {
           font-size: 12px;
-          color: #60a5fa;
+          color: var(--dash-accent);
           background: none;
           border: none;
           cursor: pointer;
@@ -710,7 +710,7 @@ export default function CreateCasePage() {
         .camera-modal-backdrop {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.9);
+          background: rgba(0,0,0,0.8);
           z-index: 100;
           display: flex;
           align-items: center;
@@ -720,10 +720,10 @@ export default function CreateCasePage() {
         .camera-modal {
           width: 100%;
           max-width: 480px;
-          background: #111827;
+          background: var(--dash-modal);
           border-radius: 16px;
           padding: 16px;
-          border: 1px solid rgba(255,255,255,0.1);
+          border: 1px solid var(--dash-border);
         }
         .error-banner {
           background: rgba(239,68,68,0.1);
@@ -731,14 +731,14 @@ export default function CreateCasePage() {
           border-radius: 8px;
           padding: 10px 14px;
           font-size: 13px;
-          color: #f87171;
+          color: var(--dash-danger);
         }
         .submit-btn {
           width: 100%;
           padding: 13px;
           border-radius: 10px;
           border: none;
-          background: #2563eb;
+          background: var(--dash-accent);
           color: white;
           font-size: 15px;
           font-weight: 600;
@@ -749,7 +749,7 @@ export default function CreateCasePage() {
           gap: 8px;
           transition: background 0.15s;
         }
-        .submit-btn:hover:not(:disabled) { background: #1d4ed8; }
+        .submit-btn:hover:not(:disabled) { opacity: 0.9; }
         .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .spinner-sm {
           width: 16px;

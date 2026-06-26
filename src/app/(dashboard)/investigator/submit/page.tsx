@@ -228,12 +228,12 @@ export default function SubmitEvidencePage() {
           </button>
         </div>
         <style jsx>{`
-          .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: #0f1117; }
-          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 16px; border: 1px solid rgba(74,222,128,0.2); background: rgba(74,222,128,0.05); }
+          .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: transparent; }
+          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 16px; border: 1px solid var(--dash-border); background: var(--dash-card); }
           .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(74,222,128,0.1); display: flex; align-items: center; justify-content: center; }
-          h2 { color: #f0fdf4; font-size: 20px; margin: 0 0 8px; }
-          p { color: #9ca3af; font-size: 14px; margin: 0 0 24px; }
-          .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+          h2 { color: var(--dash-text); font-size: 20px; margin: 0 0 8px; }
+          p { color: var(--dash-muted); font-size: 14px; margin: 0 0 24px; }
+          .btn-primary { background: var(--dash-accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
         `}</style>
       </div>
     );
@@ -258,17 +258,6 @@ export default function SubmitEvidencePage() {
             onRemove={removeFromQueue}
             expanded={pendingCount > 0}
           />
-
-        {/* Offline / Queue status */}
-        <OfflineQueueIndicator
-          isOnline={isOnline}
-          pendingCount={pendingCount}
-          isSyncing={isSyncing}
-          queue={queue}
-          onSync={syncQueue}
-          onRemove={removeFromQueue}
-          expanded={pendingCount > 0}
-        />
 
         <form
           className="form"
@@ -533,7 +522,7 @@ export default function SubmitEvidencePage() {
           min-height: 100vh;
           background: transparent;
           padding: 24px 16px 48px;
-          color: white;
+          color: var(--dash-text);
         }
         .container {
           max-width: 500px;
@@ -546,16 +535,16 @@ export default function SubmitEvidencePage() {
           /* specific padding/margin tweaks can go here if needed */
         }
         .page-header { padding-bottom: 4px; text-align: center; }
-        .page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 6px; color: #f8fafc; }
-        .page-header p { font-size: 14px; color: #94a3b8; margin: 0; }
+        .page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 6px; color: var(--dash-text); }
+        .page-header p { font-size: 14px; color: var(--dash-muted); margin: 0; }
         .form { display: flex; flex-direction: column; gap: 20px; }
         .field { display: flex; flex-direction: column; gap: 8px; }
-        label { font-size: 14px; font-weight: 600; color: #cbd5e1; }
+        label { font-size: 14px; font-weight: 600; color: var(--dash-muted); }
         input[type="text"], textarea {
-          background: #1e293b;
-          border: 1px solid #334155;
+          background: var(--dash-input);
+          border: 1px solid var(--dash-border);
           border-radius: 8px;
-          color: white;
+          color: var(--dash-text);
           padding: 10px 12px;
           font-size: 14px;
           outline: none;
@@ -573,17 +562,16 @@ export default function SubmitEvidencePage() {
           position: absolute;
           left: 12px;
           top: 10px;
-          color: #64748b;
+          color: var(--dash-muted);
           width: 18px;
           height: 18px;
           pointer-events: none;
         }
         input:focus, textarea:focus { 
-          border-color: #06b6d4; 
-          box-shadow: 0 0 0 1px #06b6d4;
-          background: #0f172a;
+          border-color: var(--dash-accent); 
+          background: var(--dash-hover);
         }
-        input::placeholder, textarea::placeholder { color: #94a3b8; }
+        input::placeholder, textarea::placeholder { color: var(--dash-muted); opacity: 0.5; }
         .method-tabs { display: flex; gap: 8px; }
         .method-tab {
           flex: 1;
@@ -593,38 +581,38 @@ export default function SubmitEvidencePage() {
           gap: 7px;
           padding: 10px;
           border-radius: 8px;
-          border: 1px solid #334155;
-          background: #1e293b;
-          color: #94a3b8;
+          border: 1px solid var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
         }
-        .method-tab:hover { background: #334155; color: #e2e8f0; }
+        .method-tab:hover { background: var(--dash-hover); color: var(--dash-text); }
         .method-tab.active {
-          border-color: #06b6d4;
-          background: rgba(6,182,212,0.1);
-          color: #22d3ee;
+          border-color: var(--dash-accent);
+          background: rgba(13, 158, 110, 0.1);
+          color: var(--dash-accent);
         }
         .capture-type-row { display: flex; gap: 6px; margin-bottom: 8px; }
         .capture-type-btn {
           flex: 1;
           padding: 6px 14px;
           border-radius: 6px;
-          border: 1px solid #334155;
-          background: #1e293b;
-          color: #94a3b8;
+          border: 1px solid var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           font-size: 13px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
         }
-        .capture-type-btn:hover { background: #334155; color: #e2e8f0; }
+        .capture-type-btn:hover { background: var(--dash-hover); color: var(--dash-text); }
         .capture-type-btn.active {
-          border-color: #06b6d4;
-          background: rgba(6,182,212,0.1);
-          color: #22d3ee;
+          border-color: var(--dash-accent);
+          background: rgba(13, 158, 110, 0.1);
+          color: var(--dash-accent);
         }
         .open-camera-btn {
           display: flex;
@@ -634,18 +622,18 @@ export default function SubmitEvidencePage() {
           width: 100%;
           padding: 12px;
           border-radius: 8px;
-          border: 1.5px dashed #475569;
-          background: rgba(30,41,59,0.5);
-          color: #cbd5e1;
+          border: 1.5px dashed var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.2s;
         }
         .open-camera-btn:hover {
-          border-color: #06b6d4;
-          color: #22d3ee;
-          background: rgba(6,182,212,0.05);
+          border-color: var(--dash-accent);
+          color: var(--dash-accent);
+          background: var(--dash-hover);
         }
         .upload-zone {
           display: flex;
@@ -656,19 +644,19 @@ export default function SubmitEvidencePage() {
           width: 100%;
           padding: 20px;
           border-radius: 8px;
-          border: 1.5px dashed #475569;
-          background: rgba(30,41,59,0.5);
-          color: #cbd5e1;
+          border: 1.5px dashed var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-muted);
           cursor: pointer;
           text-align: center;
           transition: all 0.2s;
         }
         .upload-zone:hover {
-          border-color: #06b6d4;
-          background: rgba(6,182,212,0.05);
+          border-color: var(--dash-accent);
+          background: var(--dash-hover);
         }
-        .upload-zone span { font-size: 14px; font-weight: 500; color: #e2e8f0; }
-        .upload-zone small { font-size: 12px; color: #94a3b8; }
+        .upload-zone span { font-size: 14px; font-weight: 500; color: var(--dash-text); }
+        .upload-zone small { font-size: 12px; color: var(--dash-muted); }
         .hidden-input { display: none; }
         .file-preview-row {
           display: flex;
@@ -676,8 +664,8 @@ export default function SubmitEvidencePage() {
           align-items: center;
           padding: 10px;
           border-radius: 8px;
-          border: 1px solid #334155;
-          background: #1e293b;
+          border: 1px solid var(--dash-border);
+          background: var(--dash-input);
         }
         .file-thumb {
           width: 56px;
@@ -685,7 +673,7 @@ export default function SubmitEvidencePage() {
           object-fit: cover;
           border-radius: 6px;
           flex-shrink: 0;
-          border: 1px solid #334155;
+          border: 1px solid var(--dash-border);
         }
         .file-icon {
           width: 56px;
@@ -693,18 +681,18 @@ export default function SubmitEvidencePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: #0f172a;
+          background: var(--dash-bg);
           border-radius: 6px;
-          color: #64748b;
+          color: var(--dash-muted);
           flex-shrink: 0;
-          border: 1px solid #334155;
+          border: 1px solid var(--dash-border);
         }
         .file-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-        .file-name { font-size: 13px; color: #f8fafc; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .file-size, .file-time { font-size: 11px; color: #94a3b8; }
+        .file-name { font-size: 13px; color: var(--dash-text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-size, .file-time { font-size: 11px; color: var(--dash-muted); }
         .reopen-camera {
           font-size: 12px;
-          color: #06b6d4;
+          color: var(--dash-accent);
           background: none;
           border: none;
           cursor: pointer;
@@ -713,17 +701,17 @@ export default function SubmitEvidencePage() {
           text-align: left;
           font-weight: 500;
         }
-        .reopen-camera:hover { color: #22d3ee; text-decoration: underline; }
+        .reopen-camera:hover { color: var(--dash-accent); text-decoration: underline; }
         .gps-box {
-          background: rgba(15,23,42,0.4);
-          border: 1px solid #1e293b;
+          background: var(--dash-card);
+          border: 1px solid var(--dash-border);
           border-radius: 8px;
           padding: 12px;
         }
         .camera-modal-backdrop {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.9);
+          background: rgba(0,0,0,0.8);
           z-index: 100;
           display: flex;
           align-items: center;
@@ -733,10 +721,10 @@ export default function SubmitEvidencePage() {
         .camera-modal {
           width: 100%;
           max-width: 480px;
-          background: #0f172a;
+          background: var(--dash-modal);
           border-radius: 12px;
           padding: 16px;
-          border: 1px solid #334155;
+          border: 1px solid var(--dash-border);
         }
         .error-banner {
           background: rgba(239,68,68,0.1);
@@ -745,15 +733,15 @@ export default function SubmitEvidencePage() {
           padding: 12px 14px;
           font-size: 13px;
           font-weight: 500;
-          color: #fca5a5;
+          color: var(--dash-danger);
         }
         .submit-btn {
           width: 100%;
           padding: 14px;
           border-radius: 8px;
           border: none;
-          background: #06b6d4;
-          color: #082f49;
+          background: var(--dash-accent);
+          color: white;
           font-size: 15px;
           font-weight: 700;
           cursor: pointer;
@@ -762,24 +750,19 @@ export default function SubmitEvidencePage() {
           justify-content: center;
           gap: 8px;
           transition: all 0.2s;
-          box-shadow: 0 4px 12px rgba(6,182,212,0.2);
         }
         .submit-btn:hover:not(:disabled) { 
-          background: #22d3ee; 
-          box-shadow: 0 4px 16px rgba(6,182,212,0.3);
-          transform: translateY(-1px);
+          opacity: 0.9;
         }
         .submit-btn:disabled { 
           opacity: 0.6; 
           cursor: not-allowed; 
-          box-shadow: none;
-          transform: none;
         }
         .spinner-sm {
           width: 16px;
           height: 16px;
-          border: 2px solid rgba(8,47,73,0.3);
-          border-top-color: #082f49;
+          border: 2px solid rgba(255,255,255,0.3);
+          border-top-color: white;
           border-radius: 50%;
           animation: spin 0.7s linear infinite;
         }
