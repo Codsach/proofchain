@@ -131,11 +131,11 @@ export function CommentsPanel({ caseId }: Props) {
       <div className="flex items-center justify-between border-b border-dash-border pb-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-dash-accent" />
-          <h3 className="text-sm font-bold text-white uppercase tracking-[0.2em]">
+          <h3 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">
             Case Communications
           </h3>
         </div>
-        <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">
+        <span className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest">
           {comments.length} Messages
         </span>
       </div>
@@ -143,20 +143,20 @@ export function CommentsPanel({ caseId }: Props) {
       {/* Scrollable Message List */}
       <div
         ref={scrollRef}
-        className="max-h-64 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-white/5 scrollbar-track-transparent min-h-[120px]"
+        className="max-h-64 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-dash-border scrollbar-track-transparent min-h-[120px]"
       >
         {isLoading ? (
           <div className="flex flex-col gap-3">
             {[1, 2].map((i) => (
               <div key={i} className="animate-pulse flex flex-col gap-2">
-                <div className="h-3 bg-white/5 rounded w-1/4" />
-                <div className="h-10 bg-white/5 rounded w-full" />
+                <div className="h-3 bg-dash-hover/40 rounded w-1/4" />
+                <div className="h-10 bg-dash-hover/40 rounded w-full" />
               </div>
             ))}
           </div>
         ) : comments.length === 0 ? (
           <div className="text-center py-6">
-            <p className="text-[10px] text-white/30 font-bold uppercase tracking-wider">
+            <p className="text-[10px] text-dash-muted font-bold uppercase tracking-wider">
               No communication logs recorded.
             </p>
           </div>
@@ -170,13 +170,13 @@ export function CommentsPanel({ caseId }: Props) {
                 className={`rounded-xl p-3 border transition-colors ${
                   comment.isInternal
                     ? "bg-amber-500/5 border-amber-500/20 hover:border-amber-500/30"
-                    : "bg-white/[0.02] border-white/5 hover:border-white/10"
+                    : "bg-dash-input/30 border-dash-border hover:bg-dash-hover/30"
                 }`}
               >
                 {/* Meta details */}
                 <div className="flex items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-white truncate max-w-[120px]">
+                    <span className="text-xs font-bold text-dash-text truncate max-w-[120px]">
                       {comment.authorName}
                     </span>
                     <span
@@ -193,13 +193,13 @@ export function CommentsPanel({ caseId }: Props) {
                       </span>
                     )}
                   </div>
-                  <span className="text-[9px] font-medium text-white/20">
+                  <span className="text-[9px] font-medium text-dash-muted">
                     {formatRelativeTime(comment.createdAt)}
                   </span>
                 </div>
 
                 {/* Content */}
-                <p className="text-xs text-white/70 leading-relaxed break-words whitespace-pre-wrap">
+                <p className="text-xs text-dash-text/80 leading-relaxed break-words whitespace-pre-wrap">
                   {comment.content}
                 </p>
               </motion.div>
@@ -216,19 +216,19 @@ export function CommentsPanel({ caseId }: Props) {
           onChange={(e) => setNewComment(e.target.value)}
           disabled={isSending}
           maxLength={2000}
-          className="w-full text-xs bg-black/40 border border-dash-border rounded-xl px-3 py-2 text-white placeholder-white/20 focus:outline-none focus:border-dash-accent transition-colors resize-none h-16 min-h-[50px]"
+          className="w-full text-xs bg-dash-input border border-dash-border rounded-xl px-3 py-2 text-dash-text placeholder-dash-muted/40 focus:outline-none focus:border-dash-accent transition-colors resize-none h-16 min-h-[50px]"
         />
 
         <div className="flex items-center justify-between gap-4 flex-wrap">
           {/* Internal Checkbox for Analyst/Admin */}
           {user?.role !== "investigator" ? (
-            <label className="flex items-center gap-2 cursor-pointer select-none text-[10px] font-bold uppercase tracking-wider text-white/40 hover:text-white transition-colors">
+            <label className="flex items-center gap-2 cursor-pointer select-none text-[10px] font-bold uppercase tracking-wider text-dash-muted hover:text-dash-text transition-colors">
               <input
                 type="checkbox"
                 checked={isInternal}
                 onChange={(e) => setIsInternal(e.target.checked)}
                 disabled={isSending}
-                className="rounded border-dash-border bg-black/40 text-dash-accent focus:ring-0 focus:ring-offset-0 focus:outline-none w-3.5 h-3.5"
+                className="rounded border-dash-border bg-dash-input text-dash-accent focus:ring-0 focus:ring-offset-0 focus:outline-none w-3.5 h-3.5"
               />
               <span className="flex items-center gap-1">
                 <Lock className="w-3 h-3 text-amber-500/60" />
