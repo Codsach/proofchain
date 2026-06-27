@@ -9,7 +9,7 @@ import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
-import { Share2 } from "lucide-react";
+import { Share2, FileText } from "lucide-react";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 import { CommentsPanel } from "@/components/CommentsPanel";
 
@@ -272,7 +272,7 @@ export default function InvestigatorCaseDetailPage() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}
-        className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-2xl p-8 space-y-8 shadow-2xl relative overflow-hidden group"
+        className="rounded-xl border border-dash-border border-l-4 border-l-[var(--dash-accent)] bg-dash-card p-8 space-y-8 shadow-sm relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-6">
           <div className="text-[10px] font-bold text-dash-accent/20 uppercase tracking-[0.3em] group-hover:text-dash-accent transition-colors">Subject Profile</div>
@@ -342,7 +342,7 @@ export default function InvestigatorCaseDetailPage() {
         </div>
 
         {caseData.status === "pending_ai_review" ? (
-          <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 relative overflow-hidden group shadow-lg">
+          <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-6 relative overflow-hidden group shadow-sm">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="space-y-1.5 flex-1">
                 <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
@@ -366,12 +366,12 @@ export default function InvestigatorCaseDetailPage() {
             </div>
           </div>
         ) : caseData.overallRiskLevel ? (
-          <div className={`rounded-2xl border p-6 relative overflow-hidden group shadow-lg transition-all duration-300 ${
+          <div className={`rounded-xl border p-6 relative overflow-hidden group shadow-sm transition-all duration-300 ${
             caseData.overallRiskLevel === "high"
-              ? "bg-red-500/5 border-red-500/20"
+              ? "bg-[var(--dash-danger)]/5 border-[var(--dash-danger)]/20 border-l-4 border-l-[var(--dash-danger)]"
               : caseData.overallRiskLevel === "medium"
-              ? "bg-amber-500/5 border-amber-500/20"
-              : "bg-emerald-500/5 border-emerald-500/20"
+              ? "bg-amber-500/5 border-amber-500/20 border-l-4 border-l-amber-500"
+              : "bg-[var(--dash-info)]/5 border-[var(--dash-info)]/20 border-l-4 border-l-[var(--dash-info)]"
           }`}>
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-1.5 flex-1">
@@ -393,10 +393,10 @@ export default function InvestigatorCaseDetailPage() {
                 <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-0.5">SCORE</span>
                 <span className={`text-base font-extrabold ${
                   caseData.overallRiskLevel === "high"
-                    ? "text-red-400"
+                    ? "text-[var(--dash-danger)]"
                     : caseData.overallRiskLevel === "medium"
-                    ? "text-amber-400"
-                    : "text-emerald-400"
+                    ? "text-amber-600"
+                    : "text-[var(--dash-info)]"
                 }`}>
                   {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "--"}
                 </span>
@@ -404,7 +404,7 @@ export default function InvestigatorCaseDetailPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-dash-border bg-dash-input/50 p-6 text-center">
+          <div className="rounded-xl border border-dash-border bg-dash-input/50 p-6 text-center">
             <p className="text-xs text-dash-muted">AI Analysis not executed or awaiting upload process.</p>
           </div>
         )}
@@ -430,12 +430,17 @@ export default function InvestigatorCaseDetailPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 + idx * 0.05 }}
-                className="rounded-2xl border border-dash-border bg-dash-card hover:bg-dash-hover transition-all p-5 space-y-4 group/file"
+                className="rounded-xl border border-dash-border border-l-4 border-l-[var(--dash-info)] bg-dash-card hover:bg-dash-hover transition-all p-5 space-y-4 group/file shadow-sm"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-dash-text truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
-                    <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="p-2.5 rounded-lg bg-dash-input border border-dash-border text-dash-accent group-hover/file:bg-[var(--dash-active-bg)] group-hover/file:text-[var(--dash-active-text)] group-hover/file:border-[var(--dash-active-text)]/15 transition-all duration-300 shrink-0">
+                      <FileText className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-dash-text truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
+                      <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
+                    </div>
                   </div>
                   <motion.a
                     whileHover={{ scale: 1.05 }}
@@ -443,19 +448,19 @@ export default function InvestigatorCaseDetailPage() {
                     href={getIpfsGatewayUrl(file.ipfsCid)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/80 bg-emerald-500/5 border border-dash-accent/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-dash-accent/10"
+                    className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/80 bg-dash-input border border-dash-accent/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-dash-accent/10 shrink-0"
                   >
                     Gateway Link
                   </motion.a>
                 </div>
                 <div className="space-y-1.5 pt-1">
                   <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">Digital Fingerprint (SHA-256)</p>
-                  <p className="text-[10px] font-mono text-dash-accent/80 dark:text-dash-accent/40 break-all bg-dash-input rounded-xl px-4 py-2 border border-dash-border">
+                  <p className="text-[10px] font-mono text-dash-accent/80 break-all bg-dash-input rounded-lg px-4 py-2 border border-dash-border">
                     {file.sha256Hash}
                   </p>
                   {file.gpsLat !== null && file.gpsLng !== null && (
                     <div className="pt-2 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50 animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--dash-info)]/80 animate-pulse" />
                       <span className="text-[9px] font-bold text-dash-muted/70 uppercase tracking-widest">
                         Geotag Signature: {file.gpsLat.toFixed(5)}°, {file.gpsLng.toFixed(5)}°
                       </span>
@@ -478,7 +483,7 @@ export default function InvestigatorCaseDetailPage() {
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4 }}
-        className="rounded-2xl bg-emerald-500/5 border border-emerald-500/10 p-6 flex flex-col sm:flex-row items-center justify-between gap-6"
+        className="rounded-xl bg-dash-card border border-dash-border border-l-4 border-l-[var(--dash-info)] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm"
       >
         <div className="space-y-1">
           <p className="text-xs font-bold text-dash-text uppercase tracking-tight text-center sm:text-left">Public Verification Signal</p>
@@ -489,7 +494,7 @@ export default function InvestigatorCaseDetailPage() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleShare}
-            className="flex items-center justify-center size-8 rounded-full bg-emerald-500/10 text-dash-accent hover:bg-emerald-500/20 transition-colors"
+            className="flex items-center justify-center size-8 rounded-full bg-dash-hover hover:bg-[var(--dash-border)]/50 text-dash-accent transition-colors animate-pulse"
             title="Share Case Link"
           >
             <Share2 size={14} />
@@ -499,7 +504,7 @@ export default function InvestigatorCaseDetailPage() {
             href={`/verify/${caseData.caseId}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[10px] font-bold text-dash-accent hover:text-emerald-300 transition-colors uppercase tracking-[0.2em] flex items-center gap-2 whitespace-nowrap"
+            className="text-[10px] font-bold text-dash-accent hover:underline transition-colors uppercase tracking-[0.2em] flex items-center gap-2 whitespace-nowrap"
           >
             Verify Interface <span className="text-lg">→</span>
           </motion.a>

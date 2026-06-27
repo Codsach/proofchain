@@ -110,6 +110,8 @@
   --dash-danger:      #E0284A;  /* Danger / rose                     */
   --dash-info:        #0597AE;  /* Info / cyan                       */
   --dash-accent-glow: rgba(13, 158, 110, 0.30);
+  --dash-active-bg:   var(--dash-text);
+  --dash-active-text: var(--dash-bg);
 }
 
 
@@ -162,7 +164,97 @@
   --dash-danger:      #F43F5E;
   --dash-info:        #06B6D4;
   --dash-accent-glow: rgba(16, 185, 129, 0.45);
+  --dash-active-bg:   var(--dash-text);
+  --dash-active-text: var(--dash-bg);
 }
+
+.sentinel-theme {
+  --background: oklch(0.985 0.005 340); /* #fcf8fa */
+  --foreground: oklch(0.145 0.004 340); /* #1c1b1c */
+  --card: oklch(1.0 0 0); /* #ffffff */
+  --card-foreground: oklch(0.145 0.004 340);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.145 0.004 340);
+  --primary: oklch(0.141 0.015 240); /* #0f172a / Charcoal */
+  --primary-foreground: oklch(1.0 0 0); /* #ffffff */
+  --secondary: oklch(0.364 0.024 240); /* #475569 */
+  --secondary-foreground: oklch(1.0 0 0);
+  --muted: oklch(0.952 0.004 340); /* #f0ecee */
+  --muted-foreground: oklch(0.342 0.004 340); /* #494548 */
+  --accent: oklch(0.976 0.003 340); /* #f6f3f5 */
+  --accent-foreground: oklch(0.145 0.004 340);
+  --destructive: oklch(0.245 0.125 15); /* #ba1a1a / Critical */
+  --destructive-foreground: oklch(1.0 0 0);
+  --border: oklch(0.835 0.006 340); /* #cbc4c8 / outline-variant */
+  --input: oklch(0.976 0.003 340);
+  --ring: oklch(0.141 0.015 240 / 50%);
+  --radius: 12px;
+
+  /* Dashboard variables mapping */
+  --dash-bg:          #fcf8fa;
+  --dash-sidebar:     #eae7e9; /* Darkened just 2-3% (surface-container-high) */
+  --dash-card:        #ffffff;
+  --dash-input:       #f6f3f5;
+  --dash-modal:       #ffffff;
+  --dash-table:       #f0ecee;
+  --dash-hover:       #eae7e9;
+  --dash-border:      #cbc4c8;
+  --dash-text:        #1c1b1c;
+  --dash-muted:       #494548;
+  --dash-accent:      #1e293b; /* Highlight Color: #1e293b */
+  --dash-danger:      #ba1a1a;
+  --dash-info:        #64748b; /* Success/Healthy: #64748b */
+  --dash-accent-glow: rgba(30, 41, 59, 0.15);
+  --dash-active-bg:   #e0f2fe; /* Soft blue active background */
+  --dash-active-text: #0284c7; /* Sky-600 active icon */
+
+  font-family: 'Inter', sans-serif;
+}
+
+/* Glassmorphism overrides for specific status badges on light background inside sentinel-theme */
+.sentinel-theme .bg-blue-900\/40 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #1e3a8a !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.sentinel-theme .bg-amber-900\/40 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #78350f !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.sentinel-theme .bg-red-900\/40 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ba1a1a !important; /* Critical color */
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.sentinel-theme .bg-cyan-900\/40 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #083344 !important;
+  border-color: rgba(6, 182, 212, 0.3) !important;
+}
+.sentinel-theme .bg-green-900\/40 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #064e3b !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Typography Scale classes inside sentinel-theme */
+.sentinel-theme .display-lg { font-size: 57px; font-weight: 400; line-height: 64px; }
+.sentinel-theme .display-md { font-size: 45px; font-weight: 400; line-height: 52px; }
+.sentinel-theme .display-sm { font-size: 36px; font-weight: 400; line-height: 44px; }
+.sentinel-theme .headline-lg { font-size: 32px; font-weight: 600; line-height: 40px; }
+.sentinel-theme .headline-md { font-size: 28px; font-weight: 400; line-height: 36px; }
+.sentinel-theme .headline-sm { font-size: 24px; font-weight: 400; line-height: 32px; }
+.sentinel-theme .title-lg { font-size: 22px; font-weight: 500; line-height: 28px; }
+.sentinel-theme .title-md { font-size: 16px; font-weight: 500; line-height: 24px; }
+.sentinel-theme .title-sm { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme .body-lg { font-size: 16px; font-weight: 400; line-height: 24px; }
+.sentinel-theme .body-md { font-size: 14px; font-weight: 400; line-height: 20px; }
+.sentinel-theme .body-sm { font-size: 12px; font-weight: 400; line-height: 16px; }
+.sentinel-theme .label-lg { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme .label-md { font-size: 12px; font-weight: 500; line-height: 16px; }
+.sentinel-theme .label-sm { font-size: 11px; font-weight: 500; line-height: 16px; }
+
 
 @layer base {
   * {

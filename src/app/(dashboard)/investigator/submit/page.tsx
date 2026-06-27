@@ -211,7 +211,7 @@ export default function SubmitEvidencePage() {
       <div className="page">
         <div className="success-card">
           <div className="success-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
@@ -229,8 +229,8 @@ export default function SubmitEvidencePage() {
         </div>
         <style jsx>{`
           .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: transparent; }
-          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 16px; border: 1px solid var(--dash-border); background: var(--dash-card); }
-          .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(74,222,128,0.1); display: flex; align-items: center; justify-content: center; }
+          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 12px; border: 1px solid var(--dash-border); background: var(--dash-card); }
+          .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; align-items: center; justify-content: center; }
           h2 { color: var(--dash-text); font-size: 20px; margin: 0 0 8px; }
           p { color: var(--dash-muted); font-size: 14px; margin: 0 0 24px; }
           .btn-primary { background: var(--dash-accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -247,7 +247,7 @@ export default function SubmitEvidencePage() {
           <p>All submissions are hashed, IPFS-stored, and blockchain-anchored.</p>
         </header>
 
-        <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 md:p-8 shadow-2xl form-card">
+        <div className="rounded-xl border border-dash-border bg-dash-card p-6 md:p-8 shadow-sm form-card">
           {/* Offline / Queue status */}
           <OfflineQueueIndicator
             isOnline={isOnline}
@@ -382,7 +382,7 @@ export default function SubmitEvidencePage() {
                   <div className="file-info">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span className="file-name">{selectedFile.name}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
                     </div>
                     <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
                     {capturedAt && (
@@ -456,7 +456,7 @@ export default function SubmitEvidencePage() {
                   <div className="file-info">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                       <span className="file-name">{selectedFile.name}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
                     </div>
                     <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
                     <button
@@ -592,7 +592,7 @@ export default function SubmitEvidencePage() {
         .method-tab:hover { background: var(--dash-hover); color: var(--dash-text); }
         .method-tab.active {
           border-color: var(--dash-accent);
-          background: rgba(13, 158, 110, 0.1);
+          background: rgba(30, 41, 59, 0.08);
           color: var(--dash-accent);
         }
         .capture-type-row { display: flex; gap: 6px; margin-bottom: 8px; }
@@ -611,7 +611,7 @@ export default function SubmitEvidencePage() {
         .capture-type-btn:hover { background: var(--dash-hover); color: var(--dash-text); }
         .capture-type-btn.active {
           border-color: var(--dash-accent);
-          background: rgba(13, 158, 110, 0.1);
+          background: rgba(30, 41, 59, 0.08);
           color: var(--dash-accent);
         }
         .open-camera-btn {

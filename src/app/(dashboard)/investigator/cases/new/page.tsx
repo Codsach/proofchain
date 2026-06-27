@@ -188,7 +188,7 @@ export default function CreateCasePage() {
       <div className="page">
         <div className="success-card">
           <div className="success-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2">
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
@@ -204,8 +204,8 @@ export default function CreateCasePage() {
         </div>
         <style jsx>{`
           .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: transparent; }
-          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 16px; border: 1px solid var(--dash-border); background: var(--dash-card); }
-          .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(74,222,128,0.1); display: flex; align-items: center; justify-content: center; }
+          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 12px; border: 1px solid var(--dash-border); background: var(--dash-card); }
+          .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; align-items: center; justify-content: center; }
           h2 { color: var(--dash-text); font-size: 20px; margin: 0 0 8px; }
           p { color: var(--dash-muted); font-size: 14px; margin: 0 0 24px; }
           .btn-primary { background: var(--dash-accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
@@ -222,13 +222,14 @@ export default function CreateCasePage() {
           <p>Select a template or manually enter case details.</p>
         </header>
 
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-        >
+        <div className="rounded-xl border border-dash-border bg-dash-card p-6 md:p-8 shadow-sm form-card">
+          <form
+            className="form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
+          >
           <div className="field">
             <label>Case Templates</label>
             <div className="template-cards">
@@ -506,7 +507,8 @@ export default function CreateCasePage() {
               )}
             </button>
           )}
-        </form>
+          </form>
+        </div>
       </div>
 
       <style jsx>{`
@@ -578,8 +580,8 @@ export default function CreateCasePage() {
           display: flex;
           align-items: center;
           gap: 6px;
-          background: rgba(13, 158, 110, 0.1);
-          border: 1px solid rgba(13, 158, 110, 0.2);
+          background: rgba(30, 41, 59, 0.08);
+          border: 1px solid rgba(30, 41, 59, 0.15);
           color: var(--dash-accent);
           padding: 6px 12px;
           border-radius: 6px;
@@ -589,7 +591,7 @@ export default function CreateCasePage() {
           transition: all 0.2s;
         }
         .template-btn:hover {
-          background: rgba(13, 158, 110, 0.2);
+          background: rgba(30, 41, 59, 0.15);
         }
         .method-tabs { display: flex; gap: 8px; }
         .method-tab {
@@ -610,7 +612,7 @@ export default function CreateCasePage() {
         }
         .method-tab.active {
           border-color: var(--dash-accent);
-          background: rgba(13, 158, 110, 0.1);
+          background: rgba(30, 41, 59, 0.08);
           color: var(--dash-accent);
         }
         .capture-type-row { display: flex; gap: 6px; margin-bottom: 10px; }
@@ -625,7 +627,7 @@ export default function CreateCasePage() {
         }
         .capture-type-btn.active {
           border-color: var(--dash-accent);
-          background: rgba(13, 158, 110, 0.1);
+          background: rgba(30, 41, 59, 0.08);
           color: var(--dash-accent);
         }
         .open-camera-btn {

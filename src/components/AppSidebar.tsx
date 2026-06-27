@@ -123,7 +123,7 @@ export function AppSidebar() {
                     className={`transition-all duration-300 text-dash-muted hover:bg-dash-hover/60! hover:text-dash-text! data-[active=true]:bg-transparent! data-[active=true]:hover:bg-dash-hover/60! rounded-xl ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-2"}`}
                   >
                     <Link href={item.href} className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
-                      <div className={`flex items-center justify-center rounded-full shrink-0 transition-all duration-300 ${isActive ? "bg-dash-text text-dash-bg shadow-md size-9" : "size-9"}`}>
+                      <div className={`flex items-center justify-center rounded-full shrink-0 transition-all duration-300 ${isActive ? "bg-[var(--dash-active-bg)] text-[var(--dash-active-text)] shadow-sm size-9" : "size-9"}`}>
                         <Icon size={20} className={isActive ? "" : "opacity-70"} />
                       </div>
                       {!isCollapsed && <span className={isActive ? "text-dash-text font-medium" : ""}>{item.label}</span>}

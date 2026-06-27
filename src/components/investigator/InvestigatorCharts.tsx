@@ -72,9 +72,9 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
     });
 
     return [
-      { name: "Verified", value: verified, color: "#10b981" }, // Emerald
-      { name: "Rejected", value: rejected, color: "#f43f5e" }, // Rose
-      { name: "Pending Review", value: pending, color: "#3b82f6" }, // Blue
+      { name: "Verified", value: verified, color: "var(--dash-info)" },
+      { name: "Rejected", value: rejected, color: "var(--dash-danger)" },
+      { name: "Pending Review", value: pending, color: "var(--dash-accent)" },
     ];
   }, [cases]);
 
@@ -111,7 +111,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
       {/* 1. Gantt Timeline (Custom HTML/CSS) */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl col-span-1 xl:col-span-2 min-w-0"
+        className="rounded-xl border border-dash-border border-l-4 border-l-slate-400 bg-[linear-gradient(135deg,rgba(71,85,105,0.025)_0%,rgba(255,255,255,1)_100%)] p-6 shadow-sm col-span-1 xl:col-span-2 min-w-0"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest">My Cases Timeline</h3>
@@ -122,27 +122,28 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
           {ganttCases.length > 0 ? ganttCases.map((c, i) => (
             <div key={c._id} className="relative">
               <div className="flex justify-between text-xs mb-1.5">
-                <span className="font-bold text-white truncate pr-4 max-w-[200px]">{c.title}</span>
+                <span className="font-bold text-dash-text truncate pr-4 max-w-[200px]">{c.title}</span>
                 <span className="text-dash-muted uppercase font-mono text-[9px]">{c.status.replace(/_/g, " ")}</span>
               </div>
               <div className="h-3 w-full bg-dash-sidebar rounded-full overflow-hidden flex relative">
                 {/* Visual checkpoints */}
-                <div className="absolute top-0 bottom-0 left-1/3 w-px bg-white/10 z-10"></div>
-                <div className="absolute top-0 bottom-0 left-2/3 w-px bg-white/10 z-10"></div>
+                <div className="absolute top-0 bottom-0 left-1/3 w-px bg-dash-border/30 z-10"></div>
+                <div className="absolute top-0 bottom-0 left-2/3 w-px bg-dash-border/30 z-10"></div>
                 
                 <motion.div 
                   initial={{ width: 0 }}
                   animate={{ width: `${c.progress}%` }}
                   transition={{ duration: 1, delay: i * 0.1 }}
-                  className={`h-full rounded-full relative ${
-                    STATUS_BUCKETS.REJECTED.includes(c.status) 
-                      ? 'bg-rose-500' 
+                  className="h-full rounded-full relative"
+                  style={{
+                    backgroundColor: STATUS_BUCKETS.REJECTED.includes(c.status) 
+                      ? 'var(--dash-danger)' 
                       : STATUS_BUCKETS.VERIFIED.includes(c.status)
-                        ? 'bg-emerald-500'
-                        : 'bg-blue-500'
-                  }`}
+                        ? 'var(--dash-info)'
+                        : 'var(--dash-accent)'
+                  }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white/10"></div>
                 </motion.div>
               </div>
               <div className="flex justify-between text-[9px] text-dash-muted/50 mt-1 uppercase font-bold tracking-wider">
@@ -161,7 +162,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
         {/* 2. Verdict Outcomes */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl relative min-w-0 flex flex-col"
+          className="rounded-xl border border-dash-border border-l-4 border-l-amber-500 bg-[linear-gradient(135deg,rgba(245,158,11,0.025)_0%,rgba(255,255,255,1)_100%)] p-6 shadow-sm relative min-w-0 flex flex-col"
         >
           <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-2 z-10">Verdict Outcomes</h3>
           
@@ -184,7 +185,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
                 </Pie>
                 <Tooltip 
                   contentStyle={{ backgroundColor: 'var(--dash-card)', borderColor: 'var(--dash-border)', borderRadius: '8px' }}
-                  itemStyle={{ color: '#fff' }}
+                  itemStyle={{ color: 'var(--dash-text)' }}
                 />
               </PieChart>
             </ResponsiveContainer>
@@ -209,16 +210,16 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
         {/* 3. Evidence Submission Trends */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0 flex flex-col"
+          className="rounded-xl border border-dash-border border-l-4 border-l-emerald-500 bg-[linear-gradient(135deg,rgba(16,185,129,0.025)_0%,rgba(255,255,255,1)_100%)] p-6 shadow-sm min-w-0 flex flex-col"
         >
           <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Submission Trends</h3>
           <div className="h-[150px] w-full flex-grow min-w-0 overflow-hidden">
             <ChartContainer config={{ submissions: { label: "Submissions", color: "var(--dash-accent)" } }} className="h-full w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={submissionTrends} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
-                  <XAxis dataKey="date" stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
-                  <YAxis stroke="#666" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                  <XAxis dataKey="date" stroke="var(--dash-muted)" fontSize={10} tickLine={false} axisLine={false} />
+                  <YAxis stroke="var(--dash-muted)" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Line
                     type="monotone"
