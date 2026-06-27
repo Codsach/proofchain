@@ -48,27 +48,27 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
   const { toast } = useToast();
 
   const roleAccent = {
-    investigator: "text-emerald-400 border-emerald-500/30 hover:bg-emerald-500 hover:text-black shadow-[0_0_15px_rgba(16,185,129,0.1)] hover:border-emerald-400",
-    analyst: "text-cyan-400 border-cyan-500/30 hover:bg-cyan-500 hover:text-black shadow-[0_0_15px_rgba(6,182,212,0.1)] hover:border-cyan-400",
-    admin: "text-purple-400 border-purple-500/30 hover:bg-purple-500 hover:text-white shadow-[0_0_15px_rgba(168,85,247,0.1)] hover:border-purple-400",
+    investigator: "text-emerald-700 border-emerald-500/30 hover:bg-emerald-600 hover:text-white shadow-[0_0_10px_rgba(16,185,129,0.05)] hover:border-emerald-500",
+    analyst: "text-cyan-700 border-cyan-500/30 hover:bg-cyan-600 hover:text-white shadow-[0_0_10px_rgba(6,182,212,0.05)] hover:border-cyan-500",
+    admin: "text-purple-700 border-purple-500/30 hover:bg-purple-600 hover:text-white shadow-[0_0_10px_rgba(168,85,247,0.05)] hover:border-purple-500",
   }[role];
 
   const roleSubmitBtn = {
-    investigator: "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]",
-    analyst: "bg-cyan-500 text-black hover:bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)]",
-    admin: "bg-purple-500 text-white hover:bg-purple-450 shadow-[0_0_15px_rgba(168,85,247,0.3)]",
+    investigator: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.15)]",
+    analyst: "bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.15)]",
+    admin: "bg-purple-600 text-white hover:bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.15)]",
   }[role];
 
   const roleAccentGlow = {
-    investigator: "hover:border-emerald-500/50 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/50",
-    analyst: "hover:border-cyan-500/50 focus-visible:ring-cyan-500/30 focus-visible:border-cyan-500/50",
-    admin: "hover:border-purple-500/50 focus-visible:ring-purple-500/30 focus-visible:border-purple-500/50",
+    investigator: "hover:border-emerald-500/80 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500",
+    analyst: "hover:border-cyan-500/80 focus-visible:ring-cyan-500/50 focus-visible:border-cyan-500",
+    admin: "hover:border-purple-500/80 focus-visible:ring-purple-500/50 focus-visible:border-purple-500",
   }[role];
 
   const roleTabsActive = {
-    investigator: "data-[state=active]:bg-dash-hover data-[state=active]:text-emerald-400",
-    analyst: "data-[state=active]:bg-dash-hover data-[state=active]:text-cyan-400",
-    admin: "data-[state=active]:bg-dash-hover data-[state=active]:text-purple-400",
+    investigator: "data-[state=active]:bg-dash-hover data-[state=active]:text-emerald-700",
+    analyst: "data-[state=active]:bg-dash-hover data-[state=active]:text-cyan-700",
+    admin: "data-[state=active]:bg-dash-hover data-[state=active]:text-purple-700",
   }[role];
 
   const form = useForm<DossierFormValues>({
@@ -124,7 +124,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
           Edit Dossier
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] bg-dash-modal border border-dash-border rounded-2xl shadow-2xl ring-0">
+      <DialogContent className="sm:max-w-[600px] bg-dash-modal border border-dash-border rounded-xl shadow-md ring-0 sentinel-theme text-[var(--dash-text)]">
         <DialogHeader>
           <DialogTitle className="text-xl font-heading tracking-wider uppercase text-dash-text">Update Dossier</DialogTitle>
         </DialogHeader>
