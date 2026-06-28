@@ -172,6 +172,9 @@
   --font-sans: 'Inter', sans-serif;
   --font-mono: 'Inter', sans-serif;
   --font-heading: 'Inter', sans-serif;
+  --font-exo2: 'Inter', sans-serif;
+  --font-geist-mono: 'Inter', sans-serif;
+  --font-orbitron: 'Inter', sans-serif;
   --background: oklch(0.985 0.005 340); /* #fcf8fa */
   --foreground: oklch(0.145 0.004 340); /* #1c1b1c */
   --card: oklch(1.0 0 0); /* #ffffff */

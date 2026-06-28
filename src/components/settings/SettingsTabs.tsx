@@ -24,9 +24,9 @@ interface SettingsTabsProps {
 
 export function SettingsTabs({ user }: SettingsTabsProps) {
   const roleTabsActive = {
-    investigator: "data-[state=active]:bg-dash-hover data-[state=active]:text-emerald-400",
-    analyst: "data-[state=active]:bg-dash-hover data-[state=active]:text-cyan-400",
-    admin: "data-[state=active]:bg-dash-hover data-[state=active]:text-purple-400",
+    investigator: "data-[state=active]:bg-dash-hover data-[state=active]:text-emerald-700",
+    analyst: "data-[state=active]:bg-dash-hover data-[state=active]:text-cyan-700",
+    admin: "data-[state=active]:bg-dash-hover data-[state=active]:text-purple-700",
   }[user.role];
 
   return (
@@ -46,7 +46,7 @@ export function SettingsTabs({ user }: SettingsTabsProps) {
         </TabsTrigger>
         <TabsTrigger 
           value="danger" 
-          className="font-mono text-xs uppercase rounded-lg text-dash-muted transition-all data-[state=active]:bg-rose-950/20 data-[state=active]:text-rose-500"
+          className="font-mono text-xs uppercase rounded-lg text-dash-muted transition-all data-[state=active]:bg-rose-500/10 data-[state=active]:text-rose-700"
         >
           Danger Zone
         </TabsTrigger>

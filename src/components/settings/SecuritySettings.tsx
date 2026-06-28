@@ -37,27 +37,27 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
   const { toast } = useToast();
 
   const roleBarTheme = {
-    investigator: "bg-emerald-500 shadow-[0_0_12px_rgba(16,185,129,0.8)]",
-    analyst: "bg-cyan-500 shadow-[0_0_12px_rgba(6,182,212,0.8)]",
-    admin: "bg-purple-500 shadow-[0_0_12px_rgba(168,85,247,0.8)]",
+    investigator: "bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.4)]",
+    analyst: "bg-cyan-600 shadow-[0_0_8px_rgba(6,182,212,0.4)]",
+    admin: "bg-purple-650 shadow-[0_0_8px_rgba(168,85,247,0.4)]",
   }[role];
 
   const roleAccent = {
-    investigator: "text-emerald-400",
-    analyst: "text-cyan-400",
-    admin: "text-purple-400",
+    investigator: "text-emerald-700",
+    analyst: "text-cyan-700",
+    admin: "text-purple-700",
   }[role];
 
   const roleAccentGlow = {
-    investigator: "hover:border-emerald-500/50 focus-visible:ring-emerald-500/30 focus-visible:border-emerald-500/50",
-    analyst: "hover:border-cyan-500/50 focus-visible:ring-cyan-500/30 focus-visible:border-cyan-500/50",
-    admin: "hover:border-purple-500/50 focus-visible:ring-purple-500/30 focus-visible:border-purple-500/50",
+    investigator: "hover:border-emerald-500 focus-visible:ring-emerald-500",
+    analyst: "hover:border-cyan-500 focus-visible:ring-cyan-500",
+    admin: "hover:border-purple-500 focus-visible:ring-purple-500",
   }[role];
 
   const roleSubmitBtn = {
-    investigator: "bg-emerald-500 text-black hover:bg-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)] disabled:bg-emerald-500/50 disabled:cursor-not-allowed",
-    analyst: "bg-cyan-500 text-black hover:bg-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] disabled:bg-cyan-500/50 disabled:cursor-not-allowed",
-    admin: "bg-purple-500 text-white hover:bg-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.3)] disabled:bg-purple-500/50 disabled:cursor-not-allowed",
+    investigator: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.15)] disabled:bg-emerald-600/50 disabled:cursor-not-allowed",
+    analyst: "bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.15)] disabled:bg-cyan-600/50 disabled:cursor-not-allowed",
+    admin: "bg-purple-600 text-white hover:bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.15)] disabled:bg-purple-600/50 disabled:cursor-not-allowed",
   }[role];
 
   const form = useForm<PasswordFormValues>({
@@ -103,7 +103,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
   return (
     <CardContainer className="space-y-6">
       {/* Password Reset */}
-      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-2xl rounded-2xl">
+      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader>
           <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
@@ -186,7 +186,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       </Card>
 
       {/* Two-Factor Auth */}
-      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-2xl rounded-2xl">
+      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="flex flex-row items-center justify-between pb-4 flex-wrap gap-4">
           <CardContainer className="space-y-1">
@@ -199,11 +199,11 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
             </CardDescription>
           </CardContainer>
           {user.mfaEnabled ? (
-            <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-2.5 py-1 text-xs">
+            <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 px-2.5 py-1 text-xs">
               <ShieldCheck size={12} className="mr-1" /> Active
             </Badge>
           ) : (
-            <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-rose-500/10 text-rose-400 border-rose-500/20 px-2.5 py-1 text-xs">
+            <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-rose-500/10 text-rose-800 border-rose-500/20 px-2.5 py-1 text-xs">
               Inactive
             </Badge>
           )}
@@ -227,7 +227,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       </Card>
 
       {/* Trusted Devices */}
-      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-2xl rounded-2xl">
+      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader>
           <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
@@ -260,7 +260,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                     variant="outline"
                     size="sm"
                     onClick={() => handleRevokeDevice(device.deviceTokenHash)}
-                    className="border border-rose-500/30 text-rose-500 hover:bg-rose-500 hover:text-white font-mono uppercase text-xs rounded-xl h-9 px-4 transition-all"
+                    className="border border-rose-500/35 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-mono uppercase text-xs rounded-xl h-9 px-4 transition-all"
                   >
                     Revoke
                   </Button>
