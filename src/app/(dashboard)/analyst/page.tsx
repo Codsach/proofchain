@@ -108,7 +108,7 @@ export default function AnalystPage() {
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-dash-text h-11 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/55 focus-visible:ring-1 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-full px-5"
           />
         </div>
 
@@ -179,12 +179,12 @@ export default function AnalystPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Case Target</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest hidden md:table-cell">Category</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Neural Score</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Review Protocol</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest hidden sm:table-cell">Temporal Log</th>
-                  <th className="px-6 py-4" />
+                  <th className="px-6 py-5 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Case Target</th>
+                  <th className="px-6 py-5 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest hidden md:table-cell">Category</th>
+                  <th className="px-6 py-5 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Neural Score</th>
+                  <th className="px-6 py-5 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest">Review Protocol</th>
+                  <th className="px-6 py-5 text-left text-[10px] font-bold text-dash-muted uppercase tracking-widest hidden sm:table-cell">Temporal Log</th>
+                  <th className="px-6 py-5" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-dash-border">
@@ -198,7 +198,7 @@ export default function AnalystPage() {
                       className="hover:bg-dash-hover/50 transition-colors group cursor-pointer"
                       onClick={() => window.location.href = `/analyst/cases/${c.caseId}`}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex flex-col">
                           <p className="font-medium text-dash-text transition-colors">
                             {c.title}
@@ -217,12 +217,12 @@ export default function AnalystPage() {
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell">
+                      <td className="px-6 py-5 hidden md:table-cell">
                         <span className="text-[10px] font-bold text-dash-muted uppercase tracking-widest border border-dash-border bg-dash-bg px-2 py-0.5 rounded">
                           {INCIDENT_LABELS[c.incidentType] ?? c.incidentType}
                         </span>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="scale-90 origin-left">
                           <TamperScoreBadge
                             score={c.aiSummary?.tamperScore ?? null}
@@ -230,18 +230,18 @@ export default function AnalystPage() {
                           />
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <CaseStatusBadge status={c.status} />
                       </td>
-                      <td className="px-6 py-4 text-dash-muted text-xs hidden sm:table-cell">
+                      <td className="px-6 py-5 text-dash-muted text-xs hidden sm:table-cell">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-end gap-2">
                           <Link
                             href={`/verify/${c.caseId}`}
                             target="_blank"
-                            className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10"
+                            className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10"
                           >
                             Verify ↗
                           </Link>

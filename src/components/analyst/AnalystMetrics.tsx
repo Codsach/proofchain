@@ -53,14 +53,30 @@ export function AnalystMetrics() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.08,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 },
+    hidden: { opacity: 0, y: 15 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring" as const,
+        stiffness: 100,
+        damping: 15,
+      },
+    },
+  };
+
+  const sparklineVariants = {
+    hidden: { pathLength: 0 },
+    visible: {
+      pathLength: 1,
+      transition: { duration: 1.5, ease: "easeInOut" as const },
+    },
   };
 
   return (
@@ -70,12 +86,20 @@ export function AnalystMetrics() {
       animate="show"
       className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
     >
-      {/* 1. Queue Metrics */}
+      {/* 1. Queue Metrics (Active Cases / Pending Reviews) */}
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-emerald-500/30 transition-all duration-300"
+        whileHover={{ y: -4, scale: 1.01 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        style={{ background: "linear-gradient(135deg, rgba(13,148,136,0.04) 0%, var(--dash-card) 100%)" }}
+        className="group relative overflow-hidden rounded-xl border border-teal-500/20 p-5 shadow-sm transition-all duration-300 hover:border-teal-500/50"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Top-aligned Brand Label */}
+        <div className="flex items-center justify-between mb-4 border-b border-dash-border/40 pb-2">
+          <span className="text-[9px] font-bold tracking-[0.2em] text-teal-600 dark:text-teal-400">PROOFCHAIN</span>
+          <span className="text-[8px] font-mono text-dash-muted/50">NODE_01</span>
+        </div>
+
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Queue Status</p>
@@ -88,55 +112,106 @@ export function AnalystMetrics() {
               </div>
             )}
           </div>
-          <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-500">
+          <div className="rounded-lg bg-teal-500/10 p-2 text-teal-600">
             <Activity className="h-5 w-5" />
           </div>
         </div>
-        {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-dash-border flex justify-between items-center text-xs">
-            <span className="text-dash-muted">Completed this week</span>
-            <span className="font-bold text-emerald-500">+{metrics?.completedThisWeek ?? 0}</span>
+
+        {/* Sparkline & Completed count */}
+        <div className="mt-4 pt-3 border-t border-dash-border/40 flex items-center justify-between gap-4">
+          <div className="flex-1 h-8 flex items-center">
+            <svg className="w-full h-6 text-teal-500/40" viewBox="0 0 100 30" fill="none" preserveAspectRatio="none">
+              <motion.path
+                d="M0,22 Q25,8 50,18 T100,8"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                variants={sparklineVariants}
+                initial="hidden"
+                animate="visible"
+              />
+            </svg>
           </div>
-        )}
+          {!isLoading && (
+            <div className="text-right whitespace-nowrap min-w-[60px]">
+              <p className="text-[8px] font-bold text-dash-muted uppercase tracking-wider">Completed</p>
+              <p className="text-xs font-bold text-teal-600">+{metrics?.completedThisWeek ?? 0}</p>
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* 2. Verdict Accuracy */}
       {(isLoading || (metrics && metrics.completedThisWeek > 1)) && (
-      <motion.div
-        variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-blue-500/30 transition-all duration-300"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Accuracy Rate</p>
-            {isLoading ? (
-              <Skeleton className="h-8 w-24 bg-dash-hover" />
-            ) : (
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-dash-text">{metrics?.verdictAccuracyRate ?? 100}</span>
-                <span className="text-xl text-dash-muted">%</span>
+        <motion.div
+          variants={itemVariants}
+          whileHover={{ y: -4, scale: 1.01 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.04) 0%, var(--dash-card) 100%)" }}
+          className="group relative overflow-hidden rounded-xl border border-emerald-500/20 p-5 shadow-sm transition-all duration-300 hover:border-emerald-500/50"
+        >
+          {/* Top-aligned Brand Label */}
+          <div className="flex items-center justify-between mb-4 border-b border-dash-border/40 pb-2">
+            <span className="text-[9px] font-bold tracking-[0.2em] text-emerald-600 dark:text-emerald-400">AI VERDICT</span>
+            <span className="text-[8px] font-mono text-dash-muted/50">ALIGN_CORE</span>
+          </div>
+
+          <div className="flex items-start justify-between">
+            <div className="space-y-1">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Accuracy Rate</p>
+              {isLoading ? (
+                <Skeleton className="h-8 w-24 bg-dash-hover" />
+              ) : (
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-dash-text">{metrics?.verdictAccuracyRate ?? 100}</span>
+                  <span className="text-xl text-dash-muted">%</span>
+                </div>
+              )}
+            </div>
+            <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-600">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+          </div>
+
+          {/* Sparkline & Detail */}
+          <div className="mt-4 pt-3 border-t border-dash-border/40 flex items-center justify-between gap-4">
+            <div className="flex-1 h-8 flex items-center">
+              <svg className="w-full h-6 text-emerald-500/40" viewBox="0 0 100 30" fill="none" preserveAspectRatio="none">
+                <motion.path
+                  d="M0,12 Q20,5 40,15 T80,8 T100,5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  variants={sparklineVariants}
+                  initial="hidden"
+                  animate="visible"
+                />
+              </svg>
+            </div>
+            {!isLoading && (
+              <div className="text-right whitespace-nowrap min-w-[80px]">
+                <p className="text-[8px] font-bold text-dash-muted uppercase tracking-wider">Consensus</p>
+                <p className="text-[10px] font-medium text-dash-muted">Stable</p>
               </div>
             )}
           </div>
-          <div className="rounded-lg bg-blue-500/10 p-2 text-blue-500">
-            <CheckCircle2 className="h-5 w-5" />
-          </div>
-        </div>
-        {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-dash-border text-xs">
-            <span className="text-dash-muted">Alignment with AI consensus</span>
-          </div>
-        )}
-      </motion.div>
+        </motion.div>
       )}
 
       {/* 3. Average Review Time */}
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-purple-500/30 transition-all duration-300"
+        whileHover={{ y: -4, scale: 1.01 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        style={{ background: "linear-gradient(135deg, rgba(79,70,229,0.04) 0%, var(--dash-card) 100%)" }}
+        className="group relative overflow-hidden rounded-xl border border-indigo-500/20 p-5 shadow-sm transition-all duration-300 hover:border-indigo-500/50"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Top-aligned Brand Label */}
+        <div className="flex items-center justify-between mb-4 border-b border-dash-border/40 pb-2">
+          <span className="text-[9px] font-bold tracking-[0.2em] text-indigo-600 dark:text-indigo-400">CHRONOS NODE</span>
+          <span className="text-[8px] font-mono text-dash-muted/50">LATENCY_LOG</span>
+        </div>
+
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-[10px] font-bold uppercase tracking-widest text-dash-muted">Avg Review Time</p>
@@ -153,44 +228,88 @@ export function AnalystMetrics() {
               </div>
             )}
           </div>
-          <div className="rounded-lg bg-purple-500/10 p-2 text-purple-500">
+          <div className="rounded-lg bg-indigo-500/10 p-2 text-indigo-600">
             <Clock className="h-5 w-5" />
           </div>
         </div>
-        {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-dash-border text-xs">
-            <span className="text-dash-muted">Time from ingest to verdict</span>
+
+        {/* Sparkline & Detail */}
+        <div className="mt-4 pt-3 border-t border-dash-border/40 flex items-center justify-between gap-4">
+          <div className="flex-1 h-8 flex items-center">
+            <svg className="w-full h-6 text-indigo-500/40" viewBox="0 0 100 30" fill="none" preserveAspectRatio="none">
+              <motion.path
+                d="M0,5 C20,12 40,5 60,22 C80,18 90,28 100,25"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                variants={sparklineVariants}
+                initial="hidden"
+                animate="visible"
+              />
+            </svg>
           </div>
-        )}
+          {!isLoading && (
+            <div className="text-right whitespace-nowrap min-w-[80px]">
+              <p className="text-[8px] font-bold text-dash-muted uppercase tracking-wider">Velocity</p>
+              <p className="text-[10px] font-medium text-emerald-600">Optimal</p>
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* 4. High-Risk Cases Alert */}
       <motion.div
         variants={itemVariants}
-        className="group relative overflow-hidden rounded-2xl border border-dash-border bg-dash-card p-6 hover:border-rose-500/30 transition-all duration-300"
+        whileHover={{ y: -4, scale: 1.01 }}
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        style={{ background: "linear-gradient(135deg, rgba(244,63,94,0.04) 0%, var(--dash-card) 100%)" }}
+        className="group relative overflow-hidden rounded-xl border border-rose-500/20 p-5 shadow-sm transition-all duration-300 hover:border-rose-500/50"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        {/* Top-aligned Brand Label */}
+        <div className="flex items-center justify-between mb-4 border-b border-dash-border/40 pb-2">
+          <span className="text-[9px] font-bold tracking-[0.2em] text-rose-600 dark:text-rose-400">TAMPER SCAN</span>
+          <span className="text-[8px] font-mono text-dash-muted/50">ANOMALY_DET</span>
+        </div>
+
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500 dark:text-rose-400/90">High-Risk Alert</p>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-rose-600 dark:text-rose-400">High-Risk Alert</p>
             {isLoading ? (
               <Skeleton className="h-8 w-24 bg-dash-hover" />
             ) : (
               <div className="flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-rose-500 dark:text-rose-400">{metrics?.highRiskAlerts ?? 0}</span>
+                <span className="text-3xl font-bold text-rose-600 dark:text-rose-400">{metrics?.highRiskAlerts ?? 0}</span>
                 <span className="text-xs text-rose-500/80 dark:text-rose-400/50">critical</span>
               </div>
             )}
           </div>
-          <div className="rounded-lg bg-rose-500/10 p-2 text-rose-500 animate-pulse">
+          <div className="rounded-lg bg-rose-500/10 p-2 text-rose-600 animate-pulse">
             <AlertTriangle className="h-5 w-5" />
           </div>
         </div>
-        {!isLoading && (
-          <div className="mt-4 pt-4 border-t border-rose-500/10 dark:border-rose-500/20 text-xs">
-            <span className="text-rose-600 dark:text-rose-400/60">Tamper score {'>'} 70 pending</span>
+
+        {/* Sparkline & Detail */}
+        <div className="mt-4 pt-3 border-t border-dash-border/40 flex items-center justify-between gap-4">
+          <div className="flex-1 h-8 flex items-center">
+            <svg className="w-full h-6 text-rose-500/40" viewBox="0 0 100 30" fill="none" preserveAspectRatio="none">
+              <motion.path
+                d="M0,25 C15,25 30,5 45,3 T60,22 T100,25"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                variants={sparklineVariants}
+                initial="hidden"
+                animate="visible"
+              />
+            </svg>
           </div>
-        )}
+          {!isLoading && (
+            <div className="text-right whitespace-nowrap min-w-[60px]">
+              <p className="text-[8px] font-bold text-dash-muted uppercase tracking-wider">Severity</p>
+              <p className="text-xs font-bold text-rose-600">Elevated</p>
+            </div>
+          )}
+        </div>
       </motion.div>
     </motion.div>
   );

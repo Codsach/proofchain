@@ -18,6 +18,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const isInvestigator = pathname?.startsWith("/investigator");
+  const isAnalyst = pathname?.startsWith("/analyst");
   const isProfile = pathname === "/profile";
   const isSettings = pathname === "/settings";
 
@@ -41,13 +42,13 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className={cn(
         "relative flex h-screen overflow-hidden bg-[var(--dash-bg)] text-[var(--dash-text)] selection:bg-emerald-500/30 w-full",
-        (isInvestigator || isProfile || isSettings) && "sentinel-theme"
+        (isInvestigator || isAnalyst || isProfile || isSettings) && "sentinel-theme"
       )}>
         {/* Background decoration */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           <div className={cn(
             "absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,var(--dash-bg)_20%,transparent_100%)] opacity-20",
-            (isInvestigator || isProfile || isSettings) && "bg-[linear-gradient(rgba(15,23,42,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.015)_1px,transparent_1px)] bg-[size:40px_40px]"
+            (isInvestigator || isAnalyst || isProfile || isSettings) && "bg-[linear-gradient(rgba(15,23,42,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.015)_1px,transparent_1px)] bg-[size:40px_40px]"
           )} />
         </div>
 
@@ -56,7 +57,7 @@ export default function DashboardLayout({
         <main className="relative z-10 flex-1 h-full flex flex-col overflow-hidden">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b border-[var(--dash-border)] bg-[var(--dash-sidebar)]/50 backdrop-blur-xl px-4 w-full">
             <SidebarTrigger className="-ml-1 text-dash-muted hover:text-dash-accent transition-colors" />
-            {(user.role === "admin" || user.role === "analyst" || user.role === "investigator") && !isInvestigator && !isProfile && !isSettings && (
+            {(user.role === "admin" || user.role === "analyst" || user.role === "investigator") && !isInvestigator && !isAnalyst && !isProfile && !isSettings && (
               <div className="ml-auto">
                 <ThemeToggle />
               </div>

@@ -343,7 +343,7 @@ export default function AnalystCaseReviewPage() {
               whileTap={{ scale: 0.98 }}
               href={`/api/cases/${caseData.caseId}/certificate?token=${token}`}
               download
-              className="flex items-center gap-2 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg hover:bg-emerald-500/10 transition-colors text-xs font-bold uppercase tracking-wider h-11"
+              className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg hover:bg-emerald-500/10 transition-colors text-xs font-bold uppercase tracking-wider h-11"
             >
               ↓ Download Forensic Certificate
             </motion.a>

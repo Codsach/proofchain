@@ -33,22 +33,21 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="overview" className="mt-6 space-y-6">
-        <CardContainer className="grid gap-6 md:grid-cols-3">
+      <TabsContent value="overview" className="mt-6 space-y-6 w-full">
+        <CardContainer className="grid gap-6 grid-cols-1 md:grid-cols-3 w-full">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.05 }}
             whileHover={{ y: -4, scale: 1.01 }}
-            className="h-full"
+            className="h-full w-full"
           >
-            <Card className="border border-cyan-100 bg-[linear-gradient(135deg,rgba(6,182,212,0.04)_0%,rgba(255,255,255,1)_100%)] border-t-2 border-t-cyan-600 rounded-xl hover:border-cyan-300 ring-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
+            <Card className="border border-dash-border bg-[linear-gradient(135deg,rgba(6,182,212,0.04)_0%,var(--dash-card)_100%)] border-t-2 border-t-cyan-600 rounded-xl hover:border-cyan-400/50 ring-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex flex-col gap-1">
                   <div className="text-[9px] font-mono tracking-widest text-cyan-700 font-bold uppercase select-none px-2 py-0.5 rounded border border-cyan-200/50 bg-cyan-600/10 w-fit">
-                    PROOFCHAIN // PENDING
+                    PENDING REVIEWS
                   </div>
-                  <CardTitle className="text-sm font-mono uppercase text-dash-muted mt-1">Pending Reviews</CardTitle>
                 </div>
                 <FileSearch className="h-4 w-4 text-cyan-700" />
               </CardHeader>
@@ -75,15 +74,14 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
             whileHover={{ y: -4, scale: 1.01 }}
-            className="h-full"
+            className="h-full w-full"
           >
-            <Card className="border border-sky-100 bg-[linear-gradient(135deg,rgba(14,165,233,0.04)_0%,rgba(255,255,255,1)_100%)] border-t-2 border-t-sky-600 rounded-xl hover:border-sky-300 ring-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
+            <Card className="border border-dash-border bg-[linear-gradient(135deg,rgba(14,165,233,0.04)_0%,var(--dash-card)_100%)] border-t-2 border-t-sky-600 rounded-xl hover:border-sky-400/50 ring-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex flex-col gap-1">
                   <div className="text-[9px] font-mono tracking-widest text-sky-700 font-bold uppercase select-none px-2 py-0.5 rounded border border-sky-200/50 bg-sky-600/10 w-fit">
-                    PROOFCHAIN // AUDITS
+                    VERDICTS ISSUED
                   </div>
-                  <CardTitle className="text-sm font-mono uppercase text-dash-muted mt-1">Verdicts Issued</CardTitle>
                 </div>
                 <CheckCircle className="h-4 w-4 text-sky-700" />
               </CardHeader>
@@ -104,21 +102,20 @@ export function AnalystDossier({ stats, recentVerdicts }: AnalystDossierProps) {
               </CardContent>
             </Card>
           </motion.div>
-
+ 
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.15 }}
             whileHover={{ y: -4, scale: 1.01 }}
-            className="h-full"
+            className="h-full w-full"
           >
-            <Card className="border border-rose-100 bg-[linear-gradient(135deg,rgba(244,63,94,0.04)_0%,rgba(255,255,255,1)_100%)] border-t-2 border-t-rose-600 rounded-xl hover:border-rose-300 ring-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
+            <Card className="border border-dash-border bg-[linear-gradient(135deg,rgba(244,63,94,0.04)_0%,var(--dash-card)_100%)] border-t-2 border-t-rose-600 rounded-xl hover:border-rose-400/50 ring-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group h-full">
               <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                 <div className="flex flex-col gap-1">
                   <div className="text-[9px] font-mono tracking-widest text-rose-700 font-bold uppercase select-none px-2 py-0.5 rounded border border-rose-200/50 bg-rose-600/10 w-fit">
-                    PROOFCHAIN // VERDICTS
+                    AUTHENTIC / TAMPERED
                   </div>
-                  <CardTitle className="text-sm font-mono uppercase text-dash-muted mt-1">Auth / Tampered</CardTitle>
                 </div>
                 <ShieldAlert className="h-4 w-4 text-rose-700" />
               </CardHeader>
