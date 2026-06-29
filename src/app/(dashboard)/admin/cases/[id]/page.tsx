@@ -282,7 +282,7 @@ export default function AdminCaseDetailPage() {
             <span className="text-lg">←</span> Forensic Archives
           </Link>
           <div className="flex flex-wrap items-center gap-4 mt-4">
-            <h1 className="text-3xl font-bold text-dash-text tracking-tight">{caseData.title}</h1>
+            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">{caseData.title}</h1>
             <CaseStatusBadge status={caseData.status} />
           </div>
           <p className="text-[10px] text-dash-muted font-mono mt-2 tracking-widest">

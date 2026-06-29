@@ -685,7 +685,7 @@ export default function AdminPage() {
         </div>
         <div className="flex items-end justify-between flex-wrap gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-dash-text tracking-tight">Admin Dashboard</h1>
+            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Admin Dashboard</h1>
             <p className="text-dash-muted mt-1.5 font-medium text-sm">
               Welcome back,{" "}
               <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.

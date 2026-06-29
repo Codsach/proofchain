@@ -170,10 +170,10 @@ export default function AdminCasesPage() {
     <div className="space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-emerald-500/50" />
+          <div className="h-px w-8 bg-slate-400/50" />
           <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Evidence Repository</p>
         </div>
-        <h1 className="text-4xl font-bold text-dash-text tracking-tight">Global Archives</h1>
+        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Global Archives</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Accessing <span className="text-dash-text">{cases.length}</span> forensic subjects in this sector. 
         </p>

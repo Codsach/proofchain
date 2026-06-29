@@ -46,7 +46,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className={cn(
         "relative flex h-screen overflow-hidden bg-[var(--dash-bg)] text-[var(--dash-text)] selection:bg-emerald-500/30 w-full",
-        (isInvestigatorDashboard || isProfilePage || isSettings || isSubmitPage)
+        (isInvestigatorDashboard || isProfilePage || isSettings || isSubmitPage || isAnalyst)
           ? "sentinel-theme-v2" 
           : (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme"
       )}>

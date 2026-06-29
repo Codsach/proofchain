@@ -173,10 +173,10 @@ export default function AdminUsersPage() {
       <div className="flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-px w-6 bg-emerald-500/50" />
-            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-widest">Identity Management</p>
+            <div className="h-px w-8 bg-slate-400/50" />
+            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Identity Management</p>
           </div>
-          <h1 className="text-3xl font-bold text-dash-text tracking-tight">System Users</h1>
+          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">System Users</h1>
           <p className="text-dash-muted text-sm mt-1 font-medium">
             Review and manage <span className="text-dash-text">{users.length}</span> active directory entities.
           </p>

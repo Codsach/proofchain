@@ -88,10 +88,10 @@ export default function AdminAuditPage() {
     <div className="space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-emerald-500/50" />
+          <div className="h-px w-8 bg-slate-400/50" />
           <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Security Audit</p>
         </div>
-        <h1 className="text-4xl font-bold text-dash-text tracking-tight">System Events</h1>
+        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">System Events</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Real-time append-only ledger of all platform operations and cryptographic events.
         </p>
