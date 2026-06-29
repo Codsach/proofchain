@@ -389,11 +389,14 @@ export default function InvestigatorPage() {
               whileHover="hover"
               className="h-full flex justify-center"
             >
-              <div className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 bg-white/25 dark:bg-slate-950/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between p-5 select-none group">
-                {/* Overlapping organic gradient background shapes with Layer Blur */}
-                <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none select-none rounded-[20px]">
+              <div className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] select-none group">
+                {/* Layer 1: Solid Card Base (z-0) */}
+                <div className="absolute inset-0 bg-white/25 dark:bg-slate-950/20 rounded-[20px] z-0 pointer-events-none" />
+
+                {/* Layer 2: Blurred liquid background circles (z-10) */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
                   <div 
-                    className="absolute -inset-16 flex flex-wrap opacity-95 dark:opacity-80 transition-opacity duration-300"
+                    className="absolute -inset-16 flex flex-wrap opacity-85 dark:opacity-70 transition-opacity duration-300 transform-gpu will-change-[filter]"
                     style={{ filter: "blur(130px)" }}
                   >
                     {/* Circle 1 - Top Left */}
@@ -415,33 +418,33 @@ export default function InvestigatorPage() {
                   <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
                 </div>
                 
-                {/* Card Content Header */}
-                <div className="flex items-center justify-between">
-                  <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
-                    <Icon className="w-5 h-5" />
+                {/* Layer 3: Card Content (z-20) */}
+                <div className="relative z-20 flex flex-col justify-between h-full w-full p-5">
+                  {/* Card Content Header */}
+                  <div className="flex items-center justify-between">
+                    <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
                   </div>
-                  <div className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md ${variant.badgeColor}`}>
-                    {variant.trendUp ? "↑" : "↓"} {variant.trendText}
+
+                  {/* Card Content Value */}
+                  <div className="flex flex-col mt-2">
+                    <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
+                      {stat.label}
+                    </span>
+                    <span className="text-3xl font-extrabold text-slate-955 dark:text-white tracking-tight mt-0.5 font-sans">
+                      {stat.value}
+                    </span>
                   </div>
-                </div>
 
-                {/* Card Content Value */}
-                <div className="flex flex-col mt-2">
-                  <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
-                    {stat.label}
-                  </span>
-                  <span className="text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight mt-0.5 font-sans">
-                    {stat.value}
-                  </span>
-                </div>
-
-                {/* Card Content Footer */}
-                <div className="flex items-end justify-between mt-auto">
-                  <span className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
-                    {stat.desc}
-                  </span>
-                  <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                    {variant.sparkline}
+                  {/* Card Content Footer */}
+                  <div className="flex items-end justify-between mt-auto">
+                    <span className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
+                      {stat.desc}
+                    </span>
+                    <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                      {variant.sparkline}
+                    </div>
                   </div>
                 </div>
               </div>

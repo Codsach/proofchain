@@ -339,7 +339,7 @@ const STAT_VARIANTS = {
     iconBg: "bg-cyan-606/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/25",
     trendText: "+22.7%",
     trendUp: true,
-  }
+  },
 } as const;
 
 function StatCard({
@@ -362,12 +362,15 @@ function StatCard({
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -4, scale: 1.01 }}
-      className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 bg-white/25 dark:bg-slate-950/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between p-5 select-none group"
+      className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] select-none group"
     >
-      {/* Overlapping organic gradient background shapes with Layer Blur */}
-      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none select-none rounded-[20px]">
+      {/* Layer 1: Solid Card Base (z-0) */}
+      <div className="absolute inset-0 bg-white/25 dark:bg-slate-950/20 rounded-[20px] z-0 pointer-events-none" />
+
+      {/* Layer 2: Blurred liquid background circles (z-10) */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
         <div 
-          className="absolute -inset-16 flex flex-wrap opacity-95 dark:opacity-80 transition-opacity duration-300"
+          className="absolute -inset-16 flex flex-wrap opacity-85 dark:opacity-70 transition-opacity duration-300 transform-gpu will-change-[filter]"
           style={{ filter: "blur(130px)" }}
         >
           {/* Circle 1 - Top Left */}
@@ -389,40 +392,40 @@ function StatCard({
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
       </div>
 
-      {/* Top Bar: Icon & Trend badge */}
-      <div className="flex items-center justify-between">
-        <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
-          <Icon size={18} />
-        </div>
-        <div className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md ${variant.badgeColor}`}>
-          {variant.trendUp ? "↑" : "↓"} {variant.trendText}
-        </div>
-      </div>
-
-      {/* Middle row: Brand & Metric */}
-      <div className="flex flex-col mt-2">
-        <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
-          {brandLabel}
-        </span>
-        {isLoading ? (
-          <Skeleton className="h-9 w-16 bg-white/30 dark:bg-slate-800/30 mt-1" />
-        ) : (
-          <p className="text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight mt-0.5 font-sans">
-            {value ?? 0}
-          </p>
-        )}
-      </div>
-
-      {/* Bottom Row: Label & Sparkline */}
-      <div className="flex items-end justify-between mt-auto">
-        <p className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
-          {label}
-        </p>
-        {!isLoading && (
-          <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-            <Sparkline points={sparklinePoints} color={strokeColor} />
+      {/* Layer 3: Card Content (z-20) */}
+      <div className="relative z-20 flex flex-col justify-between h-full w-full p-5">
+        {/* Top Bar: Icon */}
+        <div className="flex items-center justify-between">
+          <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
+            <Icon size={18} />
           </div>
-        )}
+        </div>
+
+        {/* Middle row: Brand & Metric */}
+        <div className="flex flex-col mt-2">
+          <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
+            {brandLabel}
+          </span>
+          {isLoading ? (
+            <Skeleton className="h-9 w-16 bg-white/30 dark:bg-slate-800/30 mt-1" />
+          ) : (
+            <p className="text-3xl font-extrabold text-slate-955 dark:text-white tracking-tight mt-0.5 font-sans">
+              {value ?? 0}
+            </p>
+          )}
+        </div>
+
+        {/* Bottom Row: Label & Sparkline */}
+        <div className="flex items-end justify-between mt-auto">
+          <p className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
+            {label}
+          </p>
+          {!isLoading && (
+            <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+              <Sparkline points={sparklinePoints} color={strokeColor} />
+            </div>
+          )}
+        </div>
       </div>
     </motion.div>
   );
@@ -594,7 +597,7 @@ export default function AdminPage() {
       label: "Total Cases",
       value: caseStats?.total,
       icon: Briefcase,
-      brandLabel: "PROOFCHAIN",
+      brandLabel: "REGISTRY",
       sparklinePoints: [8, 14, 10, 18, 15, 24],
       variantKey: "green",
       isLoading: isLoadingStats,
