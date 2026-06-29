@@ -248,7 +248,7 @@ export default function InvestigatorCaseDetailPage() {
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-4">
-            <h1 className="text-3xl font-bold text-dash-text tracking-tight">{caseData.title}</h1>
+            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">{caseData.title}</h1>
             <CaseStatusBadge status={caseData.status} />
           </div>
           {caseData.status === "verified" && token && (

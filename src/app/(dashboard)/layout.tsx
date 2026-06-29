@@ -46,9 +46,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className={cn(
         "relative flex h-screen overflow-hidden bg-[var(--dash-bg)] text-[var(--dash-text)] selection:bg-emerald-500/30 w-full",
-        (isInvestigatorDashboard || isProfilePage || isSettings || isSubmitPage || isAnalyst)
-          ? "sentinel-theme-v2" 
-          : (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme"
+        (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme-v2"
       )}>
         {/* Background decoration */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
@@ -58,7 +56,7 @@ export default function DashboardLayout({
           )} />
 
           {/* 💡 Ambient Mesh Gradients for sentinel-theme-v2 to break flat white sheet */}
-          {(isInvestigatorDashboard || isProfilePage || isSettings || isSubmitPage) && (
+          {(isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && (
             <>
               {/* Top-right soft emerald glow */}
               <div className="absolute -top-[10%] -right-[5%] w-[45%] h-[45%] rounded-full bg-emerald-500/10 blur-[130px] mix-blend-normal pointer-events-none" />
