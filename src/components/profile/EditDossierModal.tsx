@@ -124,7 +124,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
           Edit Dossier
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] bg-dash-modal border border-dash-border rounded-xl shadow-md ring-0 sentinel-theme text-[var(--dash-text)]">
+      <DialogContent className="sm:max-w-[600px] bg-dash-modal border border-dash-border rounded-xl shadow-md ring-0 sentinel-theme-v2 text-[var(--dash-text)]">
         <DialogHeader>
           <DialogTitle className="text-xl font-heading tracking-wider uppercase text-dash-text">Update Dossier</DialogTitle>
         </DialogHeader>

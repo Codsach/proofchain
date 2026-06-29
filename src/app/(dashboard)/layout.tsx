@@ -18,8 +18,10 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   const isInvestigator = pathname?.startsWith("/investigator");
+  const isInvestigatorDashboard = pathname === "/investigator";
   const isAnalyst = pathname?.startsWith("/analyst");
   const isProfile = pathname === "/profile";
+  const isProfilePage = pathname === "/profile";
   const isSettings = pathname === "/settings";
   const isAdmin = pathname?.startsWith("/admin");
 
@@ -43,7 +45,9 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className={cn(
         "relative flex h-screen overflow-hidden bg-[var(--dash-bg)] text-[var(--dash-text)] selection:bg-emerald-500/30 w-full",
-        (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme"
+        (isInvestigatorDashboard || isProfilePage)
+          ? "sentinel-theme-v2" 
+          : (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme"
       )}>
         {/* Background decoration */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">

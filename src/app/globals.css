@@ -217,6 +217,105 @@
   font-family: 'Inter', sans-serif;
 }
 
+.sentinel-theme-v2 {
+  --font-sans: var(--font-exo2), 'Inter', sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  --font-heading: var(--font-orbitron), sans-serif;
+  --font-exo2: var(--font-exo2), 'Inter', sans-serif;
+  --font-geist-mono: var(--font-geist-mono), monospace;
+  --font-orbitron: var(--font-orbitron), sans-serif;
+
+  /* 💡 High contrast slate gray background and pure white cards */
+  --background: oklch(0.960 0.011 240);    /* #f1f5f9 cool slate */
+  --foreground: oklch(0.150 0.015 240);    /* #1e293b deep charcoal text */
+  --card: oklch(1.0 0 0);                  /* #ffffff crisp white cards */
+  --card-foreground: oklch(0.150 0.015 240);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.150 0.015 240);
+  
+  /* Primary tech colors */
+  --primary: oklch(0.585 0.233 255);       /* Cobalt Blue accent (#3b82f6) */
+  --primary-foreground: oklch(1.0 0 0);
+  --secondary: oklch(0.940 0.011 240);     /* #e2e8f0 inputs */
+  --secondary-foreground: oklch(0.150 0.015 240);
+  --muted: oklch(0.950 0.011 240);         /* #f1f5f9 */
+  --muted-foreground: oklch(0.450 0.015 240); /* #64748b secondary text */
+  --accent: oklch(0.950 0.015 250 / 60%);
+  --accent-foreground: oklch(0.150 0.015 240);
+  --destructive: oklch(0.550 0.220 20);     /* Crimson Red */
+  --destructive-foreground: oklch(1.0 0 0);
+
+  /* Soft subtle borders that don't look clinical */
+  --border: oklch(0.910 0.011 240 / 70%);  /* Soft #e2e8f0 border */
+  --input: oklch(0.965 0.005 240);
+  --ring: oklch(0.585 0.233 255 / 40%);
+  --radius: 16px;                          /* Modern, smooth rounded corners */
+
+  /* Dashboard variables mapping */
+  --dash-bg:          #f1f5f9;             /* Slate background */
+  --dash-sidebar:     #ebedf1;             /* Slightly darker sidebar for layered look */
+  --dash-card:        #ffffff;             /* Crisp white cards */
+  --dash-input:       #f8fafc;             /* Very light input backgrounds */
+  --dash-modal:       #ffffff;
+  --dash-table:       #f8fafc;
+  --dash-hover:       #f1f5f9;
+  --dash-border:      #e2e8f0;             /* Soft border */
+  --dash-text:        #1e293b;             /* Primary text */
+  --dash-muted:       #64748b;             /* Secondary muted text */
+  --dash-accent:      #10b981;             /* Vibrant emerald green active accent */
+  --dash-danger:      #ef4444;
+  --dash-info:        #3b82f6;             /* Vibrant cobalt blue info state */
+  --dash-accent-glow: rgba(16, 185, 129, 0.15);
+  --dash-active-bg:   #e6fcf5;             /* Soft light emerald active background */
+  --dash-active-text: #059669;             /* Emerald active text */
+
+  font-family: var(--font-exo2), 'Inter', sans-serif;
+}
+
+/* Glassmorphism overrides for specific status badges on light background inside sentinel-theme-v2 */
+.sentinel-theme-v2 .bg-blue-900\/40 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #1e3a8a !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-amber-900\/40 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #78350f !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-red-900\/40 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ba1a1a !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-cyan-900\/40 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #083344 !important;
+  border-color: rgba(6, 182, 212, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-green-900\/40 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #064e3b !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Typography Scale classes inside sentinel-theme-v2 */
+.sentinel-theme-v2 .display-lg { font-size: 57px; font-weight: 400; line-height: 64px; }
+.sentinel-theme-v2 .display-md { font-size: 45px; font-weight: 400; line-height: 52px; }
+.sentinel-theme-v2 .display-sm { font-size: 36px; font-weight: 400; line-height: 44px; }
+.sentinel-theme-v2 .headline-lg { font-size: 32px; font-weight: 600; line-height: 40px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .headline-md { font-size: 28px; font-weight: 400; line-height: 36px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .headline-sm { font-size: 24px; font-weight: 400; line-height: 32px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .title-lg { font-size: 22px; font-weight: 500; line-height: 28px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .title-md { font-size: 16px; font-weight: 500; line-height: 24px; }
+.sentinel-theme-v2 .title-sm { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme-v2 .body-lg { font-size: 16px; font-weight: 400; line-height: 24px; }
+.sentinel-theme-v2 .body-md { font-size: 14px; font-weight: 400; line-height: 20px; }
+.sentinel-theme-v2 .body-sm { font-size: 12px; font-weight: 400; line-height: 16px; }
+.sentinel-theme-v2 .label-lg { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme-v2 .label-md { font-size: 12px; font-weight: 500; line-height: 16px; }
+.sentinel-theme-v2 .label-sm { font-size: 11px; font-weight: 500; line-height: 16px; }
+
 /* Glassmorphism overrides for specific status badges on light background inside sentinel-theme */
 .sentinel-theme .bg-blue-900\/40 {
   background-color: rgba(59, 130, 246, 0.15) !important;

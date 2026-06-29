@@ -116,7 +116,7 @@ export default async function ProfilePage() {
  }
 
   return (
-    <Card className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 space-y-6 bg-[var(--dash-bg)] text-[var(--dash-text)] border-none shadow-none ring-0 sentinel-theme font-sans">
+    <Card className="flex-1 w-full max-w-5xl mx-auto p-4 md:p-8 space-y-6 bg-[var(--dash-bg)] text-[var(--dash-text)] border-none shadow-none ring-0 sentinel-theme-v2 font-sans">
       <CardHeader className="flex flex-col gap-2 p-0">
         <CardTitle className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Dossier</CardTitle>
         <CardDescription className="text-dash-muted font-mono uppercase tracking-widest label-sm">Classified Personnel Record</CardDescription>
