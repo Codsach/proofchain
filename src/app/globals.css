@@ -369,6 +369,11 @@
 .sentinel-theme .label-sm { font-size: 11px; font-weight: 500; line-height: 16px; }
 
 
+.dark.sentinel-theme-v2 [data-sidebar="sidebar"],
+.dark [data-sidebar="sidebar"] {
+  background: linear-gradient(to bottom, #1e293b 0%, #0f172a 100%) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

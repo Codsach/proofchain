@@ -89,11 +89,11 @@ export function AppSidebar() {
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col flex-1 overflow-hidden">
-                  <span className="text-lg font-bold tracking-tight truncate">
-                    <span className="text-dash-text">Proof</span>
-                    <span className="text-emerald-500">Chain</span>
+                  <span className="text-sm font-heading font-extrabold tracking-[0.2em] truncate">
+                    <span className="text-dash-text">PROOF</span>
+                    <span className="text-emerald-500">CHAIN</span>
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate">
+                  <span className="text-[9px] font-mono font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-[0.25em] truncate mt-0.5">
                     {roleLabel[user.role]}
                   </span>
                 </div>
@@ -120,13 +120,11 @@ export function AppSidebar() {
                     asChild
                     tooltip={item.label}
                     isActive={isActive}
-                    className={`transition-all duration-300 text-dash-muted hover:bg-dash-hover/60! hover:text-dash-text! data-[active=true]:bg-transparent! data-[active=true]:hover:bg-dash-hover/60! rounded-xl ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-2"}`}
+                    className={`transition-all duration-300 text-dash-muted hover:bg-dash-hover/60! hover:text-dash-text! data-[active=true]:bg-[var(--dash-active-bg)]! data-[active=true]:text-[var(--dash-active-text)]! rounded-xl border border-transparent data-[active=true]:border-[var(--dash-border)] data-[active=true]:shadow-sm ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-3"}`}
                   >
                     <Link href={item.href} className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
-                      <div className={`flex items-center justify-center rounded-full shrink-0 transition-all duration-300 ${isActive ? "bg-[var(--dash-active-bg)] text-[var(--dash-active-text)] shadow-sm size-9" : "size-9"}`}>
-                        <Icon size={20} className={isActive ? "" : "opacity-70"} />
-                      </div>
-                      {!isCollapsed && <span className={isActive ? "text-dash-text font-medium" : ""}>{item.label}</span>}
+                      <Icon size={20} className={isActive ? "text-[var(--dash-active-text)]" : "opacity-70"} />
+                      {!isCollapsed && <span className="font-medium">{item.label}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -161,9 +159,9 @@ export function AppSidebar() {
 
             <SidebarMenuButton
               onClick={() => setIsMfaOpen(true)}
-              className="h-10 mt-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold justify-center rounded-xl shadow-sm transition-colors"
+              className="h-10 mt-2 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-700 dark:text-emerald-400 font-bold justify-center rounded-xl transition-all duration-300"
             >
-              <ShieldCheck size={18} />
+              <ShieldCheck size={18} className="text-emerald-600 dark:text-emerald-400" />
               <span>Enable 2FA</span>
             </SidebarMenuButton>
 
