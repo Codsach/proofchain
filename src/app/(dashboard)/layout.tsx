@@ -19,6 +19,7 @@ export default function DashboardLayout({
 
   const isInvestigator = pathname?.startsWith("/investigator");
   const isInvestigatorDashboard = pathname === "/investigator";
+  const isSubmitPage = pathname === "/investigator/submit";
   const isAnalyst = pathname?.startsWith("/analyst");
   const isProfile = pathname === "/profile";
   const isProfilePage = pathname === "/profile";
@@ -45,7 +46,7 @@ export default function DashboardLayout({
     <SidebarProvider>
       <div className={cn(
         "relative flex h-screen overflow-hidden bg-[var(--dash-bg)] text-[var(--dash-text)] selection:bg-emerald-500/30 w-full",
-        (isInvestigatorDashboard || isProfilePage)
+        (isInvestigatorDashboard || isProfilePage || isSettings || isSubmitPage)
           ? "sentinel-theme-v2" 
           : (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme"
       )}>
@@ -53,8 +54,20 @@ export default function DashboardLayout({
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
           <div className={cn(
             "absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,var(--dash-bg)_20%,transparent_100%)] opacity-20",
-            (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "bg-[linear-gradient(rgba(15,23,42,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.015)_1px,transparent_1px)] bg-[size:40px_40px]"
+            (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "bg-[linear-gradient(rgba(15,23,42,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.035)_1px,transparent_1px)] bg-[size:40px_40px] opacity-100"
           )} />
+
+          {/* 💡 Ambient Mesh Gradients for sentinel-theme-v2 to break flat white sheet */}
+          {(isInvestigatorDashboard || isProfilePage || isSettings || isSubmitPage) && (
+            <>
+              {/* Top-right soft emerald glow */}
+              <div className="absolute -top-[10%] -right-[5%] w-[45%] h-[45%] rounded-full bg-emerald-500/10 blur-[130px] mix-blend-normal pointer-events-none" />
+              {/* Bottom-left soft cobalt/blue glow */}
+              <div className="absolute -bottom-[15%] -left-[10%] w-[55%] h-[55%] rounded-full bg-blue-500/10 blur-[160px] mix-blend-normal pointer-events-none" />
+              {/* Center subtle purple glow */}
+              <div className="absolute top-[25%] left-[20%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] mix-blend-normal pointer-events-none" />
+            </>
+          )}
         </div>
 
         <AppSidebar />

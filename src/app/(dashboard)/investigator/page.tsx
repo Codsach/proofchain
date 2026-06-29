@@ -327,7 +327,7 @@ export default function InvestigatorPage() {
             <div className="h-px w-8 bg-slate-400/50" />
             <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Operative Field Dashboard</p>
           </div>
-          <h1 className="text-4xl font-extrabold text-dash-text tracking-tight font-sans">Case Modules</h1>
+          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Case Modules</h1>
           <p className="mt-2 text-dash-muted font-medium max-w-lg">
             Monitor evidence submission queues, cryptographic review status, and real-time chain of custody integrity.
           </p>

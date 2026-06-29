@@ -242,9 +242,16 @@ export default function SubmitEvidencePage() {
   return (
     <div className="page">
       <div className="container">
-        <header className="page-header">
-          <h1>Submit Evidence</h1>
-          <p>All submissions are hashed, IPFS-stored, and blockchain-anchored.</p>
+        <header className="page-header mb-6">
+          <div className="flex items-center gap-3 mb-2 justify-center">
+            <div className="h-px w-8 bg-slate-400/50" />
+            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Forensic Capture Module</p>
+            <div className="h-px w-8 bg-slate-400/50" />
+          </div>
+          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg text-center">Submit Evidence</h1>
+          <p className="mt-2 text-dash-muted font-medium max-w-md mx-auto text-sm text-center">
+            All submissions are hashed, IPFS-stored, and blockchain-anchored.
+          </p>
         </header>
 
         <div className="rounded-xl border border-dash-border bg-dash-card p-6 md:p-8 shadow-sm form-card">
@@ -535,7 +542,7 @@ export default function SubmitEvidencePage() {
           /* specific padding/margin tweaks can go here if needed */
         }
         .page-header { padding-bottom: 4px; text-align: center; }
-        .page-header h1 { font-size: 24px; font-weight: 700; margin: 0 0 6px; color: var(--dash-text); }
+        .page-header h1 { margin: 0 0 6px; color: var(--dash-text); }
         .page-header p { font-size: 14px; color: var(--dash-muted); margin: 0; }
         .form { display: flex; flex-direction: column; gap: 20px; }
         .field { display: flex; flex-direction: column; gap: 8px; }
