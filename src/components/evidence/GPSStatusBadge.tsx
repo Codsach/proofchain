@@ -163,15 +163,16 @@ export function GPSStatusBadge({
         .gps-actions { display: flex; gap: 6px; }
         .gps-btn {
           font-size: 12px;
-          padding: 4px 10px;
+          font-weight: 600;
+          padding: 4px 12px;
           border-radius: 6px;
-          border: 1px solid rgba(255,255,255,0.2);
-          background: transparent;
-          color: #d1d5db;
+          border: 1px solid var(--dash-border);
+          background: var(--dash-input);
+          color: var(--dash-text);
           cursor: pointer;
-          transition: background 0.15s;
+          transition: all 0.15s;
         }
-        .gps-btn:hover { background: rgba(255,255,255,0.1); }
+        .gps-btn:hover { background: var(--dash-hover); border-color: var(--dash-accent); color: var(--dash-accent); }
         .gps-btn.danger { border-color: rgba(239,68,68,0.4); color: #f87171; }
         .gps-coords { display: flex; flex-direction: column; gap: 4px; }
         .coord-row {

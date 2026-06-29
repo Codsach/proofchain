@@ -1,17 +1,32 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FolderSearch, FileText, AlignLeft } from "lucide-react";
+import dynamic from "next/dynamic";
+import { FolderSearch, FileText, AlignLeft, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { CameraCapture } from "@/components/evidence/CameraCapture";
 import { GPSStatusBadge } from "@/components/evidence/GPSStatusBadge";
 import { OfflineQueueIndicator } from "@/components/evidence/OfflineQueueIndicator";
-import { useGPS } from "@/hooks/useGPS";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { useGPS, type GPSCoordinates } from "@/hooks/useGPS";
 import { useOfflineQueue } from "@/hooks/useOfflineQueue";
 import { useAuth } from "@/components/providers/AuthContext";
 import type { CaptureMode } from "@/hooks/useCamera";
 
 type SubmitMode = "camera" | "upload";
+
+// Dynamically import the Leaflet map component to prevent Next.js SSR document/window issues
+const LocationPickerMap = dynamic(
+  () => import("@/components/evidence/LocationPickerMap"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-[250px] w-full bg-dash-sidebar animate-pulse rounded-xl border border-dash-border flex items-center justify-center mt-3">
+        <span className="text-xs text-dash-muted uppercase tracking-wider">Loading Map Interface...</span>
+      </div>
+    ),
+  }
+);
 
 export default function SubmitEvidencePage() {
   const router = useRouter();
@@ -35,11 +50,47 @@ export default function SubmitEvidencePage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // GPS
+  // High-accuracy browser Geolocation hook
   const { coords, status: gpsStatus, error: gpsError, requestGPS, clearGPS } = useGPS({
     autoStart: true,
     highAccuracy: true,
+    maximumAge: 0, // Force fresh coordinates lookup, bypassing browser cache
+    timeout: 10000,
   });
+
+  // Manage refined coordinates state (allows dragging marker / clicking map)
+  const [refinedCoords, setRefinedCoords] = useState<GPSCoordinates | null>(null);
+  const lastCoordsRef = useRef<GPSCoordinates | null>(null);
+
+  // Auto-sync refined location when a new automatic geolocation fix is acquired
+  useEffect(() => {
+    if (coords && coords !== lastCoordsRef.current) {
+      setRefinedCoords(coords);
+      lastCoordsRef.current = coords;
+    }
+  }, [coords]);
+
+  // Handle map selection/drag refinement
+  const handleMapChange = useCallback((lat: number, lng: number) => {
+    setRefinedCoords((prev) => {
+      const now = new Date();
+      if (!prev) {
+        return {
+          latitude: lat,
+          longitude: lng,
+          altitude: null,
+          accuracy: 15, // manual entry estimation
+          capturedAt: now,
+        };
+      }
+      return {
+        ...prev,
+        latitude: lat,
+        longitude: lng,
+        capturedAt: now,
+      };
+    });
+  }, []);
 
   // Offline queue
   const { queue, isOnline, addToQueue, syncQueue, removeFromQueue, isSyncing, pendingCount } =
@@ -73,12 +124,12 @@ export default function SubmitEvidencePage() {
     fd.append("title", title);
     fd.append("description", description);
     fd.append("captureMethod", submitMode === "camera" ? "camera" : "upload");
-    if (coords) {
-      fd.append("latitude", String(coords.latitude));
-      fd.append("longitude", String(coords.longitude));
-      if (coords.altitude !== null) fd.append("altitude", String(coords.altitude));
-      fd.append("gpsAccuracy", String(coords.accuracy));
-      fd.append("capturedAt", coords.capturedAt.toISOString());
+    if (refinedCoords) {
+      fd.append("latitude", String(refinedCoords.latitude));
+      fd.append("longitude", String(refinedCoords.longitude));
+      if (refinedCoords.altitude !== null) fd.append("altitude", String(refinedCoords.altitude));
+      fd.append("gpsAccuracy", String(refinedCoords.accuracy));
+      fd.append("capturedAt", refinedCoords.capturedAt.toISOString());
     }
     const deviceInfo = {
       userAgent: navigator.userAgent,
@@ -86,7 +137,7 @@ export default function SubmitEvidencePage() {
     };
     fd.append("deviceInfo", JSON.stringify(deviceInfo));
     return fd;
-  }, [selectedFile, caseId, title, description, submitMode, coords]);
+  }, [selectedFile, caseId, title, description, submitMode, refinedCoords]);
 
   const handleSubmit = useCallback(async () => {
     if (!selectedFile || !caseId.trim() || !title.trim()) {
@@ -110,17 +161,16 @@ export default function SubmitEvidencePage() {
           fileType: selectedFile.type,
           fileSize: selectedFile.size,
           fileBlob: selectedFile,
-          latitude: coords?.latitude ?? null,
-          longitude: coords?.longitude ?? null,
-          altitude: coords?.altitude ?? null,
-          gpsAccuracy: coords?.accuracy ?? null,
-          capturedAt: coords?.capturedAt.toISOString() ?? new Date().toISOString(),
+          latitude: refinedCoords?.latitude ?? null,
+          longitude: refinedCoords?.longitude ?? null,
+          altitude: refinedCoords?.altitude ?? null,
+          gpsAccuracy: refinedCoords?.accuracy ?? null,
+          capturedAt: refinedCoords?.capturedAt.toISOString() ?? new Date().toISOString(),
           captureMethod: submitMode === "camera" ? "camera" : "upload",
           deviceInfo: JSON.stringify({ userAgent: navigator.userAgent }),
         });
         setSubmitSuccess(true);
         setIsSubmitting(false);
-        // Reset form
         resetForm();
       } catch {
         setSubmitError("Failed to queue submission. Please try again.");
@@ -151,10 +201,9 @@ export default function SubmitEvidencePage() {
       } else {
         setSubmitSuccess(true);
         resetForm();
-        setTimeout(() => router.push("/investigator/dashboard"), 2000);
       }
     } catch {
-      // Network failure — queue it
+      // Network failure — queue it instead of blocking
       try {
         await addToQueue({
           caseId,
@@ -164,11 +213,11 @@ export default function SubmitEvidencePage() {
           fileType: selectedFile.type,
           fileSize: selectedFile.size,
           fileBlob: selectedFile,
-          latitude: coords?.latitude ?? null,
-          longitude: coords?.longitude ?? null,
-          altitude: coords?.altitude ?? null,
-          gpsAccuracy: coords?.accuracy ?? null,
-          capturedAt: coords?.capturedAt.toISOString() ?? new Date().toISOString(),
+          latitude: refinedCoords?.latitude ?? null,
+          longitude: refinedCoords?.longitude ?? null,
+          altitude: refinedCoords?.altitude ?? null,
+          gpsAccuracy: refinedCoords?.accuracy ?? null,
+          capturedAt: refinedCoords?.capturedAt.toISOString() ?? new Date().toISOString(),
           captureMethod: submitMode === "camera" ? "camera" : "upload",
           deviceInfo: JSON.stringify({ userAgent: navigator.userAgent }),
         });
@@ -185,17 +234,16 @@ export default function SubmitEvidencePage() {
     caseId,
     title,
     description,
-    coords,
+    refinedCoords,
     submitMode,
     isOnline,
     getToken,
     buildFormData,
     addToQueue,
-    router,
   ]);
 
   const resetForm = () => {
-    setCaseId("");
+    // Retain caseId so investigators can easily submit multiple files sequentially!
     setTitle("");
     setDescription("");
     setSelectedFile(null);
@@ -204,6 +252,7 @@ export default function SubmitEvidencePage() {
     setFilePreviewUrl(null);
     setSubmitMode(null);
     clearGPS();
+    setRefinedCoords(null);
   };
 
   if (submitSuccess) {
@@ -223,17 +272,25 @@ export default function SubmitEvidencePage() {
               ? "Your evidence has been securely submitted. AI analysis is in progress."
               : "Saved locally. It will be submitted automatically when connectivity is restored."}
           </p>
-          <button className="btn-primary" onClick={() => setSubmitSuccess(false)}>
-            Submit Another
-          </button>
+          <div className="flex flex-col gap-2.5 w-full">
+            <button className="btn-primary" onClick={() => setSubmitSuccess(false)}>
+              Submit Another Evidence
+            </button>
+            <button className="btn-secondary" onClick={() => router.push("/investigator")}>
+              Go to Dashboard
+            </button>
+          </div>
         </div>
         <style jsx>{`
           .page { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 24px; background: transparent; }
-          .success-card { text-align: center; max-width: 360px; padding: 32px; border-radius: 12px; border: 1px solid var(--dash-border); background: var(--dash-card); }
-          .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(100,116,139,0.1); display: flex; align-items: center; justify-content: center; }
-          h2 { color: var(--dash-text); font-size: 20px; margin: 0 0 8px; }
-          p { color: var(--dash-muted); font-size: 14px; margin: 0 0 24px; }
-          .btn-primary { background: var(--dash-accent); color: white; border: none; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+          .success-card { text-align: center; max-width: 400px; width: 100%; padding: 32px; border-radius: 16px; border: 1px solid var(--dash-border); background: var(--dash-card); display: flex; flex-direction: column; align-items: center; }
+          .success-icon { margin: 0 auto 16px; width: 72px; height: 72px; border-radius: 50%; background: rgba(16,185,129,0.1); display: flex; align-items: center; justify-content: center; }
+          h2 { color: var(--dash-text); font-size: 20px; margin: 0 0 8px; font-weight: 700; }
+          p { color: var(--dash-muted); font-size: 14px; margin: 0 0 24px; font-weight: 500; }
+          .btn-primary { background: var(--dash-accent); color: white; border: none; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; width: 100%; }
+          .btn-primary:hover { opacity: 0.9; }
+          .btn-secondary { background: transparent; border: 1px solid var(--dash-border); color: var(--dash-text); padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; width: 100%; }
+          .btn-secondary:hover { background: var(--dash-hover); }
         `}</style>
       </div>
     );
@@ -254,274 +311,397 @@ export default function SubmitEvidencePage() {
           </p>
         </header>
 
-        <div className="rounded-xl border border-dash-border bg-dash-card p-6 md:p-8 shadow-sm form-card">
-          {/* Offline / Queue status */}
-          <OfflineQueueIndicator
-            isOnline={isOnline}
-            pendingCount={pendingCount}
-            isSyncing={isSyncing}
-            queue={queue}
-            onSync={syncQueue}
-            onRemove={removeFromQueue}
-            expanded={pendingCount > 0}
-          />
+        {/* Two-Column Responsive Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start w-full mt-4">
+          
+          {/* Left Column: Form (2/3 width) */}
+          <div className="lg:col-span-2 rounded-xl border border-dash-border bg-dash-card p-6 md:p-8 shadow-sm form-card">
+            
+            {/* Offline / Queue status */}
+            <OfflineQueueIndicator
+              isOnline={isOnline}
+              pendingCount={pendingCount}
+              isSyncing={isSyncing}
+              queue={queue}
+              onSync={syncQueue}
+              onRemove={removeFromQueue}
+              expanded={pendingCount > 0}
+            />
 
-        <form
-          className="form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSubmit();
-          }}
-        >
-          {/* Case ID */}
-          <div className="field">
-            <label>Case ID *</label>
-            <div className="input-with-icon">
-              <FolderSearch className="input-icon" />
-              <input
-                type="text"
-                placeholder="e.g. CASE-2024-001"
-                value={caseId}
-                onChange={(e) => setCaseId(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Title */}
-          <div className="field">
-            <label>Evidence Title *</label>
-            <div className="input-with-icon">
-              <FileText className="input-icon" />
-              <input
-                type="text"
-                placeholder="Brief description of evidence"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="field">
-            <label>Description</label>
-            <div className="input-with-icon">
-              <AlignLeft className="input-icon" style={{ top: "12px" }} />
-              <textarea
-                placeholder="Optional: additional context about where and how this was captured"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-              />
-            </div>
-          </div>
-
-          {/* Capture method */}
-          <div className="field">
-            <label>Capture Method *</label>
-            <div className="method-tabs">
-              <button
-                type="button"
-                className={`method-tab ${submitMode === "camera" ? "active" : ""}`}
-                onClick={() => setSubmitMode("camera")}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-                Use Camera
-              </button>
-              <button
-                type="button"
-                className={`method-tab ${submitMode === "upload" ? "active" : ""}`}
-                onClick={() => setSubmitMode("upload")}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                Upload File
-              </button>
-            </div>
-          </div>
-
-          {/* Camera flow */}
-          {submitMode === "camera" && (
-            <div className="field">
-              <div className="capture-type-row">
-                <button
-                  type="button"
-                  className={`capture-type-btn ${captureMode === "photo" ? "active" : ""}`}
-                  onClick={() => setCaptureMode("photo")}
-                >
-                  Photo
-                </button>
-                <button
-                  type="button"
-                  className={`capture-type-btn ${captureMode === "video" ? "active" : ""}`}
-                  onClick={() => setCaptureMode("video")}
-                >
-                  Video
-                </button>
+            <form
+              className="form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
+            >
+              {/* Case ID */}
+              <div className="field">
+                <label>Case ID *</label>
+                <div className="input-with-icon">
+                  <FolderSearch className="input-icon" />
+                  <input
+                    type="text"
+                    placeholder="e.g. CASE-2024-001"
+                    value={caseId}
+                    onChange={(e) => setCaseId(e.target.value)}
+                    required
+                  />
+                </div>
               </div>
 
-              {!selectedFile ? (
-                <button
-                  type="button"
-                  className="open-camera-btn"
-                  onClick={() => setShowCamera(true)}
-                >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </svg>
-                  Open Camera
-                </button>
-              ) : (
-                <div className="file-preview-row">
-                  {selectedFile.type.startsWith("image/") ? (
-                    <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
-                  ) : (
-                    <video src={filePreviewUrl!} className="file-thumb" muted />
-                  )}
-                  <div className="file-info">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="file-name">{selectedFile.name}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                    </div>
-                    <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                    {capturedAt && (
-                      <span className="file-time">{capturedAt.toLocaleString()}</span>
-                    )}
+              {/* Title */}
+              <div className="field">
+                <label>Evidence Title *</label>
+                <div className="input-with-icon">
+                  <FileText className="input-icon" />
+                  <input
+                    type="text"
+                    placeholder="Brief description of evidence"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="field">
+                <label>Description</label>
+                <div className="input-with-icon">
+                  <AlignLeft className="input-icon" style={{ top: "12px" }} />
+                  <textarea
+                    placeholder="Optional: additional context about where and how this was captured"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Capture method */}
+              <div className="field">
+                <label>Capture Method *</label>
+                <div className="method-tabs">
+                  <button
+                    type="button"
+                    className={`method-tab ${submitMode === "camera" ? "active" : ""}`}
+                    onClick={() => setSubmitMode("camera")}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    Use Camera
+                  </button>
+                  <button
+                    type="button"
+                    className={`method-tab ${submitMode === "upload" ? "active" : ""}`}
+                    onClick={() => setSubmitMode("upload")}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    Upload File
+                  </button>
+                </div>
+              </div>
+
+              {/* Camera flow */}
+              {submitMode === "camera" && (
+                <div className="field">
+                  <div className="capture-type-row">
                     <button
                       type="button"
-                      className="reopen-camera"
-                      onClick={() => {
-                        setSelectedFile(null);
-                        setFilePreviewUrl(null);
-                        setShowCamera(true);
-                      }}
+                      className={`capture-type-btn ${captureMode === "photo" ? "active" : ""}`}
+                      onClick={() => setCaptureMode("photo")}
                     >
-                      Recapture
+                      Photo
+                    </button>
+                    <button
+                      type="button"
+                      className={`capture-type-btn ${captureMode === "video" ? "active" : ""}`}
+                      onClick={() => setCaptureMode("video")}
+                    >
+                      Video
                     </button>
                   </div>
-                </div>
-              )}
 
-              {showCamera && (
-                <div className="camera-modal-backdrop">
-                  <div className="camera-modal">
-                    <CameraCapture
-                      mode={captureMode}
-                      onCapture={handleCameraCapture}
-                      onCancel={() => setShowCamera(false)}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* File upload flow */}
-          {submitMode === "upload" && (
-            <div className="field">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*,video/mp4,video/webm,application/pdf"
-                onChange={handleFileSelect}
-                className="hidden-input"
-              />
-              {!selectedFile ? (
-                <button
-                  type="button"
-                  className="upload-zone"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  <span>Tap to select file</span>
-                  <small>Images, video, PDF — max 200MB</small>
-                </button>
-              ) : (
-                <div className="file-preview-row">
-                  {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
-                    <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
-                  ) : (
-                    <div className="file-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-                        <polyline points="13 2 13 9 20 9" />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="file-info">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span className="file-name">{selectedFile.name}</span>
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                    </div>
-                    <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                  {!selectedFile ? (
                     <button
                       type="button"
-                      className="reopen-camera"
+                      className="open-camera-btn"
+                      onClick={() => setShowCamera(true)}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                        <circle cx="12" cy="13" r="4" />
+                      </svg>
+                      Open Camera
+                    </button>
+                  ) : (
+                    <div className="file-preview-row">
+                      {selectedFile.type.startsWith("image/") ? (
+                        <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
+                      ) : (
+                        <video src={filePreviewUrl!} className="file-thumb" muted />
+                      )}
+                      <div className="file-info">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span className="file-name">{selectedFile.name}</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                        </div>
+                        <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                        {capturedAt && (
+                          <span className="file-time">{capturedAt.toLocaleString()}</span>
+                        )}
+                        <button
+                          type="button"
+                          className="reopen-camera"
+                          onClick={() => {
+                            setSelectedFile(null);
+                            setFilePreviewUrl(null);
+                            setShowCamera(true);
+                          }}
+                        >
+                          Recapture
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {showCamera && (
+                    <div className="camera-modal-backdrop">
+                      <div className="camera-modal">
+                        <CameraCapture
+                          mode={captureMode}
+                          onCapture={handleCameraCapture}
+                          onCancel={() => setShowCamera(false)}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* File upload flow */}
+              {submitMode === "upload" && (
+                <div className="field">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*,video/mp4,video/webm,application/pdf"
+                    onChange={handleFileSelect}
+                    className="hidden-input"
+                  />
+                  {!selectedFile ? (
+                    <button
+                      type="button"
+                      className="upload-zone"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      Change File
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      <span>Tap to select file</span>
+                      <small>Images, video, PDF — max 200MB</small>
                     </button>
-                  </div>
+                  ) : (
+                    <div className="file-preview-row">
+                      {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
+                        <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
+                      ) : (
+                        <div className="file-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                            <polyline points="13 2 13 9 20 9" />
+                          </svg>
+                        </div>
+                      )}
+                      <div className="file-info">
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span className="file-name">{selectedFile.name}</span>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                        </div>
+                        <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                        <button
+                          type="button"
+                          className="reopen-camera"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          Change File
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-          )}
 
-          {/* GPS panel */}
-          {submitMode && (
-            <div className="field gps-box">
-              <label>GPS Geotag</label>
-              <GPSStatusBadge
-                status={gpsStatus}
-                coords={coords}
-                error={gpsError}
-              />
-            </div>
-          )}
-
-          {/* Error */}
-          {submitError && (
-            <div className="error-banner">{submitError}</div>
-          )}
-
-          {/* Submit */}
-          {submitMode && (
-            <button
-              type="submit"
-              className="submit-btn"
-              disabled={isSubmitting || !selectedFile || !caseId || !title || !coords || gpsStatus !== "acquired"}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="spinner-sm" />
-                  {isOnline ? "Submitting…" : "Saving offline…"}
-                </>
-              ) : gpsStatus === "requesting" ? (
-                <>
-                  <span className="spinner-sm" />
-                  Acquiring GPS...
-                </>
-              ) : isOnline ? (
-                "Submit Evidence"
-              ) : (
-                "Save to Offline Queue"
+              {/* GPS panel & LocationPickerMap */}
+              {submitMode && (
+                <div className="field gps-box">
+                  <label>GPS Geotag</label>
+                  <GPSStatusBadge
+                    status={refinedCoords ? "acquired" : gpsStatus}
+                    coords={refinedCoords}
+                    error={gpsError}
+                    onRequest={requestGPS}
+                    onClear={() => {
+                      clearGPS();
+                      setRefinedCoords(null);
+                    }}
+                  />
+                  
+                  {refinedCoords ? (
+                    <LocationPickerMap
+                      lat={refinedCoords.latitude}
+                      lng={refinedCoords.longitude}
+                      accuracy={refinedCoords.accuracy}
+                      onChange={handleMapChange}
+                    />
+                  ) : (
+                    (gpsStatus === "denied" || gpsStatus === "unavailable" || gpsStatus === "timeout" || gpsStatus === "idle") && (
+                      <button
+                        type="button"
+                        className="mt-2 text-xs text-dash-accent hover:underline flex items-center gap-1.5 w-fit font-bold uppercase tracking-wider"
+                        onClick={() => {
+                          setRefinedCoords({
+                            latitude: 40.7128,
+                            longitude: -74.0060,
+                            altitude: null,
+                            accuracy: 15,
+                            capturedAt: new Date(),
+                          });
+                        }}
+                      >
+                        📍 Pin Location Manually on Map
+                      </button>
+                    )
+                  )}
+                </div>
               )}
-            </button>
-          )}
-        </form>
+
+              {/* Error */}
+              {submitError && (
+                <div className="error-banner">{submitError}</div>
+              )}
+
+              {/* Submit */}
+              {submitMode && (
+                <button
+                  type="submit"
+                  className="submit-btn"
+                  disabled={isSubmitting || !selectedFile || !caseId || !title || !refinedCoords}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="spinner-sm" />
+                      {isOnline ? "Submitting…" : "Saving offline…"}
+                    </>
+                  ) : gpsStatus === "requesting" ? (
+                    <>
+                      <span className="spinner-sm" />
+                      Acquiring GPS...
+                    </>
+                  ) : isOnline ? (
+                    "Submit Evidence"
+                  ) : (
+                    "Save to Offline Queue"
+                  )}
+                </button>
+              )}
+            </form>
+          </div>
+
+          {/* Right Column: Capture Guide & Blockchain Status (1/3 width) */}
+          <div className="space-y-6">
+            
+            {/* Capture Guide */}
+            <Card className="border border-dash-border bg-dash-card shadow-sm rounded-xl overflow-hidden">
+              <CardHeader className="border-b border-dash-border pb-3">
+                <CardTitle className="text-xs font-bold text-dash-text uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-dash-accent animate-pulse" />
+                  Forensic Capture Guide
+                </CardTitle>
+                <CardDescription className="text-[10px] text-dash-muted uppercase tracking-wider">
+                  compliance parameters
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-3.5">
+                {[
+                  {
+                    title: "Good lighting",
+                    desc: "Ensure evidence is captured in adequate lighting for clarity and automated verification.",
+                  },
+                  {
+                    title: "GPS enabled",
+                    desc: "High-accuracy GPS coordinates must be embedded for geospatial validation.",
+                  },
+                  {
+                    title: "Original file",
+                    desc: "Do not compress or screenshot the file; upload the raw original media.",
+                  },
+                  {
+                    title: "Don't crop image",
+                    desc: "Keep the original aspect ratio and metadata intact to prevent hash mismatches.",
+                  },
+                ].map((item) => (
+                  <div key={item.title} className="flex gap-3">
+                    <CheckCircle2 className="w-4 h-4 text-dash-accent mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-bold text-dash-text uppercase tracking-wider">{item.title}</p>
+                      <p className="text-[10px] text-dash-muted font-medium mt-0.5 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Blockchain Node Status */}
+            <Card className="border border-dash-border bg-dash-card shadow-sm rounded-xl overflow-hidden">
+              <CardHeader className="border-b border-dash-border pb-3">
+                <CardTitle className="text-xs font-bold text-dash-text uppercase tracking-widest flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-dash-accent" />
+                  System Node Status
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-3">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-dash-muted font-bold uppercase tracking-wider text-[10px]">IPFS Node Connection</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="font-mono text-dash-text font-bold text-[10px] uppercase">Active / Syncing</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center text-xs pt-2.5 border-t border-dash-border/30">
+                  <span className="text-dash-muted font-bold uppercase tracking-wider text-[10px]">Blockchain Network</span>
+                  <span className="font-mono text-dash-text font-bold text-[10px] uppercase">Ethereum Sepolia</span>
+                </div>
+
+                <div className="flex justify-between items-center text-xs pt-2.5 border-t border-dash-border/30">
+                  <span className="text-dash-muted font-bold uppercase tracking-wider text-[10px]">Smart Contract</span>
+                  <span className="font-mono text-dash-accent font-bold text-[10px] uppercase">CustodyTracker v1.2</span>
+                </div>
+
+                <div className="flex justify-between items-center text-xs pt-2.5 border-t border-dash-border/30">
+                  <span className="text-dash-muted font-bold uppercase tracking-wider text-[10px]">Cryptography</span>
+                  <span className="font-mono text-dash-text font-bold text-[10px] uppercase">SHA-256 Hash</span>
+                </div>
+              </CardContent>
+            </Card>
+
+          </div>
+
         </div>
+
       </div>
 
       <style jsx>{`
@@ -530,20 +710,22 @@ export default function SubmitEvidencePage() {
           background: transparent;
           padding: 24px 16px 48px;
           color: var(--dash-text);
+          display: flex;
+          justify-content: center;
         }
         .container {
-          max-width: 500px;
+          max-width: 1040px;
+          width: 100%;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
           gap: 20px;
+          align-items: center;
         }
         .form-card {
-          /* specific padding/margin tweaks can go here if needed */
+          width: 100%;
         }
-        .page-header { padding-bottom: 4px; text-align: center; }
-        .page-header h1 { margin: 0 0 6px; color: var(--dash-text); }
-        .page-header p { font-size: 14px; color: var(--dash-muted); margin: 0; }
+        .page-header { padding-bottom: 4px; text-align: center; width: 100%; }
         .form { display: flex; flex-direction: column; gap: 20px; }
         .field { display: flex; flex-direction: column; gap: 8px; }
         label { font-size: 14px; font-weight: 600; color: var(--dash-muted); }
