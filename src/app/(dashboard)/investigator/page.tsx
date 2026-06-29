@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import {
   Table,
   TableBody,
@@ -225,6 +226,18 @@ const STAT_VARIANTS = {
   }
 } as const;
 
+// Variation 5: Multi-point gradient mesh (applied permanently)
+const Variation5 = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#fde68a_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_20%_30%,#fbbf2420_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_80%_20%,#3b82f620_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_50%_80%,#8b5cf620_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#fecaca_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_90%_90%,#dc262620_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
 export default function InvestigatorPage() {
   const { user, getToken } = useAuth();
   const { toast } = useToast();
@@ -317,8 +330,15 @@ export default function InvestigatorPage() {
   );
 
   return (
-    <div className="space-y-10 pb-10">
-      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 flex flex-col overflow-hidden">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <Variation5 />
+      </div>
+
+      {/* Main Content Pane */}
+      <div className="relative z-10 flex-1 flex flex-col gap-10 p-4 sm:p-6 lg:p-8">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -647,6 +667,7 @@ export default function InvestigatorPage() {
           </Table>
         </motion.div>
       )}
+      </div>
     </div>
   );
 }
