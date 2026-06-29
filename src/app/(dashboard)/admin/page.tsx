@@ -80,8 +80,8 @@ const containerVariants = {
 };
 
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35 } },
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 // ─── System Health Bar ───────────────────────────────────────────────────────
@@ -216,15 +216,46 @@ function SystemHealthBar({
 
 // ─── Stat Card ───────────────────────────────────────────────────────────────
 
+function Sparkline({ points, color }: { points: number[]; color: string }) {
+  const minVal = Math.min(...points);
+  const maxVal = Math.max(...points);
+  const range = maxVal - minVal || 1;
+  const pathD = points
+    .map((p, i) => {
+      const x = (i / (points.length - 1)) * 52 + 4;
+      const y = 26 - ((p - minVal) / range) * 22;
+      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
+    })
+    .join(" ");
+
+  return (
+    <svg className="w-16 h-8 opacity-80" viewBox="0 0 60 30">
+      <motion.path
+        d={pathD}
+        fill="none"
+        stroke={color}
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        initial={{ pathLength: 0 }}
+        animate={{ pathLength: 1 }}
+        transition={{ duration: 1.5, ease: "easeInOut" }}
+      />
+    </svg>
+  );
+}
+
 interface StatCardProps {
   label: string;
   value?: number;
   icon: React.ElementType;
+  brandLabel: string;
+  sparklinePoints: number[];
   color: string;
-  glowColor: string;
+  textColor: string;
+  gradientBg: string;
   borderColor: string;
   iconBg: string;
-  trend?: string;
   isLoading: boolean;
 }
 
@@ -232,58 +263,57 @@ function StatCard({
   label,
   value,
   icon: Icon,
+  brandLabel,
+  sparklinePoints,
   color,
-  glowColor,
+  textColor,
+  gradientBg,
   borderColor,
   iconBg,
-  trend,
   isLoading,
 }: StatCardProps) {
   return (
     <motion.div
       variants={itemVariants}
-      whileHover={{ y: -4, scale: 1.02 }}
-      className={`relative overflow-hidden rounded-2xl border bg-dash-card backdrop-blur-xl p-6 space-y-3 group transition-all duration-300 ${borderColor}`}
+      whileHover={{ y: -4, scale: 1.01 }}
+      style={{
+        background: `linear-gradient(135deg, ${gradientBg} 0%, rgba(255, 255, 255, 0.4) 100%)`,
+      }}
+      className={`relative overflow-hidden rounded-xl border p-5 flex flex-col justify-between group transition-all duration-300 shadow-sm ${borderColor}`}
     >
-      {/* Left accent bar — always visible, not just on hover */}
-      <div
-        className={`absolute left-0 top-4 bottom-4 w-[3px] rounded-full ${glowColor.replace("/20", "")}`}
-      />
-
-      {/* Corner glow blob — appears on hover */}
-      <div
-        className={`absolute top-0 right-0 w-32 h-32 rounded-full -mr-16 -mt-16 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-2xl ${glowColor}`}
-      />
-
-      <div className="flex items-start justify-between pl-3">
-        <div className={`inline-flex p-2.5 rounded-xl ${iconBg}`}>
-          <Icon size={17} className={color} />
-        </div>
-        {trend && !isLoading && (
-          <span className={`text-[10px] font-bold ${color} flex items-center gap-0.5 bg-current/10 px-2 py-1 rounded-full`}>
-            <TrendingUp size={10} />
-            {trend}
-          </span>
-        )}
+      {/* Top Bar: Brand tag & Sparkline */}
+      <div className="flex items-center justify-between mb-4">
+        <span className={`text-[9px] font-extrabold tracking-widest uppercase px-2 py-0.5 rounded bg-white/60 border border-current/10 shadow-sm ${textColor}`}>
+          {brandLabel}
+        </span>
+        {!isLoading && <Sparkline points={sparklinePoints} color={color} />}
       </div>
 
-      <div className="pl-3 space-y-1">
-        <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest leading-none">
-          {label}
-        </p>
-
+      {/* Middle row: Icon and Metric */}
+      <div className="flex items-center gap-4">
+        <div className={`inline-flex p-2.5 rounded-lg ${iconBg} border border-current/10`}>
+          <Icon size={18} className={textColor} />
+        </div>
         {isLoading ? (
           <Skeleton className="h-10 w-16 bg-dash-hover" />
         ) : (
-          <p className={`text-4xl font-black tracking-tight ${color}`}>
+          <p className={`text-3xl font-black tracking-tight ${textColor}`}>
             {value ?? 0}
           </p>
         )}
       </div>
 
-      {/* Bottom accent line — always visible at low opacity, full on hover */}
+      {/* Bottom Row: Label */}
+      <div className="mt-3">
+        <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest leading-none">
+          {label}
+        </p>
+      </div>
+
+      {/* Top subtle highlight line */}
       <div
-        className={`absolute bottom-0 left-4 right-4 h-[1px] opacity-20 group-hover:opacity-60 transition-opacity duration-500 ${glowColor.replace("/20", "")}`}
+        className="absolute top-0 left-4 right-4 h-[1px] opacity-10 group-hover:opacity-45 transition-opacity duration-500"
+        style={{ backgroundColor: color }}
       />
     </motion.div>
   );
@@ -455,9 +485,12 @@ export default function AdminPage() {
       label: "Total Cases",
       value: caseStats?.total,
       icon: Briefcase,
-      color: "text-emerald-400",
-      glowColor: "bg-emerald-500/20",
-      borderColor: "border-emerald-500/10 hover:border-emerald-500/40",
+      brandLabel: "PROOFCHAIN",
+      sparklinePoints: [8, 14, 10, 18, 15, 24],
+      color: "#10b981",
+      textColor: "text-emerald-600",
+      gradientBg: "rgba(16, 185, 129, 0.04)",
+      borderColor: "border-emerald-500/20 hover:border-emerald-500/45",
       iconBg: "bg-emerald-500/10",
       isLoading: isLoadingStats,
     },
@@ -465,19 +498,25 @@ export default function AdminPage() {
       label: "Pending Review",
       value: caseStats?.pending,
       icon: Clock,
-      color: "text-amber-400",
-      glowColor: "bg-amber-500/20",
-      borderColor: "border-amber-500/10 hover:border-amber-500/40",
-      iconBg: "bg-amber-500/10",
+      brandLabel: "AI SCANNER",
+      sparklinePoints: [15, 8, 12, 5, 10, 7],
+      color: "#06b6d4",
+      textColor: "text-cyan-600",
+      gradientBg: "rgba(6, 182, 212, 0.04)",
+      borderColor: "border-cyan-500/20 hover:border-cyan-500/45",
+      iconBg: "bg-cyan-500/10",
       isLoading: isLoadingStats,
     },
     {
       label: "High Risk",
       value: caseStats?.highRisk,
       icon: ShieldAlert,
-      color: "text-rose-400",
-      glowColor: "bg-rose-500/20",
-      borderColor: "border-rose-500/10 hover:border-rose-500/40",
+      brandLabel: "THREAT DETECT",
+      sparklinePoints: [2, 6, 3, 8, 4, 5],
+      color: "#f43f5e",
+      textColor: "text-rose-600",
+      gradientBg: "rgba(244, 63, 94, 0.04)",
+      borderColor: "border-rose-500/20 hover:border-rose-500/45",
       iconBg: "bg-rose-500/10",
       isLoading: isLoadingStats,
     },
@@ -485,10 +524,13 @@ export default function AdminPage() {
       label: "Verified",
       value: caseStats?.verified,
       icon: CheckCircle2,
-      color: "text-dash-accent",
-      glowColor: "bg-emerald-500/20",
-      borderColor: "border-emerald-500/10 hover:border-emerald-500/40",
-      iconBg: "bg-emerald-500/10",
+      brandLabel: "LEDGER SEAL",
+      sparklinePoints: [6, 12, 9, 15, 12, 19],
+      color: "#0ea5e9",
+      textColor: "text-sky-600",
+      gradientBg: "rgba(14, 165, 233, 0.04)",
+      borderColor: "border-sky-500/20 hover:border-sky-500/45",
+      iconBg: "bg-sky-500/10",
       isLoading: isLoadingStats,
     },
   ];

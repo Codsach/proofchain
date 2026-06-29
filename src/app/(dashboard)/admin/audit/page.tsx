@@ -173,11 +173,11 @@ export default function AdminAuditPage() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Temporal Index</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Action Protocol</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Identity Actor</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Target Object</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden lg:table-cell">Source IP</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Temporal Index</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Action Protocol</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Identity Actor</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Target Object</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden lg:table-cell">Source IP</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dash-border font-medium">
@@ -190,25 +190,25 @@ export default function AdminAuditPage() {
                       transition={{ delay: idx * 0.02 }}
                       className="hover:bg-emerald-500/[0.02] transition-colors group"
                     >
-                      <td className="px-6 py-4 text-dash-muted font-mono whitespace-nowrap">
+                      <td className="px-6 py-5 text-dash-muted font-mono whitespace-nowrap">
                         {new Date(log.timestamp).toLocaleString(undefined, {
                           month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
                         })}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <span className={`font-mono px-2 py-1 rounded bg-dash-hover border border-dash-border/60 transition-colors ${ACTION_COLORS[log.actionType] ?? "text-dash-text group-hover:text-dash-accent"}`}>
                           {log.actionType}
                         </span>
                       </td>
-                      <td className="px-6 py-4 hidden sm:table-cell text-dash-muted group-hover:text-dash-text transition-colors">
+                      <td className="px-6 py-5 hidden sm:table-cell text-dash-muted group-hover:text-dash-text transition-colors">
                         {log.actorId?.email ?? <span className="text-dash-muted italic">{log.actorRole}</span>}
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell font-mono text-dash-muted">
+                      <td className="px-6 py-5 hidden md:table-cell font-mono text-dash-muted">
                         <span className="opacity-40">{log.targetType}</span>
                         <span className="mx-1 text-dash-muted">/</span>
                         <span className="group-hover:text-dash-muted transition-colors">{log.targetId.slice(0, 12)}…</span>
                       </td>
-                      <td className="px-6 py-4 hidden lg:table-cell text-dash-muted font-mono group-hover:text-dash-accent/40 transition-colors">
+                      <td className="px-6 py-5 hidden lg:table-cell text-dash-muted font-mono group-hover:text-dash-accent/40 transition-colors">
                         {log.ipAddress}
                       </td>
                     </motion.tr>

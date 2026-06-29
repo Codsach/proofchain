@@ -186,7 +186,7 @@ export default function AdminCasesPage() {
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-dash-text h-10 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/50 transition-all text-dash-text h-10 rounded-full px-5"
           />
         </div>
 
@@ -274,7 +274,7 @@ export default function AdminCasesPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="px-6 py-4 w-10">
+                  <th className="px-6 py-5 w-10">
                     <input
                       type="checkbox"
                       checked={cases.length > 0 && selectedCases.length === cases.length}
@@ -282,12 +282,12 @@ export default function AdminCasesPage() {
                       className="w-4 h-4 rounded border-dash-border bg-dash-bg accent-emerald-500 cursor-pointer"
                     />
                   </th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Case Descriptor</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Integrity Score</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Phase</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Ingestion Date</th>
-                  <th className="px-6 py-4" />
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Case Descriptor</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Integrity Score</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Phase</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Ingestion Date</th>
+                  <th className="px-6 py-5" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-dash-border font-medium">
@@ -302,7 +302,7 @@ export default function AdminCasesPage() {
                         selectedCases.includes(c.caseId) ? "bg-emerald-500/[0.05]" : "hover:bg-emerald-500/[0.02]"
                       }`}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <input
                           type="checkbox"
                           checked={selectedCases.includes(c.caseId)}
@@ -310,7 +310,7 @@ export default function AdminCasesPage() {
                           className="w-4 h-4 rounded border-dash-border bg-dash-bg accent-emerald-500 cursor-pointer"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex flex-col">
                           <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors truncate max-w-[200px]">
                             {c.title}
@@ -335,22 +335,22 @@ export default function AdminCasesPage() {
                           </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell text-dash-muted text-xs">
+                      <td className="px-6 py-5 hidden md:table-cell text-dash-muted text-xs">
                         {INCIDENT_LABELS[c.incidentType] ?? c.incidentType}
                       </td>
-                      <td className="px-6 py-4 group-hover:scale-105 transition-transform duration-300 origin-left">
+                      <td className="px-6 py-5 group-hover:scale-105 transition-transform duration-300 origin-left">
                         <TamperScoreBadge
                           score={c.aiSummary?.tamperScore ?? null}
                           showLabel={false}
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <CaseStatusBadge status={c.status} />
                       </td>
-                      <td className="px-6 py-4 text-dash-muted text-xs hidden sm:table-cell font-mono">
+                      <td className="px-6 py-5 text-dash-muted text-xs hidden sm:table-cell font-mono">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <td className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-end gap-2">
                           <Link
                             href={`/verify/${c.caseId}`}

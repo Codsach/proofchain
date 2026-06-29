@@ -201,11 +201,11 @@ export default function AdminUsersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-hover">
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Registry Subject</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Privilege Level</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Last Access</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Operational Status</th>
-                  <th className="px-6 py-4" />
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Registry Subject</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Privilege Level</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Last Access</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Operational Status</th>
+                  <th className="px-6 py-5" />
                 </tr>
               </thead>
               <tbody className="divide-y divide-dash-border">
@@ -218,13 +218,13 @@ export default function AdminUsersPage() {
                       transition={{ delay: idx * 0.03 }}
                       className="hover:bg-emerald-500/[0.02] transition-colors group"
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex flex-col">
                           <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors">{u.fullName}</p>
                           <p className="text-xs text-dash-muted font-medium">{u.email}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden sm:table-cell">
+                      <td className="px-6 py-5 hidden sm:table-cell">
                         <span
                           className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
                             ROLE_STYLES[u.role] ?? "text-dash-muted bg-dash-border border-dash-border"
@@ -233,12 +233,12 @@ export default function AdminUsersPage() {
                           {u.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-xs text-dash-muted hidden md:table-cell font-mono">
+                      <td className="px-6 py-5 text-xs text-dash-muted hidden md:table-cell font-mono">
                         {u.lastLoginAt
                           ? new Date(u.lastLoginAt).toLocaleDateString()
                           : "INITIALIZING"}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
                           <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-dash-accent animate-pulse" : "bg-dash-muted/20"}`} />
                           <span
@@ -250,7 +250,7 @@ export default function AdminUsersPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-5 text-right">
                         {u.role !== "admin" && (
                           <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                             <button
