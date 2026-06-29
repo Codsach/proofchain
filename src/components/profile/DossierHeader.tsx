@@ -100,11 +100,6 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
       <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
       
       <CardContent className="pt-8 pb-6 flex flex-col gap-6 relative">
-        {/* Absolute positioned edit button so it stays in top right of content area */}
-        <CardAction className="absolute right-6 top-6 z-10 p-0 border-none bg-transparent shadow-none ring-0">
-          <EditDossierModal role={user.role} profile={profile} />
-        </CardAction>
-
         <CardContainer className="flex flex-col md:flex-row gap-6 items-start md:items-center w-full">
           {/* Avatar Section */}
           <CardContainer className="relative group">
@@ -133,23 +128,28 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
           </CardContainer>
 
           {/* Identity Section */}
-          <CardContainer className="flex-1 space-y-2">
-            <CardContainer className="flex items-center gap-3 flex-wrap">
-              <h1 className="headline-sm font-bold tracking-wide uppercase font-heading text-dash-text">
-                {user.fullName}
-              </h1>
-              <Badge variant="outline" className={`rounded-md font-mono uppercase tracking-wider px-2 py-0.5 text-xs ${roleColor}`}>
-                {user.role}
-              </Badge>
-              {user.mfaEnabled ? (
-                <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 flex items-center gap-1 px-2 py-0.5 text-xs">
-                  <ShieldCheck size={12} /> MFA Active
+          <CardContainer className="flex-1 space-y-2 w-full">
+            <CardContainer className="flex items-center justify-between gap-3 flex-wrap w-full">
+              <div className="flex items-center gap-3 flex-wrap">
+                <h1 className="headline-sm font-bold tracking-wide uppercase font-heading text-dash-text">
+                  {user.fullName}
+                </h1>
+                <Badge variant="outline" className={`rounded-md font-mono uppercase tracking-wider px-2 py-0.5 text-xs ${roleColor}`}>
+                  {user.role}
                 </Badge>
-              ) : (
-                <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-rose-500/10 text-rose-800 border-rose-500/20 px-2 py-0.5 text-xs">
-                  MFA Disabled
-                </Badge>
-              )}
+                {user.mfaEnabled ? (
+                  <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 flex items-center gap-1 px-2 py-0.5 text-xs">
+                    <ShieldCheck size={12} /> MFA Active
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-rose-500/10 text-rose-800 border-rose-500/20 px-2 py-0.5 text-xs">
+                    MFA Disabled
+                  </Badge>
+                )}
+              </div>
+              <div className="flex-shrink-0">
+                <EditDossierModal role={user.role} profile={profile} />
+              </div>
             </CardContainer>
             <CardContainer className="text-dash-muted font-mono text-xs uppercase tracking-wider flex items-center gap-2">
               Status: <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold">Active Duty</Badge>
