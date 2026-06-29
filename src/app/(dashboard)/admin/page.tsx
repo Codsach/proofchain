@@ -251,13 +251,96 @@ interface StatCardProps {
   icon: React.ElementType;
   brandLabel: string;
   sparklinePoints: number[];
-  color: string;
-  textColor: string;
-  gradientBg: string;
-  borderColor: string;
-  iconBg: string;
+  variantKey: 'blue' | 'purple' | 'green' | 'orange' | 'amber' | 'cyan';
   isLoading: boolean;
 }
+
+const STAT_VARIANTS = {
+  blue: {
+    circleColors: [
+      "bg-cyan-500",
+      "bg-blue-600",
+      "bg-indigo-600",
+      "bg-purple-600",
+      "bg-teal-400",
+      "bg-sky-500"
+    ],
+    badgeColor: "bg-blue-500/15 text-blue-900 dark:text-blue-200 border border-blue-500/30",
+    iconBg: "bg-blue-606/15 text-blue-800 dark:text-blue-300 border border-blue-500/25",
+    trendText: "+5.4%",
+    trendUp: true,
+  },
+  purple: {
+    circleColors: [
+      "bg-pink-500",
+      "bg-purple-600",
+      "bg-fuchsia-500",
+      "bg-violet-600",
+      "bg-indigo-600",
+      "bg-blue-500"
+    ],
+    badgeColor: "bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30",
+    iconBg: "bg-purple-606/15 text-purple-800 dark:text-purple-300 border border-purple-500/25",
+    trendText: "+8.2%",
+    trendUp: true,
+  },
+  green: {
+    circleColors: [
+      "bg-emerald-500",
+      "bg-teal-500",
+      "bg-cyan-500",
+      "bg-green-600",
+      "bg-lime-400",
+      "bg-yellow-400"
+    ],
+    badgeColor: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30",
+    iconBg: "bg-emerald-606/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25",
+    trendText: "+14.1%",
+    trendUp: true,
+  },
+  orange: {
+    circleColors: [
+      "bg-orange-500",
+      "bg-rose-500",
+      "bg-red-500",
+      "bg-yellow-500",
+      "bg-amber-500",
+      "bg-pink-500"
+    ],
+    badgeColor: "bg-orange-500/15 text-orange-900 dark:text-orange-200 border border-orange-500/30",
+    iconBg: "bg-orange-606/15 text-orange-800 dark:text-orange-300 border border-orange-500/25",
+    trendText: "+12.4%",
+    trendUp: true,
+  },
+  amber: {
+    circleColors: [
+      "bg-yellow-400",
+      "bg-amber-500",
+      "bg-orange-500",
+      "bg-yellow-500",
+      "bg-rose-500",
+      "bg-amber-600"
+    ],
+    badgeColor: "bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30",
+    iconBg: "bg-amber-606/15 text-amber-900 dark:text-amber-300 border border-amber-500/25",
+    trendText: "-3.5%",
+    trendUp: false,
+  },
+  cyan: {
+    circleColors: [
+      "bg-cyan-400",
+      "bg-teal-500",
+      "bg-sky-400",
+      "bg-blue-600",
+      "bg-emerald-400",
+      "bg-cyan-600"
+    ],
+    badgeColor: "bg-cyan-500/15 text-cyan-900 dark:text-cyan-200 border border-cyan-500/30",
+    iconBg: "bg-cyan-606/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/25",
+    trendText: "+22.7%",
+    trendUp: true,
+  }
+} as const;
 
 function StatCard({
   label,
@@ -265,56 +348,82 @@ function StatCard({
   icon: Icon,
   brandLabel,
   sparklinePoints,
-  color,
-  textColor,
-  gradientBg,
-  borderColor,
-  iconBg,
+  variantKey,
   isLoading,
 }: StatCardProps) {
+  const variant = STAT_VARIANTS[variantKey];
+  const strokeColor = variantKey === "blue" ? "#1d4ed8" :
+                       variantKey === "purple" ? "#7e22ce" :
+                       variantKey === "green" ? "#047857" :
+                       variantKey === "orange" ? "#c2410c" :
+                       variantKey === "amber" ? "#b45309" : "#0e7490";
+
   return (
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -4, scale: 1.01 }}
-      style={{
-        background: `linear-gradient(135deg, ${gradientBg} 0%, rgba(255, 255, 255, 0.4) 100%)`,
-      }}
-      className={`relative overflow-hidden rounded-xl border p-5 flex flex-col justify-between group transition-all duration-300 shadow-sm ${borderColor}`}
+      className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 bg-white/25 dark:bg-slate-950/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between p-5 select-none group"
     >
-      {/* Top Bar: Brand tag & Sparkline */}
-      <div className="flex items-center justify-between mb-4">
-        <span className={`text-[9px] font-extrabold tracking-widest uppercase px-2 py-0.5 rounded bg-white/60 border border-current/10 shadow-sm ${textColor}`}>
-          {brandLabel}
-        </span>
-        {!isLoading && <Sparkline points={sparklinePoints} color={color} />}
+      {/* Overlapping organic gradient background shapes with Layer Blur */}
+      <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none select-none rounded-[20px]">
+        <div 
+          className="absolute -inset-16 flex flex-wrap opacity-95 dark:opacity-80 transition-opacity duration-300"
+          style={{ filter: "blur(130px)" }}
+        >
+          {/* Circle 1 - Top Left */}
+          <div className={`absolute top-[5%] left-[5%] w-[170px] h-[170px] rounded-full ${variant.circleColors[0]}`} />
+          {/* Circle 2 - Top Right */}
+          <div className={`absolute top-[2%] right-[10%] w-[150px] h-[150px] rounded-full ${variant.circleColors[1]}`} />
+          {/* Circle 3 - Center */}
+          <div className={`absolute top-[25%] left-[25%] w-[160px] h-[160px] rounded-full ${variant.circleColors[2]}`} />
+          {/* Circle 4 - Bottom Right */}
+          <div className={`absolute bottom-[5%] right-[5%] w-[180px] h-[180px] rounded-full ${variant.circleColors[3]}`} />
+          {/* Circle 5 - Bottom Left */}
+          <div className={`absolute bottom-[2%] left-[10%] w-[140px] h-[140px] rounded-full ${variant.circleColors[4]}`} />
+          {/* Circle 6 - Mid Right */}
+          <div className={`absolute top-[15%] right-[2%] w-[130px] h-[130px] rounded-full ${variant.circleColors[5]}`} />
+        </div>
+        {/* Subtle frosted backdrop filter cover */}
+        <div className="absolute inset-0 bg-white/10 dark:bg-slate-950/20 backdrop-blur-[1px]" />
+        {/* Stripes pattern overlay for premium tech look */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
       </div>
 
-      {/* Middle row: Icon and Metric */}
-      <div className="flex items-center gap-4">
-        <div className={`inline-flex p-2.5 rounded-lg ${iconBg} border border-current/10`}>
-          <Icon size={18} className={textColor} />
+      {/* Top Bar: Icon & Trend badge */}
+      <div className="flex items-center justify-between">
+        <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
+          <Icon size={18} />
         </div>
+        <div className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md ${variant.badgeColor}`}>
+          {variant.trendUp ? "↑" : "↓"} {variant.trendText}
+        </div>
+      </div>
+
+      {/* Middle row: Brand & Metric */}
+      <div className="flex flex-col mt-2">
+        <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
+          {brandLabel}
+        </span>
         {isLoading ? (
-          <Skeleton className="h-10 w-16 bg-dash-hover" />
+          <Skeleton className="h-9 w-16 bg-white/30 dark:bg-slate-800/30 mt-1" />
         ) : (
-          <p className={`text-3xl font-black tracking-tight ${textColor}`}>
+          <p className="text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight mt-0.5 font-sans">
             {value ?? 0}
           </p>
         )}
       </div>
 
-      {/* Bottom Row: Label */}
-      <div className="mt-3">
-        <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest leading-none">
+      {/* Bottom Row: Label & Sparkline */}
+      <div className="flex items-end justify-between mt-auto">
+        <p className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
           {label}
         </p>
+        {!isLoading && (
+          <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+            <Sparkline points={sparklinePoints} color={strokeColor} />
+          </div>
+        )}
       </div>
-
-      {/* Top subtle highlight line */}
-      <div
-        className="absolute top-0 left-4 right-4 h-[1px] opacity-10 group-hover:opacity-45 transition-opacity duration-500"
-        style={{ backgroundColor: color }}
-      />
     </motion.div>
   );
 }
@@ -487,11 +596,7 @@ export default function AdminPage() {
       icon: Briefcase,
       brandLabel: "PROOFCHAIN",
       sparklinePoints: [8, 14, 10, 18, 15, 24],
-      color: "#10b981",
-      textColor: "text-emerald-600",
-      gradientBg: "rgba(16, 185, 129, 0.04)",
-      borderColor: "border-emerald-500/20 hover:border-emerald-500/45",
-      iconBg: "bg-emerald-500/10",
+      variantKey: "green",
       isLoading: isLoadingStats,
     },
     {
@@ -500,11 +605,7 @@ export default function AdminPage() {
       icon: Clock,
       brandLabel: "AI SCANNER",
       sparklinePoints: [15, 8, 12, 5, 10, 7],
-      color: "#06b6d4",
-      textColor: "text-cyan-600",
-      gradientBg: "rgba(6, 182, 212, 0.04)",
-      borderColor: "border-cyan-500/20 hover:border-cyan-500/45",
-      iconBg: "bg-cyan-500/10",
+      variantKey: "amber",
       isLoading: isLoadingStats,
     },
     {
@@ -513,11 +614,7 @@ export default function AdminPage() {
       icon: ShieldAlert,
       brandLabel: "THREAT DETECT",
       sparklinePoints: [2, 6, 3, 8, 4, 5],
-      color: "#f43f5e",
-      textColor: "text-rose-600",
-      gradientBg: "rgba(244, 63, 94, 0.04)",
-      borderColor: "border-rose-500/20 hover:border-rose-500/45",
-      iconBg: "bg-rose-500/10",
+      variantKey: "orange",
       isLoading: isLoadingStats,
     },
     {
@@ -526,11 +623,7 @@ export default function AdminPage() {
       icon: CheckCircle2,
       brandLabel: "LEDGER SEAL",
       sparklinePoints: [6, 12, 9, 15, 12, 19],
-      color: "#0ea5e9",
-      textColor: "text-sky-600",
-      gradientBg: "rgba(14, 165, 233, 0.04)",
-      borderColor: "border-sky-500/20 hover:border-sky-500/45",
-      iconBg: "bg-sky-500/10",
+      variantKey: "cyan",
       isLoading: isLoadingStats,
     },
   ];

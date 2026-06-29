@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Folder, Brain, Shield, FolderOpen, Copy } from "lucide-react";
+import { Folder, Brain, Shield, FolderOpen, Copy, Clock, Cpu, Database } from "lucide-react";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -18,12 +18,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -77,6 +71,159 @@ function getOpenCaseCount(cases: InvestigatorCase[]) {
     )
   ).length;
 }
+
+const STAT_VARIANTS = {
+  blue: {
+    circleColors: [
+      "bg-cyan-500",
+      "bg-blue-600",
+      "bg-indigo-600",
+      "bg-purple-600",
+      "bg-teal-400",
+      "bg-sky-500"
+    ],
+    badgeColor: "bg-blue-500/15 text-blue-900 dark:text-blue-200 border border-blue-500/30",
+    iconBg: "bg-blue-600/15 text-blue-800 dark:text-blue-300 border border-blue-500/25",
+    trendText: "+5.4%",
+    trendUp: true,
+    icon: Folder,
+    sparkline: (
+      <svg className="w-16 h-8 text-blue-800 dark:text-blue-300" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <motion.path 
+          d="M5,22 Q20,10 45,20 T80,8 T95,12" 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </svg>
+    )
+  },
+  purple: {
+    circleColors: [
+      "bg-pink-500",
+      "bg-purple-600",
+      "bg-fuchsia-500",
+      "bg-violet-600",
+      "bg-indigo-600",
+      "bg-blue-500"
+    ],
+    badgeColor: "bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30",
+    iconBg: "bg-purple-600/15 text-purple-800 dark:text-purple-300 border border-purple-500/25",
+    trendText: "+8.2%",
+    trendUp: true,
+    icon: Brain,
+    sparkline: (
+      <svg className="w-16 h-8 text-purple-800 dark:text-purple-300" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <motion.path 
+          d="M5,8 Q30,5 55,22 T95,15" 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </svg>
+    )
+  },
+  green: {
+    circleColors: [
+      "bg-emerald-500",
+      "bg-teal-500",
+      "bg-cyan-500",
+      "bg-green-600",
+      "bg-lime-400",
+      "bg-yellow-400"
+    ],
+    badgeColor: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30",
+    iconBg: "bg-emerald-600/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25",
+    trendText: "+14.1%",
+    trendUp: true,
+    icon: Shield,
+    sparkline: (
+      <svg className="w-16 h-8 text-emerald-800 dark:text-emerald-300" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <motion.path 
+          d="M5,15 Q30,12 60,18 T95,10" 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </svg>
+    )
+  },
+  orange: {
+    circleColors: [
+      "bg-orange-500",
+      "bg-rose-500",
+      "bg-red-500",
+      "bg-yellow-500",
+      "bg-amber-500",
+      "bg-pink-500"
+    ],
+    badgeColor: "bg-orange-500/15 text-orange-900 dark:text-orange-200 border border-orange-500/30",
+    iconBg: "bg-orange-600/15 text-orange-800 dark:text-orange-300 border border-orange-500/25",
+    trendText: "+12.4%",
+    trendUp: true,
+    icon: FolderOpen,
+    sparkline: (
+      <svg className="w-16 h-8 text-orange-800 dark:text-orange-300" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <motion.path 
+          d="M5,12 Q25,25 50,5 T95,18" 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </svg>
+    )
+  },
+  amber: {
+    circleColors: [
+      "bg-yellow-400",
+      "bg-amber-500",
+      "bg-orange-500",
+      "bg-yellow-500",
+      "bg-rose-500",
+      "bg-amber-600"
+    ],
+    badgeColor: "bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30",
+    iconBg: "bg-amber-605/15 text-amber-900 dark:text-amber-300 border border-amber-500/25",
+    trendText: "-3.5%",
+    trendUp: false,
+    icon: Clock,
+    sparkline: (
+      <svg className="w-16 h-8 text-amber-800 dark:text-amber-300" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <motion.path 
+          d="M5,20 Q35,8 60,25 T95,12" 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </svg>
+    )
+  },
+  cyan: {
+    circleColors: [
+      "bg-cyan-400",
+      "bg-teal-500",
+      "bg-sky-400",
+      "bg-blue-600",
+      "bg-emerald-400",
+      "bg-cyan-600"
+    ],
+    badgeColor: "bg-cyan-500/15 text-cyan-900 dark:text-cyan-200 border border-cyan-500/30",
+    iconBg: "bg-cyan-600/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/25",
+    trendText: "+22.7%",
+    trendUp: true,
+    icon: Cpu,
+    sparkline: (
+      <svg className="w-16 h-8 text-cyan-800 dark:text-cyan-300" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+        <motion.path 
+          d="M5,10 Q20,22 55,8 T95,15" 
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 1.5, ease: "easeInOut" }}
+        />
+      </svg>
+    )
+  }
+} as const;
 
 export default function InvestigatorPage() {
   const { user, getToken } = useAuth();
@@ -216,61 +363,23 @@ export default function InvestigatorPage() {
             label: "Assigned Cases",
             value: cases.length,
             desc: "Total subjects in registry",
-            icon: Folder,
-            brand: "PROOFCHAIN",
-            brandColor: "bg-indigo-600/10 text-indigo-700 border-indigo-200/50",
-            cardStyle: "bg-[linear-gradient(135deg,rgba(79,70,229,0.03)_0%,rgba(255,255,255,1)_100%)] border-indigo-100 hover:border-indigo-200 text-indigo-950",
-            sparkline: (
-              <svg className="w-16 h-8 text-indigo-500" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <motion.path 
-                  d="M5,22 Q20,10 45,20 T80,8 T95,12" 
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.5, ease: "easeInOut" }}
-                />
-              </svg>
-            )
+            variantKey: "blue" as const,
           },
           {
             label: "Pending Analysis",
             value: openCases,
             desc: "Active review queue",
-            icon: Brain,
-            brand: "AI NODE",
-            brandColor: "bg-amber-600/10 text-amber-700 border-amber-200/50",
-            cardStyle: "bg-[linear-gradient(135deg,rgba(217,119,6,0.03)_0%,rgba(255,255,255,1)_100%)] border-amber-100 hover:border-amber-200 text-amber-950",
-            sparkline: (
-              <svg className="w-16 h-8 text-amber-500" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <motion.path 
-                  d="M5,8 Q30,5 55,22 T95,15" 
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.5, ease: "easeInOut" }}
-                />
-              </svg>
-            )
+            variantKey: "purple" as const,
           },
           {
             label: "Evidence Integrity",
             value: totalFiles,
             desc: "Validated artifacts",
-            icon: Shield,
-            brand: "SECURE CUSTODY",
-            brandColor: "bg-emerald-600/10 text-emerald-700 border-emerald-200/50",
-            cardStyle: "bg-[linear-gradient(135deg,rgba(16,185,129,0.03)_0%,rgba(255,255,255,1)_100%)] border-emerald-100 hover:border-emerald-200 text-emerald-950",
-            sparkline: (
-              <svg className="w-16 h-8 text-emerald-500" viewBox="0 0 100 30" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <motion.path 
-                  d="M5,15 Q30,12 60,18 T95,10" 
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ duration: 1.5, ease: "easeInOut" }}
-                />
-              </svg>
-            )
+            variantKey: "green" as const,
           },
         ].map((stat, idx) => {
-          const Icon = stat.icon;
+          const variant = STAT_VARIANTS[stat.variantKey];
+          const Icon = variant.icon;
           return (
             <motion.div
               key={stat.label}
@@ -278,37 +387,64 @@ export default function InvestigatorPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               whileHover="hover"
-              className="h-full"
+              className="h-full flex justify-center"
             >
-              <Card className={`rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 h-full ${stat.cardStyle}`}>
-                <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 px-6 pt-5">
-                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded border tracking-wider ${stat.brandColor}`}>
-                    {stat.brand}
-                  </span>
-                  <span className="text-[10px] text-dash-muted font-bold uppercase tracking-widest">
+              <div className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 bg-white/25 dark:bg-slate-950/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] flex flex-col justify-between p-5 select-none group">
+                {/* Overlapping organic gradient background shapes with Layer Blur */}
+                <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none select-none rounded-[20px]">
+                  <div 
+                    className="absolute -inset-16 flex flex-wrap opacity-95 dark:opacity-80 transition-opacity duration-300"
+                    style={{ filter: "blur(130px)" }}
+                  >
+                    {/* Circle 1 - Top Left */}
+                    <div className={`absolute top-[5%] left-[5%] w-[170px] h-[170px] rounded-full ${variant.circleColors[0]}`} />
+                    {/* Circle 2 - Top Right */}
+                    <div className={`absolute top-[2%] right-[10%] w-[150px] h-[150px] rounded-full ${variant.circleColors[1]}`} />
+                    {/* Circle 3 - Center */}
+                    <div className={`absolute top-[25%] left-[25%] w-[160px] h-[160px] rounded-full ${variant.circleColors[2]}`} />
+                    {/* Circle 4 - Bottom Right */}
+                    <div className={`absolute bottom-[5%] right-[5%] w-[180px] h-[180px] rounded-full ${variant.circleColors[3]}`} />
+                    {/* Circle 5 - Bottom Left */}
+                    <div className={`absolute bottom-[2%] left-[10%] w-[140px] h-[140px] rounded-full ${variant.circleColors[4]}`} />
+                    {/* Circle 6 - Mid Right */}
+                    <div className={`absolute top-[15%] right-[2%] w-[130px] h-[130px] rounded-full ${variant.circleColors[5]}`} />
+                  </div>
+                  {/* Subtle frosted backdrop filter cover */}
+                  <div className="absolute inset-0 bg-white/10 dark:bg-slate-950/20 backdrop-blur-[1px]" />
+                  {/* Stripes pattern overlay for premium tech look */}
+                  <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
+                </div>
+                
+                {/* Card Content Header */}
+                <div className="flex items-center justify-between">
+                  <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold backdrop-blur-md ${variant.badgeColor}`}>
+                    {variant.trendUp ? "↑" : "↓"} {variant.trendText}
+                  </div>
+                </div>
+
+                {/* Card Content Value */}
+                <div className="flex flex-col mt-2">
+                  <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
                     {stat.label}
                   </span>
-                </CardHeader>
-                <CardContent className="pt-2 px-6 pb-5">
-                  <div className="flex items-center justify-between">
-                    <p className="text-3xl font-bold text-dash-text tracking-tight">
-                      {stat.value}
-                    </p>
-                    {stat.sparkline}
+                  <span className="text-3xl font-extrabold text-slate-950 dark:text-white tracking-tight mt-0.5 font-sans">
+                    {stat.value}
+                  </span>
+                </div>
+
+                {/* Card Content Footer */}
+                <div className="flex items-end justify-between mt-auto">
+                  <span className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
+                    {stat.desc}
+                  </span>
+                  <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
+                    {variant.sparkline}
                   </div>
-                  <div className="flex items-center gap-2 mt-4 text-[10px] text-dash-muted/70 font-semibold tracking-tight">
-                    <motion.div
-                      variants={{
-                        hover: { scale: 1.2, rotate: 10, y: -2 }
-                      }}
-                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    >
-                      <Icon className="w-3.5 h-3.5" />
-                    </motion.div>
-                    <span className="uppercase tracking-wider">{stat.desc}</span>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           )
         })}
