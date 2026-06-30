@@ -3,7 +3,6 @@ import { Orbitron, Exo_2 } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 import { AuthProvider } from "@/components/providers/AuthContext";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -65,21 +64,15 @@ export default function RootLayout({
         <meta name="allow" content="camera; geolocation; microphone" />
       </head>
       <body className="font-sans antialiased bg-background selection:bg-emerald-500/30">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-        >
-          <ServiceWorkerProvider>
-            <AuthProvider>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-            </AuthProvider>
-          </ServiceWorkerProvider>
-          <Toaster />
-          <PWAInstallPrompt />
-        </ThemeProvider>
+        <ServiceWorkerProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+          </AuthProvider>
+        </ServiceWorkerProvider>
+        <Toaster />
+        <PWAInstallPrompt />
       </body>
     </html>
   );
