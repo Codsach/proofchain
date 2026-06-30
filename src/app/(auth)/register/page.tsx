@@ -3,8 +3,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import type { Variants } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { z } from "zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Mail, Lock } from "lucide-react";
@@ -20,6 +20,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { AuthLayout } from "@/components/auth/AuthLayout";
+import { ChainRings } from "@/components/auth/illustrations/ChainRings";
 
 // Add confirm password to schema for the form only
 const RegisterFormSchema = RegisterSchema.extend({
@@ -30,6 +32,25 @@ const RegisterFormSchema = RegisterSchema.extend({
 });
 
 type RegisterFormInput = z.infer<typeof RegisterFormSchema>;
+
+// Stagger variants
+const container: Variants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+};
+const item: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
+};
+
+const cardCls =
+  "rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-8 space-y-6 shadow-[0_4px_30px_rgba(15,23,42,0.06),0_1px_8px_rgba(13,158,110,0.06)] hover:shadow-[0_8px_40px_rgba(13,158,110,0.12)] hover:border-[#10b981]/40 transition-all duration-300 group";
+const labelCls = "label-md font-heading text-[#64748b] uppercase tracking-wider";
+const iconCls = "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]";
+const inputCls =
+  "bg-[#f8fafc] border-[#e2e8f0] focus:border-[#10b981] focus:ring-[#10b981]/20 transition-all h-11 text-[#1e293b] placeholder:text-[#94a3b8] font-sans rounded-lg";
+const btnCls =
+  "w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold h-11 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.20)] hover:shadow-[0_0_30px_rgba(16,185,129,0.40)] rounded-lg font-heading tracking-wide";
 
 export default function RegisterPage() {
   const { toast } = useToast();
@@ -47,11 +68,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: values.email,
-          password: values.password,
-          fullName: values.fullName,
-        }),
+        body: JSON.stringify({ email: values.email, password: values.password, fullName: values.fullName }),
       });
 
       const data = await res.json();
@@ -77,228 +94,165 @@ export default function RegisterPage() {
     }
   };
 
+  // Success state
   if (submitted) {
     return (
-      <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
-
+      <AuthLayout leftPanel={<ChainRings />}>
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="relative z-10 w-full max-w-sm text-center space-y-6"
+          transition={{ duration: 0.4 }}
+          className="space-y-6 text-center"
         >
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 space-y-6 shadow-2xl">
+          <div className={`${cardCls} !space-y-6`}>
             <div className="flex justify-center">
-              <div className="h-16 w-16 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center">
-                <span className="text-3xl text-emerald-500">✓</span>
-              </div>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.1 }}
+                className="h-16 w-16 bg-[#10b981]/10 border border-[#10b981]/30 rounded-full flex items-center justify-center"
+              >
+                <span className="text-3xl text-[#10b981]">✓</span>
+              </motion.div>
             </div>
             <div className="space-y-2">
-              <h2 className="text-xl font-bold text-white/90">Check your email</h2>
-              <p className="text-sm text-white/40">
+              <h2 className="headline-sm font-heading font-bold text-[#1e293b] tracking-wider">Check your email</h2>
+              <p className="body-sm text-[#64748b] font-sans">
                 We sent a verification link to{" "}
-                <span className="text-emerald-400 font-medium">{form.getValues("email")}</span>.
+                <span className="text-[#10b981] font-semibold">{form.getValues("email")}</span>.
                 Click the link to activate your account.
               </p>
             </div>
             <Link
               href="/login"
-              className="inline-flex h-11 items-center justify-center rounded-md bg-emerald-500 px-8 text-sm font-bold text-black transition-all hover:bg-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
+              className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#10b981] text-sm font-bold text-white transition-all hover:bg-[#059669] shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] font-heading tracking-wide"
             >
               Back to sign in
             </Link>
           </div>
         </motion.div>
-      </div>
+      </AuthLayout>
     );
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0f172a] via-[#09111e] to-[#000000] px-4 overflow-hidden">
-      {/* Background Network Nodes */}
-      <div className="absolute inset-0 z-0 bg-gradient-to-b from-transparent via-black/20 to-black/80 pointer-events-none" />
+    <AuthLayout leftPanel={<ChainRings />}>
+      <motion.div variants={container} initial="hidden" animate="visible" className="space-y-6">
+        <motion.div variants={item} className="space-y-1">
+          <h1 className="headline-sm font-heading font-bold text-[#1e293b] tracking-wider uppercase">Create account</h1>
+          <p className="body-sm text-[#64748b] font-sans">Join ProofChain — secure forensic evidence platform</p>
+        </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="relative z-10 w-full max-w-sm space-y-6"
-      >
-        <div className="text-center space-y-2">
-          <div className="flex items-center justify-center gap-4">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.5, rotate: -20, filter: "blur(10px)" }}
-              animate={{ opacity: 1, scale: 1, rotate: 0, filter: "blur(0px)" }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: 0.1
-              }}
-            >
-              <motion.div
-                animate={{
-                  y: [0, -3, 0],
-                  filter: [
-                    "drop-shadow(0px 0px 4px rgba(7, 165, 114, 0.1))",
-                    "drop-shadow(0px 0px 12px rgba(7, 165, 114, 0.5))",
-                    "drop-shadow(0px 0px 4px rgba(7, 165, 114, 0.1))"
-                  ]
-                }}
-                transition={{
-                  repeat: Infinity,
-                  duration: 4,
-                  ease: "easeInOut",
-                  delay: 0.5 // Start after entrance
-                }}
-              >
-                <Image src="/icon-v2.png" alt="ProofChain Icon" width={56} height={56} className="object-contain" priority />
-              </motion.div>
-            </motion.div>
-            <div className="flex text-5xl font-extrabold tracking-tight">
-              <motion.span
-                initial={{ opacity: 0, x: -20, filter: "blur(8px)" }}
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.3 }}
-                className="text-white"
-              >
-                Proof
-              </motion.span>
-              <motion.span
-                initial={{ opacity: 0, x: 20, filter: "blur(8px)" }}
-                animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.4 }}
-                className="text-[#07A572]"
-              >
-                Chain
-              </motion.span>
-            </div>
-          </div>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-sm text-white/40 font-medium tracking-wide uppercase"
-          >
-            Digital Forensic Evidence Platform
-          </motion.p>
-        </div>
-
-        <motion.div
-          whileHover={{ y: -2 }}
-          className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-8 space-y-6 shadow-2xl transition-colors hover:border-emerald-500/30 group"
-        >
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-white/90">Register</h2>
-            <div className="h-0.5 w-8 bg-emerald-500 rounded-full transition-all duration-300 group-hover:w-16" />
-          </div>
+        <motion.div variants={item} whileHover={{ y: -2 }} className={cardCls}>
+          <div className="h-0.5 w-8 bg-[#0D9E6E] rounded-full transition-all duration-300 group-hover:w-16" />
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
-                  <FormItem className="space-y-1.5">
-                    <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Full name</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                        <Input
-                          placeholder="Jane Smith"
-                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                          autoComplete="name"
-                          disabled={isSubmitting}
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs text-destructive/80" />
-                  </FormItem>
-                )}
-              />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <motion.div variants={item}>
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className={labelCls}>Full name</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <User className={iconCls} />
+                          <Input
+                            placeholder="Jane Smith"
+                            className={`pl-10 ${inputCls}`}
+                            autoComplete="name"
+                            disabled={isSubmitting}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs text-destructive/80" />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem className="space-y-1.5">
-                    <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Email</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                        <Input
-                          type="email"
-                          placeholder="name@company.com"
-                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                          autoComplete="email"
-                          disabled={isSubmitting}
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs text-destructive/80" />
-                  </FormItem>
-                )}
-              />
+              <motion.div variants={item}>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className={labelCls}>Email</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Mail className={iconCls} />
+                          <Input
+                            type="email"
+                            placeholder="name@company.com"
+                            className={`pl-10 ${inputCls}`}
+                            autoComplete="email"
+                            disabled={isSubmitting}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs text-destructive/80" />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="space-y-1.5">
-                    <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                        <Input
-                          type="password"
-                          placeholder="••••••••"
-                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                          autoComplete="new-password"
-                          disabled={isSubmitting}
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs text-destructive/80" />
-                  </FormItem>
-                )}
-              />
+              <motion.div variants={item}>
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className={labelCls}>Password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className={iconCls} />
+                          <Input
+                            type="password"
+                            placeholder="••••••••"
+                            className={`pl-10 ${inputCls}`}
+                            autoComplete="new-password"
+                            disabled={isSubmitting}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs text-destructive/80" />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
 
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem className="space-y-1.5">
-                    <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Confirm password</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                        <Input
-                          type="password"
-                          placeholder="••••••••"
-                          className="pl-10 bg-white/[0.03] border-white/10 focus:border-emerald-500/50 focus:ring-emerald-500/20 transition-all h-11 text-white"
-                          autoComplete="new-password"
-                          disabled={isSubmitting}
-                          {...field}
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage className="text-xs text-destructive/80" />
-                  </FormItem>
-                )}
-              />
+              <motion.div variants={item}>
+                <FormField
+                  control={form.control}
+                  name="confirmPassword"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <FormLabel className={labelCls}>Confirm password</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Lock className={iconCls} />
+                          <Input
+                            type="password"
+                            placeholder="••••••••"
+                            className={`pl-10 ${inputCls}`}
+                            autoComplete="new-password"
+                            disabled={isSubmitting}
+                            {...field}
+                          />
+                        </div>
+                      </FormControl>
+                      <FormMessage className="text-xs text-destructive/80" />
+                    </FormItem>
+                  )}
+                />
+              </motion.div>
 
-              <motion.div
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-              >
-                <Button
-                  type="submit"
-                  className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold h-11 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_25px_rgba(16,185,129,0.4)]"
-                  disabled={isSubmitting}
-                >
+              <motion.div variants={item} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button type="submit" className={btnCls} disabled={isSubmitting}>
                   {isSubmitting ? "Creating account…" : "Create account"}
                 </Button>
               </motion.div>
@@ -306,18 +260,13 @@ export default function RegisterPage() {
           </Form>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-center text-sm text-white/40"
-        >
+        <motion.p variants={item} className="text-center body-sm text-[#64748b] font-sans">
           Already have an account?{" "}
-          <Link href="/login" className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
+          <Link href="/login" className="text-[#10b981] hover:text-[#059669] font-semibold transition-colors">
             Sign in
           </Link>
         </motion.p>
       </motion.div>
-    </div>
+    </AuthLayout>
   );
 }
