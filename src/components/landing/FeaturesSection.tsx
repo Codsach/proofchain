@@ -22,8 +22,8 @@ const features = [
     colSpan: "md:col-span-2",
     rowSpan: "md:row-span-1",
     Icon: Database,
-    color: "#00f59b",
-    glowColor: "rgba(0,245,155,0.1)",
+    color: "#059669",
+    glowColor: "rgba(5,150,105,0.10)",
   },
   {
     label: "02",
@@ -32,8 +32,8 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-2",
     Icon: Bot,
-    color: "#f59e0b",
-    glowColor: "rgba(245,158,11,0.1)",
+    color: "#d97706",
+    glowColor: "rgba(217,119,6,0.10)",
   },
   {
     label: "03",
@@ -43,7 +43,7 @@ const features = [
     rowSpan: "md:row-span-1",
     Icon: History,
     color: "#10b981",
-    glowColor: "rgba(16,185,129,0.1)",
+    glowColor: "rgba(16,185,129,0.10)",
   },
   {
     label: "04",
@@ -52,8 +52,8 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: Gavel,
-    color: "#00f59b",
-    glowColor: "rgba(0,245,155,0.1)",
+    color: "#059669",
+    glowColor: "rgba(5,150,105,0.10)",
   },
   {
     label: "05",
@@ -62,8 +62,8 @@ const features = [
     colSpan: "md:col-span-1",
     rowSpan: "md:row-span-1",
     Icon: QrCode,
-    color: "#d97706",
-    glowColor: "rgba(217,119,6,0.1)",
+    color: "#b45309",
+    glowColor: "rgba(180,83,9,0.10)",
   },
   {
     label: "06",
@@ -72,8 +72,8 @@ const features = [
     colSpan: "md:col-span-2",
     rowSpan: "md:row-span-1",
     Icon: Smartphone,
-    color: "#059669",
-    glowColor: "rgba(5,150,105,0.1)",
+    color: "#047857",
+    glowColor: "rgba(4,120,87,0.10)",
   },
 ];
 
@@ -108,7 +108,7 @@ export default function FeaturesSection() {
           maxWidth: 800,
           height: 500,
           background:
-            "radial-gradient(ellipse at center, rgba(0, 245, 155, 0.06) 0%, rgba(5, 150, 105, 0.03) 50%, transparent 70%)",
+            "radial-gradient(ellipse at center, rgba(5, 150, 105, 0.07) 0%, rgba(4, 120, 87, 0.03) 50%, transparent 70%)",
           filter: "blur(60px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -136,12 +136,13 @@ export default function FeaturesSection() {
           <motion.h2
             variants={revealVariant}
             custom={1}
-            className="font-heading text-4xl md:text-5xl font-bold text-white max-w-[600px] leading-tight"
+            className="font-heading text-4xl md:text-5xl font-bold max-w-[600px] leading-tight"
+            style={{ color: "var(--lp-gray-1)" }}
           >
             Every Layer.{" "}
             <span
               style={{
-                backgroundImage: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -153,7 +154,8 @@ export default function FeaturesSection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            className="font-sans text-white/55 text-base mt-4 max-w-[480px] leading-relaxed"
+            className="font-sans text-base mt-4 max-w-[480px] leading-relaxed"
+            style={{ color: "var(--lp-gray-3)" }}
           >
             Six interlocking layers from capture to verdict — each one immutable, each one verifiable.
           </motion.p>
@@ -188,7 +190,7 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
         y: -6,
         scale: 1.015,
         borderColor: `${feature.color}35`,
-        boxShadow: `0 24px 48px -12px ${feature.glowColor}, inset 0 1px 0 ${feature.color}20`,
+        boxShadow: `0 24px 48px -12px ${feature.glowColor}, inset 0 1px 0 rgba(255,255,255,1)`,
         transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
       }}
     >
@@ -197,7 +199,7 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
         style={{
           position: "absolute",
           top: 0, left: "15%", right: "15%", height: 1,
-          background: `linear-gradient(90deg, transparent, ${feature.color}60, transparent)`,
+          background: `linear-gradient(90deg, transparent, ${feature.color}50, transparent)`,
           borderRadius: "50%",
         }}
       />
@@ -206,7 +208,7 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
         <div className="flex items-center justify-between">
           <span
             className="font-mono text-sm tracking-widest"
-            style={{ color: `${feature.color}90` }}
+            style={{ color: `${feature.color}99` }}
           >
             {feature.label}
           </span>
@@ -215,10 +217,10 @@ function FeatureCell({ feature, index }: { feature: typeof features[0]; index: n
             style={{ color: feature.color, opacity: 0.88 }}
           />
         </div>
-        <h3 className="font-heading text-xl md:text-2xl font-bold text-white leading-tight">
+        <h3 className="font-heading text-xl md:text-2xl font-bold leading-tight" style={{ color: "var(--lp-gray-1)" }}>
           {feature.title}
         </h3>
-        <p className="font-sans text-white/65 text-sm md:text-base leading-relaxed flex-1">
+        <p className="font-sans text-sm md:text-base leading-relaxed flex-1" style={{ color: "var(--lp-gray-2)" }}>
           {feature.body}
         </p>
       </div>

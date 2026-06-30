@@ -73,12 +73,12 @@ export default function HeroSection() {
         .hero-shimmer {
           background: linear-gradient(
             110deg,
-            rgba(255,255,255,0.55) 0%,
-            rgba(255,255,255,1)    18%,
-            rgba(245,158,11,0.95)  38%,
-            rgba(16,185,129,0.9)   58%,
-            rgba(255,255,255,1)    78%,
-            rgba(255,255,255,0.55) 100%
+            #334155 0%,
+            #0f172a 18%,
+            #d97706 38%,
+            #059669 58%,
+            #0f172a 78%,
+            #334155 100%
           );
           background-size: 300% auto;
           color: transparent;
@@ -87,8 +87,8 @@ export default function HeroSection() {
           animation: heroShimmer 9s linear infinite;
         }
         @keyframes auroraFloat {
-          0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.7; }
-          50%       { transform: translateX(-50%) scale(1.1); opacity: 1; }
+          0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.6; }
+          50%       { transform: translateX(-50%) scale(1.1); opacity: 0.9; }
         }
         @keyframes lineSlide {
           0%   { transform: scaleX(0); opacity: 0; }
@@ -108,7 +108,7 @@ export default function HeroSection() {
         <video
           ref={videoRef}
           autoPlay muted loop playsInline
-          style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.22 }}
+          style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.06 }}
         />
       </motion.div>
 
@@ -123,7 +123,7 @@ export default function HeroSection() {
         {/* Edge fade — left */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to right, var(--lp-bg) 0%, rgba(7, 8, 12, 0.4) 15%, transparent 35%, rgba(7, 8, 12, 0.4) 85%, var(--lp-bg) 100%)",
+          background: "linear-gradient(to right, var(--lp-bg) 0%, rgba(238,242,247,0.4) 15%, transparent 35%, rgba(238,242,247,0.4) 85%, var(--lp-bg) 100%)",
         }} />
         {/* Bottom fade */}
         <div style={{
@@ -140,7 +140,7 @@ export default function HeroSection() {
           width: "75%",
           maxWidth: 1000,
           height: 520,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(0,245,155,0.22) 0%, rgba(5,150,105,0.10) 40%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.12) 0%, rgba(4,120,87,0.05) 40%, transparent 70%)",
           filter: "blur(50px)",
           pointerEvents: "none",
           animation: "auroraFloat 10s ease-in-out infinite",
@@ -153,7 +153,7 @@ export default function HeroSection() {
           right: "5%",
           width: 440,
           height: 440,
-          background: "radial-gradient(circle, rgba(245,158,11,0.14) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)",
           filter: "blur(70px)",
           pointerEvents: "none",
         }} />
@@ -176,7 +176,6 @@ export default function HeroSection() {
           {/* ── Left: Text ── */}
           <div className="lg:col-span-7 flex flex-col items-start text-left">
 
-
             {/* Headline */}
             <motion.h1
               variants={fadeUp} initial="hidden" animate="visible" custom={1}
@@ -186,13 +185,13 @@ export default function HeroSection() {
               <span className="block hero-shimmer">
                 Immutable
               </span>
-              <span className="block text-white">
+              <span className="block" style={{ color: "var(--lp-gray-1)" }}>
                 Evidence.
               </span>
               <span
                 className="block"
                 style={{
-                  backgroundImage: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -209,8 +208,8 @@ export default function HeroSection() {
               transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
               style={{
                 width: 72, height: 3, borderRadius: 99, marginBottom: 20,
-                background: "linear-gradient(90deg, #00f59b, #059669)",
-                boxShadow: "0 0 12px rgba(0,245,155,0.4)",
+                background: "linear-gradient(90deg, #059669, #047857)",
+                boxShadow: "0 0 12px rgba(5,150,105,0.3)",
                 transformOrigin: "left",
               }}
             />
@@ -220,7 +219,7 @@ export default function HeroSection() {
               variants={fadeUp} initial="hidden" animate="visible" custom={2}
               style={{
                 fontSize: "clamp(0.93rem, 1.4vw, 1.05rem)",
-                color: "rgba(255,255,255,0.72)",
+                color: "var(--lp-gray-2)",
                 lineHeight: 1.75,
                 maxWidth: 520,
                 marginBottom: 32,
@@ -260,7 +259,7 @@ export default function HeroSection() {
               variants={fadeUp} initial="hidden" animate="visible" custom={4}
               className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full"
               style={{
-                borderTop: "1px solid rgba(255,255,255,0.10)",
+                borderTop: "1px solid rgba(15,23,42,0.10)",
                 paddingTop: 28,
               }}
             >
@@ -271,28 +270,28 @@ export default function HeroSection() {
                   style={{
                     padding: "12px 14px",
                     borderRadius: 14,
-                    background: "rgba(255,255,255,0.05)",
-                    border: "1px solid rgba(255,255,255,0.10)",
+                    background: "rgba(255,255,255,0.72)",
+                    border: "1px solid rgba(15,23,42,0.09)",
                     backdropFilter: "blur(8px)",
                     transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)",
                     cursor: "default",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(0,245,155,0.2)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(0,245,155,0.03)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 0 16px rgba(0,245,155,0.08)";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(5,150,105,0.25)";
+                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.92)";
+                    (e.currentTarget as HTMLElement).style.boxShadow = "0 0 16px rgba(5,150,105,0.08)";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.04)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)";
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(15,23,42,0.09)";
+                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.72)";
                     (e.currentTarget as HTMLElement).style.boxShadow = "none";
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                    <s.Icon size={11} style={{ color: "#00f59b", opacity: 0.8 }} />
+                    <s.Icon size={11} style={{ color: "#059669", opacity: 0.85 }} />
                     <span
                       className="font-heading"
-                      style={{ fontSize: 13, fontWeight: 700, color: "#ffffff" }}
+                      style={{ fontSize: 13, fontWeight: 700, color: "var(--lp-gray-1)" }}
                     >
                       {s.value}
                     </span>
@@ -301,7 +300,7 @@ export default function HeroSection() {
                     style={{
                       display: "block",
                       fontSize: 9,
-                      color: "rgba(255,255,255,0.52)",
+                      color: "var(--lp-gray-3)",
                       textTransform: "uppercase",
                       letterSpacing: "0.1em",
                       lineHeight: 1.4,
@@ -328,7 +327,7 @@ export default function HeroSection() {
                 position: "absolute",
                 inset: -40,
                 borderRadius: 40,
-                background: "radial-gradient(ellipse at 50% 50%, rgba(0,245,155,0.07) 0%, transparent 70%)",
+                background: "radial-gradient(ellipse at 50% 50%, rgba(5,150,105,0.08) 0%, transparent 70%)",
                 filter: "blur(24px)",
                 pointerEvents: "none",
                 zIndex: 0,
@@ -343,7 +342,7 @@ export default function HeroSection() {
                 left: "20%",
                 right: "20%",
                 height: 120,
-                background: "radial-gradient(ellipse, rgba(245,158,11,0.1) 0%, transparent 70%)",
+                background: "radial-gradient(ellipse, rgba(217,119,6,0.07) 0%, transparent 70%)",
                 filter: "blur(30px)",
                 pointerEvents: "none",
                 zIndex: 0,
@@ -371,8 +370,8 @@ export default function HeroSection() {
         <span
           style={{
             fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
-            color: "rgba(255,255,255,0.28)",
-            fontFamily: "monospace",
+            color: "rgba(15,23,42,0.35)",
+            fontFamily: "var(--font-geist-mono, monospace)",
           }}
         >
           Scroll
@@ -381,7 +380,7 @@ export default function HeroSection() {
           className="lp-scroll-dot"
           style={{
             width: 1, height: 36,
-            background: "linear-gradient(to bottom, rgba(0,245,155,0.45), transparent)",
+            background: "linear-gradient(to bottom, rgba(5,150,105,0.5), transparent)",
           }}
         />
       </motion.div>

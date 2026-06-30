@@ -8,13 +8,13 @@ const metrics = [
     value: "< 60s",
     label: "Blockchain Anchoring",
     sub: "Polygon Amoy · ~2s finality",
-    color: "#00f59b",
+    color: "#059669",
   },
   {
     value: "SHA-256",
     label: "Cryptographic Hash",
     sub: "Industry standard fingerprint",
-    color: "#f59e0b",
+    color: "#d97706",
   },
   {
     value: "Zero",
@@ -26,29 +26,29 @@ const metrics = [
     value: "3",
     label: "Access Roles",
     sub: "Investigator · Analyst · Admin",
-    color: "#00f59b",
+    color: "#059669",
   },
   {
     value: "IPFS",
     label: "Decentralised Storage",
     sub: "Content-addressed CID",
-    color: "#d97706",
+    color: "#b45309",
   },
   {
     value: "AI",
     label: "Tamper Detection",
     sub: "Gemini Vision API · ExifTool",
-    color: "#059669",
+    color: "#047857",
   },
 ];
 
 const techBadges = [
   { label: "Polygon Amoy", dot: "#8247e5" },
-  { label: "IPFS", dot: "#65c2cb" },
-  { label: "Gemini AI", dot: "#00f59b" },
-  { label: "ERC-721", dot: "#f59e0b" },
+  { label: "IPFS", dot: "#0ea5e9" },
+  { label: "Gemini AI", dot: "#059669" },
+  { label: "ERC-721", dot: "#d97706" },
   { label: "SHA-256", dot: "#10b981" },
-  { label: "ExifTool", dot: "#e2e2e2" },
+  { label: "ExifTool", dot: "#64748b" },
 ];
 
 export default function TrustSection() {
@@ -67,12 +67,12 @@ export default function TrustSection() {
       ref={sectionRef}
       style={{ background: "transparent", position: "relative", overflow: "hidden" }}
     >
-      {/* Top rule with glow */}
+      {/* Top rule with emerald accent */}
       <div
         style={{
           height: 1,
-          background: "linear-gradient(90deg, transparent 0%, rgba(0,245,155,0.3) 30%, rgba(0,245,155,0.3) 70%, transparent 100%)",
-          boxShadow: "0 0 16px rgba(0,245,155,0.15)",
+          background: "linear-gradient(90deg, transparent 0%, rgba(5,150,105,0.3) 30%, rgba(5,150,105,0.3) 70%, transparent 100%)",
+          boxShadow: "0 0 12px rgba(5,150,105,0.10)",
         }}
       />
 
@@ -100,10 +100,10 @@ export default function TrustSection() {
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
               gap: 1,
-              border: "1px solid rgba(255,255,255,0.05)",
+              border: "1px solid rgba(15,23,42,0.08)",
               borderRadius: 24,
               overflow: "hidden",
-              background: "rgba(255,255,255,0.03)",
+              background: "rgba(15,23,42,0.05)",
             }}
           >
             {metrics.map((m, i) => (
@@ -114,9 +114,9 @@ export default function TrustSection() {
                 transition={{ duration: 0.7, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   padding: "32px 28px",
-                  background: "rgba(0,0,0,0.4)",
-                  borderRight: "1px solid rgba(255,255,255,0.04)",
-                  borderBottom: "1px solid rgba(255,255,255,0.04)",
+                  background: "rgba(255,255,255,0.75)",
+                  borderRight: "1px solid rgba(15,23,42,0.06)",
+                  borderBottom: "1px solid rgba(15,23,42,0.06)",
                   transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)",
                   cursor: "default",
                   position: "relative",
@@ -124,13 +124,13 @@ export default function TrustSection() {
                 }}
                 onMouseEnter={(e) => {
                   const el = e.currentTarget as HTMLElement;
-                  el.style.background = `${m.color}08`;
-                  el.style.borderColor = `${m.color}20`;
+                  el.style.background = `rgba(255,255,255,0.95)`;
+                  el.style.boxShadow = `inset 0 0 0 1px ${m.color}22`;
                 }}
                 onMouseLeave={(e) => {
                   const el = e.currentTarget as HTMLElement;
-                  el.style.background = "rgba(0,0,0,0.4)";
-                  el.style.borderColor = "rgba(255,255,255,0.04)";
+                  el.style.background = "rgba(255,255,255,0.75)";
+                  el.style.boxShadow = "none";
                 }}
               >
                 {/* Top micro-accent */}
@@ -149,7 +149,6 @@ export default function TrustSection() {
                     lineHeight: 1,
                     marginBottom: 8,
                     letterSpacing: "-0.02em",
-                    textShadow: `0 0 20px ${m.color}40`,
                   }}
                 >
                   {m.value}
@@ -157,7 +156,7 @@ export default function TrustSection() {
                 <div
                   style={{
                     fontSize: 12, fontWeight: 600,
-                    color: "rgba(255,255,255,0.88)",
+                    color: "var(--lp-gray-1)",
                     marginBottom: 4,
                     letterSpacing: "0.01em",
                   }}
@@ -167,8 +166,8 @@ export default function TrustSection() {
                 <div
                   style={{
                     fontSize: 10,
-                    color: "rgba(255,255,255,0.50)",
-                    fontFamily: "monospace",
+                    color: "var(--lp-gray-3)",
+                    fontFamily: "var(--font-geist-mono, monospace)",
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
                   }}
@@ -183,10 +182,10 @@ export default function TrustSection() {
         {/* ── Tech badge strip ── */}
         <div
           style={{
-            borderTop: "1px solid rgba(255,255,255,0.04)",
-            borderBottom: "1px solid rgba(255,255,255,0.04)",
+            borderTop: "1px solid rgba(15,23,42,0.07)",
+            borderBottom: "1px solid rgba(15,23,42,0.07)",
             padding: "18px 24px",
-            background: "rgba(255,255,255,0.01)",
+            background: "rgba(255,255,255,0.50)",
           }}
         >
           <div
@@ -202,8 +201,8 @@ export default function TrustSection() {
           >
             <span
               style={{
-                fontSize: 9, fontFamily: "monospace",
-                color: "rgba(255,255,255,0.25)",
+                fontSize: 9, fontFamily: "var(--font-geist-mono, monospace)",
+                color: "#94a3b8",
                 textTransform: "uppercase", letterSpacing: "0.2em",
                 marginRight: 8,
                 whiteSpace: "nowrap",
@@ -221,15 +220,15 @@ export default function TrustSection() {
                   display: "flex", alignItems: "center", gap: 6,
                   padding: "5px 12px",
                   borderRadius: 99,
-                  border: "1px solid rgba(255,255,255,0.06)",
-                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(15,23,42,0.08)",
+                  background: "rgba(255,255,255,0.72)",
                 }}
               >
                 <span
                   style={{
                     width: 5, height: 5, borderRadius: "50%",
                     background: t.dot,
-                    boxShadow: `0 0 6px ${t.dot}`,
+                    boxShadow: `0 0 5px ${t.dot}80`,
                     display: "inline-block",
                     flexShrink: 0,
                   }}
@@ -237,8 +236,8 @@ export default function TrustSection() {
                 <span
                   style={{
                     fontSize: 11, fontWeight: 500,
-                    color: "rgba(255,255,255,0.65)",
-                    fontFamily: "monospace",
+                    color: "var(--lp-gray-2)",
+                    fontFamily: "var(--font-geist-mono, monospace)",
                     letterSpacing: "0.04em",
                     whiteSpace: "nowrap",
                   }}
@@ -255,7 +254,7 @@ export default function TrustSection() {
       <div
         style={{
           height: 1,
-          background: "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.05) 70%, transparent 100%)",
+          background: "linear-gradient(90deg, transparent 0%, rgba(15,23,42,0.08) 30%, rgba(15,23,42,0.08) 70%, transparent 100%)",
         }}
       />
     </div>

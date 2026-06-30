@@ -30,8 +30,8 @@ export default function CTASection() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden text-center py-36 px-6 border-t border-white/5 font-sans"
-      style={{ background: "transparent" }}
+      className="relative overflow-hidden text-center py-36 px-6 font-sans"
+      style={{ background: "transparent", borderTop: "1px solid rgba(15,23,42,0.08)" }}
     >
       {/* Top emerald glow — large radial */}
       <motion.div
@@ -44,7 +44,7 @@ export default function CTASection() {
           width: "80%",
           maxWidth: 900,
           height: 560,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(0,245,155,0.12) 0%, rgba(5,150,105,0.06) 40%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.09) 0%, rgba(4,120,87,0.04) 40%, transparent 70%)",
           filter: "blur(60px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -58,7 +58,7 @@ export default function CTASection() {
         aria-hidden
         style={{
           position: "absolute", bottom: 0, left: "25%", right: "25%", height: 200,
-          background: "radial-gradient(ellipse, rgba(245,158,11,0.06) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse, rgba(217,119,6,0.05) 0%, transparent 70%)",
           filter: "blur(50px)",
           pointerEvents: "none", zIndex: 0,
         }}
@@ -69,7 +69,7 @@ export default function CTASection() {
         aria-hidden
         style={{
           position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(rgba(15,23,42,0.04) 1px, transparent 1px)",
           backgroundSize: "40px 40px",
           maskImage: "radial-gradient(ellipse 70% 70% at 50% 50%, black 20%, transparent 100%)",
           pointerEvents: "none", zIndex: 0,
@@ -96,12 +96,13 @@ export default function CTASection() {
           <motion.h2
             variants={revealVariant}
             custom={1}
-            className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+            className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight"
+            style={{ color: "var(--lp-gray-1)" }}
           >
             Evidence that{" "}
             <span
               style={{
-                backgroundImage: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -123,7 +124,8 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={0}
-            className="font-sans text-white/68 text-base md:text-lg leading-relaxed mb-12 max-w-lg mx-auto"
+            className="font-sans text-base md:text-lg leading-relaxed mb-12 max-w-lg mx-auto"
+            style={{ color: "var(--lp-gray-2)" }}
           >
             Built for cybersecurity and digital forensics teams who need
             cryptographically guaranteed chain of custody — not just a file store.
@@ -155,7 +157,8 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            className="mt-10 text-xs text-white/30 tracking-wider font-mono uppercase"
+            className="mt-10 text-xs tracking-wider font-mono uppercase"
+            style={{ color: "#94a3b8" }}
           >
             Designed for law enforcement · Forensic labs · Cyber incident response teams
           </motion.p>

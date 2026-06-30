@@ -1,42 +1,60 @@
-/* ─── ProofChain Landing — Emerald × Amber on OLED Black ─── */
+/* ─── ProofChain Landing — Frosted Slate Light Theme ─── */
+
+/* ── Font stacks — mirrors globals.css dashboard tokens ── */
+.lp-root {
+  font-family: var(--font-exo2), 'Exo 2', 'Inter', sans-serif;
+}
+
+.lp-root .font-heading,
+.lp-root h1,
+.lp-root h2,
+.lp-root h3,
+.lp-root h4 {
+  font-family: var(--font-orbitron), 'Orbitron', sans-serif;
+}
+
+/* Monospace (hash values, labels, code, timestamps) → Geist Mono */
+.lp-mono {
+  font-family: var(--font-geist-mono), 'Courier New', monospace;
+}
 
 :root {
-  --lp-bg: #07080c;
-  --lp-surface: rgba(255, 255, 255, 0.05);      /* was 0.02 — more visible card bg */
-  --lp-border: rgba(255, 255, 255, 0.10);        /* was 0.06 — more visible borders */
-  --lp-border-subtle: rgba(255, 255, 255, 0.06); /* was 0.03 */
+  --lp-bg: #eef2f7;
+  --lp-surface: rgba(255, 255, 255, 0.75);
+  --lp-border: rgba(15, 23, 42, 0.10);
+  --lp-border-subtle: rgba(15, 23, 42, 0.06);
   --lp-white: #ffffff;
-  --lp-gray-1: rgba(255, 255, 255, 0.92);        /* headings — near full white */
-  --lp-gray-2: rgba(255, 255, 255, 0.72);        /* was 0.55 — body text readable */
-  --lp-gray-3: rgba(255, 255, 255, 0.48);        /* was 0.30 — muted but visible */
-  --lp-gray-4: rgba(255, 255, 255, 0.14);        /* was 0.10 */
-  --lp-accent: #00f59b;
-  --lp-accent-warm: #f59e0b;
-  --lp-primary-neon: #00f59b;
-  --lp-primary-neon-dim: rgba(0, 245, 155, 0.14);
-  --lp-secondary-neon: #059669;
-  --lp-secondary-neon-dim: rgba(5, 150, 105, 0.14);
-  --lp-accent-gradient: linear-gradient(135deg, #00f59b 0%, #059669 100%);
+  --lp-gray-1: #0f172a;                          /* headings — deep navy */
+  --lp-gray-2: #334155;                          /* body text — slate-700 */
+  --lp-gray-3: #64748b;                          /* muted — slate-500 */
+  --lp-gray-4: rgba(15, 23, 42, 0.10);
+  --lp-accent: #059669;                          /* deeper emerald — readable on light */
+  --lp-accent-warm: #d97706;                     /* deeper amber */
+  --lp-primary-neon: #059669;
+  --lp-primary-neon-dim: rgba(5, 150, 105, 0.12);
+  --lp-secondary-neon: #047857;
+  --lp-secondary-neon-dim: rgba(4, 120, 87, 0.10);
+  --lp-accent-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
 .lp-root {
   background:
-    radial-gradient(circle at 15% 15%, rgba(0, 245, 155, 0.03) 0%, transparent 40%),
-    radial-gradient(circle at 85% 35%, rgba(5, 150, 105, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 25% 65%, rgba(0, 245, 155, 0.03) 0%, transparent 45%),
-    radial-gradient(circle at 75% 85%, rgba(5, 150, 105, 0.02) 0%, transparent 45%),
-    var(--lp-bg);
+    radial-gradient(ellipse at 15% 0%,   rgba(5, 150, 105, 0.07)  0%, transparent 50%),
+    radial-gradient(ellipse at 85% 20%,  rgba(100, 116, 139, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 30% 80%,  rgba(5, 150, 105, 0.05)  0%, transparent 50%),
+    radial-gradient(ellipse at 80% 90%,  rgba(148, 163, 184, 0.06) 0%, transparent 45%),
+    #eef2f7;
   overflow-x: hidden;
   position: relative;
 }
 
-/* Horizontal Light Sweeps */
+/* Horizontal ambient sweeps */
 .lp-ambient-sweep-horizontal {
   position: absolute;
   left: -25%;
   width: 150%;
   height: 320px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(0, 245, 155, 0.07) 0%, rgba(5, 150, 105, 0.02) 50%, transparent 75%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(5, 150, 105, 0.06) 0%, rgba(4, 120, 87, 0.02) 50%, transparent 75%);
   filter: blur(80px);
   pointer-events: none;
   z-index: 1;
@@ -48,7 +66,7 @@
   left: -25%;
   width: 150%;
   height: 380px;
-  background: radial-gradient(ellipse at 50% 50%, rgba(5, 150, 105, 0.08) 0%, rgba(0, 245, 155, 0.02) 50%, transparent 75%);
+  background: radial-gradient(ellipse at 50% 50%, rgba(4, 120, 87, 0.06) 0%, rgba(5, 150, 105, 0.02) 50%, transparent 75%);
   filter: blur(80px);
   pointer-events: none;
   z-index: 1;
@@ -57,8 +75,8 @@
 
 .lp-root::-webkit-scrollbar { width: 4px; }
 .lp-root::-webkit-scrollbar-track { background: transparent; }
-.lp-root::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 99px; }
-.lp-root::-webkit-scrollbar-thumb:hover { background: var(--lp-primary-neon-dim); }
+.lp-root::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.12); border-radius: 99px; }
+.lp-root::-webkit-scrollbar-thumb:hover { background: rgba(5, 150, 105, 0.25); }
 
 /* Noise texture */
 .noise-overlay::after {
@@ -68,7 +86,7 @@
   pointer-events: none;
   z-index: 999;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  opacity: 0.015;
+  opacity: 0.008;
 }
 
 /* ── Nav — Floating Pill Island ── */
@@ -88,28 +106,28 @@
     box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .lp-nav.scrolled {
-  background: rgba(7, 8, 12, 0.88);
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
-  border-color: rgba(0, 245, 155, 0.14);
+  border-color: rgba(5, 150, 105, 0.15);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(0, 245, 155, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 4px 24px rgba(15, 23, 42, 0.08),
+    0 0 0 1px rgba(5, 150, 105, 0.06),
+    inset 0 -1px 0 rgba(15, 23, 42, 0.05);
 }
 
 /* ── Hero ── */
 .lp-hero-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
   background-size: 80px 80px;
   mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 50%, transparent 100%);
 }
 
 /* ── Gradient text ── */
 .lp-gradient-text {
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.7) 100%);
+  background: linear-gradient(180deg, #0f172a 0%, #334155 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -123,11 +141,11 @@
 
 /* ── Glass Cards (Features & Roles) ── */
 .lp-feature-card, .lp-role-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.68) 100%);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.5), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;
@@ -147,7 +165,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(0, 245, 155, 0.07) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 0%, rgba(5, 150, 105, 0.06) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -155,12 +173,12 @@
 
 .lp-feature-card:hover, .lp-role-card:hover {
   transform: translateY(-5px) scale(1.01);
-  border-color: rgba(0, 245, 155, 0.2);
+  border-color: rgba(5, 150, 105, 0.22);
   box-shadow:
-    0 24px 48px -12px rgba(0, 245, 155, 0.1),
-    inset 0 1px 1px rgba(0, 245, 155, 0.1),
-    0 0 24px rgba(5, 150, 105, 0.04);
-  background: linear-gradient(180deg, rgba(0, 245, 155, 0.02) 0%, rgba(5, 150, 105, 0.008) 100%);
+    0 20px 48px -12px rgba(5, 150, 105, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    0 0 24px rgba(4, 120, 87, 0.05);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.80) 100%);
 }
 
 .lp-feature-card:hover::before, .lp-role-card:hover::before {
@@ -174,58 +192,58 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--lp-primary-neon);
-  text-shadow: 0 0 8px rgba(0, 245, 155, 0.3);
+  font-family: var(--font-geist-mono), 'Courier New', monospace;
 }
 
 /* ── Buttons ── */
 .lp-btn-primary {
   background: var(--lp-accent-gradient);
-  color: #030307 !important;
+  color: #ffffff !important;
   font-weight: 600;
   border-radius: 99px;
-  box-shadow: 0 4px 20px rgba(0, 245, 155, 0.25);
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.28);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   cursor: pointer;
 }
 .lp-btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 245, 155, 0.45), 0 0 16px rgba(5, 150, 105, 0.25);
-  filter: brightness(1.08);
+  box-shadow: 0 8px 30px rgba(5, 150, 105, 0.40), 0 0 16px rgba(4, 120, 87, 0.20);
+  filter: brightness(1.06);
 }
 .lp-btn-primary:active { transform: scale(0.97); }
 
 .lp-btn-ghost {
   color: var(--lp-gray-1);
-  border: 1px solid var(--lp-border);
+  border: 1px solid rgba(15, 23, 42, 0.18);
   border-radius: 99px;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(12px);
   cursor: pointer;
 }
 .lp-btn-ghost:hover {
-  color: #ffffff;
-  border-color: rgba(0, 245, 155, 0.35);
-  background: rgba(0, 245, 155, 0.04);
+  color: #0f172a;
+  border-color: rgba(5, 150, 105, 0.40);
+  background: rgba(255, 255, 255, 0.90);
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(0, 245, 155, 0.1);
+  box-shadow: 0 0 20px rgba(5, 150, 105, 0.08);
 }
 .lp-btn-ghost:active { transform: scale(0.97); }
 
 /* Tech Section / Evidence cards */
 .glass-card-emer {
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.08);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card-emer:hover {
   transform: translateY(-4px) scale(1.02);
-  border-color: rgba(0, 245, 155, 0.25);
-  background: rgba(0, 245, 155, 0.02);
-  box-shadow: 0 16px 40px -12px rgba(0, 245, 155, 0.15), inset 0 1px 1px rgba(0, 245, 155, 0.2);
+  border-color: rgba(5, 150, 105, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 40px -12px rgba(5, 150, 105, 0.12), inset 0 1px 1px rgba(5, 150, 105, 0.12);
 }
 
 /* ── Scroll indicator ── */
@@ -242,8 +260,8 @@
   gap: 10px;
   padding: 8px 18px;
   border-radius: 99px;
-  border: 1px solid var(--lp-border);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(12px);
   font-size: 12px;
   font-weight: 500;
@@ -252,15 +270,16 @@
   transition: all 0.3s ease;
 }
 .lp-badge:hover {
-  border-color: rgba(0, 245, 155, 0.3);
-  color: #fff;
-  box-shadow: 0 0 15px rgba(0, 245, 155, 0.1);
+  border-color: rgba(5, 150, 105, 0.35);
+  color: #0f172a;
+  box-shadow: 0 0 15px rgba(5, 150, 105, 0.08);
+  background: rgba(255, 255, 255, 0.92);
 }
 .lp-badge-dot {
   width: 7px; height: 7px;
   border-radius: 50%;
   background: var(--lp-primary-neon);
-  box-shadow: 0 0 10px var(--lp-primary-neon), 0 0 20px var(--lp-primary-neon);
+  box-shadow: 0 0 8px var(--lp-primary-neon), 0 0 16px rgba(5, 150, 105, 0.4);
   animation: badge-glow 2s infinite alternate;
 }
 
@@ -281,9 +300,9 @@
   background: linear-gradient(
     135deg,
     transparent 0%,
-    rgba(0, 245, 155, 0.008) 30%,
-    rgba(0, 245, 155, 0.02) 50%,
-    rgba(0, 245, 155, 0.008) 70%,
+    rgba(5, 150, 105, 0.03) 30%,
+    rgba(5, 150, 105, 0.06) 50%,
+    rgba(5, 150, 105, 0.03) 70%,
     transparent 100%
   );
   background-size: 400% 400%;
@@ -301,7 +320,7 @@
 /* ── CTA glow ── */
 .lp-cta-glow {
   background:
-    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(5, 150, 105, 0.15) 0%, rgba(0, 245, 155, 0.05) 50%, transparent 100%),
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(5, 150, 105, 0.09) 0%, rgba(4, 120, 87, 0.04) 50%, transparent 100%),
     var(--lp-bg);
 }
 
@@ -318,7 +337,7 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--lp-primary-neon);
-  text-shadow: 0 0 10px rgba(0, 245, 155, 0.2);
+  font-family: var(--font-geist-mono), 'Courier New', monospace;
 }
 
 /* ── Number highlight ── */
@@ -344,14 +363,14 @@
 
 /* ── Liquid Glass Card ── */
 .lp-liquid-glass {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.68) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.09);
   box-shadow:
-    0 24px 80px rgba(0, 0, 0, 0.6),
-    inset 0 1px 0px rgba(255, 255, 255, 0.14),
-    inset 0 -1px 0px rgba(255, 255, 255, 0.04);
+    0 8px 32px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0px rgba(255, 255, 255, 1),
+    inset 0 -1px 0px rgba(15, 23, 42, 0.04);
   border-radius: 28px;
   position: relative;
   overflow: hidden;
@@ -365,7 +384,7 @@
   height: 180px;
   border-radius: 50%;
   filter: blur(40px);
-  opacity: 0.12;
+  opacity: 0.10;
   pointer-events: none;
   animation: float-slow 10s infinite alternate ease-in-out;
 }
@@ -382,8 +401,8 @@
   width: 100%;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--lp-primary-neon), transparent);
-  box-shadow: 0 0 14px var(--lp-primary-neon);
-  opacity: 0.8;
+  box-shadow: 0 0 10px rgba(5, 150, 105, 0.6);
+  opacity: 0.7;
   animation: scan-vertical 4s infinite linear;
 }
 
@@ -395,10 +414,10 @@
 
 /* ── Bento glass (Features section) ── */
 .bento-glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.80);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(15, 23, 42, 0.08);
   border-radius: 24px;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -408,16 +427,16 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 50% 0%, rgba(0, 245, 155, 0.06) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 0%, rgba(5, 150, 105, 0.05) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
 }
 .bento-glass:hover {
-  border-color: rgba(0, 245, 155, 0.2);
-  background: rgba(0, 245, 155, 0.02);
+  border-color: rgba(5, 150, 105, 0.22);
+  background: rgba(255, 255, 255, 0.95);
   transform: translateY(-4px);
-  box-shadow: 0 20px 44px -10px rgba(0, 245, 155, 0.12), inset 0 1px 0 rgba(0, 245, 155, 0.08);
+  box-shadow: 0 20px 44px -10px rgba(5, 150, 105, 0.10), inset 0 1px 0 rgba(255, 255, 255, 1);
 }
 .bento-glass:hover::before {
   opacity: 1;
@@ -479,4 +498,3 @@ html {
     transition: none !important;
   }
 }
-

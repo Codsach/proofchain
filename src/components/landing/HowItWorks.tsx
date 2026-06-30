@@ -17,7 +17,7 @@ const steps = [
     body: "An investigator uploads files (JPEG, PNG, PDF, MP4, .log, .pcap — up to 50 MB) or captures directly from the mobile PWA with GPS tagging. The server computes the SHA-256 hash and uploads the file to IPFS, returning a content-addressed CID.",
     detail: "Status → pending_ai_review",
     icon: FileUp,
-    color: "#00f59b",
+    color: "#059669",
   },
   {
     num: "02",
@@ -25,7 +25,7 @@ const steps = [
     body: "ExifTool extracts metadata: GPS, creation timestamp, device, and software. If the software field contains Photoshop, GIMP, or Snapseed — flagged. The file is sent to Gemini Vision API for manipulation scoring. A tamper score 0–100 is computed and stored.",
     detail: "Completes within 30 seconds",
     icon: BrainCircuit,
-    color: "#f59e0b",
+    color: "#d97706",
   },
   {
     num: "03",
@@ -41,7 +41,7 @@ const steps = [
     body: "An analyst sees the AI report and EXIF findings. They re-verify the on-chain hash in-app, then issue a signed verdict (Verified or Rejected) with reasoning. The verdict hash is anchored on-chain. Anyone can verify the full record at /verify/[caseId].",
     detail: "Verdict → immutable on-chain",
     icon: ClipboardCheck,
-    color: "#00f59b",
+    color: "#059669",
   },
 ];
 
@@ -68,8 +68,12 @@ export default function HowItWorks() {
     <section
       ref={containerRef}
       id="how-it-works"
-      className="text-white overflow-hidden h-screen flex flex-col justify-center border-y border-white/5 relative"
-      style={{ background: "transparent" }}
+      className="overflow-hidden h-screen flex flex-col justify-center relative"
+      style={{
+        background: "transparent",
+        borderTop: "1px solid rgba(15,23,42,0.08)",
+        borderBottom: "1px solid rgba(15,23,42,0.08)",
+      }}
     >
       {/* Central emerald glow */}
       <div
@@ -78,7 +82,7 @@ export default function HowItWorks() {
         style={{
           width: "70vw", height: "70vw",
           maxWidth: 720, maxHeight: 720,
-          background: "radial-gradient(circle, rgba(0,245,155,0.05) 0%, rgba(5,150,105,0.02) 40%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, rgba(4,120,87,0.02) 40%, transparent 70%)",
           filter: "blur(60px)",
           borderRadius: "50%",
         }}
@@ -87,7 +91,7 @@ export default function HowItWorks() {
       {/* Section label + heading */}
       <div className="absolute top-12 left-6 md:top-24 md:left-24 z-10 pointer-events-none">
         <p className="lp-section-label mb-3">Workflow</p>
-        <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white">
+        <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold" style={{ color: "var(--lp-gray-1)" }}>
           The Journey of Truth
         </h2>
       </div>
@@ -101,25 +105,27 @@ export default function HowItWorks() {
               className="step-panel w-[85vw] md:w-[60vw] lg:w-[50vw] flex-shrink-0 pr-8 md:pr-16"
             >
               <div
-                className="group backdrop-blur-xl border border-white/8 rounded-[32px] p-8 md:p-12 relative overflow-hidden h-full flex flex-col justify-between transition-all duration-500"
+                className="group backdrop-blur-xl rounded-[32px] p-8 md:p-12 relative overflow-hidden h-full flex flex-col justify-between transition-all duration-500"
                 style={{
-                  background: "rgba(255,255,255,0.025)",
-                  borderColor: "rgba(255,255,255,0.07)",
+                  background: "rgba(255,255,255,0.78)",
+                  borderColor: "rgba(15,23,42,0.09)",
+                  border: "1px solid rgba(15,23,42,0.09)",
+                  boxShadow: "0 4px 24px rgba(15,23,42,0.06)",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = `${step.color}35`;
-                  e.currentTarget.style.boxShadow = `0 0 40px ${step.color}12`;
+                  e.currentTarget.style.boxShadow = `0 8px 40px rgba(15,23,42,0.08), 0 0 0 1px ${step.color}20`;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
-                  e.currentTarget.style.boxShadow = "none";
+                  e.currentTarget.style.borderColor = "rgba(15,23,42,0.09)";
+                  e.currentTarget.style.boxShadow = "0 4px 24px rgba(15,23,42,0.06)";
                 }}
               >
                 {/* Top accent line */}
                 <div
                   style={{
                     position: "absolute", top: 0, left: "12%", right: "12%", height: 1,
-                    background: `linear-gradient(90deg, transparent, ${step.color}50, transparent)`,
+                    background: `linear-gradient(90deg, transparent, ${step.color}55, transparent)`,
                   }}
                 />
 
@@ -127,7 +133,7 @@ export default function HowItWorks() {
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
                   style={{
-                    background: `radial-gradient(ellipse at 30% 0%, ${step.color}08 0%, transparent 60%)`,
+                    background: `radial-gradient(ellipse at 30% 0%, ${step.color}06 0%, transparent 60%)`,
                     filter: "blur(20px)",
                   }}
                 />
@@ -138,10 +144,10 @@ export default function HowItWorks() {
                     <div
                       className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110"
                       style={{
-                        border: `1px solid ${step.color}25`,
-                        background: `${step.color}08`,
+                        border: `1px solid ${step.color}30`,
+                        background: `${step.color}10`,
                         color: step.color,
-                        boxShadow: `0 0 20px ${step.color}15`,
+                        boxShadow: `0 0 20px ${step.color}12`,
                       }}
                     >
                       <step.icon size={32} style={{ color: step.color }} />
@@ -152,13 +158,13 @@ export default function HowItWorks() {
                   <div className="flex flex-col flex-grow justify-center">
                     <h3
                       className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold mb-4 transition-colors duration-300"
-                      style={{ color: "#ffffff" }}
+                      style={{ color: "var(--lp-gray-1)" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = step.color)}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "#ffffff")}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--lp-gray-1)")}
                     >
                       {step.heading}
                     </h3>
-                    <p className="font-sans text-white/65 text-base md:text-lg leading-relaxed mb-8">
+                    <p className="font-sans text-base md:text-lg leading-relaxed mb-8" style={{ color: "var(--lp-gray-2)" }}>
                       {step.body}
                     </p>
                     <div className="mt-auto">
@@ -167,7 +173,7 @@ export default function HowItWorks() {
                         style={{
                           color: step.color,
                           background: `${step.color}0d`,
-                          borderColor: `${step.color}25`,
+                          borderColor: `${step.color}28`,
                         }}
                       >
                         {step.detail}

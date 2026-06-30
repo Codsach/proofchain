@@ -28,11 +28,11 @@ const roles = [
       "Receive verdict notifications",
     ],
     note: "Self-registration with email verification",
-    accent: "#00f59b",
-    accentDim: "rgba(0,245,155,0.08)",
-    accentHover: "rgba(0,245,155,0.025)",
-    borderHover: "rgba(0,245,155,0.3)",
-    shadowHover: "rgba(0,245,155,0.18)",
+    accent: "#059669",
+    accentDim: "rgba(5,150,105,0.10)",
+    accentHover: "rgba(5,150,105,0.04)",
+    borderHover: "rgba(5,150,105,0.28)",
+    shadowHover: "rgba(5,150,105,0.12)",
     Icon: ShieldAlert,
   },
   {
@@ -49,10 +49,10 @@ const roles = [
     ],
     note: "Account created by Admin only",
     accent: "#10b981",
-    accentDim: "rgba(16,185,129,0.08)",
-    accentHover: "rgba(16,185,129,0.025)",
-    borderHover: "rgba(16,185,129,0.3)",
-    shadowHover: "rgba(16,185,129,0.18)",
+    accentDim: "rgba(16,185,129,0.10)",
+    accentHover: "rgba(16,185,129,0.04)",
+    borderHover: "rgba(16,185,129,0.28)",
+    shadowHover: "rgba(16,185,129,0.12)",
     Icon: FileSearch,
   },
   {
@@ -68,11 +68,11 @@ const roles = [
       "Cannot alter any evidence record",
     ],
     note: "Seeded at deployment · No self-registration",
-    accent: "#e2e2e2",
-    accentDim: "rgba(226,226,226,0.06)",
-    accentHover: "rgba(226,226,226,0.02)",
-    borderHover: "rgba(226,226,226,0.22)",
-    shadowHover: "rgba(226,226,226,0.1)",
+    accent: "#64748b",
+    accentDim: "rgba(100,116,139,0.10)",
+    accentHover: "rgba(100,116,139,0.04)",
+    borderHover: "rgba(100,116,139,0.25)",
+    shadowHover: "rgba(100,116,139,0.12)",
     Icon: Settings,
   },
 ];
@@ -105,7 +105,7 @@ export default function RolesSection() {
         aria-hidden
         style={{
           position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)",
+          backgroundImage: "radial-gradient(rgba(15,23,42,0.05) 1px, transparent 1px)",
           backgroundSize: "32px 32px",
           pointerEvents: "none",
           maskImage: "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%)",
@@ -119,7 +119,7 @@ export default function RolesSection() {
           position: "absolute",
           top: "10%", left: "-5%",
           width: 500, height: 500,
-          background: "radial-gradient(ellipse at center, rgba(0,245,155,0.05) 0%, rgba(5,150,105,0.02) 50%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(5,150,105,0.07) 0%, rgba(4,120,87,0.02) 50%, transparent 70%)",
           filter: "blur(80px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -135,7 +135,7 @@ export default function RolesSection() {
           position: "absolute",
           bottom: "5%", right: "0%",
           width: 400, height: 400,
-          background: "radial-gradient(circle, rgba(245,158,11,0.04) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(217,119,6,0.05) 0%, transparent 70%)",
           filter: "blur(80px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -153,11 +153,16 @@ export default function RolesSection() {
           <motion.p variants={revealVariant} custom={0} className="lp-section-label" style={{ marginBottom: 16 }}>
             Access Model
           </motion.p>
-          <motion.h2 variants={revealVariant} custom={1} className="lp-section-h2" style={{ color: "#fff", maxWidth: 440 }}>
+          <motion.h2
+            variants={revealVariant}
+            custom={1}
+            className="lp-section-h2"
+            style={{ color: "var(--lp-gray-1)", maxWidth: 440 }}
+          >
             Three roles.{" "}
             <span
               style={{
-                backgroundImage: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
+                backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -169,7 +174,7 @@ export default function RolesSection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            style={{ marginTop: 16, fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: 1.7, maxWidth: 480 }}
+            style={{ marginTop: 16, fontSize: 15, color: "var(--lp-gray-3)", lineHeight: 1.7, maxWidth: 480 }}
           >
             Every action is scoped to role. No role can delete records.
             Investigator identity is hidden from analysts to prevent bias.
@@ -201,8 +206,8 @@ export default function RolesSection() {
                 y: -6,
                 scale: 1.015,
                 borderColor: role.borderHover,
-                boxShadow: `0 24px 56px -12px ${role.shadowHover}, inset 0 1px 0 ${role.accentDim}`,
-                background: `linear-gradient(180deg, ${role.accentHover} 0%, rgba(0,0,0,0) 100%)`,
+                boxShadow: `0 24px 56px -12px ${role.shadowHover}, inset 0 1px 0 rgba(255,255,255,1)`,
+                background: `linear-gradient(180deg, ${role.accentHover} 0%, rgba(255,255,255,0.90) 100%)`,
                 transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
               }}
             >
@@ -210,8 +215,8 @@ export default function RolesSection() {
               <div
                 style={{
                   position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
-                  background: `linear-gradient(90deg, transparent, ${role.accent}60, transparent)`,
-                  opacity: 0.6,
+                  background: `linear-gradient(90deg, transparent, ${role.accent}55, transparent)`,
+                  opacity: 0.7,
                 }}
               />
 
@@ -222,29 +227,29 @@ export default function RolesSection() {
                     style={{
                       width: 34, height: 34, borderRadius: 9,
                       background: `${role.accentDim}`,
-                      border: `1px solid ${role.accent}25`,
+                      border: `1px solid ${role.accent}28`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}
                   >
                     <role.Icon size={17} color={role.accent} />
                   </div>
                   <div>
-                    <span style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>{role.name}</span>
-                    <span style={{ fontSize: 11, color: role.accent, fontWeight: 500, opacity: 0.7, marginLeft: 6 }}>
+                    <span style={{ fontSize: 16, fontWeight: 700, color: "var(--lp-gray-1)" }}>{role.name}</span>
+                    <span style={{ fontSize: 11, color: role.accent, fontWeight: 500, opacity: 0.8, marginLeft: 6 }}>
                       · {role.subtitle}
                     </span>
                   </div>
                 </div>
-                <p style={{ fontSize: 13.5, color: "rgba(255,255,255,0.68)", lineHeight: 1.7 }}>
+                <p style={{ fontSize: 13.5, color: "var(--lp-gray-2)", lineHeight: 1.7 }}>
                   {role.description}
                 </p>
               </div>
 
-              <div className="lp-divider" style={{ margin: "18px 0", background: "rgba(255,255,255,0.07)" }} />
+              <div className="lp-divider" style={{ margin: "18px 0" }} />
 
               <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 9 }}>
                 {role.permissions.map((p) => (
-                  <li key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "rgba(255,255,255,0.70)", lineHeight: 1.5 }}>
+                  <li key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "var(--lp-gray-2)", lineHeight: 1.5 }}>
                     <Check size={13} color={role.accent} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 2, opacity: 0.85 }} />
                     {p}
                   </li>
@@ -254,10 +259,10 @@ export default function RolesSection() {
               <div
                 style={{
                   marginTop: 22, paddingTop: 14,
-                  borderTop: "1px solid rgba(255,255,255,0.07)",
-                  fontSize: 10, color: "rgba(255,255,255,0.48)",
+                  borderTop: "1px solid rgba(15,23,42,0.08)",
+                  fontSize: 10, color: "var(--lp-gray-3)",
                   letterSpacing: "0.07em", textTransform: "uppercase",
-                  fontFamily: "monospace",
+                  fontFamily: "var(--font-geist-mono, monospace)",
                 }}
               >
                 {role.note}

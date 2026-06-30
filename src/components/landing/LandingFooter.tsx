@@ -63,7 +63,7 @@ export default function LandingFooter() {
   return (
     <footer
       style={{
-        borderTop: "1px solid rgba(255,255,255,0.05)",
+        borderTop: "1px solid rgba(15,23,42,0.08)",
         padding: "64px 24px 40px",
         background: "transparent",
         position: "relative",
@@ -101,12 +101,12 @@ export default function LandingFooter() {
             >
               <img src="/icon-v2.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: "contain" }} />
               <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>
-                <span style={{ color: "#ffffff" }}>Proof</span>
-                <span style={{ color: "#00f59b" }}>Chain</span>
+                <span style={{ color: "var(--lp-gray-1)" }}>Proof</span>
+                <span style={{ color: "#059669" }}>Chain</span>
               </span>
             </Link>
 
-            <p style={{ fontSize: 13, color: "rgba(255,255,255,0.4)", lineHeight: 1.65, maxWidth: 240, margin: 0 }}>
+            <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.65, maxWidth: 240, margin: 0 }}>
               Tamper-proof digital forensic evidence. Blockchain-anchored. AI-analysed.
             </p>
 
@@ -122,7 +122,7 @@ export default function LandingFooter() {
                   animation: "badge-glow 2s infinite alternate",
                 }}
               />
-              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", fontFamily: "monospace" }}>
+              <span style={{ fontSize: 11, color: "#94a3b8", fontFamily: "var(--font-geist-mono, monospace)", }}>
                 Polygon Amoy Testnet
               </span>
             </div>
@@ -175,8 +175,8 @@ export default function LandingFooter() {
                 style={{
                   fontSize: 10, fontWeight: 600,
                   letterSpacing: "0.18em", textTransform: "uppercase",
-                  color: "rgba(255,255,255,0.28)", marginBottom: 18,
-                  fontFamily: "monospace",
+                  color: "#94a3b8", marginBottom: 18,
+                  fontFamily: "var(--font-geist-mono, monospace)",
                 }}
               >
                 {col.heading}
@@ -190,12 +190,12 @@ export default function LandingFooter() {
                         target="_blank"
                         rel="noopener noreferrer"
                         style={{
-                          fontSize: 13, color: "rgba(255,255,255,0.4)",
+                          fontSize: 13, color: "#64748b",
                           textDecoration: "none", transition: "color 0.2s ease",
                           display: "inline-flex", alignItems: "center", gap: 4,
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "#00f59b")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#059669")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
                       >
                         {item.label}
                         <span style={{ fontSize: 10, opacity: 0.5 }}>↗</span>
@@ -204,11 +204,11 @@ export default function LandingFooter() {
                       <Link
                         href={item.href}
                         style={{
-                          fontSize: 13, color: "rgba(255,255,255,0.4)",
+                          fontSize: 13, color: "#64748b",
                           textDecoration: "none", transition: "color 0.2s ease",
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "#ffffff")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.4)")}
+                        onMouseEnter={(e) => (e.currentTarget.style.color = "#0f172a")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
                       >
                         {item.label}
                       </Link>
@@ -223,7 +223,7 @@ export default function LandingFooter() {
         {/* Bottom bar */}
         <div
           style={{
-            borderTop: "1px solid rgba(255,255,255,0.05)",
+            borderTop: "1px solid rgba(15,23,42,0.08)",
             paddingTop: 22,
             display: "flex",
             justifyContent: "space-between",
@@ -232,10 +232,10 @@ export default function LandingFooter() {
             gap: 10,
           }}
         >
-          <p style={{ fontSize: 12, color: "rgba(255,255,255,0.22)", margin: 0, fontFamily: "monospace" }}>
+          <p style={{ fontSize: 12, color: "#94a3b8", margin: 0, fontFamily: "var(--font-geist-mono, monospace)", }}>
             © 2026 ProofChain · Sachin R — MCA241221
           </p>
-          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.18)", margin: 0, fontFamily: "monospace" }}>
+          <p style={{ fontSize: 11, color: "#cbd5e1", margin: 0, fontFamily: "var(--font-geist-mono, monospace)", }}>
             Not a court-admissible system · Academic & forensic demonstration
           </p>
         </div>
