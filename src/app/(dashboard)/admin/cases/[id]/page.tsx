@@ -105,6 +105,22 @@ const INCIDENT_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const InspectionBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Teal */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#99f6e4_0%,transparent_40%)]" />
+      {/* Top Right: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Bottom Center: Teal */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#99f6e4_0%,transparent_40%)]" />
+      {/* Bottom Right: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#bfdbfe_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
+
 export default function AdminCaseDetailPage() {
   const { id: caseId } = useParams<{ id: string }>();
   const { getToken } = useAuth();
@@ -205,20 +221,34 @@ export default function AdminCaseDetailPage() {
 
   if (isLoadingCase) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-8 w-48 bg-dash-hover" />
-        <Skeleton className="h-96 w-full rounded-2xl bg-dash-hover" />
+      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+        {/* Background mesh gradients */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <InspectionBackground />
+        </div>
+        <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
+          <div className="space-y-6 w-full">
+            <Skeleton className="h-8 w-48 bg-dash-hover" />
+            <Skeleton className="h-96 w-full rounded-2xl bg-dash-hover" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!caseData) {
     return (
-      <div className="rounded-3xl border border-dash-border bg-dash-sidebar backdrop-blur-2xl p-20 text-center shadow-2xl">
-        <p className="text-dash-muted text-sm font-medium">Case subject not found in secure storage.</p>
-        <Link href="/admin/cases" className="text-dash-accent text-xs font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
-          ← Return to Archives
-        </Link>
+      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center items-center w-full">
+        {/* Background mesh gradients */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <InspectionBackground />
+        </div>
+        <div className="relative z-10 rounded-3xl border border-dash-border bg-dash-sidebar backdrop-blur-2xl p-20 text-center shadow-2xl">
+          <p className="text-dash-muted text-sm font-medium">Case subject not found in secure storage.</p>
+          <Link href="/admin/cases" className="text-dash-accent text-xs font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
+            ← Return to Archives
+          </Link>
+        </div>
       </div>
     );
   }
@@ -275,7 +305,14 @@ export default function AdminCaseDetailPage() {
   }
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <InspectionBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-8 pb-10">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
@@ -578,6 +615,8 @@ export default function AdminCaseDetailPage() {
           {!isLoadingTransfers && !isLoadingCase && (
             <CustodyTimeline nodes={timelineNodes} />
           )}
+        </div>
+      </div>
         </div>
       </div>
     </div>

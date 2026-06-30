@@ -104,14 +104,14 @@ const INCIDENT_LABELS: Record<string, string> = {
 const InspectionBackground = () => {
   return (
     <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Purple */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#e9d5ff_0%,transparent_40%)]" />
-      {/* Top Right: Fuchsia */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#f5d0fe_0%,transparent_40%)]" />
-      {/* Bottom Center: Purple */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#e9d5ff_0%,transparent_40%)]" />
-      {/* Bottom Right: Fuchsia */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#f5d0fe_0%,transparent_40%)]" />
+      {/* Top Left: Teal */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#99f6e4_0%,transparent_40%)]" />
+      {/* Top Right: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Bottom Center: Teal */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#99f6e4_0%,transparent_40%)]" />
+      {/* Bottom Right: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#bfdbfe_0%,transparent_40%)]" />
     </div>
   );
 };

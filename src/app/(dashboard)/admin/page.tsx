@@ -507,6 +507,21 @@ const EMPTY_RISK: RiskDataPoint[] = [];
 const EMPTY_STATUS: StatusDataPoint[] = [];
 const EMPTY_TAMPER: TamperDataPoint[] = [];
 
+const DashboardBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Top Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
+      {/* Bottom Center: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Bottom Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
 export default function AdminPage() {
   const { user, getToken } = useAuth();
 
@@ -668,7 +683,14 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <DashboardBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-8 pb-10">
 
       {/* Header */}
       <motion.div
@@ -759,6 +781,8 @@ export default function AdminPage() {
         recentActivity={recentActivity}
         isLoading={isChartsLoading}
       />
+        </div>
+      </div>
     </div>
   );
 }

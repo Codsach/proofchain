@@ -52,6 +52,22 @@ const ROLE_STYLES: Record<string, string> = {
   admin: "text-amber-400 border-amber-500/20 bg-amber-500/5",
 };
 
+const IdentityBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Violet */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#ddd6fe_0%,transparent_40%)]" />
+      {/* Top Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
+      {/* Bottom Center: Violet */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)]" />
+      {/* Bottom Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
+
 export default function AdminUsersPage() {
   const { getToken } = useAuth();
   const { toast } = useToast();
@@ -169,7 +185,14 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <IdentityBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-8">
       <div className="flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -404,6 +427,8 @@ export default function AdminUsersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+        </div>
+      </div>
     </div>
   );
 }

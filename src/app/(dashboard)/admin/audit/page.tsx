@@ -44,6 +44,21 @@ const ACTION_COLORS: Record<string, string> = {
   "verify.public_check": "text-purple-400 group-hover:text-purple-300",
 };
 
+const AuditBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Amber */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#fde68a_0%,transparent_40%)]" />
+      {/* Top Right: Orange */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#fed7aa_0%,transparent_40%)]" />
+      {/* Bottom Center: Amber */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#fde68a_0%,transparent_40%)]" />
+      {/* Bottom Right: Orange */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#fed7aa_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
 export default function AdminAuditPage() {
   const { getToken } = useAuth();
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -85,7 +100,14 @@ export default function AdminAuditPage() {
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   return (
-    <div className="space-y-10">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <AuditBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-slate-400/50" />
@@ -287,6 +309,8 @@ export default function AdminAuditPage() {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }
