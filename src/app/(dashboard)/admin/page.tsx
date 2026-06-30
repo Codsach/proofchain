@@ -747,7 +747,7 @@ export default function AdminPage() {
         variants={containerVariants}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 lg:grid-cols-4 gap-5"
+        className="grid grid-cols-2 lg:grid-cols-2 gap-6"
       >
         {statCards.map((card) => (
           <StatCard key={card.label} {...card} />
