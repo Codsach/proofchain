@@ -101,6 +101,22 @@ const INCIDENT_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const InspectionBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Purple */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#e9d5ff_0%,transparent_40%)]" />
+      {/* Top Right: Fuchsia */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#f5d0fe_0%,transparent_40%)]" />
+      {/* Bottom Center: Purple */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#e9d5ff_0%,transparent_40%)]" />
+      {/* Bottom Right: Fuchsia */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#f5d0fe_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
+
 export default function AnalystCaseReviewPage() {
   const { id: caseId } = useParams<{ id: string }>();
   const { getToken } = useAuth();
@@ -244,20 +260,34 @@ export default function AnalystCaseReviewPage() {
 
   if (isLoadingCase) {
     return (
-      <div className="space-y-6 max-w-5xl">
-        <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
-        <Skeleton className="h-96 w-full bg-dash-hover rounded-2xl" />
+      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+        {/* Background mesh gradients */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <InspectionBackground />
+        </div>
+        <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
+          <div className="space-y-6 max-w-5xl w-full">
+            <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
+            <Skeleton className="h-96 w-full bg-dash-hover rounded-2xl" />
+          </div>
+        </div>
       </div>
     );
   }
 
   if (!caseData) {
     return (
-      <div className="rounded-3xl border border-dash-border bg-dash-card p-24 text-center backdrop-blur-2xl">
-        <p className="text-dash-muted text-sm font-medium">Authentication required: Subject not accessible.</p>
-        <Link href="/analyst" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
-          ← Back to Queue
-        </Link>
+      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center items-center w-full">
+        {/* Background mesh gradients */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <InspectionBackground />
+        </div>
+        <div className="relative z-10 rounded-3xl border border-dash-border bg-dash-card/50 p-24 text-center backdrop-blur-2xl">
+          <p className="text-dash-muted text-sm font-medium">Authentication required: Subject not accessible.</p>
+          <Link href="/analyst" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
+            ← Back to Queue
+          </Link>
+        </div>
       </div>
     );
   }
@@ -314,7 +344,14 @@ export default function AnalystCaseReviewPage() {
   }
 
   return (
-    <div className="space-y-10 pb-10">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <InspectionBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-10 pb-10">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/analyst" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2 mb-4">
@@ -600,6 +637,8 @@ export default function AnalystCaseReviewPage() {
         onSubmit={handleVerdict}
         isLoading={isSubmittingVerdict}
       />
+        </div>
+      </div>
     </div>
   );
 }
