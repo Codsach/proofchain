@@ -91,7 +91,7 @@ export default function LoginForm({
   const isAdminMode = mode === "admin";
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden auth-root">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.05)_0%,transparent_70%)]" />

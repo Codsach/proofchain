@@ -1,8 +1,8 @@
 /* ─── ProofChain Landing — Frosted Slate Light Theme ─── */
 
-/* ── Font stacks — mirrors globals.css dashboard tokens ── */
+/* ── Font stacks — mirrors globals.css & design.md tokens ── */
 .lp-root {
-  font-family: var(--font-exo2), 'Exo 2', 'Inter', sans-serif;
+  font-family: var(--font-inter), 'Inter', sans-serif;
 }
 
 .lp-root .font-heading,
@@ -10,13 +10,30 @@
 .lp-root h2,
 .lp-root h3,
 .lp-root h4 {
-  font-family: var(--font-orbitron), 'Orbitron', sans-serif;
+  font-family: var(--font-inter), 'Inter', sans-serif;
 }
 
 /* Monospace (hash values, labels, code, timestamps) → Geist Mono */
 .lp-mono {
   font-family: var(--font-geist-mono), 'Courier New', monospace;
 }
+
+/* Typography Scales (design.md) */
+.lp-root .display-lg { font-size: 57px; line-height: 64px; font-weight: 400; }
+.lp-root .display-md { font-size: 45px; line-height: 52px; font-weight: 400; }
+.lp-root .display-sm { font-size: 36px; line-height: 44px; font-weight: 400; }
+.lp-root .headline-lg { font-size: 32px; line-height: 40px; font-weight: 600; }
+.lp-root .headline-md { font-size: 28px; line-height: 36px; font-weight: 400; }
+.lp-root .headline-sm { font-size: 24px; line-height: 32px; font-weight: 400; }
+.lp-root .title-lg { font-size: 22px; line-height: 28px; font-weight: 500; }
+.lp-root .title-md { font-size: 16px; line-height: 24px; font-weight: 500; }
+.lp-root .title-sm { font-size: 14px; line-height: 20px; font-weight: 500; }
+.lp-root .body-lg { font-size: 16px; line-height: 24px; font-weight: 400; }
+.lp-root .body-md { font-size: 14px; line-height: 20px; font-weight: 400; }
+.lp-root .body-sm { font-size: 12px; line-height: 16px; font-weight: 400; }
+.lp-root .label-lg { font-size: 14px; line-height: 20px; font-weight: 500; }
+.lp-root .label-md { font-size: 12px; line-height: 16px; font-weight: 500; }
+.lp-root .label-sm { font-size: 11px; line-height: 16px; font-weight: 500; }
 
 :root {
   --lp-bg: #eef2f7;
@@ -35,6 +52,24 @@
   --lp-secondary-neon: #047857;
   --lp-secondary-neon-dim: rgba(4, 120, 87, 0.10);
   --lp-accent-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+
+  /* Spacing Scale (design.md) */
+  --lp-space-none: 0;
+  --lp-space-xs: 4px;
+  --lp-space-sm: 8px;
+  --lp-space-md: 16px;
+  --lp-space-lg: 24px;
+  --lp-space-xl: 32px;
+  --lp-space-xxl: 48px;
+  --lp-space-huge: 64px;
+
+  /* Roundness Scale (design.md) */
+  --lp-radius-none: 0;
+  --lp-radius-sm: 2px;
+  --lp-radius-md: 4px;
+  --lp-radius-lg: 8px;
+  --lp-radius-xl: 12px;
+  --lp-radius-full: 9999px;
 }
 
 .lp-root {
@@ -92,13 +127,13 @@
 /* ── Nav — Floating Pill Island ── */
 .lp-nav {
   position: fixed;
-  top: 16px;
+  top: var(--lp-space-md);
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - 48px);
+  width: calc(100% - var(--lp-space-xxl));
   max-width: 1200px;
   z-index: 50;
-  border-radius: 16px;
+  border-radius: var(--lp-radius-xl);
   border: 1px solid transparent;
   transition:
     background 0.4s cubic-bezier(0.16, 1, 0.3, 1),
@@ -152,13 +187,13 @@
 }
 
 .lp-feature-card {
-  border-radius: 20px;
-  padding: 32px;
+  border-radius: var(--lp-radius-xl);
+  padding: var(--lp-space-xl);
 }
 
 .lp-role-card {
-  border-radius: 24px;
-  padding: 40px 36px;
+  border-radius: var(--lp-radius-xl);
+  padding: var(--lp-space-xl);
 }
 
 .lp-feature-card::before, .lp-role-card::before {
@@ -371,7 +406,7 @@
     0 8px 32px rgba(15, 23, 42, 0.08),
     inset 0 1px 0px rgba(255, 255, 255, 1),
     inset 0 -1px 0px rgba(15, 23, 42, 0.04);
-  border-radius: 28px;
+  border-radius: var(--lp-radius-xl);
   position: relative;
   overflow: hidden;
   transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -418,7 +453,7 @@
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 24px;
+  border-radius: var(--lp-radius-xl);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   overflow: hidden;

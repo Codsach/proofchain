@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Orbitron, Exo_2 } from "next/font/google";
+import { Orbitron, Exo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 import { AuthProvider } from "@/components/providers/AuthContext";
@@ -15,6 +15,11 @@ const orbitron = Orbitron({
 const exo2 = Exo_2({
   subsets: ["latin"],
   variable: "--font-exo2",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -53,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${exo2.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${orbitron.variable} ${exo2.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA iOS meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

@@ -38,7 +38,7 @@ function AuthPageBg() {
 
 export function AuthLayout({ leftPanel, children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen flex relative overflow-hidden font-sans">
+    <div className="min-h-screen flex relative overflow-hidden font-sans auth-root">
       <AuthPageBg />
 
       {/* LEFT PANEL — pure animated illustration */}

@@ -201,20 +201,18 @@ export default function HeroSection() {
               </span>
             </motion.h1>
 
-            {/* Accent rule */}
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
               transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                width: 72, height: 3, borderRadius: 99, marginBottom: 20,
+                width: 72, height: 3, borderRadius: "var(--lp-radius-full)", marginBottom: "var(--lp-space-md)",
                 background: "linear-gradient(90deg, #059669, #047857)",
                 boxShadow: "0 0 12px rgba(5,150,105,0.3)",
                 transformOrigin: "left",
               }}
             />
 
-            {/* Subtext */}
             <motion.p
               variants={fadeUp} initial="hidden" animate="visible" custom={2}
               style={{
@@ -222,8 +220,8 @@ export default function HeroSection() {
                 color: "var(--lp-gray-2)",
                 lineHeight: 1.75,
                 maxWidth: 520,
-                marginBottom: 32,
-                fontFamily: "var(--font-exo2, sans-serif)",
+                marginBottom: "var(--lp-space-xl)",
+                fontFamily: "var(--font-inter), sans-serif",
               }}
             >
               Every file cryptographically sealed, AI‑analysed for alterations,
@@ -231,16 +229,15 @@ export default function HeroSection() {
               on a public ledger — so no party can modify forensic evidence without detection.
             </motion.p>
 
-            {/* CTA buttons */}
             <motion.div
               variants={fadeUp} initial="hidden" animate="visible" custom={3}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-10"
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-8"
             >
               <Link
                 href="/login"
                 id="hero-cta-primary"
                 className="lp-btn-primary font-sans flex items-center justify-center gap-2.5 no-underline"
-                style={{ height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 14, fontWeight: 600 }}
+                style={{ height: 52, paddingLeft: "var(--lp-space-xl)", paddingRight: "var(--lp-space-xl)", fontSize: 14, fontWeight: 600 }}
               >
                 Access Platform <ArrowRight size={16} />
               </Link>
@@ -248,19 +245,18 @@ export default function HeroSection() {
                 href="#features"
                 id="hero-cta-secondary"
                 className="lp-btn-ghost font-sans flex items-center justify-center gap-2 no-underline"
-                style={{ height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 14, fontWeight: 600 }}
+                style={{ height: 52, paddingLeft: "var(--lp-space-xl)", paddingRight: "var(--lp-space-xl)", fontSize: 14, fontWeight: 600 }}
               >
                 View Features
               </a>
             </motion.div>
 
-            {/* Stats strip */}
             <motion.div
               variants={fadeUp} initial="hidden" animate="visible" custom={4}
               className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full"
               style={{
                 borderTop: "1px solid rgba(15,23,42,0.10)",
-                paddingTop: 28,
+                paddingTop: "var(--lp-space-lg)",
               }}
             >
               {stats.map((s) => (
@@ -268,8 +264,8 @@ export default function HeroSection() {
                   key={s.label}
                   className="group"
                   style={{
-                    padding: "12px 14px",
-                    borderRadius: 14,
+                    padding: "var(--lp-space-sm) var(--lp-space-md)",
+                    borderRadius: "var(--lp-radius-xl)",
                     background: "rgba(255,255,255,0.72)",
                     border: "1px solid rgba(15,23,42,0.09)",
                     backdropFilter: "blur(8px)",
@@ -304,7 +300,7 @@ export default function HeroSection() {
                       textTransform: "uppercase",
                       letterSpacing: "0.1em",
                       lineHeight: 1.4,
-                      fontFamily: "var(--font-exo2, sans-serif)",
+                      fontFamily: "var(--font-inter), sans-serif",
                     }}
                   >
                     {s.label}
