@@ -265,8 +265,8 @@ const STAT_VARIANTS = {
       "bg-teal-400",
       "bg-sky-500"
     ],
-    badgeColor: "bg-blue-500/15 text-blue-900 dark:text-blue-200 border border-blue-500/30",
-    iconBg: "bg-blue-606/15 text-blue-800 dark:text-blue-300 border border-blue-500/25",
+    badgeColor: "bg-blue-500/15 text-blue-900 border border-blue-500/30",
+    iconBg: "bg-blue-606/15 text-blue-800 border border-blue-500/25",
     trendText: "+5.4%",
     trendUp: true,
   },
@@ -279,8 +279,8 @@ const STAT_VARIANTS = {
       "bg-indigo-600",
       "bg-blue-500"
     ],
-    badgeColor: "bg-purple-500/15 text-purple-900 dark:text-purple-200 border border-purple-500/30",
-    iconBg: "bg-purple-606/15 text-purple-800 dark:text-purple-300 border border-purple-500/25",
+    badgeColor: "bg-purple-500/15 text-purple-900 border border-purple-500/30",
+    iconBg: "bg-purple-606/15 text-purple-800 border border-purple-500/25",
     trendText: "+8.2%",
     trendUp: true,
   },
@@ -293,8 +293,8 @@ const STAT_VARIANTS = {
       "bg-lime-400",
       "bg-yellow-400"
     ],
-    badgeColor: "bg-emerald-500/15 text-emerald-900 dark:text-emerald-200 border border-emerald-500/30",
-    iconBg: "bg-emerald-606/15 text-emerald-800 dark:text-emerald-300 border border-emerald-500/25",
+    badgeColor: "bg-emerald-500/15 text-emerald-900 border border-emerald-500/30",
+    iconBg: "bg-emerald-606/15 text-emerald-800 border border-emerald-500/25",
     trendText: "+14.1%",
     trendUp: true,
   },
@@ -307,8 +307,8 @@ const STAT_VARIANTS = {
       "bg-amber-500",
       "bg-pink-500"
     ],
-    badgeColor: "bg-orange-500/15 text-orange-900 dark:text-orange-200 border border-orange-500/30",
-    iconBg: "bg-orange-606/15 text-orange-800 dark:text-orange-300 border border-orange-500/25",
+    badgeColor: "bg-orange-500/15 text-orange-900 border border-orange-500/30",
+    iconBg: "bg-orange-606/15 text-orange-800 border border-orange-500/25",
     trendText: "+12.4%",
     trendUp: true,
   },
@@ -321,8 +321,8 @@ const STAT_VARIANTS = {
       "bg-rose-500",
       "bg-amber-600"
     ],
-    badgeColor: "bg-amber-500/15 text-amber-900 dark:text-amber-200 border border-amber-500/30",
-    iconBg: "bg-amber-606/15 text-amber-900 dark:text-amber-300 border border-amber-500/25",
+    badgeColor: "bg-amber-500/15 text-amber-900 border border-amber-500/30",
+    iconBg: "bg-amber-606/15 text-amber-900 border border-amber-500/25",
     trendText: "-3.5%",
     trendUp: false,
   },
@@ -335,8 +335,8 @@ const STAT_VARIANTS = {
       "bg-emerald-400",
       "bg-cyan-600"
     ],
-    badgeColor: "bg-cyan-500/15 text-cyan-900 dark:text-cyan-200 border border-cyan-500/30",
-    iconBg: "bg-cyan-606/15 text-cyan-800 dark:text-cyan-300 border border-cyan-500/25",
+    badgeColor: "bg-cyan-500/15 text-cyan-900 border border-cyan-500/30",
+    iconBg: "bg-cyan-606/15 text-cyan-800 border border-cyan-500/25",
     trendText: "+22.7%",
     trendUp: true,
   },
@@ -362,15 +362,15 @@ function StatCard({
     <motion.div
       variants={itemVariants}
       whileHover={{ y: -4, scale: 1.01 }}
-      className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] dark:hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] select-none group"
+      className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] select-none group"
     >
       {/* Layer 1: Solid Card Base (z-0) */}
-      <div className="absolute inset-0 bg-white/25 dark:bg-slate-950/20 rounded-[20px] z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-white/25 rounded-[20px] z-0 pointer-events-none" />
 
       {/* Layer 2: Blurred liquid background circles (z-10) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
         <div 
-          className="absolute -inset-16 flex flex-wrap opacity-85 dark:opacity-70 transition-opacity duration-300 transform-gpu will-change-[filter]"
+          className="absolute -inset-16 flex flex-wrap opacity-85 transition-opacity duration-300 transform-gpu will-change-[filter]"
           style={{ filter: "blur(130px)" }}
         >
           {/* Circle 1 - Top Left */}
@@ -387,7 +387,7 @@ function StatCard({
           <div className={`absolute top-[15%] right-[2%] w-[130px] h-[130px] rounded-full ${variant.circleColors[5]}`} />
         </div>
         {/* Subtle frosted backdrop filter cover */}
-        <div className="absolute inset-0 bg-white/10 dark:bg-slate-950/20 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
         {/* Stripes pattern overlay for premium tech look */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
       </div>
@@ -403,13 +403,13 @@ function StatCard({
 
         {/* Middle row: Brand & Metric */}
         <div className="flex flex-col mt-2">
-          <span className="text-[10px] text-slate-900 dark:text-slate-100 font-extrabold uppercase tracking-[0.15em]">
+          <span className="text-[10px] text-slate-900 font-extrabold uppercase tracking-[0.15em]">
             {brandLabel}
           </span>
           {isLoading ? (
-            <Skeleton className="h-9 w-16 bg-white/30 dark:bg-slate-800/30 mt-1" />
+            <Skeleton className="h-9 w-16 bg-white/30 mt-1" />
           ) : (
-            <p className="text-3xl font-extrabold text-slate-955 dark:text-white tracking-tight mt-0.5 font-sans">
+            <p className="text-3xl font-extrabold text-slate-955 tracking-tight mt-0.5 font-sans">
               {value ?? 0}
             </p>
           )}
@@ -417,7 +417,7 @@ function StatCard({
 
         {/* Bottom Row: Label & Sparkline */}
         <div className="flex items-end justify-between mt-auto">
-          <p className="text-[10px] text-slate-800 dark:text-slate-200 font-bold uppercase tracking-wider">
+          <p className="text-[10px] text-slate-800 font-bold uppercase tracking-wider">
             {label}
           </p>
           {!isLoading && (

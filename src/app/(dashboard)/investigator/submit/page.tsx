@@ -33,13 +33,13 @@ const SubmissionBackground = () => {
   return (
     <div className="absolute inset-0 h-full w-full bg-transparent">
       {/* Top Left: Emerald green */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#a7f3d0_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_20%_30%,#10b98120_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#a7f3d0_0%,transparent_40%)]" />
       {/* Top Right: Cyan */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c5f2f7_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_80%_20%,#06b6d420_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c5f2f7_0%,transparent_40%)]" />
       {/* Bottom Center: Cobalt Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_50%_80%,#3b82f620_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
       {/* Bottom Right: Mint Green */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#a7f3d0_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_90%_90%,#34d39920_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#a7f3d0_0%,transparent_40%)]" />
     </div>
   );
 };

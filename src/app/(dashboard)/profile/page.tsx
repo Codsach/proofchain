@@ -21,13 +21,13 @@ const ProfileBackground = () => {
   return (
     <div className="absolute inset-0 h-full w-full bg-transparent">
       {/* Top Left: Violet */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#ddd6fe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_20%_30%,#8b5cf61a_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#ddd6fe_0%,transparent_40%)]" />
       {/* Top Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_80%_20%,#6366f11a_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
       {/* Bottom Center: Violet */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_50%_80%,#8b5cf61a_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)]" />
       {/* Bottom Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)] dark:[background:radial-gradient(circle_at_90%_90%,#6366f11a_0%,transparent_40%)]" />
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
     </div>
   );
 };
