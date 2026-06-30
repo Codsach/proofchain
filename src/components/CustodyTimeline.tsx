@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   UploadCloud, 
@@ -34,9 +35,10 @@ export interface TimelineNode {
 interface CustodyTimelineProps {
   nodes: TimelineNode[];
   isPublic?: boolean;
+  className?: string;
 }
 
-export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProps) {
+export function CustodyTimeline({ nodes, isPublic = false, className }: CustodyTimelineProps) {
   const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
 
   const toggleExpand = (id: string) => {
@@ -46,16 +48,16 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
   const getIcon = (type: TimelineNode["type"], verdictType?: TimelineNode["verdictType"]) => {
     switch (type) {
       case "upload":
-        return <UploadCloud className="w-4 h-4 text-emerald-400" />;
+        return <UploadCloud className="w-[15px] h-[15px] text-emerald-400" />;
       case "verdict":
         return verdictType === "verified" ? (
-          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+          <CheckCircle2 className="w-[15px] h-[15px] text-emerald-400" />
         ) : (
-          <XCircle className="w-4 h-4 text-rose-400" />
+          <XCircle className="w-[15px] h-[15px] text-rose-400" />
         );
       case "transfer":
       default:
-        return <ArrowRightLeft className="w-4 h-4 text-blue-400" />;
+        return <ArrowRightLeft className="w-[15px] h-[15px] text-blue-400" />;
     }
   };
 
@@ -65,7 +67,7 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
   };
 
   return (
-    <div className="rounded-2xl border border-dash-border bg-dash-sidebar backdrop-blur-xl p-6 shadow-xl space-y-6">
+    <div className={cn("rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl space-y-6", className)}>
       {/* Widget Header with Pulse */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -89,7 +91,7 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
             No custody events recorded.
           </div>
         ) : (
-          <div className="relative pl-6 border-l border-dash-border/30 space-y-6 py-2">
+          <div className="relative ml-4 pl-6 border-l border-dash-border/30 space-y-6 py-2">
             {nodes.slice().reverse().map((node, index) => {
               const isExpanded = expandedNodes[node.id];
               const isLatest = index === 0;
@@ -97,7 +99,7 @@ export function CustodyTimeline({ nodes, isPublic = false }: CustodyTimelineProp
               return (
                 <div key={node.id} className="relative group">
                   {/* Timeline Node Point */}
-                  <div className={`absolute -left-[30px] top-1.5 flex items-center justify-center w-5 h-5 rounded-full border bg-dash-bg transition-all ${
+                  <div className={`absolute -left-[38px] top-[4px] flex items-center justify-center w-7 h-7 rounded-full border bg-dash-bg transition-all ${
                     isLatest 
                       ? "border-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.3)] scale-110" 
                       : "border-dash-border/60 group-hover:border-dash-accent/50"

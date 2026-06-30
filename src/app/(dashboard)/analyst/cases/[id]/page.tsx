@@ -403,8 +403,9 @@ export default function AnalystCaseReviewPage() {
         </div>
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="space-y-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        {/* Left Column (col-span-2) */}
+        <div className="lg:col-span-2 space-y-8">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -492,143 +493,153 @@ export default function AnalystCaseReviewPage() {
             </div>
           </motion.div>
 
-          <CommentsPanel caseId={caseId} />
+          {/* Forensic Scan Reports Accordion */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-4">
+              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Forensic Scan Reports</h2>
+              <div className="h-px flex-1 bg-dash-border" />
+            </div>
+
+            <div className="space-y-3">
+              {caseData.files.map((file) => {
+                const report = aiReports.find((r) => r.fileId === file.fileId);
+                const isOpen = expandedFileId === file.fileId;
+                return (
+                  <div
+                    key={file.fileId}
+                    className="rounded-xl border border-dash-border bg-dash-card/30 overflow-hidden transition-all duration-300"
+                  >
+                    {/* Header */}
+                    <button
+                      type="button"
+                      onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
+                      className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover/40 transition-colors cursor-pointer focus:outline-none"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
+                          {file.originalName}
+                        </p>
+                        <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
+                          {file.mimeType}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        {report ? (
+                          <TamperScoreBadge score={report.tamperScore} />
+                        ) : isLoadingAi ? (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                            Scanning
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted uppercase tracking-wider">
+                            <span className="w-1.5 h-1.5 rounded-full bg-dash-border" />
+                            Pending
+                          </span>
+                        )}
+                        {isOpen ? (
+                          <ChevronUp className="w-4 h-4 text-dash-muted" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4 text-dash-muted" />
+                        )}
+                      </div>
+                    </button>
+
+                    {/* Body */}
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="border-t border-dash-border p-4 bg-dash-input/50">
+                            {report ? (
+                              <AiReportPanel report={report} isLoading={false} />
+                            ) : (
+                              <AiReportPanel report={null} isLoading={true} />
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {!isLoadingTransfers && !isLoadingCase && (
+            <CustodyTimeline nodes={timelineNodes} />
+          )}
         </div>
 
-        <motion.div 
+        {/* Right Column */}
+        <div className="space-y-6">
+          <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15 }}
             className="space-y-6"
-        >
-          <div className="flex items-center gap-4">
-            <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Intelligence</h2>
-            <div className="h-px flex-1 bg-dash-border" />
-          </div>
+          >
+            <div className="flex items-center gap-4">
+              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Intelligence</h2>
+              <div className="h-px flex-1 bg-dash-border" />
+            </div>
 
-          {/* Overall Risk Card */}
-          <div className={`rounded-2xl border p-5 relative overflow-hidden group shadow-lg transition-all duration-300 ${
-            caseData.overallRiskLevel === "high"
-              ? "bg-red-500/5 border-red-500/20"
-              : caseData.overallRiskLevel === "medium"
-              ? "bg-amber-500/5 border-amber-500/20"
-              : caseData.overallRiskLevel === "low"
-              ? "bg-emerald-500/5 border-emerald-500/20"
-              : "bg-dash-input border-dash-border animate-pulse"
-          }`}>
-            <div className="flex items-center justify-between gap-4">
-              <div className="space-y-1">
-                <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">
-                  Overall Risk Assessment
-                </p>
-                <h3 className="text-base font-bold text-dash-text tracking-tight">
-                  {caseData.overallRiskLevel ? (
-                    <span className="uppercase">{caseData.overallRiskLevel} RISK</span>
-                  ) : (
-                    <span>PENDING SCAN</span>
-                  )}
-                </h3>
-                <p className="text-[11px] text-dash-muted leading-relaxed font-normal">
-                  {caseData.overallRiskLevel === "high"
-                    ? "High probability of image/metadata manipulation detected. Exercise extreme caution."
-                    : caseData.overallRiskLevel === "medium"
-                    ? "Potential anomalies detected in image metadata or structure. Further review suggested."
-                    : caseData.overallRiskLevel === "low"
-                    ? "All assets verified with low tamper indicators. Digital signature authentic."
-                    : "Forensic scanner is conducting deep neural scan on uploaded assets..."}
-                </p>
-              </div>
-              <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-dash-bg border border-dash-border min-w-[70px]">
-                <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-0.5">SCORE</span>
-                <span className={`text-lg font-extrabold ${
-                  caseData.overallRiskLevel === "high"
-                    ? "text-red-400"
-                    : caseData.overallRiskLevel === "medium"
-                    ? "text-amber-400"
-                    : caseData.overallRiskLevel === "low"
-                    ? "text-emerald-400"
-                    : "text-dash-muted"
-                }`}>
-                  {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "--"}
-                </span>
+            {/* Overall Risk Card */}
+            <div className={`rounded-2xl border p-5 relative overflow-hidden group shadow-lg transition-all duration-300 ${
+              caseData.overallRiskLevel === "high"
+                ? "bg-red-500/5 border-red-500/20"
+                : caseData.overallRiskLevel === "medium"
+                ? "bg-amber-500/5 border-amber-500/20"
+                : caseData.overallRiskLevel === "low"
+                ? "bg-emerald-500/5 border-emerald-500/20"
+                : "bg-dash-input border-dash-border animate-pulse"
+            }`}>
+              <div className="flex items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">
+                    Overall Risk Assessment
+                  </p>
+                  <h3 className="text-base font-bold text-dash-text tracking-tight">
+                    {caseData.overallRiskLevel ? (
+                      <span className="uppercase">{caseData.overallRiskLevel} RISK</span>
+                    ) : (
+                      <span>PENDING SCAN</span>
+                    )}
+                  </h3>
+                  <p className="text-[11px] text-dash-muted leading-relaxed font-normal">
+                    {caseData.overallRiskLevel === "high"
+                      ? "High probability of image/metadata manipulation detected. Exercise extreme caution."
+                      : caseData.overallRiskLevel === "medium"
+                      ? "Potential anomalies detected in image metadata or structure. Further review suggested."
+                      : caseData.overallRiskLevel === "low"
+                      ? "All assets verified with low tamper indicators. Digital signature authentic."
+                      : "Forensic scanner is conducting deep neural scan on uploaded assets..."}
+                  </p>
+                </div>
+                <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-dash-bg border border-dash-border min-w-[70px]">
+                  <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-0.5">SCORE</span>
+                  <span className={`text-lg font-extrabold ${
+                    caseData.overallRiskLevel === "high"
+                      ? "text-red-400"
+                      : caseData.overallRiskLevel === "medium"
+                      ? "text-amber-400"
+                      : caseData.overallRiskLevel === "low"
+                      ? "text-emerald-400"
+                      : "text-dash-muted"
+                  }`}>
+                    {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "--"}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Accordion of reports per file */}
-          <div className="space-y-3">
-            {caseData.files.map((file) => {
-              const report = aiReports.find((r) => r.fileId === file.fileId);
-              const isOpen = expandedFileId === file.fileId;
-              return (
-                <div
-                  key={file.fileId}
-                  className="rounded-xl border border-dash-border bg-dash-card/30 overflow-hidden transition-all duration-300"
-                >
-                  {/* Header */}
-                  <button
-                    type="button"
-                    onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
-                    className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover/40 transition-colors cursor-pointer focus:outline-none"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
-                        {file.originalName}
-                      </p>
-                      <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
-                        {file.mimeType}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      {report ? (
-                        <TamperScoreBadge score={report.tamperScore} />
-                      ) : isLoadingAi ? (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                          Scanning
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-dash-border" />
-                          Pending
-                        </span>
-                      )}
-                      {isOpen ? (
-                        <ChevronUp className="w-4 h-4 text-dash-muted" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-dash-muted" />
-                      )}
-                    </div>
-                  </button>
-
-                  {/* Body */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="border-t border-dash-border p-4 bg-dash-input/50">
-                          {report ? (
-                            <AiReportPanel report={report} isLoading={false} />
-                          ) : (
-                            <AiReportPanel report={null} isLoading={true} />
-                          )}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-          
-          {!isLoadingTransfers && !isLoadingCase && (
-            <CustodyTimeline nodes={timelineNodes} />
-          )}
-        </motion.div>
+          <CommentsPanel caseId={caseId} />
+        </div>
       </div>
 
       <VerdictDialog

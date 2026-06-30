@@ -230,10 +230,14 @@ const STAT_VARIANTS = {
 const Variation5 = () => {
   return (
     <div className="absolute inset-0 h-full w-full bg-transparent">
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#fde68a_0%,transparent_40%)]" />
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)]" />
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)]" />
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#fecaca_0%,transparent_40%)]" />
+      {/* Top Left: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Top Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
+      {/* Bottom Center: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Bottom Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
     </div>
   );
 };

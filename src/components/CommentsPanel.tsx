@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/components/providers/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
@@ -19,6 +20,7 @@ interface Comment {
 
 interface Props {
   caseId: string;
+  className?: string;
 }
 
 function formatRelativeTime(dateString: string) {
@@ -38,7 +40,7 @@ function formatRelativeTime(dateString: string) {
   return date.toLocaleDateString();
 }
 
-export function CommentsPanel({ caseId }: Props) {
+export function CommentsPanel({ caseId, className }: Props) {
   const { getToken, user } = useAuth();
   const { toast } = useToast();
   const [comments, setComments] = useState<Comment[]>([]);
@@ -126,7 +128,7 @@ export function CommentsPanel({ caseId }: Props) {
   };
 
   return (
-    <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl space-y-4">
+    <div className={cn("rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl flex flex-col gap-4", className)}>
       {/* Header */}
       <div className="flex items-center justify-between border-b border-dash-border pb-3">
         <div className="flex items-center gap-2">
@@ -143,7 +145,7 @@ export function CommentsPanel({ caseId }: Props) {
       {/* Scrollable Message List */}
       <div
         ref={scrollRef}
-        className="max-h-64 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-dash-border scrollbar-track-transparent min-h-[120px]"
+        className="max-h-64 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-dash-border scrollbar-track-transparent min-h-[120px] flex-1"
       >
         {isLoading ? (
           <div className="flex flex-col gap-3">

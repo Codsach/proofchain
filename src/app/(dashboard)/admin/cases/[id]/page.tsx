@@ -350,7 +350,7 @@ export default function AdminCaseDetailPage() {
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 flex flex-col gap-8">
           <motion.div 
             initial={{ opacity: 0, x: -20 }} 
             animate={{ opacity: 1, x: 0 }}
@@ -379,7 +379,7 @@ export default function AdminCaseDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="space-y-4"
+            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-6 shadow-2xl relative overflow-hidden group"
           >
             <div className="flex items-center gap-4">
               <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Enclosed Evidence</h2>
@@ -394,7 +394,7 @@ export default function AdminCaseDetailPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 + idx * 0.05 }}
-                  className="rounded-2xl bg-dash-card border border-dash-border hover:border-emerald-500/20 p-5 space-y-4 transition-all group/file hover:shadow-[0_0_20px_rgba(16,185,129,0.05)]"
+                  className="rounded-2xl bg-dash-bg border border-dash-border hover:border-emerald-500/20 p-5 space-y-4 transition-all group/file hover:shadow-[0_0_20px_rgba(16,185,129,0.05)]"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
@@ -412,7 +412,7 @@ export default function AdminCaseDetailPage() {
                   </div>
                   <div className="space-y-1.5">
                     <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Digital Fingerprint</p>
-                    <p className="text-[10px] font-mono text-dash-accent/40 break-all bg-black/40 rounded px-2 py-1.5 border border-dash-border font-medium">
+                    <p className="text-[10px] font-mono text-dash-accent/60 break-all bg-dash-input/50 rounded px-2 py-1.5 border border-dash-border font-medium">
                       {file.sha256Hash}
                     </p>
                   </div>
@@ -422,12 +422,7 @@ export default function AdminCaseDetailPage() {
             
             {/* Show Map for the first file with GPS data */}
             {caseData.files.find(f => f.gpsLat !== null && f.gpsLng !== null) && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="pt-6"
-              >
+              <div className="pt-2">
                 {(() => {
                   const fileWithGps = caseData.files.find(f => f.gpsLat !== null && f.gpsLng !== null)!;
                   return (
@@ -438,33 +433,36 @@ export default function AdminCaseDetailPage() {
                     />
                   );
                 })()}
-              </motion.div>
+              </div>
             )}
           </motion.div>
 
-          <CommentsPanel caseId={caseId} />
+          {!isLoadingTransfers && !isLoadingCase && (
+            <CustodyTimeline nodes={timelineNodes} className="flex-1" />
+          )}
         </div>
 
-        <div className="space-y-8">
+        <div className="flex flex-col gap-8">
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15 }}
+            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-6 shadow-2xl relative overflow-hidden group"
           >
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-4">
               <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
               <div className="h-px flex-1 bg-dash-border" />
             </div>
 
             {/* Overall Risk Card */}
-            <div className={`rounded-2xl border p-5 relative overflow-hidden group shadow-lg transition-all duration-300 mb-6 ${
+            <div className={`rounded-xl border p-5 relative overflow-hidden group shadow-md transition-all duration-300 ${
               caseData.overallRiskLevel === "high"
                 ? "bg-red-500/5 border-red-500/20"
                 : caseData.overallRiskLevel === "medium"
                 ? "bg-amber-500/5 border-amber-500/20"
                 : caseData.overallRiskLevel === "low"
                 ? "bg-emerald-500/5 border-emerald-500/20"
-                : "bg-dash-input/30 border-dash-border animate-pulse"
+                : "bg-dash-input border-dash-border animate-pulse"
             }`}>
               <div className="flex items-center justify-between gap-4">
                 <div className="space-y-1">
@@ -473,9 +471,9 @@ export default function AdminCaseDetailPage() {
                   </p>
                   <h3 className="text-base font-bold text-dash-text tracking-tight">
                     {caseData.overallRiskLevel ? (
-                      <span className="uppercase">{caseData.overallRiskLevel} RISK</span>
+                      <span className="uppercase">{caseData.overallRiskLevel} RISK DETECTED</span>
                     ) : (
-                      <span>PENDING SCAN</span>
+                      <span>AWAITING SCAN</span>
                     )}
                   </h3>
                   <p className="text-[11px] text-dash-muted leading-relaxed font-normal">
@@ -581,7 +579,7 @@ export default function AdminCaseDetailPage() {
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-4 shadow-xl"
+                className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-4 shadow-2xl"
               >
                 <div className="flex items-center justify-between">
                   <h2 className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">Terminal Verdict</h2>
@@ -612,13 +610,11 @@ export default function AdminCaseDetailPage() {
             )}
           </AnimatePresence>
 
-          {!isLoadingTransfers && !isLoadingCase && (
-            <CustodyTimeline nodes={timelineNodes} />
-          )}
+          <CommentsPanel caseId={caseId} className="flex-1" />
         </div>
       </div>
         </div>
       </div>
     </div>
   );
-}
+}
