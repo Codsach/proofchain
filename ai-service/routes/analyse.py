@@ -200,8 +200,15 @@ async def analyse_evidence(
         },
         "gemini": {
             "manipulation_likelihood": gemini_result.manipulation_likelihood,
+            "ai_generation_likelihood": gemini_result.ai_generation_likelihood,
             "findings": gemini_result.findings,
             "confidence": gemini_result.confidence,
+        },
+        "aiDetection": {
+            "is_ai_generated": ai_gen_result.get("is_ai_generated") if ai_gen_result else None,
+            "confidence": ai_gen_result.get("confidence") if ai_gen_result else None,
+            "detector_available": ai_gen_result.get("detector_available", False) if ai_gen_result else False,
+            "error": ai_gen_result.get("error") if ai_gen_result else "Not run — non-image file",
         },
         "tamperScore": score_result.score,
         "riskLevel": score_result.risk_level,

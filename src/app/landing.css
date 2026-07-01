@@ -477,6 +477,92 @@
   opacity: 1;
 }
 
+/* ── KPI Cards (StatsSection) ── */
+.kpi-card {
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.78) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Isolate stacking context so shimmer clips to border-radius */
+  transform: translateZ(0);
+}
+
+/* Hover shimmer reflection sweep */
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.01s;
+}
+
+.kpi-card:hover::after {
+  animation: kpi-shimmer-sweep 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes kpi-shimmer-sweep {
+  0%   { left: -75%; opacity: 1; }
+  100% { left: 125%; opacity: 1; }
+}
+
+/* Inner glow on hover — triggered via group-hover helper class */
+.kpi-card .group-hover\:opacity-100 {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.kpi-card:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
+
+/* Shimmer sweep fallback class (for inline use if needed) */
+.kpi-shimmer-sweep {
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 100%
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+.kpi-card:hover .kpi-shimmer-sweep {
+  animation: kpi-shimmer-sweep 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Reduced motion: disable shimmer */
+@media (prefers-reduced-motion: reduce) {
+  .kpi-card::after,
+  .kpi-shimmer-sweep {
+    animation: none !important;
+  }
+  .kpi-card {
+    transition: none !important;
+  }
+}
+
 /* ─────────────────────────────────────────────
    GLOBAL FIXES
 ───────────────────────────────────────────── */

@@ -34,7 +34,14 @@ def verify_internal_key(x_internal_key: str = Header(...)):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "proofchain-ai", "version": "2.0.0"}
+    from ai_detector import get_detector_status
+    detector = get_detector_status()
+    return {
+        "status": "ok",
+        "service": "proofchain-ai",
+        "version": "2.0.0",
+        "ai_detector": detector,
+    }
 
 
 from routes.analyse import router as analyse_router

@@ -41,15 +41,15 @@ def check_pdf_anomalies(file_bytes: bytes) -> Dict[str, Any]:
 
         doc = fitz.open(stream=file_bytes, filetype="pdf")
         
-        # 1. Text layer check
+        # 1. Text layer check — sample up to 10 pages
         total_chars = 0
-        pages_checked = min(len(doc), 5)  # Check first 5 pages
+        pages_checked = min(len(doc), 10)  # Check first 10 pages
         for page_num in range(pages_checked):
             page = doc[page_num]
             text = page.get_text("text")
             total_chars += len(text.strip())
 
-        if total_chars < 50:
+        if total_chars < 100:
             results["no_text_layer"] = True
             results["details"].append("No extractable text layer (scanned page or image-only PDF)")
 

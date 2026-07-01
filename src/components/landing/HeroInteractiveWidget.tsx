@@ -93,7 +93,7 @@ export default function HeroInteractiveWidget() {
 
   return (
     <div
-      className="relative w-full max-w-[460px] mx-auto select-none"
+      className="relative w-full max-w-[460px] mx-auto lg:mr-0 lg:ml-auto lg:-mt-20 select-none"
       style={{
         background: "linear-gradient(160deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.72) 100%)",
         backdropFilter: "blur(28px)",

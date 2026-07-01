@@ -145,11 +145,13 @@ def _extract_with_pillow(file_path: str, is_field_incident: bool) -> ExifResult:
         from PIL.ExifTags import TAGS
 
         img = Image.open(file_path)
-        exif_data = img._getexif()
+        # Use public getexif() API (works for JPEG, PNG, TIFF, WebP)
+        # _getexif() is JPEG-only and returns None for all other formats
+        raw_exif = img.getexif()
 
         decoded = {}
-        if exif_data:
-            decoded = {TAGS.get(tag, tag): value for tag, value in exif_data.items()}
+        if raw_exif:
+            decoded = {TAGS.get(tag, tag): value for tag, value in raw_exif.items()}
             result.software = decoded.get("Software")
             result.creation_timestamp = str(decoded.get("DateTimeOriginal", ""))
             result.modification_timestamp = str(decoded.get("DateTime", ""))

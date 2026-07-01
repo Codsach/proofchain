@@ -148,6 +148,20 @@ def compute_score(
         # Inconclusive without error means API returned unexpected data
         pass
 
+    # ── Gemini AI-Generation signals ──────────────────────────────────────────
+    if gemini.ai_generation_likelihood == "high":
+        score += 30
+        breakdown["gemini_ai_generation_high"] = {
+            "points": 30,
+            "detail": f"AI visual analysis is HIGHLY CONFIDENT this image was AI-generated (confidence: {gemini.confidence})",
+        }
+    elif gemini.ai_generation_likelihood == "medium":
+        score += 15
+        breakdown["gemini_ai_generation_medium"] = {
+            "points": 15,
+            "detail": f"AI visual analysis flagged this image as POSSIBLY AI-generated (confidence: {gemini.confidence})",
+        }
+
     # ── PDF signal ────────────────────────────────────────────────────────────
     if is_pdf_no_text_layer:
         score += 25
@@ -234,6 +248,26 @@ def compute_score(
         risk_level = "medium"
     else:
         risk_level = "high"
+
+    # ── Minimum risk override: AI generation confirmed ─────────────────────────
+    # If either the local ViT detector OR Gemini visual analysis detected AI
+    # generation (at medium or high confidence), always escalate to at least
+    # "medium" risk — even if the raw score sits in the "low" band.
+    ai_generation_confirmed = ai_gen_detected or (
+        gemini.ai_generation_likelihood in ("medium", "high")
+    )
+    if risk_level == "low" and ai_generation_confirmed:
+        risk_level = "medium"
+        if "ai_generation_override" not in breakdown:
+            breakdown["ai_generation_override"] = {
+                "points": 0,
+                "detail": (
+                    "Risk level escalated to MEDIUM — AI generation confirmed by "
+                    + ("local ViT detector" if ai_gen_detected else "")
+                    + (" and " if ai_gen_detected and gemini.ai_generation_likelihood in ("medium", "high") else "")
+                    + (f"Gemini visual analysis ({gemini.ai_generation_likelihood} likelihood)" if gemini.ai_generation_likelihood in ("medium", "high") else "")
+                ),
+            }
 
     # ── Plain English summary ─────────────────────────────────────────────────
     plain_notes = _build_plain_notes(score, risk_level, breakdown, gemini, exif)

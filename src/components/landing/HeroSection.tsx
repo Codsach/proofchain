@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { ArrowRight, Shield, Zap, Lock, Database } from "lucide-react";
@@ -9,7 +9,9 @@ import HeroInteractiveWidget from "./HeroInteractiveWidget";
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 36, filter: "blur(12px)" },
   visible: (i: number = 0) => ({
-    opacity: 1, y: 0, filter: "blur(0px)",
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
     transition: { duration: 1.3, delay: i * 0.13, ease: [0.16, 1, 0.3, 1] },
   }),
 };
@@ -23,40 +25,17 @@ const stats = [
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const bgY    = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
-  const midY   = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
-  const midOp  = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgY    = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const fgOp   = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgSc   = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
-
-  useEffect(() => {
-    let hls: any = null;
-    const video = videoRef.current;
-    if (!video) return;
-    const src = "https://stream.mux.com/tLkHO1qZoaaQOUeVWo8hEBeGQfySP02EPS02BmnNFyXys.m3u8";
-    import("hls.js").then((M) => {
-      const Hls = M.default;
-      if (Hls.isSupported()) {
-        hls = new Hls({ enableWorker: false });
-        hls.loadSource(src);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(() => {}));
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = src;
-        video.addEventListener("loadedmetadata", () => video.play().catch(() => {}));
-      }
-    });
-    return () => { if (hls) hls.destroy(); };
-  }, []);
+  const midY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const midOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
+  const fgOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgSc = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
 
   return (
     <div
@@ -65,7 +44,8 @@ export default function HeroSection() {
       style={{ background: "transparent" }}
     >
       {/* ─── Keyframes ─── */}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         @keyframes heroShimmer {
           0%   { background-position: 200% center; }
           100% { background-position: -200% center; }
@@ -96,21 +76,6 @@ export default function HeroSection() {
         }
         .hero-line { animation: lineSlide 1.4s cubic-bezier(0.16,1,0.3,1) forwards; transform-origin: left; }
       ` }} />
-
-      {/* ─── Layer 1: Video ─── */}
-      <motion.div
-        style={{
-          position: "absolute", top: "-5%", bottom: "-5%", left: 0, right: 0,
-          y: bgY, scale: bgScale, zIndex: 0, pointerEvents: "none",
-          transformOrigin: "center top", willChange: "transform",
-        }}
-      >
-        <video
-          ref={videoRef}
-          autoPlay muted loop playsInline
-          style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.06 }}
-        />
-      </motion.div>
 
       {/* ─── Layer 2: Ambient glows ─── */}
       <motion.div
@@ -157,9 +122,6 @@ export default function HeroSection() {
           filter: "blur(70px)",
           pointerEvents: "none",
         }} />
-
-        {/* Subtle grid */}
-        <div className="lp-hero-grid hidden md:block" style={{ position: "absolute", inset: 0 }} />
       </motion.div>
 
       {/* ─── Layer 3: Foreground ─── */}
@@ -313,7 +275,7 @@ export default function HeroSection() {
 
           {/* ── Right: Widget ── */}
           <motion.div
-            className="lg:col-span-5 w-full flex justify-center items-center relative"
+            className="lg:col-span-5 w-full flex justify-center lg:justify-end items-center relative"
             variants={fadeUp} initial="hidden" animate="visible" custom={2.5}
           >
             {/* Outer ambient glow ring */}
