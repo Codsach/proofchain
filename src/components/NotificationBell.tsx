@@ -205,7 +205,7 @@ export function NotificationBell() {
               className="w-80 max-h-[400px] overflow-y-auto custom-scrollbar bg-dash-card border border-dash-border rounded-2xl shadow-2xl backdrop-blur-3xl"
             >
               <div className="p-4 border-b border-dash-border sticky top-0 bg-dash-card/90 backdrop-blur-md z-10 flex items-center justify-between">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Notifications</h3>
+                <h3 className="text-sm font-bold text-dash-text uppercase tracking-wider">Notifications</h3>
                 {unreadCount > 0 && (
                   <span className="text-[10px] font-bold bg-dash-accent/20 text-dash-accent px-2 py-0.5 rounded-full">
                     {unreadCount} new
@@ -227,14 +227,14 @@ export function NotificationBell() {
                     >
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <p className={`text-sm font-semibold truncate ${!notif.isRead ? 'text-white' : 'text-dash-muted'}`}>
+                          <p className={`text-sm font-semibold truncate ${!notif.isRead ? 'text-dash-text' : 'text-dash-muted'}`}>
                             {notif.title}
                           </p>
                           <span className="text-[9px] text-dash-muted font-mono whitespace-nowrap mt-1">
                             {new Date(notif.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className={`text-xs leading-relaxed line-clamp-2 ${!notif.isRead ? 'text-white/80' : 'text-white/40'}`}>
+                        <p className={`text-xs leading-relaxed line-clamp-2 ${!notif.isRead ? 'text-dash-text/80' : 'text-dash-text/40'}`}>
                           {notif.message}
                         </p>
                       </div>

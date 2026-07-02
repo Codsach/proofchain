@@ -16,6 +16,7 @@ interface AuthUser {
   email: string;
   fullName: string;
   role: "investigator" | "analyst" | "admin";
+  avatarUrl: string | null;
 }
 
 interface AuthContextValue {

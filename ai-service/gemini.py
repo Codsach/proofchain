@@ -12,19 +12,21 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-CANONICAL_PROMPT = """You are a digital forensics assistant. Analyse the provided image for signs of digital manipulation.
+CANONICAL_PROMPT = """You are a digital forensics assistant. Analyse the provided image for two distinct threats: (A) digital manipulation/tampering and (B) AI generation.
 
-Check for:
+Check for the following:
 1. Inconsistent lighting or shadows between objects
 2. Cloning or copy-paste artifacts (repeated textures or patterns)
 3. Splicing boundaries (hard edges where image regions have different noise profiles)
 4. Compression inconsistencies (different JPEG quality blocks within one image)
 5. Unnatural text or UI overlays (added text, doctored screenshots)
 6. Metadata inconsistency clues visible in the image content
+7. AI generation artifacts: unnaturally perfect or plastic-looking skin/surfaces, dreamlike or non-photorealistic backgrounds, uncanny valley facial features, perfectly symmetrical or repetitive fine-detail patterns (e.g. hair, fur, fabric), absence of real-world imperfections (sensor noise, lens distortion, chromatic aberration, grain), synthetic and overly uniform noise distribution, hallucinated or nonsensical text/signage/logos, inconsistent finger counts or limb geometry, and an overall "rendered" aesthetic inconsistent with real photography
 
 Respond in this exact JSON format and nothing else:
 {
   "manipulation_likelihood": "low" | "medium" | "high",
+  "ai_generation_likelihood": "low" | "medium" | "high",
   "findings": ["finding 1", "finding 2"],
   "confidence": "low" | "medium" | "high"
 }
@@ -35,6 +37,7 @@ Do not include any text, markdown, or explanation outside the JSON object."""
 @dataclass
 class GeminiResult:
     manipulation_likelihood: str = "inconclusive"
+    ai_generation_likelihood: str = "inconclusive"
     findings: list[str] = None
     confidence: str = "inconclusive"
     error: Optional[str] = None
@@ -82,7 +85,7 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
             contents=[CANONICAL_PROMPT, image_part],
             config=types.GenerateContentConfig(
                 temperature=0.1,  # Low temperature for consistent forensic analysis
-                max_output_tokens=512,
+                max_output_tokens=1024,  # Raised from 512 — prompt now has 4 fields + up to 10 findings
                 response_mime_type="application/json",
             ),
         )
@@ -96,6 +99,10 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
         if likelihood not in ("low", "medium", "high"):
             likelihood = "inconclusive"
 
+        ai_gen_likelihood = parsed.get("ai_generation_likelihood", "inconclusive")
+        if ai_gen_likelihood not in ("low", "medium", "high"):
+            ai_gen_likelihood = "inconclusive"
+
         confidence = parsed.get("confidence", "inconclusive")
         if confidence not in ("low", "medium", "high"):
             confidence = "inconclusive"
@@ -106,6 +113,7 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
 
         return GeminiResult(
             manipulation_likelihood=likelihood,
+            ai_generation_likelihood=ai_gen_likelihood,
             findings=findings[:10],  # cap at 10 findings
             confidence=confidence,
         )

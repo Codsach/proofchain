@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+
 
 @theme inline {
   --color-background: var(--background);
@@ -50,6 +50,7 @@
   --color-dash-bg: var(--dash-bg);
   --color-dash-sidebar: var(--dash-sidebar);
   --color-dash-card: var(--dash-card);
+  --color-dash-input: var(--dash-input);
   --color-dash-hover: var(--dash-hover);
   --color-dash-border: var(--dash-border);
   --color-dash-text: var(--dash-text);
@@ -60,97 +61,278 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  /* ── Shadcn base tokens (Light / Warm Slate) ── */
+  --background: oklch(0.945 0.006 240);    /* #F0F2F5 warm cool-gray */
+  --foreground: oklch(0.175 0.020 255);    /* #1A2033 deep navy text */
+  --card: oklch(0.965 0.005 240);          /* #F5F7FA elevated off-white */
+  --card-foreground: oklch(0.175 0.020 255);
+  --popover: oklch(0.965 0.005 240);
+  --popover-foreground: oklch(0.175 0.020 255);
+  --primary: oklch(0.620 0.155 162);       /* Deeper emerald on light bg */
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --secondary: oklch(0.920 0.007 240);     /* #ECEEF3 input surface */
+  --secondary-foreground: oklch(0.175 0.020 255);
+  --muted: oklch(0.912 0.007 240);         /* #E8EBF0 muted surface */
+  --muted-foreground: oklch(0.430 0.015 240); /* #556070 readable mid-tone */
+  --accent: oklch(0.900 0.007 240);        /* #E2E6ED hover */
+  --accent-foreground: oklch(0.175 0.020 255);
+  --destructive: oklch(0.580 0.230 15);    /* Rose */
+  --border: oklch(0.840 0.010 240);        /* #D1D7E0 soft visible border */
+  --input: oklch(0.920 0.007 240);         /* #ECEEF3 */
+  --ring: oklch(0.620 0.155 162 / 50%);
+  --chart-1: oklch(0.620 0.155 162);       /* emerald */
+  --chart-2: oklch(0.590 0.155 210);       /* cyan */
+  --chart-3: oklch(0.720 0.160 80);        /* amber */
+  --chart-4: oklch(0.580 0.190 295);       /* purple */
+  --chart-5: oklch(0.580 0.210 15);        /* rose */
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar: oklch(0.912 0.007 240);       /* #E8EBF0 */
+  --sidebar-foreground: oklch(0.175 0.020 255);
+  --sidebar-primary: oklch(0.620 0.155 162);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-accent: oklch(0.900 0.007 240);
+  --sidebar-accent-foreground: oklch(0.175 0.020 255);
+  --sidebar-border: oklch(0.840 0.010 240 / 80%);
+  --sidebar-ring: oklch(0.620 0.155 162 / 40%);
 
-  /* Dashboard variables */
-  --dash-bg: #09090B;
-  --dash-sidebar: #09090B;
-  --dash-card: #111827;
-  --dash-table: #09090B;
-  --dash-modal: #111827;
-  --dash-hover: #1F2937;
-  --dash-border: #1F2937;
-  --dash-text: #F8FAFC;
-  --dash-muted: #9CA3AF;
-  --dash-accent: #10B981;
-  --dash-danger: #EF4444;
-  --dash-info: #06B6D4;
-  --dash-accent-glow: rgba(16, 185, 129, 0.5);
+  /* ── Dashboard variables — Warm Slate (Light Mode) ── */
+  --dash-bg:          #F0F2F5;  /* Layer 0: warm cool-gray page bg  */
+  --dash-sidebar:     #E8EBF0;  /* Layer 1: sidebar surface          */
+  --dash-card:        #F5F7FA;  /* Layer 2: card / panel surface     */
+  --dash-input:       #ECEEF3;  /* Layer 3: form input surface       */
+  --dash-modal:       #F5F7FA;  /* Layer 3: modal / dialog           */
+  --dash-table:       #E8EBF0;  /* Layer 1: table rows               */
+  --dash-hover:       #E2E6ED;  /* Layer 4: hover / interactive      */
+  --dash-border:      #D1D7E0;  /* Soft visible border               */
+  --dash-text:        #1A2033;  /* Primary text (deep navy)          */
+  --dash-muted:       #556070;  /* Secondary / muted text            */
+  --dash-accent:      #0D9E6E;  /* Deeper emerald — pops on light bg */
+  --dash-danger:      #E0284A;  /* Danger / rose                     */
+  --dash-info:        #0597AE;  /* Info / cyan                       */
+  --dash-accent-glow: rgba(13, 158, 110, 0.30);
+  --dash-active-bg:   var(--dash-text);
+  --dash-active-text: var(--dash-bg);
 }
 
-.dark {
-  --background: oklch(0 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.1 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.1 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.15 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.15 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.15 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.1 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.15 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+
+
+.sentinel-theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'Inter', sans-serif;
+  --font-heading: 'Inter', sans-serif;
+  --font-exo2: 'Inter', sans-serif;
+  --font-geist-mono: 'Inter', sans-serif;
+  --font-orbitron: 'Inter', sans-serif;
+  --background: oklch(0.985 0.005 340); /* #fcf8fa */
+  --foreground: oklch(0.145 0.004 340); /* #1c1b1c */
+  --card: oklch(1.0 0 0); /* #ffffff */
+  --card-foreground: oklch(0.145 0.004 340);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.145 0.004 340);
+  --primary: oklch(0.141 0.015 240); /* #0f172a / Charcoal */
+  --primary-foreground: oklch(1.0 0 0); /* #ffffff */
+  --secondary: oklch(0.364 0.024 240); /* #475569 */
+  --secondary-foreground: oklch(1.0 0 0);
+  --muted: oklch(0.952 0.004 340); /* #f0ecee */
+  --muted-foreground: oklch(0.342 0.004 340); /* #494548 */
+  --accent: oklch(0.976 0.003 340); /* #f6f3f5 */
+  --accent-foreground: oklch(0.145 0.004 340);
+  --destructive: oklch(0.245 0.125 15); /* #ba1a1a / Critical */
+  --destructive-foreground: oklch(1.0 0 0);
+  --border: oklch(0.835 0.006 340); /* #cbc4c8 / outline-variant */
+  --input: oklch(0.976 0.003 340);
+  --ring: oklch(0.141 0.015 240 / 50%);
+  --radius: 12px;
+
+  /* Dashboard variables mapping */
+  --dash-bg:          #fcf8fa;
+  --dash-sidebar:     #eae7e9; /* Darkened just 2-3% (surface-container-high) */
+  --dash-card:        #ffffff;
+  --dash-input:       #f6f3f5;
+  --dash-modal:       #ffffff;
+  --dash-table:       #f0ecee;
+  --dash-hover:       #eae7e9;
+  --dash-border:      #cbc4c8;
+  --dash-text:        #1c1b1c;
+  --dash-muted:       #494548;
+  --dash-accent:      #1e293b; /* Highlight Color: #1e293b */
+  --dash-danger:      #ba1a1a;
+  --dash-info:        #64748b; /* Success/Healthy: #64748b */
+  --dash-accent-glow: rgba(30, 41, 59, 0.15);
+  --dash-active-bg:   #e0f2fe; /* Soft blue active background */
+  --dash-active-text: #0284c7; /* Sky-600 active icon */
+
+  font-family: 'Inter', sans-serif;
+}
+
+.sentinel-theme-v2 {
+  --font-sans: var(--font-exo2), 'Inter', sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+  --font-heading: var(--font-orbitron), sans-serif;
+  --font-exo2: var(--font-exo2), 'Inter', sans-serif;
+  --font-geist-mono: var(--font-geist-mono), monospace;
+  --font-orbitron: var(--font-orbitron), sans-serif;
+
+  /* 💡 High contrast slate gray background and pure white cards */
+  --background: oklch(0.960 0.011 240);    /* #f1f5f9 cool slate */
+  --foreground: oklch(0.150 0.015 240);    /* #1e293b deep charcoal text */
+  --card: oklch(1.0 0 0);                  /* #ffffff crisp white cards */
+  --card-foreground: oklch(0.150 0.015 240);
+  --popover: oklch(1.0 0 0);
+  --popover-foreground: oklch(0.150 0.015 240);
+  
+  /* Primary tech colors */
+  --primary: oklch(0.585 0.233 255);       /* Cobalt Blue accent (#3b82f6) */
+  --primary-foreground: oklch(1.0 0 0);
+  --secondary: oklch(0.940 0.011 240);     /* #e2e8f0 inputs */
+  --secondary-foreground: oklch(0.150 0.015 240);
+  --muted: oklch(0.950 0.011 240);         /* #f1f5f9 */
+  --muted-foreground: oklch(0.450 0.015 240); /* #64748b secondary text */
+  --accent: oklch(0.950 0.015 250 / 60%);
+  --accent-foreground: oklch(0.150 0.015 240);
+  --destructive: oklch(0.550 0.220 20);     /* Crimson Red */
+  --destructive-foreground: oklch(1.0 0 0);
+
+  /* Soft subtle borders that don't look clinical */
+  --border: oklch(0.910 0.011 240 / 70%);  /* Soft #e2e8f0 border */
+  --input: oklch(0.965 0.005 240);
+  --ring: oklch(0.585 0.233 255 / 40%);
+  --radius: 16px;                          /* Modern, smooth rounded corners */
+
+  /* Dashboard variables mapping */
+  --dash-bg:          #f1f5f9;             /* Slate background */
+  --dash-sidebar:     #ebedf1;             /* Slightly darker sidebar for layered look */
+  --dash-card:        #ffffff;             /* Crisp white cards */
+  --dash-input:       #f8fafc;             /* Very light input backgrounds */
+  --dash-modal:       #ffffff;
+  --dash-table:       #f8fafc;
+  --dash-hover:       #f1f5f9;
+  --dash-border:      #e2e8f0;             /* Soft border */
+  --dash-text:        #1e293b;             /* Primary text */
+  --dash-muted:       #64748b;             /* Secondary muted text */
+  --dash-accent:      #10b981;             /* Vibrant emerald green active accent */
+  --dash-danger:      #ef4444;
+  --dash-info:        #3b82f6;             /* Vibrant cobalt blue info state */
+  --dash-accent-glow: rgba(16, 185, 129, 0.15);
+  --dash-active-bg:   #e6fcf5;             /* Soft light emerald active background */
+  --dash-active-text: #059669;             /* Emerald active text */
+
+  font-family: var(--font-exo2), 'Inter', sans-serif;
+}
+
+/* Override standard shadows to give a premium elevated floating look */
+.sentinel-theme-v2 .shadow-sm,
+.sentinel-theme-v2 .shadow,
+.sentinel-theme-v2 .shadow-md,
+.sentinel-theme-v2 .shadow-lg {
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.02), 0 12px 30px -4px rgba(15, 23, 42, 0.04) !important;
+}
+
+/* Glassmorphism overrides for specific status badges on light background inside sentinel-theme-v2 */
+.sentinel-theme-v2 .bg-blue-900\/40 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #1e3a8a !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-amber-900\/40 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #78350f !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-red-900\/40 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ba1a1a !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-cyan-900\/40 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #083344 !important;
+  border-color: rgba(6, 182, 212, 0.3) !important;
+}
+.sentinel-theme-v2 .bg-green-900\/40 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #064e3b !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Typography Scale classes inside sentinel-theme-v2 */
+.sentinel-theme-v2 .display-lg { font-size: 57px; font-weight: 400; line-height: 64px; }
+.sentinel-theme-v2 .display-md { font-size: 45px; font-weight: 400; line-height: 52px; }
+.sentinel-theme-v2 .display-sm { font-size: 36px; font-weight: 400; line-height: 44px; }
+.sentinel-theme-v2 .headline-lg { font-size: 32px; font-weight: 600; line-height: 40px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .headline-md { font-size: 28px; font-weight: 400; line-height: 36px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .headline-sm { font-size: 24px; font-weight: 400; line-height: 32px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .title-lg { font-size: 22px; font-weight: 500; line-height: 28px; font-family: var(--font-heading), sans-serif; }
+.sentinel-theme-v2 .title-md { font-size: 16px; font-weight: 500; line-height: 24px; }
+.sentinel-theme-v2 .title-sm { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme-v2 .body-lg { font-size: 16px; font-weight: 400; line-height: 24px; }
+.sentinel-theme-v2 .body-md { font-size: 14px; font-weight: 400; line-height: 20px; }
+.sentinel-theme-v2 .body-sm { font-size: 12px; font-weight: 400; line-height: 16px; }
+.sentinel-theme-v2 .label-lg { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme-v2 .label-md { font-size: 12px; font-weight: 500; line-height: 16px; }
+.sentinel-theme-v2 .label-sm { font-size: 11px; font-weight: 500; line-height: 16px; }
+
+/* Glassmorphism overrides for specific status badges on light background inside sentinel-theme */
+.sentinel-theme .bg-blue-900\/40 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #1e3a8a !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}
+.sentinel-theme .bg-amber-900\/40 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #78350f !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+}
+.sentinel-theme .bg-red-900\/40 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #ba1a1a !important; /* Critical color */
+  border-color: rgba(239, 68, 68, 0.3) !important;
+}
+.sentinel-theme .bg-cyan-900\/40 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #083344 !important;
+  border-color: rgba(6, 182, 212, 0.3) !important;
+}
+.sentinel-theme .bg-green-900\/40 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #064e3b !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Typography Scale classes inside sentinel-theme */
+.sentinel-theme .display-lg { font-size: 57px; font-weight: 400; line-height: 64px; }
+.sentinel-theme .display-md { font-size: 45px; font-weight: 400; line-height: 52px; }
+.sentinel-theme .display-sm { font-size: 36px; font-weight: 400; line-height: 44px; }
+.sentinel-theme .headline-lg { font-size: 32px; font-weight: 600; line-height: 40px; }
+.sentinel-theme .headline-md { font-size: 28px; font-weight: 400; line-height: 36px; }
+.sentinel-theme .headline-sm { font-size: 24px; font-weight: 400; line-height: 32px; }
+.sentinel-theme .title-lg { font-size: 22px; font-weight: 500; line-height: 28px; }
+.sentinel-theme .title-md { font-size: 16px; font-weight: 500; line-height: 24px; }
+.sentinel-theme .title-sm { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme .body-lg { font-size: 16px; font-weight: 400; line-height: 24px; }
+.sentinel-theme .body-md { font-size: 14px; font-weight: 400; line-height: 20px; }
+.sentinel-theme .body-sm { font-size: 12px; font-weight: 400; line-height: 16px; }
+.sentinel-theme .label-lg { font-size: 14px; font-weight: 500; line-height: 20px; }
+.sentinel-theme .label-md { font-size: 12px; font-weight: 500; line-height: 16px; }
+.sentinel-theme .label-sm { font-size: 11px; font-weight: 500; line-height: 16px; }
+
+/* ── Auth / Login Related Pages Font Override — matches design.md Sentinel Interface ── */
+.auth-root,
+.auth-root * {
+  font-family: var(--font-inter), 'Inter', sans-serif !important;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
-}
+}

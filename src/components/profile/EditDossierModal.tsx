@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { CardContainer, CardFooter } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -13,22 +14,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateDossier } from "@/app/(dashboard)/profile/actions";
 import { useToast } from "@/hooks/use-toast";
 import { Edit, Loader2 } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const dossierSchema = z.object({
-  phoneNumber: z.string().optional().nullable(),
-  department: z.string().optional().nullable(),
-  location: z.string().optional().nullable(),
-  bio: z.string().max(500, "Bio must be under 500 characters").optional().nullable(),
-  emergencyContactName: z.string().optional().nullable(),
-  emergencyContactPhone: z.string().optional().nullable(),
-  skills: z.string().optional().nullable(), // We'll process this to an array
-  assignedDevices: z.string().optional().nullable(), // We'll process this to an array
+ phoneNumber: z.string().optional().nullable(),
+ department: z.string().optional().nullable(),
+ location: z.string().optional().nullable(),
+ bio: z.string().max(500, "Bio must be under 500 characters").optional().nullable(),
+ emergencyContactName: z.string().optional().nullable(),
+ emergencyContactPhone: z.string().optional().nullable(),
+ skills: z.string().optional().nullable(), // We'll process this to an array
+ assignedDevices: z.string().optional().nullable(), // We'll process this to an array
 });
 
 type DossierFormValues = z.infer<typeof dossierSchema>;
 
 interface EditDossierModalProps {
+  role: "investigator" | "analyst" | "admin";
   profile: {
     phoneNumber?: string | null;
     department?: string | null;
@@ -41,10 +42,34 @@ interface EditDossierModalProps {
   } | null;
 }
 
-export function EditDossierModal({ profile }: EditDossierModalProps) {
+export function EditDossierModal({ role, profile }: EditDossierModalProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const roleAccent = {
+    investigator: "text-emerald-700 border-emerald-500/30 hover:bg-emerald-600 hover:text-white shadow-[0_0_10px_rgba(16,185,129,0.05)] hover:border-emerald-500",
+    analyst: "text-cyan-700 border-cyan-500/30 hover:bg-cyan-600 hover:text-white shadow-[0_0_10px_rgba(6,182,212,0.05)] hover:border-cyan-500",
+    admin: "text-purple-700 border-purple-500/30 hover:bg-purple-600 hover:text-white shadow-[0_0_10px_rgba(168,85,247,0.05)] hover:border-purple-500",
+  }[role];
+
+  const roleSubmitBtn = {
+    investigator: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.15)]",
+    analyst: "bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.15)]",
+    admin: "bg-purple-600 text-white hover:bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.15)]",
+  }[role];
+
+  const roleAccentGlow = {
+    investigator: "hover:border-emerald-500/80 focus-visible:ring-emerald-500/50 focus-visible:border-emerald-500",
+    analyst: "hover:border-cyan-500/80 focus-visible:ring-cyan-500/50 focus-visible:border-cyan-500",
+    admin: "hover:border-purple-500/80 focus-visible:ring-purple-500/50 focus-visible:border-purple-500",
+  }[role];
+
+  const roleTabsActive = {
+    investigator: "data-[state=active]:bg-dash-hover data-[state=active]:text-emerald-700",
+    analyst: "data-[state=active]:bg-dash-hover data-[state=active]:text-cyan-700",
+    admin: "data-[state=active]:bg-dash-hover data-[state=active]:text-purple-700",
+  }[role];
 
   const form = useForm<DossierFormValues>({
     resolver: zodResolver(dossierSchema),
@@ -80,8 +105,6 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
       if (res.success) {
         toast({ title: "Dossier Updated", description: "Your profile has been successfully updated." });
         setOpen(false);
-        // Page refresh or state lift would happen here to show the new data immediately. 
-        // For now, Next.js might revalidate the path if we call router.refresh(), but we are just handling the action.
         window.location.reload(); 
       } else {
         toast({ variant: "destructive", title: "Update Failed", description: res.error });
@@ -96,52 +119,52 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="bg-[var(--dash-bg)] border-[var(--dash-accent)] text-[var(--dash-accent)] hover:bg-[var(--dash-accent)] hover:text-black shadow-[0_0_15px_rgba(34,197,94,0.1)]">
+        <Button variant="outline" size="sm" className={`font-mono border transition-all duration-300 rounded-xl h-9 px-4 ${roleAccent}`}>
           <Edit className="w-4 h-4 mr-2" />
           Edit Dossier
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] bg-[var(--dash-modal)] border border-[var(--dash-border)]">
+      <DialogContent className="sm:max-w-[600px] bg-dash-modal border border-dash-border rounded-xl shadow-md ring-0 sentinel-theme-v2 text-[var(--dash-text)]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-mono uppercase text-[var(--dash-text)]">Update Dossier</DialogTitle>
+          <DialogTitle className="text-xl font-heading tracking-wider uppercase text-dash-text">Update Dossier</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs defaultValue="general" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-[var(--dash-bg)] border border-[var(--dash-border)]">
-                <TabsTrigger value="general" className="font-mono text-xs uppercase data-[state=active]:bg-[var(--dash-card)] data-[state=active]:text-[var(--dash-accent)]">General</TabsTrigger>
-                <TabsTrigger value="operational" className="font-mono text-xs uppercase data-[state=active]:bg-[var(--dash-card)] data-[state=active]:text-[var(--dash-accent)]">Operational</TabsTrigger>
-                <TabsTrigger value="emergency" className="font-mono text-xs uppercase data-[state=active]:bg-[var(--dash-card)] data-[state=active]:text-[var(--dash-accent)]">Emergency</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-3 bg-dash-sidebar border border-dash-border p-1 rounded-xl">
+                <TabsTrigger value="general" className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>General</TabsTrigger>
+                <TabsTrigger value="operational" className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>Operational</TabsTrigger>
+                <TabsTrigger value="emergency" className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>Emergency</TabsTrigger>
               </TabsList>
 
               <TabsContent value="general" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
+                <CardContainer className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="phoneNumber" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Phone Number</FormLabel>
+                      <FormLabel className="text-dash-muted font-mono text-xs uppercase">Phone Number</FormLabel>
                       <FormControl>
-                        <Input placeholder="+1..." className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                        <Input placeholder="+1..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
                   <FormField control={form.control} name="department" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Department</FormLabel>
+                      <FormLabel className="text-dash-muted font-mono text-xs uppercase">Department</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g. Cyber Forensics" className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                        <Input placeholder="e.g. Cyber Forensics" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )} />
-                </div>
+                </CardContainer>
                 
                 <FormField control={form.control} name="location" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Location / Precinct</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Location / Precinct</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. HQ - Sector 7" className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                      <Input placeholder="e.g. HQ - Sector 7" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -149,9 +172,9 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
 
                 <FormField control={form.control} name="bio" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Duty Notes / Bio</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Duty Notes / Bio</FormLabel>
                     <FormControl>
-                      <Textarea placeholder="Professional summary or active duty notes..." className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white resize-none" {...field} value={field.value || ""} />
+                      <Textarea placeholder="Professional summary or active duty notes..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl p-3 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all resize-none h-24 ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -161,9 +184,9 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
               <TabsContent value="operational" className="space-y-4 mt-4">
                 <FormField control={form.control} name="skills" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Skills & Certifications (Comma Separated)</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Skills & Certifications (Comma Separated)</FormLabel>
                     <FormControl>
-                      <Input placeholder="OSINT, Network Forensics, CEH..." className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                      <Input placeholder="OSINT, Network Forensics, CEH..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -171,9 +194,9 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
 
                 <FormField control={form.control} name="assignedDevices" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Assigned Devices (Comma Separated)</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Assigned Devices (Comma Separated)</FormLabel>
                     <FormControl>
-                      <Input placeholder="Laptop-AX12, Mobile-Z9..." className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                      <Input placeholder="Laptop-AX12, Mobile-Z9..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -183,9 +206,9 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
               <TabsContent value="emergency" className="space-y-4 mt-4">
                 <FormField control={form.control} name="emergencyContactName" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Emergency Contact Name</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Emergency Contact Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="Full Name" className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                      <Input placeholder="Full Name" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,9 +216,9 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
 
                 <FormField control={form.control} name="emergencyContactPhone" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs">Emergency Contact Phone</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Emergency Contact Phone</FormLabel>
                     <FormControl>
-                      <Input placeholder="+1..." className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white" {...field} value={field.value || ""} />
+                      <Input placeholder="+1..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -203,12 +226,12 @@ export function EditDossierModal({ profile }: EditDossierModalProps) {
               </TabsContent>
             </Tabs>
 
-            <div className="flex justify-end pt-4 border-t border-[var(--dash-border)]">
-              <Button type="submit" disabled={isSubmitting} className="bg-[var(--dash-accent)] text-black hover:bg-emerald-600 font-mono font-bold">
+            <CardFooter className="flex justify-end pt-4 border-t border-dash-border bg-transparent p-0">
+              <Button type="submit" disabled={isSubmitting} className={`font-mono font-bold uppercase rounded-xl h-11 px-6 transition-all ${roleSubmitBtn}`}>
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {isSubmitting ? "UPDATING..." : "SAVE DOSSIER"}
               </Button>
-            </div>
+            </CardFooter>
           </form>
         </Form>
       </DialogContent>

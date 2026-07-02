@@ -1,7 +1,21 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { motion } from "framer-motion";
+
+// Simple relative-time helper (no external dep required)
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const s = Math.floor(diff / 1000);
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return `${d}d ago`;
+}
+
 import {
   LineChart,
   Line,
@@ -15,274 +29,540 @@ import {
   Cell,
   BarChart,
   Bar,
-  RadialBarChart,
-  RadialBar,
-  Legend
 } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import dynamic from "next/dynamic";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import {
+  Activity,
+  ShieldAlert,
+  CheckCircle2,
+  Clock,
+  User,
+  Users,
+  UserCog,
+  TrendingUp,
+  AlertCircle,
+} from "lucide-react";
 
-const GlobalCasesMap = dynamic(() => import("@/components/admin/GlobalCasesMap"), { ssr: false });
 
-// --- Mock Data ---
+// ---- Types ----
 
-const volumeData = [
-  { name: "Jan", cases: 120 }, { name: "Feb", cases: 210 }, { name: "Mar", cases: 180 },
-  { name: "Apr", cases: 290 }, { name: "May", cases: 350 }, { name: "Jun", cases: 420 },
-  { name: "Jul", cases: 380 }, { name: "Aug", cases: 490 }, { name: "Sep", cases: 550 },
-];
+export interface VolumeDataPoint {
+  name: string;
+  cases: number;
+}
 
-const riskData = [
-  { name: "Low Risk", value: 65, color: "#10b981" },
-  { name: "Medium Risk", value: 25, color: "#f59e0b" },
-  { name: "High Risk", value: 10, color: "#f43f5e" },
-];
+export interface RiskDataPoint {
+  name: string;
+  value: number;
+  color: string;
+}
 
-const tamperScoreData = [
-  { range: "0-10", count: 400 }, { range: "11-20", count: 120 },
-  { range: "21-30", count: 80 }, { range: "31-40", count: 40 },
-  { range: "41-50", count: 20 }, { range: "51-60", count: 15 },
-  { range: "61-70", count: 25 }, { range: "71-80", count: 45 },
-  { range: "81-90", count: 90 }, { range: "91-100", count: 150 },
-];
+export interface StatusDataPoint {
+  date: string;
+  pending: number;
+  verified: number;
+  rejected: number;
+}
 
-const statusBreakdownData = [
-  { date: "Week 1", pending: 40, verified: 120, rejected: 10 },
-  { date: "Week 2", pending: 50, verified: 150, rejected: 15 },
-  { date: "Week 3", pending: 30, verified: 180, rejected: 20 },
-  { date: "Week 4", pending: 60, verified: 200, rejected: 25 },
-];
+export interface TamperDataPoint {
+  range: string;
+  count: number;
+}
 
-const aiPerformanceData = [
-  { name: "Analysts", fill: "#3b82f6", value: 85 },
-  { name: "AI Agent", fill: "#10b981", value: 96 },
-];
+export interface UserCounts {
+  investigator: { total: number; active: number };
+  analyst: { total: number; active: number };
+  admin: { total: number; active: number };
+}
 
-// Map markers
-const markers = [
-  { id: "demo-ny", name: "New York Incident", lng: -74.006, lat: 40.7128 },
-  { id: "demo-ldn", name: "London Breach", lng: -0.1276, lat: 51.5072 },
-  { id: "demo-tyo", name: "Tokyo Malware", lng: 139.6917, lat: 35.6895 },
-  { id: "demo-sgp", name: "Singapore Phishing", lng: 103.8198, lat: 1.3521 },
-  { id: "demo-syd", name: "Sydney Threat", lng: 151.2093, lat: -33.8688 },
-];
+export interface AuditLogEntry {
+  _id: string;
+  timestamp: string;
+  actionType: string;
+  actorRole: string;
+  actorId?: { fullName?: string; email?: string } | null;
+  targetType: string;
+  ipAddress: string;
+}
 
-// Heatmap Data (Days x Hours)
-const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const heatmapData = days.map((day) =>
-  Array.from({ length: 24 }).map((_, hour) => ({
-    day,
-    hour,
-    value: Math.floor(Math.random() * 100), // Random intensity
-  }))
-);
+export interface DashboardChartsProps {
+  volumeData: VolumeDataPoint[];
+  riskData: RiskDataPoint[];
+  statusData: StatusDataPoint[];
+  tamperData: TamperDataPoint[];
+  userCounts: UserCounts;
+  recentActivity: AuditLogEntry[];
+  isLoading: boolean;
+}
 
-// --- Component ---
+// ---- Helpers ----
 
-export function DashboardCharts() {
+
+
+function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
-    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-8">
-      
-      {/* 1. Case Volume Over Time */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl min-w-0"
-      >
-        <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Case Volume Over Time</h3>
-        <div className="h-[300px] w-full min-w-0 overflow-hidden">
-          <ChartContainer config={{ cases: { label: "Cases", color: "var(--dash-accent)" } }} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={volumeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
-                <XAxis dataKey="name" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line
-                  type="monotone"
-                  dataKey="cases"
-                  stroke="var(--dash-accent)"
-                  strokeWidth={3}
-                  dot={{ r: 4, fill: "var(--dash-card)", strokeWidth: 2 }}
-                  activeDot={{ r: 6, fill: "var(--dash-accent)" }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
-      </motion.div>
+    <div className="mb-6">
+      <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest">{title}</h3>
+      {subtitle && <p className="text-xs text-dash-muted mt-0.5">{subtitle}</p>}
+    </div>
+  );
+}
 
-      {/* 2. Risk Distribution & 5. Avg Resolution Time */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-2 gap-6"
-      >
-        <div className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl flex flex-col justify-between">
-          <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-2">Risk Distribution</h3>
-          <div className="h-[200px] w-full relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={riskData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {riskData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--dash-card)', borderColor: 'var(--dash-border)', borderRadius: '8px' }}
-                  itemStyle={{ color: '#fff' }}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {/* Center Text */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-              <span className="text-2xl font-bold text-dash-text">100%</span>
-              <span className="text-[10px] text-dash-muted uppercase">Analyzed</span>
+function ChartSkeleton({ height = 250 }: { height?: number }) {
+  return (
+    <div className="space-y-3">
+      <Skeleton className="h-4 w-40 bg-dash-border" />
+      <Skeleton className={`w-full bg-dash-border rounded-xl`} style={{ height }} />
+    </div>
+  );
+}
+
+// ---- Action type → icon + colour mapping ----
+
+const ACTION_META: Record<string, { label: string; icon: React.ElementType; color: string }> = {
+  "case.create":          { label: "Case Created",       icon: Activity,    color: "text-emerald-400" },
+  "case.archive":         { label: "Case Archived",      icon: AlertCircle, color: "text-zinc-400" },
+  "evidence.submit":      { label: "Evidence Submitted", icon: CheckCircle2,color: "text-emerald-400" },
+  "verdict.issue":        { label: "Verdict Issued",     icon: ShieldAlert, color: "text-amber-400" },
+  "user.login":           { label: "User Login",         icon: User,        color: "text-blue-400" },
+  "user.deactivate":      { label: "User Deactivated",   icon: UserCog,     color: "text-rose-400" },
+  "admin.create_analyst": { label: "Analyst Created",    icon: Users,       color: "text-purple-400" },
+  "file.upload":          { label: "File Uploaded",      icon: Activity,    color: "text-cyan-400" },
+  "ai.complete":          { label: "AI Analysis Done",   icon: CheckCircle2,color: "text-emerald-400" },
+  "transfer.complete":    { label: "Transfer Complete",  icon: TrendingUp,  color: "text-emerald-400" },
+};
+
+function getActionMeta(actionType: string) {
+  return (
+    ACTION_META[actionType] ?? {
+      label: actionType.replace(/\./g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+      icon: Activity,
+      color: "text-dash-muted",
+    }
+  );
+}
+
+// ---- Sub-components ----
+
+function UserRosterCards({
+  userCounts,
+  isLoading,
+}: {
+  userCounts: UserCounts;
+  isLoading: boolean;
+}) {
+  const roster = [
+    {
+      role: "Investigators",
+      icon: User,
+      counts: userCounts.investigator,
+      color: "text-blue-400",
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/20",
+      glow: "group-hover:shadow-[0_0_20px_rgba(59,130,246,0.15)]",
+    },
+    {
+      role: "Analysts",
+      icon: Users,
+      counts: userCounts.analyst,
+      color: "text-purple-400",
+      bg: "bg-purple-500/10",
+      border: "border-purple-500/20",
+      glow: "group-hover:shadow-[0_0_20px_rgba(168,85,247,0.15)]",
+    },
+    {
+      role: "Admins",
+      icon: UserCog,
+      counts: userCounts.admin,
+      color: "text-emerald-400",
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/20",
+      glow: "group-hover:shadow-[0_0_20px_rgba(16,185,129,0.15)]",
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-3 gap-3">
+      {roster.map(({ role, icon: Icon, counts, color, bg, border, glow }) => (
+        <div
+          key={role}
+          className={`group relative rounded-xl border ${border} bg-dash-card p-4 space-y-2 transition-all duration-300 ${glow}`}
+        >
+          <div className={`inline-flex p-2 rounded-lg ${bg}`}>
+            <Icon size={16} className={color} />
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-7 w-12 bg-dash-border" />
+          ) : (
+            <p className={`text-2xl font-bold ${color}`}>{counts.total}</p>
+          )}
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">{role}</p>
+          {!isLoading && counts.total > 0 && (
+            <p className="text-[10px] text-dash-muted">
+              {counts.active} active
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function RecentActivityFeed({
+  activity,
+  isLoading,
+}: {
+  activity: AuditLogEntry[];
+  isLoading: boolean;
+}) {
+  return (
+    <div className="space-y-1 h-full overflow-y-auto pr-1 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-dash-border">
+      {isLoading ? (
+        Array.from({ length: 6 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3 py-2">
+            <Skeleton className="h-7 w-7 rounded-lg bg-dash-border shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3 w-32 bg-dash-border" />
+              <Skeleton className="h-2.5 w-20 bg-dash-border" />
             </div>
           </div>
+        ))
+      ) : activity.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-32 text-dash-muted">
+          <Clock size={24} className="mb-2 opacity-40" />
+          <p className="text-xs">No activity yet</p>
         </div>
+      ) : (
+        activity.map((entry, idx) => {
+          const meta = getActionMeta(entry.actionType);
+          const Icon = meta.icon;
+          const actor =
+            typeof entry.actorId === "object" && entry.actorId !== null
+              ? (entry.actorId as { fullName?: string; email?: string }).fullName ??
+                (entry.actorId as { email?: string }).email ??
+                entry.actorRole
+              : entry.actorRole;
 
-        <div className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl flex flex-col justify-between relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-dash-accent/10 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-dash-accent/20 transition-all" />
-          <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-2 z-10">Avg Resolution Time</h3>
-          <div className="flex flex-col gap-1 z-10 mt-4">
-            <span className="text-5xl font-black text-dash-text tracking-tighter">1.4<span className="text-2xl text-dash-muted font-bold ml-1">hrs</span></span>
-            <span className="text-sm text-dash-accent font-medium flex items-center gap-1">
-              <span className="text-lg">↓</span> 12% faster than last week
-            </span>
-          </div>
-          <div className="h-[60px] w-full mt-4 z-10 opacity-50">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={[{v: 2.1}, {v: 1.8}, {v: 1.9}, {v: 1.6}, {v: 1.4}]}>
-                <Line type="monotone" dataKey="v" stroke="#10b981" strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </motion.div>
-
-      {/* 4. Case Status Breakdown */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
-      >
-        <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Status Breakdown</h3>
-        <div className="h-[250px] w-full min-w-0 overflow-hidden">
-          <ChartContainer config={{ 
-            verified: { label: "Verified", color: "#10b981" },
-            pending: { label: "Pending", color: "#f59e0b" },
-            rejected: { label: "Rejected", color: "#f43f5e" }
-          }} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={statusBreakdownData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
-                <XAxis dataKey="date" stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="verified" stackId="a" fill="#10b981" radius={[0, 0, 4, 4]} />
-                <Bar dataKey="pending" stackId="a" fill="#f59e0b" />
-                <Bar dataKey="rejected" stackId="a" fill="#f43f5e" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
-      </motion.div>
-
-      {/* 3. Tamper Score Histogram */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
-      >
-        <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Tamper Score Spread</h3>
-        <div className="h-[250px] w-full min-w-0 overflow-hidden">
-          <ChartContainer config={{ count: { label: "Cases", color: "#8b5cf6" } }} className="h-full w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tamperScoreData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }} barCategoryGap={1}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" vertical={false} />
-                <XAxis dataKey="range" stroke="#666" fontSize={10} tickLine={false} axisLine={false} />
-                <YAxis stroke="#666" fontSize={12} tickLine={false} axisLine={false} />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="count" fill="#8b5cf6" radius={[2, 2, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </ChartContainer>
-        </div>
-      </motion.div>
-
-      {/* 6. AI Analysis Performance */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl flex flex-col items-center justify-center relative"
-      >
-        <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest absolute top-6 left-6">AI vs Human Accuracy</h3>
-        <div className="h-[250px] w-full mt-6 flex justify-center items-center">
-          <ResponsiveContainer width="100%" height="100%">
-            <RadialBarChart cx="50%" cy="50%" innerRadius="40%" outerRadius="100%" barSize={24} data={aiPerformanceData} startAngle={180} endAngle={-180}>
-              <RadialBar background={{ fill: '#1f1f1f' }} dataKey="value" cornerRadius={10} />
-              <Legend iconSize={10} layout="vertical" verticalAlign="middle" wrapperStyle={{ right: 0, color: '#fff' }} />
-              <Tooltip 
-                  contentStyle={{ backgroundColor: 'var(--dash-card)', borderColor: 'var(--dash-border)', borderRadius: '8px' }}
-                  itemStyle={{ color: '#fff' }}
-              />
-            </RadialBarChart>
-          </ResponsiveContainer>
-        </div>
-      </motion.div>
-
-      {/* 7. Peak Submission Hours Heatmap */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl overflow-x-auto"
-      >
-        <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Peak Submission Hours</h3>
-        <div className="min-w-[600px]">
-          <div className="flex mb-2">
-            <div className="w-10"></div>
-            {Array.from({ length: 24 }).map((_, i) => (
-              <div key={i} className="flex-1 text-center text-[10px] text-dash-muted">{i}</div>
-            ))}
-          </div>
-          <div className="space-y-1">
-            {heatmapData.map((dayData, i) => (
-              <div key={i} className="flex items-center gap-1">
-                <div className="w-10 text-xs font-medium text-dash-muted text-right pr-2">{dayData[0].day}</div>
-                {dayData.map((h, j) => {
-                  const intensity = h.value;
-                  let bg = "bg-dash-sidebar";
-                  if (intensity > 80) bg = "bg-dash-accent";
-                  else if (intensity > 60) bg = "bg-emerald-500/80";
-                  else if (intensity > 40) bg = "bg-emerald-600/60";
-                  else if (intensity > 20) bg = "bg-emerald-800/40";
-                  return (
-                    <div 
-                      key={j} 
-                      className={`flex-1 aspect-square rounded-sm ${bg} hover:ring-2 ring-white/50 transition-all cursor-crosshair`}
-                      title={`${h.day} ${h.hour}:00 - ${h.value} cases`}
-                    />
-                  );
-                })}
+          return (
+            <motion.div
+              key={entry._id}
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.04, duration: 0.25 }}
+              className="flex items-start gap-3 py-2.5 px-2 rounded-lg hover:bg-dash-hover/60 transition-colors group cursor-default"
+            >
+              <div className="shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-dash-border/60">
+                <Icon size={13} className={meta.color} />
               </div>
-            ))}
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-dash-text truncate">{meta.label}</p>
+                <p className="text-[10px] text-dash-muted truncate">
+                  {actor} · {entry.ipAddress}
+                </p>
+              </div>
+              <span className="text-[10px] text-dash-muted shrink-0 pt-0.5">
+                {timeAgo(entry.timestamp)}
+              </span>
+            </motion.div>
+          );
+        })
+      )}
+    </div>
+  );
+}
+
+// ---- Main component ----
+
+export function DashboardCharts({
+  volumeData,
+  riskData,
+  statusData,
+  tamperData,
+  userCounts,
+  recentActivity,
+  isLoading,
+}: DashboardChartsProps) {
+  const totalRisk = riskData.reduce((s, d) => s + d.value, 0);
+
+  return (
+    <div className="space-y-6 mt-2">
+
+      {/* Row 1: User Roster + Recent Activity */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* User Roster */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.05 }}
+          className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl"
+        >
+          <SectionHeader title="User Roster" subtitle="Active accounts by role" />
+          <UserRosterCards userCounts={userCounts} isLoading={isLoading} />
+        </motion.div>
+
+        {/* Recent Activity Feed */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl flex flex-col"
+        >
+          <SectionHeader title="Recent Activity" subtitle="Latest system events" />
+          <div className="flex-1 min-h-0">
+            <RecentActivityFeed activity={recentActivity} isLoading={isLoading} />
           </div>
-        </div>
+        </motion.div>
+      </div>
+
+      {/* Row 2: Case Volume Over Time — full width */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15 }}
+        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
+      >
+        {isLoading ? (
+          <ChartSkeleton height={300} />
+        ) : (
+          <>
+            <div className="flex items-start justify-between mb-6">
+              <SectionHeader title="Case Volume Over Time" subtitle="New cases submitted per month" />
+              <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest">
+                Last 9 months
+              </Badge>
+            </div>
+            <div className="h-[280px] w-full min-w-0 overflow-hidden">
+              <ChartContainer
+                config={{ cases: { label: "Cases", color: "var(--dash-accent)" } }}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={volumeData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="volumeGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                    <XAxis dataKey="name" stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Line
+                      type="monotone"
+                      dataKey="cases"
+                      stroke="#10b981"
+                      strokeWidth={3}
+                      dot={{ r: 4, fill: "var(--dash-card)", strokeWidth: 2, stroke: "#10b981" }}
+                      activeDot={{ r: 7, fill: "#10b981", stroke: "#065f46", strokeWidth: 2 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </>
+        )}
       </motion.div>
 
-      {/* 8. Geographic Distribution Map */}
+      {/* Row 3: Risk Distribution + Status Breakdown */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* Risk Distribution Donut */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl"
+        >
+          {isLoading ? (
+            <ChartSkeleton height={220} />
+          ) : (
+            <>
+              <SectionHeader title="Risk Distribution" subtitle="Across all AI-analysed reports" />
+              <div className="flex items-center gap-6">
+                <div className="h-[180px] w-[180px] relative shrink-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={riskData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={56}
+                        outerRadius={80}
+                        paddingAngle={4}
+                        dataKey="value"
+                        stroke="none"
+                        animationBegin={200}
+                        animationDuration={800}
+                      >
+                        {riskData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "var(--dash-card)",
+                          borderColor: "var(--dash-border)",
+                          borderRadius: "8px",
+                        }}
+                        itemStyle={{ color: "var(--dash-text)" }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  {/* Centre label */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <span className="text-2xl font-bold text-dash-text">{totalRisk}</span>
+                    <span className="text-[10px] text-dash-muted uppercase tracking-wider">Reports</span>
+                  </div>
+                </div>
+                {/* Legend */}
+                <div className="flex-1 space-y-3">
+                  {riskData.map((d) => (
+                    <div key={d.name} className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-block h-2.5 w-2.5 rounded-full" style={{ background: d.color }} />
+                          <span className="text-xs text-dash-muted font-medium">{d.name}</span>
+                        </div>
+                        <span className="text-xs font-bold text-dash-text">{d.value}</span>
+                      </div>
+                      <div className="h-1 rounded-full bg-dash-border overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: totalRisk > 0 ? `${(d.value / totalRisk) * 100}%` : "0%" }}
+                          transition={{ duration: 0.7, delay: 0.3 }}
+                          className="h-full rounded-full"
+                          style={{ background: d.color }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+        </motion.div>
+
+        {/* Status Breakdown (stacked bar) */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.25 }}
+          className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
+        >
+          {isLoading ? (
+            <ChartSkeleton height={220} />
+          ) : (
+            <>
+              <div className="flex items-start justify-between mb-6">
+                <SectionHeader title="Status Breakdown" subtitle="Cases by outcome, last 4 weeks" />
+                <div className="flex flex-col gap-1.5 shrink-0 mt-0.5">
+                  {[
+                    { label: "Verified", color: "#10b981" },
+                    { label: "Pending", color: "#f59e0b" },
+                    { label: "Rejected", color: "#f43f5e" },
+                  ].map(({ label, color }) => (
+                    <div key={label} className="flex items-center gap-1.5">
+                      <span className="inline-block h-2 w-2 rounded-sm" style={{ background: color }} />
+                      <span className="text-[10px] text-dash-muted">{label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="h-[200px] w-full min-w-0 overflow-hidden">
+                <ChartContainer
+                  config={{
+                    verified: { label: "Verified", color: "#10b981" },
+                    pending: { label: "Pending", color: "#f59e0b" },
+                    rejected: { label: "Rejected", color: "#f43f5e" },
+                  }}
+                  className="h-full w-full"
+                >
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={statusData} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                      <XAxis dataKey="date" stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar dataKey="verified" stackId="a" fill="#10b981" radius={[0, 0, 4, 4]} maxBarSize={36} />
+                      <Bar dataKey="pending" stackId="a" fill="#f59e0b" maxBarSize={36} />
+                      <Bar dataKey="rejected" stackId="a" fill="#f43f5e" radius={[4, 4, 0, 0]} maxBarSize={36} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </div>
+
+      {/* Row 4: Tamper Score Histogram — full width */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-        className="rounded-2xl border border-dash-border bg-dash-card p-6 col-span-1 xl:col-span-2 shadow-xl min-w-0"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.3 }}
+        className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-xl min-w-0"
       >
-        <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Geographic Case Origins</h3>
-        <div className="h-[500px] w-full rounded-xl overflow-hidden relative flex items-center justify-center border border-dash-border/50">
-          <GlobalCasesMap markers={markers} />
-        </div>
+        {isLoading ? (
+          <ChartSkeleton height={230} />
+        ) : (
+          <>
+            <div className="flex items-start justify-between mb-6">
+              <SectionHeader
+                title="Tamper Score Distribution"
+                subtitle="Evidence files scored by AI integrity analysis"
+              />
+              <div className="flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-3 rounded-sm bg-emerald-500" />
+                  <span className="text-[10px] text-dash-muted">Clean (0-30)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-3 rounded-sm bg-amber-500" />
+                  <span className="text-[10px] text-dash-muted">Medium (31-70)</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-block h-2 w-3 rounded-sm bg-rose-500" />
+                  <span className="text-[10px] text-dash-muted">High (71-100)</span>
+                </div>
+              </div>
+            </div>
+            <div className="h-[230px] w-full min-w-0 overflow-hidden">
+              <ChartContainer
+                config={{ count: { label: "Files", color: "#8b5cf6" } }}
+                className="h-full w-full"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={tamperData}
+                    margin={{ top: 0, right: 0, left: -20, bottom: 0 }}
+                    barCategoryGap={3}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
+                    <XAxis dataKey="range" stroke="var(--dash-muted)" fontSize={10} tickLine={false} axisLine={false} />
+                    <YAxis stroke="var(--dash-muted)" fontSize={12} tickLine={false} axisLine={false} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Bar dataKey="count" radius={[3, 3, 0, 0]} maxBarSize={40}>
+                      {tamperData.map((entry, index) => {
+                        const rangeStart = index * 10;
+                        const color =
+                          rangeStart < 31
+                            ? "#10b981"
+                            : rangeStart < 71
+                            ? "#f59e0b"
+                            : "#f43f5e";
+                        return <Cell key={`cell-${index}`} fill={color} />;
+                      })}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          </>
+        )}
       </motion.div>
 
     </div>

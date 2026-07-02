@@ -91,7 +91,7 @@ export default function LoginForm({
   const isAdminMode = mode === "admin";
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-[#000000] px-4 overflow-hidden auth-root">
       {/* Background decoration */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_0%,rgba(16,185,129,0.05)_0%,transparent_70%)]" />
@@ -198,7 +198,12 @@ export default function LoginForm({
                 name="password"
                 render={({ field }) => (
                   <FormItem className="space-y-1.5">
-                    <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Password</FormLabel>
+                    <div className="flex justify-between items-center">
+                      <FormLabel className="text-white/60 text-xs font-semibold uppercase tracking-wider">Password</FormLabel>
+                      <Link href="/forgot-password" className="text-xs text-emerald-400 hover:text-emerald-300 transition-colors">
+                        Forgot password?
+                      </Link>
+                    </div>
                     <FormControl>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />

@@ -7,6 +7,14 @@ load_dotenv()
 
 app = FastAPI(title="ProofChain AI Service", version="2.0.0")
 
+@app.on_event("startup")
+def startup_event():
+    try:
+        from ai_detector import init_detector
+        init_detector()
+    except Exception as e:
+        print(f"Error pre-warming AI Image Detector: {e}")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -26,7 +34,14 @@ def verify_internal_key(x_internal_key: str = Header(...)):
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "service": "proofchain-ai", "version": "2.0.0"}
+    from ai_detector import get_detector_status
+    detector = get_detector_status()
+    return {
+        "status": "ok",
+        "service": "proofchain-ai",
+        "version": "2.0.0",
+        "ai_detector": detector,
+    }
 
 
 from routes.analyse import router as analyse_router

@@ -14,11 +14,16 @@ async function getCase(
 
     const { id: caseId } = await ctx.params;
 
-    const query = Case.findOne({ caseId }).select("-__v");
+    const query = Case.findOne({ caseId })
+      .select("-__v")
+      .populate("currentCustodian", "fullName email role");
 
     // Investigators can only see their own cases
     if (user.role === "investigator") {
       query.where({ investigatorId: user.userId });
+      query.populate("investigatorId", "fullName email role");
+    } else if (user.role === "admin") {
+      query.populate("investigatorId", "fullName email role");
     }
 
     const caseDoc = await query.lean();

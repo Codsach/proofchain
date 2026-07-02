@@ -15,19 +15,19 @@ async function getAiReport(
     const { id: caseId } = await ctx.params;
 
     // Verify the case exists and user has access
-    const caseDoc = await Case.findOne({ caseId }).select("aiReportId status investigatorId");
+    const caseDoc = await Case.findOne({ caseId }).select("aiReportIds status investigatorId");
     if (!caseDoc) {
       return NextResponse.json({ error: "Case not found" }, { status: 404 });
     }
 
-    if (!caseDoc.aiReportId) {
+    if (!caseDoc.aiReportIds || caseDoc.aiReportIds.length === 0) {
       return NextResponse.json(
         { message: "AI analysis is still running", status: caseDoc.status },
         { status: 202 }
       );
     }
 
-    const report = await AiReport.findById(caseDoc.aiReportId).lean();
+    const report = await AiReport.findById(caseDoc.aiReportIds[0]).lean();
     if (!report) {
       return NextResponse.json(
         { error: "AI report not found" },

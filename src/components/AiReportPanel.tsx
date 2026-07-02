@@ -1,5 +1,6 @@
-import { TamperScoreBadge } from "./TamperScoreBadge";
 import { motion } from "framer-motion";
+import { TamperGauge } from "./TamperGauge";
+import { ScoreBreakdownChart } from "./ScoreBreakdownChart";
 
 interface ExifData {
   software: string | null;
@@ -26,6 +27,33 @@ interface AiReport {
   analysedAt: string;
   status: string;
 }
+
+export const SIGNAL_LABELS: Record<string, string> = {
+  editing_software: "Editing Software Detected",
+  modification_after_creation: "Modified After Creation",
+  gps_absent: "GPS Absent (Field Incident)",
+  gps_absent_on_field_incident: "GPS Absent (Field Incident)",
+  no_creation_timestamp: "No Creation Timestamp",
+  gemini_high: "AI Visual Analysis: High Risk",
+  gemini_medium: "AI Visual Analysis: Medium Risk",
+  pdf_no_text_layer: "PDF: No Text Layer (Scanned)",
+  thumbnail_dimension_mismatch: "Thumbnail Dimension Mismatch",
+  gps_precision_anomaly: "GPS Precision Anomaly",
+  future_timestamp: "Future Creation Timestamp",
+  software_field_contradiction: "Software Field Contradiction",
+  screenshot_tool_detected: "Screenshot Tool Detected",
+  instant_modification: "Instant Modification",
+  device_make_contradiction: "Device Make Contradiction",
+  uncalibrated_color_space: "Uncalibrated Color Space",
+  mime_mismatch: "MIME Type Spoofing Detected",
+  office_macros_detected: "Office Document Macro Detected",
+  video_reencoded: "Re-encoded Video Detection",
+  av_timestamp_mismatch: "A/V Stream Timestamp Mismatch",
+  av_duration_mismatch: "A/V Stream Duration Mismatch",
+  ai_generated_image: "AI-Generated Image Analysis",
+  pdf_javascript_detected: "PDF Embedded JavaScript Risk",
+  pdf_hidden_layers_detected: "PDF Hidden Layers Detected",
+};
 
 interface Props {
   report: AiReport | null;
@@ -61,6 +89,22 @@ export function AiReportPanel({ report, isLoading }: Props) {
     modification_after_creation: "Modified after creation",
     gps_absent_on_field_incident: "GPS absent",
     no_creation_timestamp: "No creation timestamp",
+    thumbnail_dimension_mismatch: "Thumbnail dimensions mismatch",
+    gps_precision_anomaly: "GPS precision anomaly",
+    future_timestamp: "Future creation timestamp",
+    software_field_contradiction: "Software field contradiction",
+    screenshot_tool_detected: "Screenshot tool detected",
+    instant_modification: "Instant modification after creation",
+    device_make_contradiction: "Device make contradiction",
+    uncalibrated_color_space: "Uncalibrated color space",
+    mime_mismatch_detected: "MIME type signature spoofed",
+    office_macros_detected: "VBA Macro or OLE trigger detected",
+    video_reencoded_detected: "Video re-encoded multiple times / modified",
+    av_timestamp_mismatch_detected: "Audio/Video streams have timestamp mismatch",
+    av_duration_mismatch_detected: "Audio/Video stream durations differ significantly",
+    ai_generated_image_detected: "Image is likely AI-Generated (ViT Heuristics)",
+    pdf_javascript_detected: "Embedded PDF JavaScript elements detected",
+    pdf_hidden_layers_detected: "PDF Optional Content Groups (hidden layers) detected",
   };
 
   return (
@@ -69,14 +113,11 @@ export function AiReportPanel({ report, isLoading }: Props) {
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
 
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 relative">
-        <div>
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-2">Integrity Index</p>
-          <div className="scale-110 origin-left">
-            <TamperScoreBadge score={report.tamperScore} showLabel />
-          </div>
+      <div className="flex items-center justify-between gap-4 relative">
+        <div className="-ml-3">
+          <TamperGauge score={report.tamperScore} />
         </div>
-        <div className="text-right">
+        <div className="text-right self-start pt-2">
           <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Temporal Scan</p>
           <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
             {new Date(report.analysedAt).toLocaleString(undefined, {
@@ -98,6 +139,16 @@ export function AiReportPanel({ report, isLoading }: Props) {
           {report.plainNotesSummary}
         </p>
       </motion.div>
+
+      {/* Score Breakdown Chart */}
+      {report.scoreBreakdown && Object.keys(report.scoreBreakdown).length > 0 && (
+        <div className="space-y-3 pt-2">
+          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+            Forensic Risk Breakdown
+          </p>
+          <ScoreBreakdownChart scoreBreakdown={report.scoreBreakdown} />
+        </div>
+      )}
 
       {/* EXIF flags */}
       {report.exifData.flags && report.exifData.flags.length > 0 && (

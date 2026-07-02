@@ -44,6 +44,21 @@ const ACTION_COLORS: Record<string, string> = {
   "verify.public_check": "text-purple-400 group-hover:text-purple-300",
 };
 
+const AuditBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Amber */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#fde68a_0%,transparent_40%)]" />
+      {/* Top Right: Orange */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#fed7aa_0%,transparent_40%)]" />
+      {/* Bottom Center: Amber */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#fde68a_0%,transparent_40%)]" />
+      {/* Bottom Right: Orange */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#fed7aa_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
 export default function AdminAuditPage() {
   const { getToken } = useAuth();
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -85,13 +100,20 @@ export default function AdminAuditPage() {
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   return (
-    <div className="space-y-10">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <AuditBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-emerald-500/50" />
+          <div className="h-px w-8 bg-slate-400/50" />
           <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Security Audit</p>
         </div>
-        <h1 className="text-4xl font-bold text-dash-text tracking-tight">System Events</h1>
+        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">System Events</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Real-time append-only ledger of all platform operations and cryptographic events.
         </p>
@@ -102,7 +124,7 @@ export default function AdminAuditPage() {
         <div className="space-y-1.5 flex-1 min-w-[200px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Event Category</p>
           <Select value={actionFilter} onValueChange={(v) => { setActionFilter(v); setPage(1); }}>
-            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl">
               <SelectValue placeholder="All instances" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text">
@@ -120,7 +142,7 @@ export default function AdminAuditPage() {
             type="date"
             value={fromDate}
             onChange={(e) => { setFromDate(e.target.value); setPage(1); }}
-            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl px-4"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl px-4"
           />
         </div>
 
@@ -130,7 +152,7 @@ export default function AdminAuditPage() {
             type="date"
             value={toDate}
             onChange={(e) => { setToDate(e.target.value); setPage(1); }}
-            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl px-4"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl px-4"
           />
         </div>
 
@@ -173,14 +195,14 @@ export default function AdminAuditPage() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Temporal Index</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Action Protocol</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Identity Actor</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Target Object</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden lg:table-cell">Source IP</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Temporal Index</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Action Protocol</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Identity Actor</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Target Object</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden lg:table-cell">Source IP</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 font-medium">
+              <tbody className="divide-y divide-dash-border font-medium">
                 <AnimatePresence>
                   {logs.map((log, idx) => (
                     <motion.tr 
@@ -190,25 +212,25 @@ export default function AdminAuditPage() {
                       transition={{ delay: idx * 0.02 }}
                       className="hover:bg-emerald-500/[0.02] transition-colors group"
                     >
-                      <td className="px-6 py-4 text-dash-muted font-mono whitespace-nowrap">
+                      <td className="px-6 py-5 text-dash-muted font-mono whitespace-nowrap">
                         {new Date(log.timestamp).toLocaleString(undefined, {
                           month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit'
                         })}
                       </td>
-                      <td className="px-6 py-4">
-                        <span className={`font-mono px-2 py-1 rounded bg-dash-card border border-white/[0.03] transition-colors ${ACTION_COLORS[log.actionType] ?? "text-dash-text group-hover:text-dash-accent"}`}>
+                      <td className="px-6 py-5">
+                        <span className={`font-mono px-2 py-1 rounded bg-dash-hover border border-dash-border/60 transition-colors ${ACTION_COLORS[log.actionType] ?? "text-dash-text group-hover:text-dash-accent"}`}>
                           {log.actionType}
                         </span>
                       </td>
-                      <td className="px-6 py-4 hidden sm:table-cell text-white/50 group-hover:text-dash-text transition-colors">
+                      <td className="px-6 py-5 hidden sm:table-cell text-dash-muted group-hover:text-dash-text transition-colors">
                         {log.actorId?.email ?? <span className="text-dash-muted italic">{log.actorRole}</span>}
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell font-mono text-dash-muted">
+                      <td className="px-6 py-5 hidden md:table-cell font-mono text-dash-muted">
                         <span className="opacity-40">{log.targetType}</span>
                         <span className="mx-1 text-dash-muted">/</span>
-                        <span className="group-hover:text-white/60 transition-colors">{log.targetId.slice(0, 12)}…</span>
+                        <span className="group-hover:text-dash-muted transition-colors">{log.targetId.slice(0, 12)}…</span>
                       </td>
-                      <td className="px-6 py-4 hidden lg:table-cell text-dash-muted font-mono group-hover:text-dash-accent/40 transition-colors">
+                      <td className="px-6 py-5 hidden lg:table-cell text-dash-muted font-mono group-hover:text-dash-accent/40 transition-colors">
                         {log.ipAddress}
                       </td>
                     </motion.tr>
@@ -226,7 +248,7 @@ export default function AdminAuditPage() {
           <div className="flex items-center gap-3">
             <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Items per page</p>
             <Select value={limit} onValueChange={(v) => { setLimit(v); setPage(1); }}>
-              <SelectTrigger className="w-20 bg-dash-sidebar border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-8 rounded-lg text-xs">
+              <SelectTrigger className="w-20 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-8 rounded-lg text-xs">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-dash-bg border-dash-border text-dash-text text-xs">
@@ -244,7 +266,7 @@ export default function AdminAuditPage() {
               size="sm"
               onClick={() => setPage(1)}
               disabled={page === 1 || isLoading}
-              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text hover:bg-white/5 transition-all outline-none hidden sm:flex"
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text hover:bg-dash-hover transition-all outline-none hidden sm:flex"
             >
               First
             </Button>
@@ -258,13 +280,13 @@ export default function AdminAuditPage() {
               ← Prev
             </Button>
             <div className="flex items-center gap-2 sm:gap-4 px-2">
-              <div className="h-px w-4 sm:w-8 bg-white/10" />
+              <div className="h-px w-4 sm:w-8 bg-dash-border" />
               <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em] text-center">
                 Sector <span className="text-dash-text">{page}</span> of {totalPages}
                 <br className="sm:hidden" />
                 <span className="sm:ml-2 text-dash-accent/40">({totalRecords} logs)</span>
               </span>
-              <div className="h-px w-4 sm:w-8 bg-white/10" />
+              <div className="h-px w-4 sm:w-8 bg-dash-border" />
             </div>
             <Button
               variant="ghost"
@@ -280,13 +302,15 @@ export default function AdminAuditPage() {
               size="sm"
               onClick={() => setPage(totalPages)}
               disabled={page === totalPages || isLoading}
-              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text hover:bg-white/5 transition-all outline-none hidden sm:flex"
+              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text hover:bg-dash-hover transition-all outline-none hidden sm:flex"
             >
               Last
             </Button>
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }

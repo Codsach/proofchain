@@ -1,9 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Orbitron, Exo_2 } from "next/font/google";
+import { Orbitron, Exo_2, Inter } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 import { AuthProvider } from "@/components/providers/AuthContext";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
@@ -16,6 +15,11 @@ const orbitron = Orbitron({
 const exo2 = Exo_2({
   subsets: ["latin"],
   variable: "--font-exo2",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -54,7 +58,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${orbitron.variable} ${exo2.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${orbitron.variable} ${exo2.variable} ${inter.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA iOS meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -64,23 +68,16 @@ export default function RootLayout({
         {/* Required for camera access on iOS PWA */}
         <meta name="allow" content="camera; geolocation; microphone" />
       </head>
-      <body className="font-sans antialiased bg-black selection:bg-emerald-500/30">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <ServiceWorkerProvider>
-            <AuthProvider>
-              <TooltipProvider>
-                {children}
-              </TooltipProvider>
-            </AuthProvider>
-          </ServiceWorkerProvider>
-          <Toaster />
-          <PWAInstallPrompt />
-        </ThemeProvider>
+      <body className="font-sans antialiased bg-background selection:bg-emerald-500/30">
+        <ServiceWorkerProvider>
+          <AuthProvider>
+            <TooltipProvider>
+              {children}
+            </TooltipProvider>
+          </AuthProvider>
+        </ServiceWorkerProvider>
+        <Toaster />
+        <PWAInstallPrompt />
       </body>
     </html>
   );

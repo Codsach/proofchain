@@ -1,330 +1,329 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
-import { ArrowRight, Lock } from "lucide-react";
-import { NetworkParticles } from "@/components/ui/network-particles";
+import { ArrowRight } from "lucide-react";
 import HeroInteractiveWidget from "./HeroInteractiveWidget";
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(12px)" },
+  hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
   visible: (i: number = 0) => ({
-    opacity: 1, y: 0, filter: "blur(0px)",
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
     transition: { duration: 1.2, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] },
   }),
 };
 
+// Very subtle mouse parallax
+function useMouseParallax(strength = 0.012) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      setOffset({
+        x: (e.clientX - cx) * strength,
+        y: (e.clientY - cy) * strength,
+      });
+    };
+    window.addEventListener("mousemove", fn, { passive: true });
+    return () => window.removeEventListener("mousemove", fn);
+  }, [strength]);
+  return offset;
+}
+
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const parallax    = useMouseParallax(0.010);
 
-  // Scroll progress relative to the hero section itself
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  // Layer 1 — Background video (slowest)
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.05]);
-
-  // Layer 2 — Grid + glow overlay (mid speed)
-  const midY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
-  const midOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-
-  // Layer 3 — Foreground text content (fastest)
-  const fgY = useTransform(scrollYProgress, [0, 1], ["0%", "25%"]);
-  const fgOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgScale = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
-
-  useEffect(() => {
-    let hls: any = null;
-    const video = videoRef.current;
-    if (!video) return;
-
-    const src = "https://stream.mux.com/tLkHO1qZoaaQOUeVWo8hEBeGQfySP02EPS02BmnNFyXys.m3u8";
-
-    // Dynamic import Hls.js to avoid SSR issues
-    import("hls.js").then((HlsModule) => {
-      const Hls = HlsModule.default;
-      if (Hls.isSupported()) {
-        hls = new Hls({ enableWorker: false });
-        hls.loadSource(src);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().catch((err) => console.log("Video auto-play blocked:", err));
-        });
-      } else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-        video.src = src;
-        video.addEventListener("loadedmetadata", () => {
-          video.play().catch((err) => console.log("Video auto-play blocked:", err));
-        });
-      }
-    });
-
-    return () => {
-      if (hls) hls.destroy();
-    };
-  }, []);
+  const midY  = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+  const midOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgY   = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const fgOp  = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgSc  = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
 
   return (
     <div
       ref={sectionRef}
-      className={`lp-hero-radial noise-overlay relative min-h-screen flex items-center justify-center pt-24 pb-16 lg:py-0 overflow-hidden w-full`}
-      style={{
-        boxSizing: "border-box",
-      }}
+      className="noise-overlay relative min-h-screen flex items-center justify-center overflow-hidden w-full"
+      style={{ background: "transparent" }}
     >
+      {/* ─── Keyframes ─── */}
       <style dangerouslySetInnerHTML={{
         __html: `
-        @keyframes textShimmer {
-          0% { background-position: 200% center; }
-          100% { background-position: -200% center; }
+        @keyframes heroGradientText {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
-        .animate-text-shimmer {
+        .hero-shimmer {
           background: linear-gradient(
             110deg,
-            rgba(255, 255, 255, 0.65) 0%,
-            rgba(255, 255, 255, 1) 25%,
-            rgba(194, 163, 50, 0.8) 50%,
-            rgba(161, 133, 37, 0.8) 75%,
-            rgba(255, 255, 255, 0.65) 100%
+            #0f172a 0%,
+            #334155 22%,
+            #059669 42%,
+            #047857 58%,
+            #334155 78%,
+            #0f172a 100%
           );
-          background-size: 200% auto;
+          background-size: 280% auto;
           color: transparent;
           -webkit-background-clip: text;
           background-clip: text;
-          animation: textShimmer 8s linear infinite;
+          animation: heroGradientText 10s ease infinite;
         }
       `}} />
 
-      {/* ── Layer 1: Background video (slowest parallax) ── */}
+      {/* ─── Layer 2: Ambient lighting — soft, no large circles ─── */}
       <motion.div
         style={{
-          position: "absolute",
-          top: "-5%",
-          bottom: "-5%",
-          left: 0,
-          right: 0,
-          y: bgY,
-          scale: bgScale,
-          zIndex: 0,
-          pointerEvents: "none",
-          transformOrigin: "center top",
-          willChange: "transform",
+          position: "absolute", inset: 0,
+          y: midY, opacity: midOp, zIndex: 2,
+          pointerEvents: "none", willChange: "transform, opacity",
         }}
       >
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            opacity: 0.18,
-          }}
-        />
-      </motion.div>
+        {/* Edge fades */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to right, var(--lp-bg) 0%, transparent 18%, transparent 82%, var(--lp-bg) 100%)",
+        }} />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to top, var(--lp-bg) 0%, transparent 50%)",
+        }} />
 
-      {/* Canvas Animated Network Mesh Background */}
-      <NetworkParticles className="opacity-25 z-[1]" />
-
-      {/* ── Layer 2: Overlays + grid + glow (mid parallax) ── */}
-      <motion.div
-        style={{
+        {/* Very soft top-center radial — no animation, no large circle */}
+        <div style={{
           position: "absolute",
-          inset: 0,
-          y: midY,
-          opacity: midOpacity,
-          zIndex: 2,
+          top: "-4%",
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "55%",
+          maxWidth: 760,
+          height: 380,
+          background: "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.08) 0%, rgba(5,150,105,0.03) 45%, transparent 70%)",
+          filter: "blur(60px)",
           pointerEvents: "none",
-          willChange: "transform, opacity",
-        }}
-      >
-        {/* Gradient overlays */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to right, #030307 0%, transparent 100%)",
-          }}
-        />
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to top, #030307 0%, transparent 50%)",
-          }}
-        />
+        }} />
 
-        {/* Grid lines */}
-        <div className="lp-hero-grid hidden md:block" style={{ position: "absolute", inset: 0 }}>
-          <div style={{ position: "absolute", left: "20%", top: 0, bottom: 0, width: "1px", background: "rgba(15, 23, 42, 0.06)" }} />
-          <div style={{ position: "absolute", left: "40%", top: 0, bottom: 0, width: "1px", background: "rgba(15, 23, 42, 0.06)" }} />
-          <div style={{ position: "absolute", left: "60%", top: 0, bottom: 0, width: "1px", background: "rgba(15, 23, 42, 0.06)" }} />
-          <div style={{ position: "absolute", left: "80%", top: 0, bottom: 0, width: "1px", background: "rgba(15, 23, 42, 0.06)" }} />
-        </div>
+        {/* Soft blue accent — right edge */}
+        <div style={{
+          position: "absolute",
+          top: "20%",
+          right: "-4%",
+          width: 320,
+          height: 320,
+          background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)",
+          filter: "blur(70px)",
+          pointerEvents: "none",
+        }} />
 
-        {/* Central glowing aurora */}
-        <div
-          style={{
-            position: "absolute",
-            top: "15%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "80%",
-            maxWidth: "900px",
-            height: "350px",
-            pointerEvents: "none",
-          }}
+        {/* Warm amber — lower left */}
+        <div style={{
+          position: "absolute",
+          bottom: "8%",
+          left: "5%",
+          width: 280,
+          height: 280,
+          background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Subtle background nodes & connections */}
+        <svg
+          className="absolute top-24 left-1/4 w-[600px] h-[500px] opacity-[0.02] pointer-events-none"
+          viewBox="0 0 600 500"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <svg viewBox="0 0 800 300" width="100%" height="100%">
-            <defs>
-              <filter id="glow-blur" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="30" />
-              </filter>
-            </defs>
-            <ellipse cx="400" cy="150" rx="300" ry="90" fill="rgba(194, 163, 50, 0.08)" filter="url(#glow-blur)" />
-            <ellipse cx="450" cy="150" rx="200" ry="70" fill="rgba(161, 133, 37, 0.06)" filter="url(#glow-blur)" />
-          </svg>
-        </div>
+          <circle cx="100" cy="150" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="280" cy="100" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="480" cy="180" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="180" cy="380" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="380" cy="300" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="500" cy="400" r="3" fill="var(--lp-gray-1)" />
+          
+          <line x1="100" y1="150" x2="280" y2="100" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="280" y1="100" x2="480" y2="180" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="100" y1="150" x2="180" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="180" y1="380" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="280" y1="100" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="380" y1="300" x2="500" y2="400" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="480" y1="180" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          
+          <text x="120" y="145" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">0x7f4e</text>
+          <text x="300" y="95" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">bafybeig</text>
+          <text x="400" y="295" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">sha256</text>
+          <text x="200" y="375" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">polygon</text>
+        </svg>
       </motion.div>
 
-      {/* ── Layer 3: Foreground Content (Text + Interactive Widget) ── */}
+      {/* ─── Layer 3: Foreground ─── */}
       <motion.div
         style={{
-          y: fgY,
-          opacity: fgOpacity,
-          scale: fgScale,
-          zIndex: 10,
-          willChange: "transform, opacity",
+          y: fgY, opacity: fgOp, scale: fgSc,
+          zIndex: 10, willChange: "transform, opacity",
           transformOrigin: "center top",
         }}
-        className="relative w-full max-w-[1160px] mx-auto px-4 sm:px-6 md:px-8"
+        className="relative w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center min-h-screen lg:min-h-0 lg:py-36">
 
-          {/* Left Column: Text and Actions */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
+          {/* ── Left: Text ── */}
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+
+            {/* Trust badge */}
+            <motion.div
+              variants={fadeUp} initial="hidden" animate="visible" custom={0}
+              className="lp-badge mb-8"
+            >
+              <span className="lp-badge-dot" />
+              <span style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em" }}>
+                Blockchain-anchored · AI-analysed · Tamper-proof
+              </span>
+            </motion.div>
 
             {/* Headline */}
             <motion.h1
-              className={`font-heading text-[2.5rem] sm:text-5xl md:text-6xl lg:text-[4.5rem] leading-[1.08] tracking-tight mb-6 font-extrabold text-white text-left`}
-              variants={fadeUp}
-              initial="hidden"
-              animate="visible"
-              custom={1}
+              variants={fadeUp} initial="hidden" animate="visible" custom={1}
+              className="font-heading font-black tracking-tight mb-5"
+              style={{ lineHeight: 1.0, fontSize: "clamp(3.0rem, 7vw, 5.4rem)" }}
             >
-              <span className="block animate-text-shimmer">
-                Immutable Integrity.
+              <span className="block hero-shimmer">
+                Immutable
               </span>
-              <span className="block text-slate-100/90">
-                Secured on Chain.
+              <span className="block" style={{ color: "var(--lp-gray-1)" }}>
+                Evidence.
+              </span>
+              <span
+                className="block"
+                style={{
+                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                }}
+              >
+                On Chain.
               </span>
             </motion.h1>
 
-            {/* Description Subtext */}
+            <motion.div
+              initial={{ scaleX: 0, opacity: 0 }}
+              animate={{ scaleX: 1, opacity: 1 }}
+              transition={{ duration: 1.1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                width: 56, height: 2.5, borderRadius: 99, marginBottom: 24,
+                background: "linear-gradient(90deg, #059669, #047857)",
+                transformOrigin: "left",
+                boxShadow: "0 0 8px rgba(5,150,105,0.20)",
+              }}
+            />
+
             <motion.p
               variants={fadeUp} initial="hidden" animate="visible" custom={2}
-              className="text-[0.9375rem] sm:text-base text-slate-300/80 leading-relaxed max-w-[580px] mb-8 font-normal"
+              style={{
+                fontSize: "clamp(0.92rem, 1.35vw, 1.03rem)",
+                color: "var(--lp-gray-2)",
+                lineHeight: 1.75,
+                maxWidth: 500,
+                marginBottom: 40,
+                fontFamily: "var(--font-inter), sans-serif",
+              }}
             >
-              Every file cryptographically sealed, AI-analysed for alterations, transferred
-              with a signed chain of custody, and permanently anchored on a public ledger
-              so no party can modify forensic evidence without detection.
+              Every file cryptographically sealed, AI‑analysed for alterations,
+              transferred with a signed chain of custody, and permanently anchored
+              on a public ledger — so no party can modify forensic evidence without detection.
             </motion.p>
 
-            {/* Action Buttons */}
             <motion.div
               variants={fadeUp} initial="hidden" animate="visible" custom={3}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-8"
             >
               <Link
                 href="/login"
                 id="hero-cta-primary"
-                className={`lp-btn-primary font-sans w-full sm:w-auto flex items-center justify-center gap-2.5 h-12 px-8 text-sm font-semibold no-underline`}
+                className="lp-btn-primary font-sans flex items-center justify-center gap-2.5 no-underline"
+                style={{ height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
                 Access Platform <ArrowRight size={16} />
               </Link>
               <a
                 href="#features"
                 id="hero-cta-secondary"
-                className={`lp-btn-ghost font-sans w-full sm:w-auto flex items-center justify-center gap-2 h-12 px-8 text-sm font-semibold no-underline`}
+                className="lp-btn-ghost font-sans flex items-center justify-center gap-2 no-underline"
+                style={{ height: 52, paddingLeft: 28, paddingRight: 28, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
                 View Features
               </a>
             </motion.div>
 
-            {/* Bullet Point Specifications */}
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="visible" custom={4}
-              className="mt-10 sm:mt-12 flex flex-row flex-wrap gap-x-6 gap-y-3 justify-start items-center w-full border-t border-white/5 pt-6"
-            >
-              {[
-                { txt: "IPFS Storage", icon: true },
-                { txt: "SHA-256 Anchored", icon: true },
-                { txt: "Gemini Vision AI", icon: true },
-                { txt: "Polygon Registry", icon: true }
-              ].map((t) => (
-                <span
-                  key={t.txt}
-                  className={`font-sans flex items-center gap-2`}
-                >
-                  <Lock size={10} className="text-[var(--lp-accent)]" />
-                  <span className="text-[10px] sm:text-[11px] font-semibold text-slate-400/80 tracking-wider uppercase">
-                    {t.txt}
-                  </span>
-                </span>
-              ))}
-            </motion.div>
-
           </div>
 
-          {/* Right Column: Interactive Forensic Seal Widget */}
+          {/* ── Right: Widget ── */}
           <motion.div
-            className="lg:col-span-5 w-full flex justify-center items-center relative"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={2.5}
+            className="lg:col-span-6 w-full flex justify-center lg:justify-end items-center relative"
+            variants={fadeUp} initial="hidden" animate="visible" custom={2.5}
+            style={{
+              x: parallax.x * 8,
+              y: parallax.y * 8,
+              transition: "x 0.6s ease-out, y 0.6s ease-out",
+            } as React.CSSProperties}
           >
-            <div className="lp-ambient-sweep-horizontal" style={{ top: "15%", transform: "translateY(-50%) rotate(-3deg)", opacity: 0.8 }} />
+            {/* Soft ambient glow behind widget */}
+            <div
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: -32,
+                borderRadius: 40,
+                background: "radial-gradient(ellipse at 50% 50%, rgba(5,150,105,0.07) 0%, transparent 70%)",
+                filter: "blur(32px)",
+                pointerEvents: "none",
+                zIndex: 0,
+              }}
+            />
             <HeroInteractiveWidget />
           </motion.div>
 
         </div>
       </motion.div>
 
-      {/* Scroll indicator hint */}
+      {/* ─── Scroll cue ─── */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
+        transition={{ delay: 2.0, duration: 1 }}
+        className="hidden lg:flex"
         style={{
-          position: "absolute",
-          bottom: 28,
-          left: "50%",
+          position: "absolute", bottom: 28, left: "50%",
           transform: "translateX(-50%)",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 6,
+          flexDirection: "column", alignItems: "center", gap: 6,
           zIndex: 10,
         }}
-        className="hidden lg:flex"
       >
-        <span className="font-sans" style={{ fontSize: 10, letterSpacing: "0.15em", textTransform: "uppercase", color: "rgba(15, 23, 42, 0.2)" }}>
+        <span
+          style={{
+            fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
+            color: "rgba(15,23,42,0.28)",
+            fontFamily: "var(--font-geist-mono, monospace)",
+          }}
+        >
           Scroll
         </span>
         <div
           className="lp-scroll-dot"
           style={{
-            width: 1,
-            height: 36,
-            background: "linear-gradient(to bottom, rgba(0, 242, 254, 0.4), transparent)",
+            width: 1, height: 32,
+            background: "linear-gradient(to bottom, rgba(5,150,105,0.40), transparent)",
           }}
         />
       </motion.div>

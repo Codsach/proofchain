@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
+import UserProfile from "@/lib/models/UserProfile";
 import { LoginSchema } from "@/lib/schemas/auth";
 import {
   signAccessToken,
@@ -169,6 +170,7 @@ export async function POST(req: NextRequest) {
     });
 
     // 11. Build response — refresh token in httpOnly cookie
+    const profile = await UserProfile.findOne({ userId: user._id });
     const res = NextResponse.json({
       accessToken,
       redirectTo,           // ← frontend just follows this, doesn't decide it
@@ -177,6 +179,7 @@ export async function POST(req: NextRequest) {
         email:    user.email,
         fullName: user.fullName,
         role:     user.role,
+        avatarUrl: profile?.avatarUrl || null,
       },
     });
 

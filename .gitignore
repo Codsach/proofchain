@@ -102,3 +102,8 @@ tmp/
 *.pem
 .yarn/install-state.gz
 .agent
+
+implementation_plan.md 
+walkthrough.md
+enhancements.md 
+design.md 

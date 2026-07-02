@@ -27,11 +27,13 @@ import {
   ChevronLeft,
   Briefcase,
   User,
-  Settings
+  Settings,
+  Fingerprint
 } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { MfaSetupModal } from "@/components/MfaSetupModal";
 import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const navItems = {
   investigator: [
@@ -87,11 +89,11 @@ export function AppSidebar() {
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col flex-1 overflow-hidden">
-                  <span className="text-lg font-bold tracking-tight truncate">
-                    <span className="text-white">Proof</span>
-                    <span className="text-emerald-500">Chain</span>
+                  <span className="text-sm font-heading font-extrabold tracking-[0.2em] truncate">
+                    <span className="text-dash-text">PROOF</span>
+                    <span className="text-emerald-500">CHAIN</span>
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest truncate">
+                  <span className="text-[9px] font-mono font-bold text-emerald-500 dark:text-emerald-400 uppercase tracking-[0.25em] truncate mt-0.5">
                     {roleLabel[user.role]}
                   </span>
                 </div>
@@ -118,13 +120,11 @@ export function AppSidebar() {
                     asChild
                     tooltip={item.label}
                     isActive={isActive}
-                    className={`transition-all duration-300 text-zinc-400 hover:bg-white/5! hover:text-white! data-[active=true]:bg-transparent! data-[active=true]:hover:bg-white/5! rounded-xl ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-2"}`}
+                    className={`transition-all duration-300 text-dash-muted hover:bg-dash-hover/60! hover:text-dash-text! data-[active=true]:bg-[var(--dash-active-bg)]! data-[active=true]:text-[var(--dash-active-text)]! rounded-xl border border-transparent data-[active=true]:border-[var(--dash-border)] data-[active=true]:shadow-sm ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-3"}`}
                   >
                     <Link href={item.href} className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
-                      <div className={`flex items-center justify-center rounded-full shrink-0 transition-all duration-300 ${isActive ? "bg-white text-black shadow-md size-9" : "size-9"}`}>
-                        <Icon size={20} className={isActive ? "" : "opacity-70"} />
-                      </div>
-                      {!isCollapsed && <span className={isActive ? "text-zinc-200 font-medium" : ""}>{item.label}</span>}
+                      <Icon size={20} className={isActive ? "text-[var(--dash-active-text)]" : "opacity-70"} />
+                      {!isCollapsed && <span className="font-medium">{item.label}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -138,28 +138,36 @@ export function AppSidebar() {
         {!isCollapsed ? (
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between px-2">
-              <div className="flex flex-col overflow-hidden">
-                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-                  Logged in as
-                </span>
-                <span className="text-xs text-zinc-300 truncate font-medium" title={user.email}>
-                  {user.email}
-                </span>
+              <div className="flex items-center gap-3 overflow-hidden">
+                <Avatar className="h-8 w-8 rounded-full border border-dash-border bg-dash-bg">
+                  <AvatarImage src={user.avatarUrl || undefined} className="object-cover" />
+                  <AvatarFallback className="bg-emerald-500/10 text-emerald-500 text-xs font-medium">
+                    {user.fullName?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col overflow-hidden">
+                  <span className="text-[10px] font-bold text-dash-muted/70 uppercase tracking-widest">
+                    Logged in as
+                  </span>
+                  <span className="text-xs text-dash-muted truncate font-medium" title={user.email}>
+                    {user.email}
+                  </span>
+                </div>
               </div>
               <NotificationBell />
             </div>
 
             <SidebarMenuButton
               onClick={() => setIsMfaOpen(true)}
-              className="h-10 mt-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold justify-center rounded-xl shadow-sm transition-colors"
+              className="h-10 mt-2 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-700 dark:text-emerald-400 font-bold justify-center rounded-xl transition-all duration-300"
             >
-              <ShieldCheck size={18} />
+              <ShieldCheck size={18} className="text-emerald-600 dark:text-emerald-400" />
               <span>Enable 2FA</span>
             </SidebarMenuButton>
 
             <SidebarMenuButton
               onClick={logout}
-              className="h-10 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 justify-start rounded-xl px-3"
+              className="h-10 text-dash-muted hover:text-rose-400 hover:bg-rose-500/10 justify-start rounded-xl px-3"
             >
               <LogOut size={18} />
               <span>Logout</span>
@@ -167,6 +175,12 @@ export function AppSidebar() {
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 w-full">
+            <Avatar className="h-8 w-8 rounded-full border border-dash-border bg-dash-bg">
+              <AvatarImage src={user.avatarUrl || undefined} className="object-cover" />
+              <AvatarFallback className="bg-emerald-500/10 text-emerald-500 text-xs font-medium">
+                {user.fullName?.charAt(0).toUpperCase() || user.email.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex justify-center w-full">
               <NotificationBell />
             </div>
@@ -174,7 +188,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               onClick={() => setIsMfaOpen(true)}
               tooltip="Enable 2FA"
-              className="size-10 flex items-center justify-center text-zinc-400 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-xl p-0"
+              className="size-10 flex items-center justify-center text-dash-muted hover:text-emerald-400 hover:bg-emerald-500/10 rounded-xl p-0"
             >
               <ShieldCheck size={20} />
             </SidebarMenuButton>
@@ -182,7 +196,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               onClick={logout}
               tooltip="Logout"
-              className="size-10 flex items-center justify-center text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-xl p-0"
+              className="size-10 flex items-center justify-center text-dash-muted hover:text-rose-400 hover:bg-rose-500/10 rounded-xl p-0"
             >
               <LogOut size={20} />
             </SidebarMenuButton>

@@ -22,6 +22,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import { Copy, Check } from "lucide-react";
 
 interface CaseRow {
   caseId: string;
@@ -41,8 +43,25 @@ const INCIDENT_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const InspectionBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Teal */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#99f6e4_0%,transparent_40%)]" />
+      {/* Top Right: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)]" />
+      {/* Bottom Center: Teal */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#99f6e4_0%,transparent_40%)]" />
+      {/* Bottom Right: Blue */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#bfdbfe_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
+
 export default function AdminCasesPage() {
   const { getToken } = useAuth();
+  const { toast } = useToast();
   const [cases, setCases] = useState<CaseRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("all");
@@ -58,6 +77,7 @@ export default function AdminCasesPage() {
   const [analysts, setAnalysts] = useState<Array<{ _id: string; fullName: string }>>([]);
   const [selectedAnalystId, setSelectedAnalystId] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Load analysts
   useEffect(() => {
@@ -163,13 +183,20 @@ export default function AdminCasesPage() {
   };
 
   return (
-    <div className="space-y-10">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <InspectionBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-emerald-500/50" />
+          <div className="h-px w-8 bg-slate-400/50" />
           <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Evidence Repository</p>
         </div>
-        <h1 className="text-4xl font-bold text-dash-text tracking-tight">Global Archives</h1>
+        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Global Archives</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Accessing <span className="text-dash-text">{cases.length}</span> forensic subjects in this sector. 
         </p>
@@ -182,14 +209,14 @@ export default function AdminCasesPage() {
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-hover border-dash-border hover:border-emerald-500/30 focus-visible:ring-emerald-500/30 transition-all text-white h-10 rounded-xl"
+            className="bg-dash-input border-dash-border hover:border-emerald-500/30 focus-visible:ring-2 focus-visible:ring-emerald-500/20 focus-visible:border-emerald-500/50 transition-all text-dash-text h-10 rounded-full px-5"
           />
         </div>
 
         <div className="space-y-1.5 sm:min-w-[180px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Incident Type</p>
           <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
-            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -204,7 +231,7 @@ export default function AdminCasesPage() {
         <div className="space-y-1.5 sm:min-w-[180px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle Status</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="bg-dash-hover border-dash-border hover:border-emerald-500/30 transition-all text-white/70 h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl">
               <SelectValue placeholder="All states" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -236,7 +263,7 @@ export default function AdminCasesPage() {
               <Button
                 variant="ghost"
                 onClick={() => setSelectedCases([])}
-                className="text-white/60 hover:text-white"
+                className="text-dash-muted hover:text-dash-text"
               >
                 Clear
               </Button>
@@ -270,7 +297,7 @@ export default function AdminCasesPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="px-6 py-4 w-10">
+                  <th className="px-6 py-5 w-10">
                     <input
                       type="checkbox"
                       checked={cases.length > 0 && selectedCases.length === cases.length}
@@ -278,15 +305,15 @@ export default function AdminCasesPage() {
                       className="w-4 h-4 rounded border-dash-border bg-dash-bg accent-emerald-500 cursor-pointer"
                     />
                   </th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Case Descriptor</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Integrity Score</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Phase</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Ingestion Date</th>
-                  <th className="px-6 py-4" />
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Case Descriptor</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Incident Taxonomy</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Integrity Score</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Phase</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Ingestion Date</th>
+                  <th className="px-6 py-5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5 font-medium">
+              <tbody className="divide-y divide-dash-border font-medium">
                 <AnimatePresence>
                   {cases.map((c, idx) => (
                     <motion.tr 
@@ -298,7 +325,7 @@ export default function AdminCasesPage() {
                         selectedCases.includes(c.caseId) ? "bg-emerald-500/[0.05]" : "hover:bg-emerald-500/[0.02]"
                       }`}
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <input
                           type="checkbox"
                           checked={selectedCases.includes(c.caseId)}
@@ -306,38 +333,62 @@ export default function AdminCasesPage() {
                           className="w-4 h-4 rounded border-dash-border bg-dash-bg accent-emerald-500 cursor-pointer"
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex flex-col">
                           <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors truncate max-w-[200px]">
                             {c.title}
                           </p>
-                          <p className="text-[10px] text-dash-muted font-mono mt-0.5 tracking-tighter">
-                            OBJID::{c.caseId.slice(0, 12)}
-                          </p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(c.caseId);
+                              toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                              setCopiedId(c.caseId);
+                              setTimeout(() => setCopiedId(null), 1500);
+                            }}
+                            className={`text-[10px] font-mono mt-0.5 tracking-tighter flex items-center gap-1 px-1.5 py-0.5 rounded border transition-colors w-fit ${
+                              copiedId === c.caseId
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                                : "text-dash-muted hover:text-dash-accent bg-dash-input hover:bg-dash-hover border-dash-border"
+                            }`}
+                            title={`Copy full Case ID: ${c.caseId}`}
+                          >
+                            <span>ID: {copiedId === c.caseId ? "Copied ✓" : `${c.caseId.slice(0, 8)}...`}</span>
+                            {copiedId === c.caseId ? <Check size={8} /> : <Copy size={8} />}
+                          </button>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden md:table-cell text-dash-muted text-xs">
+                      <td className="px-6 py-5 hidden md:table-cell text-dash-muted text-xs">
                         {INCIDENT_LABELS[c.incidentType] ?? c.incidentType}
                       </td>
-                      <td className="px-6 py-4 group-hover:scale-105 transition-transform duration-300 origin-left">
+                      <td className="px-6 py-5 group-hover:scale-105 transition-transform duration-300 origin-left">
                         <TamperScoreBadge
                           score={c.aiSummary?.tamperScore ?? null}
                           showLabel={false}
                         />
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <CaseStatusBadge status={c.status} />
                       </td>
-                      <td className="px-6 py-4 text-dash-muted text-xs hidden sm:table-cell font-mono">
+                      <td className="px-6 py-5 text-dash-muted text-xs hidden sm:table-cell font-mono">
                         {new Date(c.createdAt).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/admin/cases/${c.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-emerald-500/20 bg-emerald-500/5 px-4 py-1.5 rounded-lg hover:border-emerald-500/40 hover:shadow-[0_0_15px_rgba(16,185,129,0.15)] outline-none"
-                        >
-                          Inspect →
-                        </Link>
+                      <td className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-2">
+                          <Link
+                            href={`/verify/${c.caseId}`}
+                            target="_blank"
+                            className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-all border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 rounded-lg hover:bg-emerald-500/10"
+                          >
+                            Verify ↗
+                          </Link>
+                          <Link
+                            href={`/admin/cases/${c.caseId}`}
+                            className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/60 hover:text-dash-accent transition-all border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg hover:bg-dash-hover outline-none"
+                          >
+                            Inspect →
+                          </Link>
+                        </div>
                       </td>
                     </motion.tr>
                   ))}
@@ -361,11 +412,11 @@ export default function AdminCasesPage() {
             ← Previous Channel
           </Button>
           <div className="flex items-center gap-4">
-            <div className="h-px w-8 bg-white/10" />
+            <div className="h-px w-8 bg-dash-border" />
             <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">
               Sector <span className="text-dash-text">{page}</span> of {totalPages}
             </span>
-            <div className="h-px w-8 bg-white/10" />
+            <div className="h-px w-8 bg-dash-border" />
           </div>
           <Button
             variant="ghost"
@@ -381,7 +432,7 @@ export default function AdminCasesPage() {
 
       {/* Bulk Assign Modal */}
       <Dialog open={isAssignModalOpen} onOpenChange={setIsAssignModalOpen}>
-        <DialogContent className="bg-dash-card border-dash-border text-white p-6 max-w-md">
+        <DialogContent className="bg-dash-card border-dash-border text-dash-text p-6 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold tracking-tight">Assign {selectedCases.length} Cases</DialogTitle>
           </DialogHeader>
@@ -389,10 +440,10 @@ export default function AdminCasesPage() {
             <div className="space-y-2">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Select Analyst</p>
               <Select value={selectedAnalystId} onValueChange={setSelectedAnalystId}>
-                <SelectTrigger className="bg-dash-hover border-dash-border focus-visible:ring-emerald-500/30 transition-all text-white h-12 rounded-xl">
+                <SelectTrigger className="bg-dash-input border-dash-border focus-visible:ring-emerald-500/30 transition-all text-dash-text h-12 rounded-xl">
                   <SelectValue placeholder="Choose an analyst" />
                 </SelectTrigger>
-                <SelectContent className="bg-dash-bg border-dash-border text-white">
+                <SelectContent className="bg-dash-card border-dash-border text-dash-text">
                   {analysts.map((analyst) => (
                     <SelectItem key={analyst._id} value={analyst._id}>
                       {analyst.fullName}
@@ -405,7 +456,7 @@ export default function AdminCasesPage() {
               <Button
                 variant="ghost"
                 onClick={() => setIsAssignModalOpen(false)}
-                className="text-white/60 hover:text-white"
+                className="text-dash-muted hover:text-dash-text"
                 disabled={isSubmitting}
               >
                 Cancel
@@ -419,8 +470,10 @@ export default function AdminCasesPage() {
               </Button>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+         </DialogContent>
+       </Dialog>
+        </div>
+      </div>
     </div>
   );
-}
+}

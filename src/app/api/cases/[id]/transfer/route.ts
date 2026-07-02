@@ -147,17 +147,38 @@ async function initiateTransfer(
 async function getTransferLog(
   _req: NextRequest,
   ctx: { params: Promise<{ id: string }> },
-  _user: JWTPayload
+  user: JWTPayload
 ) {
   try {
     await connectDB();
     const { id: caseId } = await ctx.params;
 
-    const transfers = await Transfer.find({ caseId })
+    let transfers: any = await Transfer.find({ caseId })
       .sort({ transferredAt: 1 })
       .populate("fromUserId", "fullName email role")
       .populate("toUserId", "fullName email role")
       .lean();
+
+    if (user.role === "analyst") {
+      transfers = transfers.map((t: any) => {
+        const tCopy = { ...t };
+        if (tCopy.fromUserId && (tCopy.fromUserId as any).role === "investigator") {
+          tCopy.fromUserId = {
+            ...(tCopy.fromUserId as any),
+            fullName: "Investigator (Anonymized)",
+            email: "anonymized@proofchain.local",
+          };
+        }
+        if (tCopy.toUserId && (tCopy.toUserId as any).role === "investigator") {
+          tCopy.toUserId = {
+            ...(tCopy.toUserId as any),
+            fullName: "Investigator (Anonymized)",
+            email: "anonymized@proofchain.local",
+          };
+        }
+        return tCopy;
+      });
+    }
 
     return NextResponse.json({ transfers });
   } catch (err) {

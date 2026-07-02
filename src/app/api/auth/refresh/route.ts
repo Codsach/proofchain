@@ -8,6 +8,7 @@ import {
 } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
+import UserProfile from "@/lib/models/UserProfile";
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,6 +55,8 @@ export async function POST(req: NextRequest) {
     const newAccessToken = signAccessToken(newPayload);
     const newRefreshToken = signRefreshToken(newPayload);
 
+    const profile = await UserProfile.findOne({ userId: user._id });
+
     const res = NextResponse.json({
       accessToken: newAccessToken,
       user: {
@@ -61,6 +64,7 @@ export async function POST(req: NextRequest) {
         email: user.email,
         fullName: user.fullName,
         role: user.role,
+        avatarUrl: profile?.avatarUrl || null,
       },
     });
 

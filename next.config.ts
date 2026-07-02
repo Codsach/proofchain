@@ -8,8 +8,7 @@ const nextConfig: NextConfig = {
   },
   
   turbopack: {},
-
-  allowedDevOrigins: ["10.122.120.59", "localhost"],
+  allowedDevOrigins: ["10.122.120.59", "172.28.216.59", "localhost"],
 
   async headers() {
     return [

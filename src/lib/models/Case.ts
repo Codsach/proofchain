@@ -40,7 +40,9 @@ export interface ICase extends Document {
   status: CaseStatus;
   files: IFileRecord[];
   tags: string[];
-  aiReportId: Types.ObjectId | null;
+  aiReportIds: Types.ObjectId[];
+  overallTamperScore: number | null;
+  overallRiskLevel: "low" | "medium" | "high" | null;
   onChainTxHash: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -90,7 +92,13 @@ const CaseSchema = new Schema<ICase>(
     },
     files: [FileRecordSchema],
     tags: [{ type: String, trim: true }],
-    aiReportId: { type: Schema.Types.ObjectId, ref: "AiReport", default: null },
+    aiReportIds: [{ type: Schema.Types.ObjectId, ref: "AiReport" }],
+    overallTamperScore: { type: Number, default: null },
+    overallRiskLevel: {
+      type: String,
+      enum: ["low", "medium", "high", null],
+      default: null,
+    },
     onChainTxHash: { type: String, default: null },
   },
   { timestamps: true }

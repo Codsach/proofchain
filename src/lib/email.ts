@@ -253,3 +253,30 @@ export async function notifyPasswordChange(email: string, fullName: string) {
     `,
   });
 }
+
+export async function sendPasswordResetEmail(email: string, fullName: string, resetUrl: string) {
+  await sendEmail({
+    to: email,
+    subject: "Reset your ProofChain password",
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto;background:#0D1B2A;color:#E8E8F0;padding:32px;border-radius:8px;">
+        <h2 style="color:#00C9A7;margin-top:0;">ProofChain Security</h2>
+        <p>Hi ${fullName},</p>
+        <p>You requested a password reset for your ProofChain account.</p>
+        <p>Click the button below to choose a new password. This link is valid for 1 hour.</p>
+        <a href="${resetUrl}"
+           style="display:inline-block;background:#00C9A7;color:#000;padding:10px 20px;
+                  text-decoration:none;border-radius:6px;font-weight:bold;margin-top:8px;">
+          Reset Password
+        </a>
+        <p style="word-break: break-all; color: #8888AA; font-size: 12px; margin-top: 16px;">
+          If the button does not work, copy and paste this link into your browser:<br />
+          <a href="${resetUrl}" style="color:#00C9A7;">${resetUrl}</a>
+        </p>
+        <p style="font-size:11px;color:#555570;margin-top:24px;">
+          If you did not request this, you can safely ignore this email.
+        </p>
+      </div>
+    `,
+  });
+}

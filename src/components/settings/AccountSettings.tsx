@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { User, Mail, Loader2 } from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardContainer, CardFooter } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,15 +13,39 @@ import { useToast } from "@/hooks/use-toast";
 import { updateAccountDetails } from "@/app/(dashboard)/settings/actions";
 
 const accountSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
+ fullName: z.string().min(2, "Name must be at least 2 characters"),
+ email: z.string().email("Please enter a valid email"),
 });
 
 type AccountFormValues = z.infer<typeof accountSchema>;
 
-export function AccountSettings({ user }: { user: { fullName: string; email: string } }) {
+export function AccountSettings({ role, user }: { role: "investigator" | "analyst" | "admin"; user: { fullName: string; email: string } }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const roleBarTheme = {
+    investigator: "bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.4)]",
+    analyst: "bg-cyan-600 shadow-[0_0_8px_rgba(6,182,212,0.4)]",
+    admin: "bg-purple-650 shadow-[0_0_8px_rgba(168,85,247,0.4)]",
+  }[role];
+
+  const roleAccent = {
+    investigator: "text-emerald-700",
+    analyst: "text-cyan-700",
+    admin: "text-purple-700",
+  }[role];
+
+  const roleSubmitBtn = {
+    investigator: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.15)] disabled:bg-emerald-600/50 disabled:cursor-not-allowed",
+    analyst: "bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.15)] disabled:bg-cyan-600/50 disabled:cursor-not-allowed",
+    admin: "bg-purple-600 text-white hover:bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.15)] disabled:bg-purple-600/50 disabled:cursor-not-allowed",
+  }[role];
+
+  const roleAccentGlow = {
+    investigator: "hover:border-emerald-500 focus-visible:ring-emerald-500",
+    analyst: "hover:border-cyan-500 focus-visible:ring-cyan-500",
+    admin: "hover:border-purple-500 focus-visible:ring-purple-500",
+  }[role];
 
   const form = useForm<AccountFormValues>({
     resolver: zodResolver(accountSchema),
@@ -37,7 +61,6 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
       const res = await updateAccountDetails(data);
       if (res.success) {
         toast({ title: "Account Updated", description: "Your details have been successfully saved." });
-        // The router will refresh from the parent, or we can just let it be optimistic
       } else {
         toast({ variant: "destructive", title: "Update Failed", description: res.error });
       }
@@ -49,31 +72,31 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
   };
 
   return (
-    <Card className="bg-[var(--dash-card)] border-[var(--dash-border)] rounded-none relative overflow-hidden">
-      <div className="h-1 w-full bg-[var(--dash-accent)]" />
+    <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
+      <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
       <CardHeader>
-        <CardTitle className="text-xl font-mono uppercase text-[var(--dash-text)] flex items-center gap-2">
-          <User className="h-5 w-5 text-[var(--dash-accent)]" />
+        <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
+          <User className={`h-5 w-5 ${roleAccent}`} />
           Identity Protocol
         </CardTitle>
-        <CardDescription className="text-[var(--dash-muted)] font-mono text-xs uppercase">
+        <CardDescription className="text-dash-muted font-mono text-xs uppercase tracking-wider">
           Update your core personnel details.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs uppercase">Full Name</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Full Name</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="John Doe"
-                        className="bg-[var(--dash-bg)] border-[var(--dash-border)] text-white font-mono"
+                        className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                         {...field}
                       />
                     </FormControl>
@@ -86,32 +109,32 @@ export function AccountSettings({ user }: { user: { fullName: string; email: str
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-[var(--dash-muted)] font-mono text-xs uppercase">Email Address</FormLabel>
+                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Email Address</FormLabel>
                     <FormControl>
-                      <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-[var(--dash-muted)]" />
+                      <CardContainer className="relative">
+                        <Mail className={`absolute left-3.5 top-3.5 h-4 w-4 ${roleAccent}`} />
                         <Input
                           placeholder="john.doe@example.com"
-                          className="pl-9 bg-[var(--dash-bg)] border-[var(--dash-border)] text-white font-mono"
+                          className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 pl-10 pr-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
                           {...field}
                         />
-                      </div>
+                      </CardContainer>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            <div className="flex justify-end pt-4 border-t border-[var(--dash-border)]">
+            </CardContainer>
+            <CardFooter className="flex justify-end pt-4 border-t border-dash-border bg-transparent p-0">
               <Button 
                 type="submit" 
                 disabled={isSubmitting || !form.formState.isDirty}
-                className="bg-[var(--dash-accent)] text-black hover:bg-emerald-600 font-mono font-bold uppercase"
+                className={`font-mono font-bold uppercase rounded-xl h-11 px-6 transition-all ${roleSubmitBtn}`}
               >
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 {isSubmitting ? "Processing..." : "Save Identity"}
               </Button>
-            </div>
+            </CardFooter>
           </form>
         </Form>
       </CardContent>

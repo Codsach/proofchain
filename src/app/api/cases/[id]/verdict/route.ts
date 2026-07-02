@@ -138,10 +138,16 @@ async function anchorVerdictOnChain(
   }
 }
 export const GET = withAuth(
-  async (req: NextRequest, context, user) => {
-    const verdicts = await Verdict.find(); // or filter based on user
-
-    return NextResponse.json(verdicts);
+  async (req: NextRequest, context: { params: Promise<{ id: string }> }, user) => {
+    try {
+      await connectDB();
+      const { id: caseId } = await context.params;
+      const verdict = await Verdict.findOne({ caseId }).lean();
+      return NextResponse.json(verdict);
+    } catch (err) {
+      console.error("[verdict/get]", err);
+      return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
   },
   ["admin", "analyst", "investigator"]
 );

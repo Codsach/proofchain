@@ -52,6 +52,22 @@ const ROLE_STYLES: Record<string, string> = {
   admin: "text-amber-400 border-amber-500/20 bg-amber-500/5",
 };
 
+const IdentityBackground = () => {
+  return (
+    <div className="absolute inset-0 h-full w-full bg-transparent">
+      {/* Top Left: Violet */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#ddd6fe_0%,transparent_40%)]" />
+      {/* Top Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
+      {/* Bottom Center: Violet */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)]" />
+      {/* Bottom Right: Indigo */}
+      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
+    </div>
+  );
+};
+
+
 export default function AdminUsersPage() {
   const { getToken } = useAuth();
   const { toast } = useToast();
@@ -169,14 +185,21 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
+      {/* Background mesh gradients */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <IdentityBackground />
+      </div>
+
+      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
+        <div className="space-y-8">
       <div className="flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-px w-6 bg-emerald-500/50" />
-            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-widest">Identity Management</p>
+            <div className="h-px w-8 bg-slate-400/50" />
+            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Identity Management</p>
           </div>
-          <h1 className="text-3xl font-bold text-dash-text tracking-tight">System Users</h1>
+          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">System Users</h1>
           <p className="text-dash-muted text-sm mt-1 font-medium">
             Review and manage <span className="text-dash-text">{users.length}</span> active directory entities.
           </p>
@@ -201,14 +224,14 @@ export default function AdminUsersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-hover">
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Registry Subject</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Privilege Level</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Last Access</th>
-                  <th className="text-left px-6 py-4 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Operational Status</th>
-                  <th className="px-6 py-4" />
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Registry Subject</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Privilege Level</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Last Access</th>
+                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Operational Status</th>
+                  <th className="px-6 py-5" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-dash-border">
                 <AnimatePresence>
                   {users.map((u, idx) => (
                     <motion.tr 
@@ -218,13 +241,13 @@ export default function AdminUsersPage() {
                       transition={{ delay: idx * 0.03 }}
                       className="hover:bg-emerald-500/[0.02] transition-colors group"
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex flex-col">
                           <p className="font-semibold text-dash-text group-hover:text-dash-accent transition-colors">{u.fullName}</p>
                           <p className="text-xs text-dash-muted font-medium">{u.email}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 hidden sm:table-cell">
+                      <td className="px-6 py-5 hidden sm:table-cell">
                         <span
                           className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${
                             ROLE_STYLES[u.role] ?? "text-dash-muted bg-dash-border border-dash-border"
@@ -233,14 +256,14 @@ export default function AdminUsersPage() {
                           {u.role}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-xs text-dash-muted hidden md:table-cell font-mono">
+                      <td className="px-6 py-5 text-xs text-dash-muted hidden md:table-cell font-mono">
                         {u.lastLoginAt
                           ? new Date(u.lastLoginAt).toLocaleDateString()
                           : "INITIALIZING"}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-5">
                         <div className="flex items-center gap-2">
-                          <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-dash-accent animate-pulse" : "bg-white/20"}`} />
+                          <div className={`w-1.5 h-1.5 rounded-full ${u.isActive ? "bg-dash-accent animate-pulse" : "bg-dash-muted/20"}`} />
                           <span
                             className={`text-[10px] font-bold uppercase tracking-widest ${
                               u.isActive ? "text-dash-accent" : "text-dash-muted"
@@ -250,7 +273,7 @@ export default function AdminUsersPage() {
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-right">
+                      <td className="px-6 py-5 text-right">
                         {u.role !== "admin" && (
                           <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-2 group-hover:translate-x-0">
                             <button
@@ -404,6 +427,8 @@ export default function AdminUsersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+        </div>
+      </div>
     </div>
   );
 }
