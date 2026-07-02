@@ -316,6 +316,7 @@ function StatItem({
   index: number;
   isInView: boolean;
 }) {
+  const [hovered, setHovered] = useState(false);
   const count = useCountUp(
     stat.isDecimal ? 9998 : Math.round(stat.value),
     1800 + index * 120,
@@ -327,140 +328,147 @@ function StatItem({
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.75, delay: 0.15 + index * 0.10, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        padding: "28px 24px",
-        borderRadius: "20px",
-        border: "1px solid rgba(15, 23, 42, 0.07)",
-        background: `linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.85) 100%)`,
-        boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1)",
-        position: "relative",
-        overflow: "hidden",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        cursor: "default",
-      }}
-      whileHover={{
-        y: -5,
-        borderColor: `${stat.color}25`,
-        boxShadow: `0 16px 40px -12px ${stat.color}15, 0 0 0 1px ${stat.color}10, inset 0 1px 0 rgba(255,255,255,1)`,
-        background: `linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, ${stat.color}05 100%)`,
-        transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
-      }}
+      style={{ display: "flex", flex: 1 }}
     >
-      {/* Glow layer */}
       <div
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         style={{
-          position: "absolute",
-          bottom: 0, left: "10%", right: "10%", height: 80,
-          background: `radial-gradient(ellipse at 50% 100%, ${stat.color}0d, transparent 70%)`,
-          pointerEvents: "none", zIndex: 0,
+          padding: "28px 24px",
+          borderRadius: "20px",
+          border: "1px solid rgba(15, 23, 42, 0.07)",
+          background: hovered
+            ? `linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, ${stat.color}05 100%)`
+            : `linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.85) 100%)`,
+          borderColor: hovered ? `${stat.color}25` : "rgba(15, 23, 42, 0.07)",
+          boxShadow: hovered
+            ? `0 16px 40px -12px ${stat.color}15, 0 0 0 1px ${stat.color}10, inset 0 1px 0 rgba(255,255,255,1)`
+            : "0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1)",
+          transform: hovered ? "translateY(-5px)" : "translateY(0px)",
+          position: "relative",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          cursor: "default",
+          width: "100%",
+          transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
-      />
-
-      {/* Header telemetry / status chip row */}
-      <div className="relative z-10" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
-        {/* Status chip */}
-        <span style={{
-          fontSize: 8.5, fontWeight: 700,
-          fontFamily: "var(--font-geist-mono, monospace)",
-          color: stat.color,
-          background: `${stat.color}0a`,
-          border: `1px solid ${stat.color}18`,
-          padding: "3px 8px", borderRadius: 6,
-          display: "inline-flex", alignItems: "center", gap: 5,
-        }}>
-          <span className="relative flex h-1.5 w-1.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: stat.color }}></span>
-            <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: stat.color }}></span>
-          </span>
-          {stat.status}
-        </span>
-        {/* Telemetry metadata label */}
-        <span style={{
-          fontSize: 7.5, color: "rgba(15, 23, 42, 0.24)",
-          fontFamily: "var(--font-geist-mono, monospace)",
-          letterSpacing: "0.08em",
-        }}>
-          SYS_MTRX_STB
-        </span>
-      </div>
-
-      <div className="relative z-10 flex-grow" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-        {/* Big number */}
+      >
+        {/* Glow layer */}
         <div
-          className="font-heading stat-number"
           style={{
-            fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
-            fontWeight: 800,
-            lineHeight: 1.1,
-            letterSpacing: "-0.04em",
-            color: stat.color,
-            marginBottom: 6,
+            position: "absolute",
+            bottom: 0, left: "10%", right: "10%", height: 80,
+            background: `radial-gradient(ellipse at 50% 100%, ${stat.color}0d, transparent 70%)`,
+            pointerEvents: "none", zIndex: 0,
           }}
-        >
-          {stat.noCount
-            ? stat.displayValue
-            : stat.isDecimal
-              ? `${(count / 100).toFixed(2)}`
-              : stat.prefix
-                ? `${stat.prefix}${count}`
-                : `${count}`
-          }
-          {stat.suffix && (
-            <span
-              style={{
-                fontSize: "0.55em",
-                fontWeight: 700,
-                marginLeft: 2,
-                opacity: 0.75,
-              }}
-            >
-              {stat.suffix}
-            </span>
-          )}
-        </div>
+        />
 
-        {/* Label */}
-        <div
-          style={{
-            fontSize: 13.5,
-            fontWeight: 600,
-            color: "var(--lp-gray-1)",
-            marginBottom: 4,
-            letterSpacing: "-0.01em",
-          }}
-        >
-          {stat.label}
-        </div>
-
-        {/* Sublabel */}
-        <div
-          style={{
-            fontSize: 10.5,
-            color: "var(--lp-gray-3)",
+        {/* Header telemetry / status chip row */}
+        <div className="relative z-10" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+          {/* Status chip */}
+          <span style={{
+            fontSize: 8.5, fontWeight: 700,
             fontFamily: "var(--font-geist-mono, monospace)",
-            textTransform: "uppercase",
+            color: stat.color,
+            background: `${stat.color}0a`,
+            border: `1px solid ${stat.color}18`,
+            padding: "3px 8px", borderRadius: 6,
+            display: "inline-flex", alignItems: "center", gap: 5,
+          }}>
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: stat.color }}></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: stat.color }}></span>
+            </span>
+            {stat.status}
+          </span>
+          {/* Telemetry metadata label */}
+          <span style={{
+            fontSize: 7.5, color: "rgba(15, 23, 42, 0.24)",
+            fontFamily: "var(--font-geist-mono, monospace)",
             letterSpacing: "0.08em",
-          }}
-        >
-          {stat.sub}
+          }}>
+            SYS_MTRX_STB
+          </span>
         </div>
-      </div>
 
-      {/* Progress Bar Visual */}
-      <div className="relative z-10" style={{ marginTop: 16, width: "100%" }}>
-        <div style={{ height: 3.5, width: "100%", background: "rgba(15,23,42,0.04)", borderRadius: 99, overflow: "hidden", position: "relative" }}>
-          <motion.div
-            initial={{ width: 0 }}
-            animate={isInView ? { width: `${stat.progressValue}%` } : {}}
-            transition={{ duration: 1.5, delay: 0.2 + index * 0.1, ease: "easeOut" }}
+        <div className="relative z-10 flex-grow" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+          {/* Big number */}
+          <div
+            className="font-heading stat-number"
             style={{
-              height: "100%",
-              borderRadius: 99,
-              background: `linear-gradient(90deg, ${stat.color}a0, ${stat.color})`,
+              fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
+              fontWeight: 800,
+              lineHeight: 1.1,
+              letterSpacing: "-0.04em",
+              color: stat.color,
+              marginBottom: 6,
             }}
-          />
+          >
+            {stat.noCount
+              ? stat.displayValue
+              : stat.isDecimal
+                ? `${(count / 100).toFixed(2)}`
+                : stat.prefix
+                  ? `${stat.prefix}${count}`
+                  : `${count}`
+            }
+            {stat.suffix && (
+              <span
+                style={{
+                  fontSize: "0.55em",
+                  fontWeight: 700,
+                  marginLeft: 2,
+                  opacity: 0.75,
+                }}
+              >
+                {stat.suffix}
+              </span>
+            )}
+          </div>
+
+          {/* Label */}
+          <div
+            style={{
+              fontSize: 13.5,
+              fontWeight: 600,
+              color: "var(--lp-gray-1)",
+              marginBottom: 4,
+              letterSpacing: "-0.01em",
+            }}
+          >
+            {stat.label}
+          </div>
+
+          {/* Sublabel */}
+          <div
+            style={{
+              fontSize: 10.5,
+              color: "var(--lp-gray-3)",
+              fontFamily: "var(--font-geist-mono, monospace)",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+            }}
+          >
+            {stat.sub}
+          </div>
+        </div>
+
+        {/* Progress Bar Visual */}
+        <div className="relative z-10" style={{ marginTop: 16, width: "100%" }}>
+          <div style={{ height: 3.5, width: "100%", background: "rgba(15,23,42,0.04)", borderRadius: 99, overflow: "hidden", position: "relative" }}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={isInView ? { width: `${stat.progressValue}%` } : {}}
+              transition={{ duration: 1.5, delay: 0.2 + index * 0.1, ease: "easeOut" }}
+              style={{
+                height: "100%",
+                borderRadius: 99,
+                background: `linear-gradient(90deg, ${stat.color}a0, ${stat.color})`,
+              }}
+            />
+          </div>
         </div>
       </div>
     </motion.div>
