@@ -3,32 +3,32 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Download, Smartphone } from "lucide-react";
+import { Smartphone } from "lucide-react";
 import { motion } from "framer-motion";
 
 const links = [
   {
     heading: "Platform",
     items: [
-      { label: "Features", href: "#features" },
-      { label: "How It Works", href: "#how-it-works" },
-      { label: "Roles", href: "#roles" },
-      { label: "Sign In", href: "/login" },
+      { label: "Features",     href: "#features"      },
+      { label: "How It Works", href: "#how-it-works"  },
+      { label: "Roles",        href: "#roles"         },
+      { label: "Sign In",      href: "/login"         },
     ],
   },
   {
     heading: "Technology",
     items: [
-      { label: "Polygon Amoy", href: "https://amoy.polygonscan.com", external: true },
-      { label: "IPFS / web3.storage", href: "https://web3.storage", external: true },
-      { label: "Public Verify", href: "/verify", external: false },
+      { label: "Polygon Amoy",      href: "https://amoy.polygonscan.com", external: true  },
+      { label: "IPFS / web3.storage", href: "https://web3.storage",       external: true  },
+      { label: "Public Verify",     href: "/verify",                       external: false },
     ],
   },
   {
     heading: "Project",
     items: [
-      { label: "PRD v2.0", href: "#" },
-      { label: "Audit Log", href: "#" },
+      { label: "PRD v2.0",       href: "#" },
+      { label: "Audit Log",      href: "#" },
       { label: "Smart Contract", href: "#" },
     ],
   },
@@ -39,10 +39,7 @@ export default function LandingFooter() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
+    const handler = (e: Event) => { e.preventDefault(); setDeferredPrompt(e); };
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
@@ -63,20 +60,20 @@ export default function LandingFooter() {
   return (
     <footer
       style={{
-        borderTop: "1px solid rgba(15,23,42,0.08)",
+        borderTop: "1px solid rgba(15,23,42,0.07)",
         padding: "64px 24px 40px",
         background: "transparent",
         position: "relative",
         overflow: "hidden",
       }}
     >
-      {/* Subtle top ambient glow */}
+      {/* Very soft top ambient */}
       <div
         aria-hidden
         style={{
           position: "absolute",
-          top: 0, left: "25%", right: "25%", height: 200,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(0,245,155,0.04) 0%, transparent 70%)",
+          top: 0, left: "25%", right: "25%", height: 160,
+          background: "radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.04) 0%, transparent 70%)",
           filter: "blur(40px)",
           pointerEvents: "none",
         }}
@@ -100,7 +97,7 @@ export default function LandingFooter() {
               style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 14 }}
             >
               <img src="/icon-v2.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: "contain" }} />
-              <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.01em" }}>
+              <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em" }}>
                 <span style={{ color: "var(--lp-gray-1)" }}>Proof</span>
                 <span style={{ color: "#059669" }}>Chain</span>
               </span>
@@ -115,53 +112,53 @@ export default function LandingFooter() {
               <span
                 style={{
                   width: 6, height: 6, borderRadius: "50%",
-                  background: "var(--lp-primary-neon)",
-                  boxShadow: "0 0 8px var(--lp-primary-neon)",
+                  background: "#059669",
+                  boxShadow: "0 0 0 2px rgba(5,150,105,0.20)",
                   display: "inline-block",
                   flexShrink: 0,
-                  animation: "badge-glow 2s infinite alternate",
+                  animation: "badge-glow 2.5s infinite alternate",
                 }}
               />
-              <span style={{ fontSize: 11, color: "#94a3b8", fontFamily: "var(--font-geist-mono, monospace)", }}>
+              <span style={{ fontSize: 11, color: "#94a3b8", fontFamily: "var(--font-geist-mono, monospace)" }}>
                 Polygon Amoy Testnet
               </span>
             </div>
 
-            {/* Install button — hover only, no continuous animation */}
+            {/* Install button — clean emerald, no neon */}
             <motion.button
               onClick={handleInstallClick}
               whileHover={{
-                scale: 1.04,
-                boxShadow: "0 8px 24px rgba(0,245,155,0.25)",
+                scale: 1.03,
+                boxShadow: "0 8px 24px rgba(5,150,105,0.18)",
               }}
               whileTap={{ scale: 0.97 }}
               style={{
                 marginTop: 20,
-                background: "linear-gradient(135deg, #00f59b 0%, #059669 100%)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                color: "#030307",
+                background: "linear-gradient(135deg, #059669 0%, #047857 100%)",
+                border: "1px solid rgba(5,150,105,0.20)",
+                color: "#ffffff",
                 padding: "9px 16px",
                 borderRadius: 12,
                 cursor: "pointer",
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
-                boxShadow: "0 4px 16px rgba(0,245,155,0.2)",
+                boxShadow: "0 2px 8px rgba(5,150,105,0.18), inset 0 1px 0 rgba(255,255,255,0.12)",
                 transition: "box-shadow 0.3s ease",
               }}
             >
-              <Smartphone size={18} style={{ color: "#030307", flexShrink: 0 }} />
+              <Smartphone size={16} style={{ color: "#ffffff", flexShrink: 0 }} />
               <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", textAlign: "left" }}>
                 <span
                   style={{
                     fontSize: 9, fontWeight: 600, textTransform: "uppercase",
-                    letterSpacing: "0.07em", color: "rgba(3,3,7,0.65)",
+                    letterSpacing: "0.07em", color: "rgba(255,255,255,0.65)",
                     lineHeight: 1, marginBottom: 2,
                   }}
                 >
                   Available Now
                 </span>
-                <span style={{ fontSize: 14, fontWeight: 700, color: "#030307", lineHeight: 1 }}>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "#ffffff", lineHeight: 1 }}>
                   Install Web App
                 </span>
               </div>
@@ -198,7 +195,7 @@ export default function LandingFooter() {
                         onMouseLeave={(e) => (e.currentTarget.style.color = "#64748b")}
                       >
                         {item.label}
-                        <span style={{ fontSize: 10, opacity: 0.5 }}>↗</span>
+                        <span style={{ fontSize: 10, opacity: 0.45 }}>↗</span>
                       </a>
                     ) : (
                       <Link
@@ -223,7 +220,7 @@ export default function LandingFooter() {
         {/* Bottom bar */}
         <div
           style={{
-            borderTop: "1px solid rgba(15,23,42,0.08)",
+            borderTop: "1px solid rgba(15,23,42,0.07)",
             paddingTop: 22,
             display: "flex",
             justifyContent: "space-between",
@@ -232,11 +229,11 @@ export default function LandingFooter() {
             gap: 10,
           }}
         >
-          <p style={{ fontSize: 12, color: "#94a3b8", margin: 0, fontFamily: "var(--font-geist-mono, monospace)", }}>
+          <p style={{ fontSize: 12, color: "#94a3b8", margin: 0, fontFamily: "var(--font-geist-mono, monospace)" }}>
             © 2026 ProofChain · Sachin R — MCA241221
           </p>
-          <p style={{ fontSize: 11, color: "#cbd5e1", margin: 0, fontFamily: "var(--font-geist-mono, monospace)", }}>
-            Not a court-admissible system · Academic & forensic demonstration
+          <p style={{ fontSize: 11, color: "#cbd5e1", margin: 0, fontFamily: "var(--font-geist-mono, monospace)" }}>
+            Not a court-admissible system · Academic &amp; forensic demonstration
           </p>
         </div>
       </div>

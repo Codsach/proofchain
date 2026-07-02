@@ -1,14 +1,14 @@
 // app/page.tsx — ProofChain Landing Page
 import type { Metadata } from "next";
 import "./landing.css";
-import LandingNav from "@/components/landing/LandingNav";
-import HeroSection from "@/components/landing/HeroSection";
+import LandingNav      from "@/components/landing/LandingNav";
+import HeroSection     from "@/components/landing/HeroSection";
+import TrustSection    from "@/components/landing/TrustSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
-import HowItWorks from "@/components/landing/HowItWorks";
-import RolesSection from "@/components/landing/RolesSection";
-import CTASection from "@/components/landing/CTASection";
-import LandingFooter from "@/components/landing/LandingFooter";
-import TrustSection from "@/components/landing/TrustSection";
+import HowItWorks      from "@/components/landing/HowItWorks";
+import RolesSection    from "@/components/landing/RolesSection";
+import CTASection      from "@/components/landing/CTASection";
+import LandingFooter   from "@/components/landing/LandingFooter";
 
 export const metadata: Metadata = {
   title: "ProofChain — Tamper-Proof Digital Forensic Evidence Platform",
@@ -38,8 +38,9 @@ export default function LandingPage() {
       <LandingNav />
       <main style={{ position: "relative" }}>
         <HeroSection />
-        <FeaturesSection />
+        {/* Premium metrics section — directly below hero */}
         <TrustSection />
+        <FeaturesSection />
         <HowItWorks />
         <RolesSection />
         <CTASection />

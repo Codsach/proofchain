@@ -1,41 +1,53 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
-import { ArrowRight, Shield, Zap, Lock, Database } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import HeroInteractiveWidget from "./HeroInteractiveWidget";
 
 const fadeUp: Variants = {
-  hidden: { opacity: 0, y: 36, filter: "blur(12px)" },
+  hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
   visible: (i: number = 0) => ({
     opacity: 1,
     y: 0,
     filter: "blur(0px)",
-    transition: { duration: 1.3, delay: i * 0.13, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 1.2, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] },
   }),
 };
 
-const stats = [
-  { value: "< 60s", label: "Blockchain Anchoring", Icon: Zap },
-  { value: "SHA-256", label: "Cryptographic Seal", Icon: Shield },
-  { value: "100%", label: "Immutable Records", Icon: Lock },
-  { value: "IPFS", label: "Decentralised Store", Icon: Database },
-];
+// Very subtle mouse parallax
+function useMouseParallax(strength = 0.012) {
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 2;
+      setOffset({
+        x: (e.clientX - cx) * strength,
+        y: (e.clientY - cy) * strength,
+      });
+    };
+    window.addEventListener("mousemove", fn, { passive: true });
+    return () => window.removeEventListener("mousemove", fn);
+  }, [strength]);
+  return offset;
+}
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
+  const parallax    = useMouseParallax(0.010);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const midY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
+  const midY  = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
   const midOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const fgOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgSc = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
+  const fgY   = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const fgOp  = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgSc  = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
 
   return (
     <div
@@ -46,38 +58,30 @@ export default function HeroSection() {
       {/* ─── Keyframes ─── */}
       <style dangerouslySetInnerHTML={{
         __html: `
-        @keyframes heroShimmer {
-          0%   { background-position: 200% center; }
-          100% { background-position: -200% center; }
+        @keyframes heroGradientText {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
         }
         .hero-shimmer {
           background: linear-gradient(
             110deg,
-            #334155 0%,
-            #0f172a 18%,
-            #d97706 38%,
-            #059669 58%,
-            #0f172a 78%,
-            #334155 100%
+            #0f172a 0%,
+            #334155 22%,
+            #059669 42%,
+            #047857 58%,
+            #334155 78%,
+            #0f172a 100%
           );
-          background-size: 300% auto;
+          background-size: 280% auto;
           color: transparent;
           -webkit-background-clip: text;
           background-clip: text;
-          animation: heroShimmer 9s linear infinite;
+          animation: heroGradientText 10s ease infinite;
         }
-        @keyframes auroraFloat {
-          0%, 100% { transform: translateX(-50%) scale(1);   opacity: 0.6; }
-          50%       { transform: translateX(-50%) scale(1.1); opacity: 0.9; }
-        }
-        @keyframes lineSlide {
-          0%   { transform: scaleX(0); opacity: 0; }
-          100% { transform: scaleX(1); opacity: 1; }
-        }
-        .hero-line { animation: lineSlide 1.4s cubic-bezier(0.16,1,0.3,1) forwards; transform-origin: left; }
-      ` }} />
+      `}} />
 
-      {/* ─── Layer 2: Ambient glows ─── */}
+      {/* ─── Layer 2: Ambient lighting — soft, no large circles ─── */}
       <motion.div
         style={{
           position: "absolute", inset: 0,
@@ -85,41 +89,51 @@ export default function HeroSection() {
           pointerEvents: "none", willChange: "transform, opacity",
         }}
       >
-        {/* Edge fade — left */}
+        {/* Edge fades */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to right, var(--lp-bg) 0%, rgba(238,242,247,0.4) 15%, transparent 35%, rgba(238,242,247,0.4) 85%, var(--lp-bg) 100%)",
+          background: "linear-gradient(to right, var(--lp-bg) 0%, transparent 18%, transparent 82%, var(--lp-bg) 100%)",
         }} />
-        {/* Bottom fade */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to top, var(--lp-bg) 0%, transparent 55%)",
+          background: "linear-gradient(to top, var(--lp-bg) 0%, transparent 50%)",
         }} />
 
-        {/* Primary emerald aurora — top center */}
+        {/* Very soft top-center radial — no animation, no large circle */}
         <div style={{
           position: "absolute",
-          top: "-8%",
+          top: "-4%",
           left: "50%",
           transform: "translateX(-50%)",
-          width: "75%",
-          maxWidth: 1000,
-          height: 520,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.12) 0%, rgba(4,120,87,0.05) 40%, transparent 70%)",
-          filter: "blur(50px)",
+          width: "55%",
+          maxWidth: 760,
+          height: 380,
+          background: "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.08) 0%, rgba(5,150,105,0.03) 45%, transparent 70%)",
+          filter: "blur(60px)",
           pointerEvents: "none",
-          animation: "auroraFloat 10s ease-in-out infinite",
         }} />
 
-        {/* Warm amber glow — lower right */}
+        {/* Soft blue accent — right edge */}
         <div style={{
           position: "absolute",
-          bottom: "10%",
-          right: "5%",
-          width: 440,
-          height: 440,
-          background: "radial-gradient(circle, rgba(217,119,6,0.08) 0%, transparent 70%)",
+          top: "20%",
+          right: "-4%",
+          width: 320,
+          height: 320,
+          background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)",
           filter: "blur(70px)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Warm amber — lower left */}
+        <div style={{
+          position: "absolute",
+          bottom: "8%",
+          left: "5%",
+          width: 280,
+          height: 280,
+          background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)",
+          filter: "blur(60px)",
           pointerEvents: "none",
         }} />
       </motion.div>
@@ -133,16 +147,27 @@ export default function HeroSection() {
         }}
         className="relative w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center min-h-screen lg:min-h-0 lg:py-36">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center min-h-screen lg:min-h-0 lg:py-36">
 
           {/* ── Left: Text ── */}
-          <div className="lg:col-span-7 flex flex-col items-start text-left">
+          <div className="lg:col-span-6 flex flex-col items-start text-left">
+
+            {/* Trust badge */}
+            <motion.div
+              variants={fadeUp} initial="hidden" animate="visible" custom={0}
+              className="lp-badge mb-8"
+            >
+              <span className="lp-badge-dot" />
+              <span style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em" }}>
+                Blockchain-anchored · AI-analysed · Tamper-proof
+              </span>
+            </motion.div>
 
             {/* Headline */}
             <motion.h1
               variants={fadeUp} initial="hidden" animate="visible" custom={1}
               className="font-heading font-black tracking-tight mb-5"
-              style={{ lineHeight: 1.0, fontSize: "clamp(3.2rem, 7.5vw, 5.8rem)" }}
+              style={{ lineHeight: 1.0, fontSize: "clamp(3.0rem, 7vw, 5.4rem)" }}
             >
               <span className="block hero-shimmer">
                 Immutable
@@ -166,23 +191,23 @@ export default function HeroSection() {
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 1.2, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                width: 72, height: 3, borderRadius: "var(--lp-radius-full)", marginBottom: "var(--lp-space-md)",
+                width: 56, height: 2.5, borderRadius: 99, marginBottom: 24,
                 background: "linear-gradient(90deg, #059669, #047857)",
-                boxShadow: "0 0 12px rgba(5,150,105,0.3)",
                 transformOrigin: "left",
+                boxShadow: "0 0 8px rgba(5,150,105,0.20)",
               }}
             />
 
             <motion.p
               variants={fadeUp} initial="hidden" animate="visible" custom={2}
               style={{
-                fontSize: "clamp(0.93rem, 1.4vw, 1.05rem)",
+                fontSize: "clamp(0.92rem, 1.35vw, 1.03rem)",
                 color: "var(--lp-gray-2)",
                 lineHeight: 1.75,
-                maxWidth: 520,
-                marginBottom: "var(--lp-space-xl)",
+                maxWidth: 500,
+                marginBottom: 40,
                 fontFamily: "var(--font-inter), sans-serif",
               }}
             >
@@ -199,7 +224,7 @@ export default function HeroSection() {
                 href="/login"
                 id="hero-cta-primary"
                 className="lp-btn-primary font-sans flex items-center justify-center gap-2.5 no-underline"
-                style={{ height: 52, paddingLeft: "var(--lp-space-xl)", paddingRight: "var(--lp-space-xl)", fontSize: 14, fontWeight: 600 }}
+                style={{ height: 52, paddingLeft: 32, paddingRight: 32, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
                 Access Platform <ArrowRight size={16} />
               </Link>
@@ -207,101 +232,33 @@ export default function HeroSection() {
                 href="#features"
                 id="hero-cta-secondary"
                 className="lp-btn-ghost font-sans flex items-center justify-center gap-2 no-underline"
-                style={{ height: 52, paddingLeft: "var(--lp-space-xl)", paddingRight: "var(--lp-space-xl)", fontSize: 14, fontWeight: 600 }}
+                style={{ height: 52, paddingLeft: 28, paddingRight: 28, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
                 View Features
               </a>
-            </motion.div>
-
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="visible" custom={4}
-              className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 w-full"
-              style={{
-                borderTop: "1px solid rgba(15,23,42,0.10)",
-                paddingTop: "var(--lp-space-lg)",
-              }}
-            >
-              {stats.map((s) => (
-                <div
-                  key={s.label}
-                  className="group"
-                  style={{
-                    padding: "var(--lp-space-sm) var(--lp-space-md)",
-                    borderRadius: "var(--lp-radius-xl)",
-                    background: "rgba(255,255,255,0.72)",
-                    border: "1px solid rgba(15,23,42,0.09)",
-                    backdropFilter: "blur(8px)",
-                    transition: "all 0.35s cubic-bezier(0.16,1,0.3,1)",
-                    cursor: "default",
-                  }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(5,150,105,0.25)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.92)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "0 0 16px rgba(5,150,105,0.08)";
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(15,23,42,0.09)";
-                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.72)";
-                    (e.currentTarget as HTMLElement).style.boxShadow = "none";
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                    <s.Icon size={11} style={{ color: "#059669", opacity: 0.85 }} />
-                    <span
-                      className="font-heading"
-                      style={{ fontSize: 13, fontWeight: 700, color: "var(--lp-gray-1)" }}
-                    >
-                      {s.value}
-                    </span>
-                  </div>
-                  <span
-                    style={{
-                      display: "block",
-                      fontSize: 9,
-                      color: "var(--lp-gray-3)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                      lineHeight: 1.4,
-                      fontFamily: "var(--font-inter), sans-serif",
-                    }}
-                  >
-                    {s.label}
-                  </span>
-                </div>
-              ))}
             </motion.div>
 
           </div>
 
           {/* ── Right: Widget ── */}
           <motion.div
-            className="lg:col-span-5 w-full flex justify-center lg:justify-end items-center relative"
+            className="lg:col-span-6 w-full flex justify-center lg:justify-end items-center relative"
             variants={fadeUp} initial="hidden" animate="visible" custom={2.5}
+            style={{
+              x: parallax.x * 8,
+              y: parallax.y * 8,
+              transition: "x 0.6s ease-out, y 0.6s ease-out",
+            } as React.CSSProperties}
           >
-            {/* Outer ambient glow ring */}
+            {/* Soft ambient glow behind widget */}
             <div
               aria-hidden
               style={{
                 position: "absolute",
-                inset: -40,
+                inset: -32,
                 borderRadius: 40,
-                background: "radial-gradient(ellipse at 50% 50%, rgba(5,150,105,0.08) 0%, transparent 70%)",
-                filter: "blur(24px)",
-                pointerEvents: "none",
-                zIndex: 0,
-              }}
-            />
-            {/* Warm bottom accent */}
-            <div
-              aria-hidden
-              style={{
-                position: "absolute",
-                bottom: -60,
-                left: "20%",
-                right: "20%",
-                height: 120,
-                background: "radial-gradient(ellipse, rgba(217,119,6,0.07) 0%, transparent 70%)",
-                filter: "blur(30px)",
+                background: "radial-gradient(ellipse at 50% 50%, rgba(5,150,105,0.07) 0%, transparent 70%)",
+                filter: "blur(32px)",
                 pointerEvents: "none",
                 zIndex: 0,
               }}
@@ -316,7 +273,7 @@ export default function HeroSection() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 1 }}
+        transition={{ delay: 2.0, duration: 1 }}
         className="hidden lg:flex"
         style={{
           position: "absolute", bottom: 28, left: "50%",
@@ -327,8 +284,8 @@ export default function HeroSection() {
       >
         <span
           style={{
-            fontSize: 9, letterSpacing: "0.2em", textTransform: "uppercase",
-            color: "rgba(15,23,42,0.35)",
+            fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
+            color: "rgba(15,23,42,0.28)",
             fontFamily: "var(--font-geist-mono, monospace)",
           }}
         >
@@ -337,8 +294,8 @@ export default function HeroSection() {
         <div
           className="lp-scroll-dot"
           style={{
-            width: 1, height: 36,
-            background: "linear-gradient(to bottom, rgba(5,150,105,0.5), transparent)",
+            width: 1, height: 32,
+            background: "linear-gradient(to bottom, rgba(5,150,105,0.40), transparent)",
           }}
         />
       </motion.div>
