@@ -100,17 +100,31 @@ export default function RolesSection() {
         overflow: "hidden",
       }}
     >
-      {/* Subtle dot grid */}
-      <div
+      {/* Subtle blockchain connection graphic */}
+      <svg
         aria-hidden
-        style={{
-          position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(15,23,42,0.05) 1px, transparent 1px)",
-          backgroundSize: "32px 32px",
-          pointerEvents: "none",
-          maskImage: "radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 100%)",
-        }}
-      />
+        className="absolute inset-0 w-full h-full opacity-[0.015] pointer-events-none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="80" cy="180" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="240" cy="100" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="480" cy="220" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="880" cy="120" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="1080" cy="240" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="680" cy="380" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="920" cy="400" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="340" cy="420" r="3" fill="var(--lp-gray-1)" />
+        
+        <line x1="80" y1="180" x2="240" y2="100" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="240" y1="100" x2="480" y2="220" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="480" y1="220" x2="680" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="680" y1="380" x2="920" y2="400" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="920" y1="400" x2="1080" y2="240" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="880" y1="120" x2="1080" y2="240" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="480" y1="220" x2="880" y2="120" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="240" y1="100" x2="340" y2="420" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+        <line x1="340" y1="420" x2="680" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="4 4" />
+      </svg>
 
       {/* Emerald ambient glow — top left */}
       <motion.div
@@ -198,17 +212,37 @@ export default function RolesSection() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
-              variants={revealVariant}
               custom={i}
               className="lp-role-card"
-              style={{ willChange: "transform, opacity", borderRadius: 24 }}
-              whileHover={{
-                y: -6,
-                scale: 1.015,
-                borderColor: role.borderHover,
-                boxShadow: `0 24px 56px -12px ${role.shadowHover}, inset 0 1px 0 rgba(255,255,255,1)`,
-                background: `linear-gradient(180deg, ${role.accentHover} 0%, rgba(255,255,255,0.90) 100%)`,
-                transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
+              style={{
+                willChange: "transform, opacity",
+                borderRadius: 24,
+                background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${role.accent}02 60%, ${role.accent}08 100%)`,
+                borderColor: `${role.accent}14`,
+                position: "relative",
+                overflow: "hidden",
+              }}
+              whileHover="hover"
+              animate="rest"
+              variants={{
+                hidden: revealVariant.hidden,
+                visible: revealVariant.visible,
+                hover: {
+                  y: -6,
+                  scale: 1.015,
+                  borderColor: role.accent,
+                  boxShadow: `0 24px 56px -12px ${role.shadowHover}, 0 0 0 1px ${role.accent}10, inset 0 1px 0 rgba(255,255,255,1)`,
+                  background: `linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, ${role.accent}05 60%, ${role.accent}0c 100%)`,
+                  transition: { duration: 0.4 }
+                },
+                rest: {
+                  y: 0,
+                  scale: 1,
+                  borderColor: `${role.accent}14`,
+                  boxShadow: "0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1)",
+                  background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${role.accent}02 60%, ${role.accent}08 100%)`,
+                  transition: { duration: 0.4 }
+                }
               }}
             >
               {/* Top accent line */}
@@ -223,16 +257,20 @@ export default function RolesSection() {
               {/* Role header */}
               <div style={{ marginBottom: 20 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                  <div
+                  <motion.div
                     style={{
                       width: 34, height: 34, borderRadius: 9,
                       background: `${role.accentDim}`,
                       border: `1px solid ${role.accent}28`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}
+                    variants={{
+                      hover: { scale: 1.1, rotate: 5, transition: { duration: 0.3 } },
+                      rest: { scale: 1, rotate: 0, transition: { duration: 0.3 } }
+                    }}
                   >
                     <role.Icon size={17} color={role.accent} />
-                  </div>
+                  </motion.div>
                   <div>
                     <span style={{ fontSize: 16, fontWeight: 700, color: "var(--lp-gray-1)" }}>{role.name}</span>
                     <span style={{ fontSize: 11, color: role.accent, fontWeight: 500, opacity: 0.8, marginLeft: 6 }}>

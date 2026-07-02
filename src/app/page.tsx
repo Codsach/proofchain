@@ -35,6 +35,7 @@ export const metadata: Metadata = {
 export default function LandingPage() {
   return (
     <div className="lp-root" style={{ minHeight: "100dvh", position: "relative" }}>
+      <div className="lp-grain" />
       <LandingNav />
       <main style={{ position: "relative" }}>
         <HeroSection />

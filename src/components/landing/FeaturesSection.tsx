@@ -78,9 +78,9 @@ const supportingFeatures = [
     title: "Mobile PWA",
     body: "Investigators submit evidence directly from the field using the installed PWA. Camera access and offline queuing built in.",
     Icon: Smartphone,
-    color: "#059669",
-    colorDim: "rgba(5,150,105,0.10)",
-    iconBg: "rgba(5,150,105,0.10)",
+    color: "#06b6d4",
+    colorDim: "rgba(6,182,212,0.10)",
+    iconBg: "rgba(6,182,212,0.10)",
     tag: "Field Ready",
   },
 ];
@@ -123,6 +123,28 @@ export default function FeaturesSection() {
           willChange: "transform",
         }}
       />
+
+      {/* Decorative node network graphic */}
+      <svg
+        className="absolute top-12 left-10 w-96 h-96 opacity-[0.025] pointer-events-none"
+        viewBox="0 0 400 400"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle cx="50" cy="50" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="200" cy="80" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="350" cy="120" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="100" cy="220" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="280" cy="260" r="3" fill="var(--lp-gray-1)" />
+        <circle cx="180" cy="350" r="3" fill="var(--lp-gray-1)" />
+        <line x1="50" y1="50" x2="200" y2="80" stroke="var(--lp-gray-1)" strokeWidth="1" />
+        <line x1="200" y1="80" x2="350" y2="120" stroke="var(--lp-gray-1)" strokeWidth="1" />
+        <line x1="50" y1="50" x2="100" y2="220" stroke="var(--lp-gray-1)" strokeWidth="1" />
+        <line x1="100" y1="220" x2="280" y2="260" stroke="var(--lp-gray-1)" strokeWidth="1" />
+        <line x1="200" y1="80" x2="100" y2="220" stroke="var(--lp-gray-1)" strokeWidth="1" />
+        <line x1="280" y1="260" x2="180" y2="350" stroke="var(--lp-gray-1)" strokeWidth="1" />
+        <line x1="350" y1="120" x2="280" y2="260" stroke="var(--lp-gray-1)" strokeWidth="1" />
+      </svg>
 
       <div className="max-w-[1200px] mx-auto relative z-10">
         {/* ── Section header ── */}
@@ -197,28 +219,57 @@ function HeroFeatureCard({ feature, index }: { feature: typeof heroFeatures[0]; 
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-60px" }}
+      className="bento-glass-lg group feature-card-border-animated"
+      style={{
+        padding: "40px 40px 36px",
+        background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${feature.color}03 60%, ${feature.color}09 100%)`,
+        borderColor: `${feature.color}14`,
+        "--card-accent-grad": `linear-gradient(135deg, ${feature.color}00 0%, ${feature.color}35 50%, ${feature.color}00 100%)`
+      } as React.CSSProperties}
+      whileHover="hover"
+      animate="rest"
       variants={{
         hidden: { opacity: 0, y: 28, filter: "blur(6px)" },
         visible: {
           opacity: 1, y: 0, filter: "blur(0px)",
           transition: { duration: 0.85, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] as const },
         },
-      }}
-      className="bento-glass-lg group"
-      style={{ padding: "40px 40px 36px" }}
-      whileHover={{
-        y: -7,
-        scale: 1.012,
-        boxShadow: `
-          0 2px 6px rgba(15,23,42,0.04),
-          0 20px 56px rgba(15,23,42,0.10),
-          0 0 0 1px ${feature.color}18,
-          inset 0 1px 0 rgba(255,255,255,1)
-        `,
-        borderColor: `${feature.color}25`,
-        transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const },
+        hover: {
+          y: -7,
+          scale: 1.012,
+          boxShadow: `
+            0 2px 6px rgba(15,23,42,0.04),
+            0 20px 56px rgba(15,23,42,0.10),
+            0 0 0 1px ${feature.color}18,
+            inset 0 1px 0 rgba(255,255,255,1)
+          `,
+          borderColor: `${feature.color}28`,
+          transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
+        },
+        rest: {
+          y: 0,
+          scale: 1,
+          boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03), 0 8px 24px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1)",
+          transition: { duration: 0.4 }
+        }
       }}
     >
+      {/* Glow layer behind card content */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: -40,
+          right: -40,
+          width: 200,
+          height: 200,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${feature.color}15 0%, transparent 70%)`,
+          filter: "blur(24px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       {/* Top accent gradient */}
       <div
         style={{
@@ -244,15 +295,18 @@ function HeroFeatureCard({ feature, index }: { feature: typeof heroFeatures[0]; 
         {/* Header row */}
         <div className="flex items-start justify-between">
           {/* Icon with colored background */}
-          <div
+          <motion.div
             className="feature-icon-bg"
             style={{
               background: feature.iconBg,
               border: `1px solid ${feature.color}22`,
             }}
+            variants={{
+              hover: { scale: 1.1, rotate: 6, y: -2, transition: { duration: 0.3 } }
+            }}
           >
             <feature.Icon size={22} style={{ color: feature.color }} />
-          </div>
+          </motion.div>
 
           {/* Tag pill */}
           <span
@@ -324,28 +378,57 @@ function SupportingCard({ feature, index }: { feature: typeof supportingFeatures
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-40px" }}
+      className="bento-glass group feature-card-border-animated"
+      style={{
+        padding: "28px 24px",
+        background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${feature.color}02 60%, ${feature.color}08 100%)`,
+        borderColor: `${feature.color}12`,
+        "--card-accent-grad": `linear-gradient(135deg, ${feature.color}00 0%, ${feature.color}35 50%, ${feature.color}00 100%)`
+      } as React.CSSProperties}
+      whileHover="hover"
+      animate="rest"
       variants={{
         hidden: { opacity: 0, y: 24, filter: "blur(5px)" },
         visible: {
           opacity: 1, y: 0, filter: "blur(0px)",
           transition: { duration: 0.75, delay: 0.2 + index * 0.08, ease: [0.16, 1, 0.3, 1] as const },
         },
-      }}
-      className="bento-glass group feature-card-border-animated"
-      style={{ padding: "28px 24px" }}
-      whileHover={{
-        y: -5,
-        scale: 1.02,
-        boxShadow: `
-          0 2px 6px rgba(15,23,42,0.04),
-          0 14px 36px rgba(15,23,42,0.08),
-          0 0 0 1px ${feature.color}16,
-          inset 0 1px 0 rgba(255,255,255,1)
-        `,
-        borderColor: `${feature.color}22`,
-        transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const },
+        hover: {
+          y: -5,
+          scale: 1.02,
+          boxShadow: `
+            0 2px 6px rgba(15,23,42,0.04),
+            0 14px 36px rgba(15,23,42,0.08),
+            0 0 0 1px ${feature.color}16,
+            inset 0 1px 0 rgba(255,255,255,1)
+          `,
+          borderColor: `${feature.color}22`,
+          transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
+        },
+        rest: {
+          y: 0,
+          scale: 1,
+          boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 12px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1)",
+          transition: { duration: 0.35 }
+        }
       }}
     >
+      {/* Glow layer behind card content */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: -30,
+          right: -30,
+          width: 140,
+          height: 140,
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${feature.color}12 0%, transparent 70%)`,
+          filter: "blur(18px)",
+          pointerEvents: "none",
+          zIndex: 0,
+        }}
+      />
+
       {/* Top accent */}
       <div
         style={{
@@ -358,16 +441,19 @@ function SupportingCard({ feature, index }: { feature: typeof supportingFeatures
 
       <div className="relative z-10 flex flex-col gap-4 h-full">
         {/* Icon with colored background */}
-        <div
+        <motion.div
           className="feature-icon-bg"
           style={{
             width: 40, height: 40, borderRadius: 12,
             background: feature.iconBg,
             border: `1px solid ${feature.color}20`,
           }}
+          variants={{
+            hover: { scale: 1.1, rotate: 6, y: -2, transition: { duration: 0.3 } }
+          }}
         >
           <feature.Icon size={18} style={{ color: feature.color }} />
-        </div>
+        </motion.div>
 
         <div>
           {/* Number label */}

@@ -73,7 +73,7 @@
   --lp-radius-full: 9999px;
 }
 
-/* ── Root background — warm off-white with soft mesh ── */
+/* Root background — warm off-white with soft mesh ── */
 .lp-root {
   background-color: var(--lp-bg);
   overflow-x: hidden;
@@ -88,24 +88,22 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 80% 50% at 10% -10%, rgba(16, 185, 129, 0.05) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 90% 20%,  rgba(59, 130, 246, 0.04) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(16, 185, 129, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 30% at 80% 80%,  rgba(245, 158, 11, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse 70% 40% at 10% -10%, rgba(16, 185, 129, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 20%,  rgba(59, 130, 246, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 15% 70%, rgba(139, 92, 246, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 85%,  rgba(245, 158, 11, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 50% 50%,  rgba(255, 255, 255, 0.5) 0%, transparent 100%);
 }
 
-/* Subtle grid texture */
-.lp-root::after {
+/* Fine grain overlay */
+.lp-grain {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
-  background-image:
-    linear-gradient(rgba(15, 23, 42, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.025) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 30%, transparent 90%);
+  z-index: 99;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.015;
 }
 
 /* Noise overlay — applied on hero */
@@ -153,13 +151,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.90);
 }
 
-/* ── Hero grid texture ── */
+/* ── Hero grid texture removed ── */
 .lp-hero-grid {
-  background-image:
-    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 85% 80% at 50% 50%, black 40%, transparent 100%);
+  background: transparent;
 }
 
 /* ── Gradient text ── */
@@ -273,7 +267,7 @@
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(16,185,129,0) 0%, rgba(16,185,129,0.25) 50%, rgba(16,185,129,0) 100%);
+  background: var(--card-accent-grad, linear-gradient(135deg, rgba(16,185,129,0) 0%, rgba(16,185,129,0.25) 50%, rgba(16,185,129,0) 100%));
   background-size: 200% 200%;
   opacity: 0;
   transition: opacity 0.4s ease;

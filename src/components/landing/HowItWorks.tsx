@@ -378,35 +378,71 @@ export default function HowItWorks() {
       </div>
 
       {/* Horizontal scroll track */}
-      <div className="flex-1 flex items-center min-h-0 py-4 md:py-8">
-        <div ref={trackRef} className="flex px-6 md:px-24">
+      <div className="flex-1 flex items-center min-h-0 py-4 md:py-8 relative">
+        {/* Subtle decorative connection line behind track */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0, right: 0, top: "50%",
+            height: 1.5,
+            background: "linear-gradient(90deg, transparent, rgba(5,150,105,0.08) 20%, rgba(139,92,246,0.08) 80%, transparent)",
+            zIndex: 0,
+            pointerEvents: "none",
+          }}
+        />
+
+        <div ref={trackRef} className="flex px-6 md:px-24 relative z-10">
           {steps.map((step) => (
             <div
               key={step.num}
               className="step-panel w-[85vw] md:w-[60vw] lg:w-[45vw] xl:w-[40vw] flex-shrink-0 pr-8 md:pr-12"
             >
-              <div
-                className="group backdrop-blur-xl rounded-[32px] p-6 md:p-10 relative overflow-hidden flex flex-col justify-between transition-all duration-500"
+              <motion.div
+                className="group backdrop-blur-xl rounded-[32px] p-6 md:p-10 relative overflow-hidden flex flex-col justify-between feature-card-border-animated"
                 style={{
                   height: "calc(100vh - 340px)",
                   minHeight: "380px",
                   maxHeight: "480px",
-                  background: "rgba(255,255,255,0.82)",
-                  borderColor: "rgba(15,23,42,0.09)",
+                  background: `linear-gradient(135deg, rgba(255,255,255,0.88) 0%, ${step.color}02 60%, ${step.color}08 100%)`,
                   border: "1px solid rgba(15,23,42,0.09)",
                   boxShadow: "0 4px 32px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.95)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = `${step.color}35`;
-                  e.currentTarget.style.boxShadow = `0 12px 48px rgba(15,23,42,0.10), 0 0 0 1px ${step.color}22, inset 0 1px 0 rgba(255,255,255,1)`;
-                  e.currentTarget.style.background = "rgba(255,255,255,0.95)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = "rgba(15,23,42,0.09)";
-                  e.currentTarget.style.boxShadow = "0 4px 32px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.95)";
-                  e.currentTarget.style.background = "rgba(255,255,255,0.82)";
+                  "--card-accent-grad": `linear-gradient(135deg, ${step.color}00 0%, ${step.color}35 50%, ${step.color}00 100%)`
+                } as React.CSSProperties}
+                whileHover="hover"
+                animate="rest"
+                variants={{
+                  hover: {
+                    y: -6,
+                    borderColor: `${step.color}30`,
+                    background: `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, ${step.color}04 60%, ${step.color}0d 100%)`,
+                    boxShadow: `0 16px 48px rgba(15,23,42,0.10), 0 0 0 1px ${step.color}18, inset 0 1px 0 rgba(255,255,255,1)`,
+                    transition: { duration: 0.4 }
+                  },
+                  rest: {
+                    y: 0,
+                    borderColor: "rgba(15,23,42,0.09)",
+                    background: `linear-gradient(135deg, rgba(255,255,255,0.88) 0%, ${step.color}02 60%, ${step.color}08 100%)`,
+                    boxShadow: "0 4px 32px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.95)",
+                    transition: { duration: 0.4 }
+                  }
                 }}
               >
+                {/* Glow layer behind card content */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: -40,
+                    right: -40,
+                    width: 200,
+                    height: 200,
+                    borderRadius: "50%",
+                    background: `radial-gradient(circle, ${step.color}12 0%, transparent 70%)`,
+                    filter: "blur(24px)",
+                    pointerEvents: "none",
+                    zIndex: 0,
+                  }}
+                />
+
                 {/* Top accent line */}
                 <div
                   style={{
@@ -443,16 +479,20 @@ export default function HowItWorks() {
                     >
                       Step {step.num}
                     </span>
-                    <div
-                      className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+                    <motion.div
+                      className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center"
                       style={{
                         border: `1px solid ${step.color}30`,
                         background: `${step.colorDim}`,
                         boxShadow: `0 0 24px ${step.color}15`,
                       }}
+                      variants={{
+                        hover: { scale: 1.1, rotate: 6, transition: { duration: 0.3 } },
+                        rest: { scale: 1, rotate: 0, transition: { duration: 0.3 } }
+                      }}
                     >
                       <step.icon size={28} style={{ color: step.color }} />
-                    </div>
+                    </motion.div>
                   </div>
 
                   {/* Content */}
@@ -460,8 +500,6 @@ export default function HowItWorks() {
                     <h3
                       className="text-xl md:text-2xl lg:text-3xl font-heading font-bold mb-3 transition-colors duration-300"
                       style={{ color: "var(--lp-gray-1)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = step.color)}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = "var(--lp-gray-1)")}
                     >
                       {step.heading}
                     </h3>
@@ -483,7 +521,7 @@ export default function HowItWorks() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           ))}
         </div>

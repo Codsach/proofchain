@@ -102,17 +102,25 @@ export default function CTASection() {
         }}
       />
 
-      {/* Subtle dot grid */}
+      {/* Cryptographic floating hash strings */}
       <div
         aria-hidden
         style={{
           position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(15,23,42,0.035) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-          maskImage: "radial-gradient(ellipse 75% 70% at 50% 50%, black 15%, transparent 100%)",
-          pointerEvents: "none", zIndex: 0,
+          opacity: 0.015,
+          fontFamily: "var(--font-geist-mono, monospace)",
+          fontSize: 10,
+          color: "var(--lp-gray-1)",
+          pointerEvents: "none",
+          zIndex: 0,
         }}
-      />
+      >
+        <span style={{ position: "absolute", top: "10%", left: "15%" }}>0x9f38e2bc71aa4d812</span>
+        <span style={{ position: "absolute", top: "40%", right: "12%" }}>bafybeig8l4rmpqz7c</span>
+        <span style={{ position: "absolute", bottom: "15%", left: "20%" }}>sha256:e3b0c44298f</span>
+        <span style={{ position: "absolute", bottom: "35%", right: "25%" }}>polygon:amoy:evidence</span>
+        <span style={{ position: "absolute", top: "25%", right: "45%" }}>0x3fa5fde72c5b4198</span>
+      </div>
 
       {/* Floating decorative elements */}
       <div

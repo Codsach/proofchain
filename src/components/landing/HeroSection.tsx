@@ -136,6 +136,34 @@ export default function HeroSection() {
           filter: "blur(60px)",
           pointerEvents: "none",
         }} />
+
+        {/* Subtle background nodes & connections */}
+        <svg
+          className="absolute top-24 left-1/4 w-[600px] h-[500px] opacity-[0.02] pointer-events-none"
+          viewBox="0 0 600 500"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <circle cx="100" cy="150" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="280" cy="100" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="480" cy="180" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="180" cy="380" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="380" cy="300" r="3" fill="var(--lp-gray-1)" />
+          <circle cx="500" cy="400" r="3" fill="var(--lp-gray-1)" />
+          
+          <line x1="100" y1="150" x2="280" y2="100" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="280" y1="100" x2="480" y2="180" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="100" y1="150" x2="180" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="180" y1="380" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="280" y1="100" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="380" y1="300" x2="500" y2="400" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          <line x1="480" y1="180" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
+          
+          <text x="120" y="145" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">0x7f4e</text>
+          <text x="300" y="95" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">bafybeig</text>
+          <text x="400" y="295" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">sha256</text>
+          <text x="200" y="375" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">polygon</text>
+        </svg>
       </motion.div>
 
       {/* ─── Layer 3: Foreground ─── */}

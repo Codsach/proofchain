@@ -35,6 +35,8 @@ const stats = [
     sub: "Cryptographically guaranteed",
     color: "#059669",
     isDecimal: true,
+    status: "SECURE",
+    progressValue: 99.98,
   },
   {
     value: 60,
@@ -46,6 +48,8 @@ const stats = [
     isDecimal: false,
     prefix: "<",
     noCount: true,
+    status: "SYNCED",
+    progressValue: 88,
   },
   {
     value: 100,
@@ -55,6 +59,8 @@ const stats = [
     sub: "Immutable transfer records",
     color: "#10b981",
     isDecimal: false,
+    status: "IMMUTABLE",
+    progressValue: 100,
   },
   {
     value: 12,
@@ -64,6 +70,8 @@ const stats = [
     sub: "EXIF · Gemini Vision · Heuristics",
     color: "#8b5cf6",
     isDecimal: false,
+    status: "MONITORING",
+    progressValue: 75,
   },
   {
     value: 24,
@@ -74,6 +82,8 @@ const stats = [
     color: "#d97706",
     isDecimal: false,
     noCount: true,
+    status: "PUBLIC",
+    progressValue: 100,
   },
   {
     value: 0,
@@ -84,6 +94,8 @@ const stats = [
     color: "#059669",
     isDecimal: false,
     noCount: true,
+    status: "LOCKED",
+    progressValue: 100,
   },
 ];
 
@@ -163,12 +175,12 @@ export default function TrustSection() {
             </span>
           </motion.h2>
 
-          {/* ── Editorial stats grid ── */}
+          {/* ── Live metrics stats grid ── */}
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 0,
+              gap: 20,
             }}
             className="stats-grid"
           >
@@ -310,103 +322,146 @@ function StatItem({
     isInView && !stat.noCount
   );
 
-  const isTop    = index < 3;
-  const isLeft   = index % 3 === 0;
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.75, delay: 0.15 + index * 0.10, ease: [0.16, 1, 0.3, 1] }}
       style={{
-        padding: "48px 40px",
-        textAlign: "center",
-        borderRight: (index % 3 !== 2) ? "1px solid rgba(15,23,42,0.07)" : "none",
-        borderBottom: isTop ? "1px solid rgba(15,23,42,0.07)" : "none",
+        padding: "28px 24px",
+        borderRadius: "20px",
+        border: "1px solid rgba(15, 23, 42, 0.07)",
+        background: `linear-gradient(135deg, rgba(255,255,255,0.92) 0%, rgba(248,250,252,0.85) 100%)`,
+        boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 16px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1)",
         position: "relative",
-        transition: "background 0.3s ease",
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
         cursor: "default",
       }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.60)";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.background = "transparent";
+      whileHover={{
+        y: -5,
+        borderColor: `${stat.color}25`,
+        boxShadow: `0 16px 40px -12px ${stat.color}15, 0 0 0 1px ${stat.color}10, inset 0 1px 0 rgba(255,255,255,1)`,
+        background: `linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, ${stat.color}05 100%)`,
+        transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
       }}
     >
-      {/* Micro top accent on hover — per stat color */}
+      {/* Glow layer */}
       <div
         style={{
           position: "absolute",
-          top: 0, left: "25%", right: "25%",
-          height: 1.5,
-          background: `linear-gradient(90deg, transparent, ${stat.color}50, transparent)`,
-          opacity: 0,
-          transition: "opacity 0.3s ease",
-          pointerEvents: "none",
+          bottom: 0, left: "10%", right: "10%", height: 80,
+          background: `radial-gradient(ellipse at 50% 100%, ${stat.color}0d, transparent 70%)`,
+          pointerEvents: "none", zIndex: 0,
         }}
-        className="stat-top-accent"
       />
 
-      {/* Big number */}
-      <div
-        className="font-heading stat-number"
-        style={{
-          fontSize: "clamp(2.8rem, 5vw, 4rem)",
-          fontWeight: 800,
-          lineHeight: 1,
-          letterSpacing: "-0.04em",
-          color: stat.color,
-          marginBottom: 12,
-          transition: "transform 0.3s ease",
-        }}
-      >
-        {stat.noCount
-          ? stat.displayValue
-          : stat.isDecimal
-            ? `${(count / 100).toFixed(2)}`
-            : stat.prefix
-              ? `${stat.prefix}${count}`
-              : `${count}`
-        }
-        {stat.suffix && (
-          <span
-            style={{
-              fontSize: "0.55em",
-              fontWeight: 700,
-              marginLeft: 2,
-              opacity: 0.75,
-            }}
-          >
-            {stat.suffix}
-          </span>
-        )}
-      </div>
-
-      {/* Label */}
-      <div
-        style={{
-          fontSize: 14,
-          fontWeight: 600,
-          color: "var(--lp-gray-1)",
-          marginBottom: 6,
-          letterSpacing: "-0.01em",
-        }}
-      >
-        {stat.label}
-      </div>
-
-      {/* Sublabel */}
-      <div
-        style={{
-          fontSize: 11,
-          color: "var(--lp-gray-3)",
+      {/* Header telemetry / status chip row */}
+      <div className="relative z-10" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
+        {/* Status chip */}
+        <span style={{
+          fontSize: 8.5, fontWeight: 700,
           fontFamily: "var(--font-geist-mono, monospace)",
-          textTransform: "uppercase",
+          color: stat.color,
+          background: `${stat.color}0a`,
+          border: `1px solid ${stat.color}18`,
+          padding: "3px 8px", borderRadius: 6,
+          display: "inline-flex", alignItems: "center", gap: 5,
+        }}>
+          <span className="relative flex h-1.5 w-1.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: stat.color }}></span>
+            <span className="relative inline-flex rounded-full h-1.5 w-1.5" style={{ backgroundColor: stat.color }}></span>
+          </span>
+          {stat.status}
+        </span>
+        {/* Telemetry metadata label */}
+        <span style={{
+          fontSize: 7.5, color: "rgba(15, 23, 42, 0.24)",
+          fontFamily: "var(--font-geist-mono, monospace)",
           letterSpacing: "0.08em",
-        }}
-      >
-        {stat.sub}
+        }}>
+          SYS_MTRX_STB
+        </span>
+      </div>
+
+      <div className="relative z-10 flex-grow" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        {/* Big number */}
+        <div
+          className="font-heading stat-number"
+          style={{
+            fontSize: "clamp(2.4rem, 4vw, 3.4rem)",
+            fontWeight: 800,
+            lineHeight: 1.1,
+            letterSpacing: "-0.04em",
+            color: stat.color,
+            marginBottom: 6,
+          }}
+        >
+          {stat.noCount
+            ? stat.displayValue
+            : stat.isDecimal
+              ? `${(count / 100).toFixed(2)}`
+              : stat.prefix
+                ? `${stat.prefix}${count}`
+                : `${count}`
+          }
+          {stat.suffix && (
+            <span
+              style={{
+                fontSize: "0.55em",
+                fontWeight: 700,
+                marginLeft: 2,
+                opacity: 0.75,
+              }}
+            >
+              {stat.suffix}
+            </span>
+          )}
+        </div>
+
+        {/* Label */}
+        <div
+          style={{
+            fontSize: 13.5,
+            fontWeight: 600,
+            color: "var(--lp-gray-1)",
+            marginBottom: 4,
+            letterSpacing: "-0.01em",
+          }}
+        >
+          {stat.label}
+        </div>
+
+        {/* Sublabel */}
+        <div
+          style={{
+            fontSize: 10.5,
+            color: "var(--lp-gray-3)",
+            fontFamily: "var(--font-geist-mono, monospace)",
+            textTransform: "uppercase",
+            letterSpacing: "0.08em",
+          }}
+        >
+          {stat.sub}
+        </div>
+      </div>
+
+      {/* Progress Bar Visual */}
+      <div className="relative z-10" style={{ marginTop: 16, width: "100%" }}>
+        <div style={{ height: 3.5, width: "100%", background: "rgba(15,23,42,0.04)", borderRadius: 99, overflow: "hidden", position: "relative" }}>
+          <motion.div
+            initial={{ width: 0 }}
+            animate={isInView ? { width: `${stat.progressValue}%` } : {}}
+            transition={{ duration: 1.5, delay: 0.2 + index * 0.1, ease: "easeOut" }}
+            style={{
+              height: "100%",
+              borderRadius: 99,
+              background: `linear-gradient(90deg, ${stat.color}a0, ${stat.color})`,
+            }}
+          />
+        </div>
       </div>
     </motion.div>
   );
