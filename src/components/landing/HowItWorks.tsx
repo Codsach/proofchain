@@ -299,7 +299,7 @@ export default function HowItWorks() {
     <section
       ref={containerRef}
       id="how-it-works"
-      className="overflow-hidden h-screen flex flex-col justify-center relative"
+      className="overflow-hidden h-screen flex flex-col relative"
       style={{
         background: "transparent",
         borderTop: "1px solid rgba(15,23,42,0.08)",
@@ -319,73 +319,78 @@ export default function HowItWorks() {
         }}
       />
 
-      {/* Section label + heading */}
-      <div className="absolute top-12 left-6 md:top-24 md:left-24 z-10 pointer-events-none">
-        <p className="lp-section-label mb-3">Workflow</p>
-        <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold" style={{ color: "var(--lp-gray-1)" }}>
-          The Journey of Truth
-        </h2>
-        {/* Scroll hint */}
-        <p
+      {/* Section label + heading row */}
+      <div className="w-full pt-24 md:pt-28 px-6 md:px-24 pb-4 flex flex-col md:flex-row md:items-end justify-between z-10 pointer-events-none gap-4">
+        <div>
+          <p className="lp-section-label mb-2">Workflow</p>
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "var(--lp-gray-1)", lineHeight: 1.15 }}>
+            The Journey of Truth
+          </h2>
+          {/* Scroll hint */}
+          <p
+            style={{
+              marginTop: 8,
+              fontSize: 10,
+              fontFamily: "var(--font-geist-mono, monospace)",
+              color: "var(--lp-gray-3)",
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            <span
+              style={{
+                display: "inline-block",
+                width: 16,
+                height: 1,
+                background: "var(--lp-gray-3)",
+                borderRadius: 1,
+              }}
+            />
+            Scroll to explore
+          </p>
+        </div>
+
+        {/* Step counter indicator */}
+        <div
           style={{
-            marginTop: 12,
-            fontSize: 10,
-            fontFamily: "var(--font-geist-mono, monospace)",
-            color: "var(--lp-gray-3)",
-            textTransform: "uppercase",
-            letterSpacing: "0.15em",
             display: "flex",
+            gap: 8,
             alignItems: "center",
-            gap: 6,
+            paddingBottom: 4,
           }}
         >
-          <span
-            style={{
-              display: "inline-block",
-              width: 16,
-              height: 1,
-              background: "var(--lp-gray-3)",
-              borderRadius: 1,
-            }}
-          />
-          Scroll to explore
-        </p>
-      </div>
-
-      {/* Step counter indicator (top-right) */}
-      <div
-        className="absolute top-12 right-8 md:top-24 md:right-24 z-10 pointer-events-none"
-        style={{
-          display: "flex",
-          gap: 8,
-          alignItems: "center",
-        }}
-      >
-        {steps.map((step, i) => (
-          <div
-            key={step.num}
-            style={{
-              width: i === 0 ? 24 : 8,
-              height: 3,
-              borderRadius: 99,
-              background: i === 0 ? steps[0].color : "rgba(15,23,42,0.12)",
-              transition: "all 0.4s ease",
-            }}
-          />
-        ))}
+          {steps.map((step, i) => (
+            <div
+              key={step.num}
+              style={{
+                width: i === 0 ? 24 : 8,
+                height: 3,
+                borderRadius: 99,
+                background: i === 0 ? steps[0].color : "rgba(15,23,42,0.12)",
+                transition: "all 0.4s ease",
+              }}
+            />
+          ))}
+        </div>
       </div>
 
       {/* Horizontal scroll track */}
-      <div className="flex h-full items-center mt-12 md:mt-0">
+      <div className="flex-1 flex items-center min-h-0 py-4 md:py-8">
         <div ref={trackRef} className="flex px-6 md:px-24">
           {steps.map((step) => (
             <div
               key={step.num}
-              className="step-panel w-[85vw] md:w-[60vw] lg:w-[50vw] flex-shrink-0 pr-8 md:pr-16"
+              className="step-panel w-[85vw] md:w-[60vw] lg:w-[45vw] xl:w-[40vw] flex-shrink-0 pr-8 md:pr-12"
             >
               <div
-                className="group backdrop-blur-xl rounded-[32px] p-8 md:p-12 relative overflow-hidden h-full flex flex-col justify-between transition-all duration-500"
+                className="group backdrop-blur-xl rounded-[32px] p-6 md:p-10 relative overflow-hidden flex flex-col justify-between transition-all duration-500"
                 style={{
+                  height: "calc(100vh - 340px)",
+                  minHeight: "380px",
+                  maxHeight: "480px",
                   background: "rgba(255,255,255,0.82)",
                   borderColor: "rgba(15,23,42,0.09)",
                   border: "1px solid rgba(15,23,42,0.09)",
@@ -419,7 +424,7 @@ export default function HowItWorks() {
                   }}
                 />
 
-                <div className="relative z-10 flex flex-col gap-8 h-full">
+                <div className="relative z-10 flex flex-col gap-6 h-full">
                   {/* Step number + Icon row */}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <span
@@ -439,33 +444,33 @@ export default function HowItWorks() {
                       Step {step.num}
                     </span>
                     <div
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110"
+                      className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center transition-all duration-500 group-hover:scale-110"
                       style={{
                         border: `1px solid ${step.color}30`,
                         background: `${step.colorDim}`,
                         boxShadow: `0 0 24px ${step.color}15`,
                       }}
                     >
-                      <step.icon size={32} style={{ color: step.color }} />
+                      <step.icon size={28} style={{ color: step.color }} />
                     </div>
                   </div>
 
                   {/* Content */}
                   <div className="flex flex-col flex-grow justify-center">
                     <h3
-                      className="text-2xl md:text-3xl lg:text-4xl font-heading font-bold mb-4 transition-colors duration-300"
+                      className="text-xl md:text-2xl lg:text-3xl font-heading font-bold mb-3 transition-colors duration-300"
                       style={{ color: "var(--lp-gray-1)" }}
                       onMouseEnter={(e) => (e.currentTarget.style.color = step.color)}
                       onMouseLeave={(e) => (e.currentTarget.style.color = "var(--lp-gray-1)")}
                     >
                       {step.heading}
                     </h3>
-                    <p className="font-sans text-base md:text-lg leading-relaxed mb-8" style={{ color: "var(--lp-gray-2)" }}>
+                    <p className="font-sans text-sm md:text-base leading-relaxed mb-6" style={{ color: "var(--lp-gray-2)" }}>
                       {step.body}
                     </p>
                     <div className="mt-auto">
                       <span
-                        className="inline-block font-mono text-xs md:text-sm uppercase tracking-widest py-2.5 px-5 rounded-xl border"
+                        className="inline-block font-mono text-[10px] md:text-xs uppercase tracking-widest py-2 px-4 rounded-xl border"
                         style={{
                           color: step.color,
                           background: `${step.colorDim}`,
