@@ -102,7 +102,6 @@ export default function FeaturesSection() {
       ref={sectionRef}
       id="features"
       className="py-[128px] px-6 relative overflow-hidden font-sans"
-      style={{ background: "transparent" }}
     >
       {/* Very soft section ambient — no heavy circles */}
       <motion.div

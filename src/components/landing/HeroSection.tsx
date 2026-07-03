@@ -53,7 +53,6 @@ export default function HeroSection() {
     <div
       ref={sectionRef}
       className="noise-overlay relative min-h-screen flex items-center justify-center overflow-hidden w-full"
-      style={{ background: "transparent" }}
     >
       {/* ─── Keyframes ─── */}
       <style dangerouslySetInnerHTML={{

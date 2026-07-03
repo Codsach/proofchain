@@ -62,7 +62,6 @@ export default function LandingFooter() {
       style={{
         borderTop: "1px solid rgba(15,23,42,0.07)",
         padding: "64px 24px 40px",
-        background: "transparent",
         position: "relative",
         overflow: "hidden",
       }}

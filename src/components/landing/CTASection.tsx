@@ -69,7 +69,7 @@ export default function CTASection() {
     <section
       ref={sectionRef}
       className="relative overflow-hidden text-center py-36 px-6 font-sans"
-      style={{ background: "transparent", borderTop: "1px solid rgba(15,23,42,0.07)" }}
+      style={{ borderTop: "1px solid rgba(15,23,42,0.07)" }}
     >
       {/* ── Soft ambient glow — top center ── */}
       <motion.div

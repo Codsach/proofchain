@@ -94,7 +94,6 @@ export default function RolesSection() {
       ref={sectionRef}
       id="roles"
       style={{
-        background: "transparent",
         padding: "120px 24px",
         position: "relative",
         overflow: "hidden",

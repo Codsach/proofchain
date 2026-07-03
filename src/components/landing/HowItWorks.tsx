@@ -112,12 +112,11 @@ export default function HowItWorks() {
 
   // ── MOBILE: Vertical Timeline ──
   if (isMobile) {
-    return (
+      return (
       <section
         id="how-it-works"
         ref={mobileRef}
         style={{
-          background: "transparent",
           borderTop: "1px solid rgba(15,23,42,0.08)",
           borderBottom: "1px solid rgba(15,23,42,0.08)",
           padding: "72px 20px",
@@ -301,7 +300,6 @@ export default function HowItWorks() {
       id="how-it-works"
       className="overflow-hidden h-screen flex flex-col relative"
       style={{
-        background: "transparent",
         borderTop: "1px solid rgba(15,23,42,0.08)",
         borderBottom: "1px solid rgba(15,23,42,0.08)",
       }}

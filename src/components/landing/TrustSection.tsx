@@ -121,7 +121,7 @@ export default function TrustSection() {
   return (
     <div
       ref={sectionRef}
-      style={{ background: "transparent", position: "relative", overflow: "hidden" }}
+      style={{ position: "relative", overflow: "hidden" }}
     >
       {/* Top separator */}
       <div

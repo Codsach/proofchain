@@ -110,7 +110,6 @@ export default function StatsSection() {
     <section
       ref={sectionRef}
       className="py-20 px-6 relative overflow-hidden"
-      style={{ background: "transparent" }}
     >
       {/* Top separator */}
       <div
