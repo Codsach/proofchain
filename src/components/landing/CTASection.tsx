@@ -67,10 +67,11 @@ export default function CTASection() {
 
   return (
     <section
-      ref={sectionRef}
-      className="relative overflow-hidden text-center py-36 px-6 font-sans"
-      style={{ borderTop: "1px solid rgba(15,23,42,0.07)" }}
-    >
+  ref={sectionRef}
+  className="relative py-20 px-4 font-sans flex justify-center"
+  style={{ borderTop: "1px solid rgba(15,23,42,0.03)" }}
+  
+>
       {/* ── Soft ambient glow — top center ── */}
       <motion.div
         aria-hidden
@@ -161,7 +162,20 @@ export default function CTASection() {
         <Zap size={16} style={{ color: "#8b5cf6", opacity: 0.65 }} />
       </div>
 
-      <div style={{ maxWidth: 600, margin: "0 auto", position: "relative", zIndex: 1 }}>
+      <div
+        style={{
+          maxWidth: "min(1400px, 95vw)",
+          margin: "0 auto",
+          position: "relative",
+          zIndex: 1,
+          padding: "64px 48px",
+          borderRadius: 24,
+          background: "linear-gradient(180deg, #fbfdfe 0%, #eef6f9 100%)",
+          boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
+          border: "1px solid rgba(15,23,42,0.04)",
+          textAlign: "center",
+        }}
+      >
 
         {/* Label + Heading */}
         <motion.div
@@ -183,9 +197,12 @@ export default function CTASection() {
             custom={1}
             className="font-heading font-bold mb-6 leading-tight"
             style={{
-              color: "var(--lp-gray-1)",
-              fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
-              letterSpacing: "-0.03em",
+              color: "#0f172a",
+              fontSize: "clamp(1.9rem, 3.6vw, 2.8rem)",
+              letterSpacing: "-0.02em",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             Evidence that{" "}
@@ -213,8 +230,8 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={0}
-            className="font-sans leading-relaxed mb-12 max-w-md mx-auto"
-            style={{ color: "var(--lp-gray-2)", fontSize: "clamp(0.93rem, 1.3vw, 1.04rem)", lineHeight: 1.75 }}
+            className="font-sans leading-relaxed mb-8 mx-auto"
+            style={{ color: "rgba(15,23,42,0.7)", fontSize: "clamp(0.95rem, 1.2vw, 1.02rem)", lineHeight: 1.6, maxWidth: 760 }}
           >
             Built for cybersecurity and digital forensics teams who need
             cryptographically guaranteed chain of custody — not just a file store.
@@ -224,6 +241,7 @@ export default function CTASection() {
             variants={revealVariant}
             custom={1}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            style={{ marginTop: 6 }}
           >
             {/* Magnetic primary CTA */}
             <Link
@@ -231,7 +249,7 @@ export default function CTASection() {
               href="/login"
               id="cta-access"
               className="lp-btn-primary font-sans flex items-center gap-2.5 no-underline"
-              style={{ padding: "14px 36px", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}
+              style={{ padding: "12px 32px", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}
             >
               Request Access <ArrowRight size={16} />
             </Link>
@@ -248,8 +266,8 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            className="mt-10 text-xs tracking-wider font-mono uppercase"
-            style={{ color: "rgba(15,23,42,0.30)" }}
+            className="mt-8 text-xs tracking-wider font-mono uppercase"
+            style={{ color: "rgba(15,23,42,0.38)" }}
           >
             Designed for law enforcement · Forensic labs · Cyber incident response teams
           </motion.p>
