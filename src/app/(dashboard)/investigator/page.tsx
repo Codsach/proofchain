@@ -9,6 +9,7 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InvestigatorCharts } from "@/components/investigator/InvestigatorCharts";
+import { StatCard } from "@/components/ui/StatCard";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -386,92 +387,43 @@ export default function InvestigatorPage() {
           {
             label: "Assigned Cases",
             value: cases.length,
-            desc: "Total subjects in registry",
+            description: "Assigned to your profile",
             variantKey: "blue" as const,
+            metaText: "Active",
           },
           {
             label: "Pending Analysis",
             value: openCases,
-            desc: "Active review queue",
+            description: "Awaiting consensus review",
             variantKey: "purple" as const,
+            metaText: "Awaiting Review",
           },
           {
             label: "Evidence Integrity",
             value: totalFiles,
-            desc: "Validated artifacts",
+            description: "On-chain evidence files",
             variantKey: "green" as const,
+            metaText: "Verified",
           },
         ].map((stat, idx) => {
           const variant = STAT_VARIANTS[stat.variantKey];
-          const Icon = variant.icon;
           return (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              whileHover="hover"
-              className="h-full flex justify-center"
+              className="h-full w-full"
             >
-              <div className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] select-none group">
-                {/* Layer 1: Solid Card Base (z-0) */}
-                <div className="absolute inset-0 bg-white/25 rounded-[20px] z-0 pointer-events-none" />
-
-                {/* Layer 2: Blurred liquid background circles (z-10) */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
-                  <div 
-                    className="absolute -inset-16 flex flex-wrap opacity-85 transition-opacity duration-300 transform-gpu will-change-[filter]"
-                    style={{ filter: "blur(130px)" }}
-                  >
-                    {/* Circle 1 - Top Left */}
-                    <div className={`absolute top-[5%] left-[5%] w-[170px] h-[170px] rounded-full ${variant.circleColors[0]}`} />
-                    {/* Circle 2 - Top Right */}
-                    <div className={`absolute top-[2%] right-[10%] w-[150px] h-[150px] rounded-full ${variant.circleColors[1]}`} />
-                    {/* Circle 3 - Center */}
-                    <div className={`absolute top-[25%] left-[25%] w-[160px] h-[160px] rounded-full ${variant.circleColors[2]}`} />
-                    {/* Circle 4 - Bottom Right */}
-                    <div className={`absolute bottom-[5%] right-[5%] w-[180px] h-[180px] rounded-full ${variant.circleColors[3]}`} />
-                    {/* Circle 5 - Bottom Left */}
-                    <div className={`absolute bottom-[2%] left-[10%] w-[140px] h-[140px] rounded-full ${variant.circleColors[4]}`} />
-                    {/* Circle 6 - Mid Right */}
-                    <div className={`absolute top-[15%] right-[2%] w-[130px] h-[130px] rounded-full ${variant.circleColors[5]}`} />
-                  </div>
-                  {/* Subtle frosted backdrop filter cover */}
-                  <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
-                  {/* Stripes pattern overlay for premium tech look */}
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
-                </div>
-                
-                {/* Layer 3: Card Content (z-20) */}
-                <div className="relative z-20 flex flex-col justify-between h-full w-full p-5">
-                  {/* Card Content Header */}
-                  <div className="flex items-center justify-between">
-                    <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-
-                  {/* Card Content Value */}
-                  <div className="flex flex-col mt-2">
-                    <span className="text-[10px] text-slate-900 font-extrabold uppercase tracking-[0.15em]">
-                      {stat.label}
-                    </span>
-                    <span className="text-3xl font-extrabold text-slate-955 tracking-tight mt-0.5 font-sans">
-                      {stat.value}
-                    </span>
-                  </div>
-
-                  {/* Card Content Footer */}
-                  <div className="flex items-end justify-between mt-auto">
-                    <span className="text-[10px] text-slate-800 font-bold uppercase tracking-wider">
-                      {stat.desc}
-                    </span>
-                    <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                      {variant.sparkline}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <StatCard
+                label={stat.label}
+                value={stat.value}
+                description={stat.description}
+                variantKey={stat.variantKey}
+                icon={variant.icon}
+                metaText={stat.metaText}
+                isLoading={isLoadingCases}
+              />
             </motion.div>
           )
         })}

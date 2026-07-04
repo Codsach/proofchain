@@ -14,6 +14,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { DashboardCharts } from "@/components/admin/DashboardCharts";
+import { StatCard, StatCardProps } from "@/components/ui/StatCard";
 import type {
   VolumeDataPoint,
   RiskDataPoint,
@@ -212,222 +213,7 @@ function SystemHealthBar({
   );
 }
 
-// ─── Stat Card ───────────────────────────────────────────────────────────────
 
-function Sparkline({ points, color }: { points: number[]; color: string }) {
-  const minVal = Math.min(...points);
-  const maxVal = Math.max(...points);
-  const range = maxVal - minVal || 1;
-  const pathD = points
-    .map((p, i) => {
-      const x = (i / (points.length - 1)) * 52 + 4;
-      const y = 26 - ((p - minVal) / range) * 22;
-      return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-    })
-    .join(" ");
-
-  return (
-    <svg className="w-16 h-8 opacity-80" viewBox="0 0 60 30">
-      <motion.path
-        d={pathD}
-        fill="none"
-        stroke={color}
-        strokeWidth="1.75"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 1.5, ease: "easeInOut" }}
-      />
-    </svg>
-  );
-}
-
-interface StatCardProps {
-  label: string;
-  value?: number;
-  icon: React.ElementType;
-  brandLabel: string;
-  sparklinePoints: number[];
-  variantKey: 'blue' | 'purple' | 'green' | 'orange' | 'amber' | 'cyan';
-  isLoading: boolean;
-}
-
-const STAT_VARIANTS = {
-  blue: {
-    circleColors: [
-      "bg-cyan-500",
-      "bg-blue-600",
-      "bg-indigo-600",
-      "bg-purple-600",
-      "bg-teal-400",
-      "bg-sky-500"
-    ],
-    badgeColor: "bg-blue-500/15 text-blue-900 border border-blue-500/30",
-    iconBg: "bg-blue-606/15 text-blue-800 border border-blue-500/25",
-    trendText: "+5.4%",
-    trendUp: true,
-  },
-  purple: {
-    circleColors: [
-      "bg-pink-500",
-      "bg-purple-600",
-      "bg-fuchsia-500",
-      "bg-violet-600",
-      "bg-indigo-600",
-      "bg-blue-500"
-    ],
-    badgeColor: "bg-purple-500/15 text-purple-900 border border-purple-500/30",
-    iconBg: "bg-purple-606/15 text-purple-800 border border-purple-500/25",
-    trendText: "+8.2%",
-    trendUp: true,
-  },
-  green: {
-    circleColors: [
-      "bg-emerald-500",
-      "bg-teal-500",
-      "bg-cyan-500",
-      "bg-green-600",
-      "bg-lime-400",
-      "bg-yellow-400"
-    ],
-    badgeColor: "bg-emerald-500/15 text-emerald-900 border border-emerald-500/30",
-    iconBg: "bg-emerald-606/15 text-emerald-800 border border-emerald-500/25",
-    trendText: "+14.1%",
-    trendUp: true,
-  },
-  orange: {
-    circleColors: [
-      "bg-orange-500",
-      "bg-rose-500",
-      "bg-red-500",
-      "bg-yellow-500",
-      "bg-amber-500",
-      "bg-pink-500"
-    ],
-    badgeColor: "bg-orange-500/15 text-orange-900 border border-orange-500/30",
-    iconBg: "bg-orange-606/15 text-orange-800 border border-orange-500/25",
-    trendText: "+12.4%",
-    trendUp: true,
-  },
-  amber: {
-    circleColors: [
-      "bg-yellow-400",
-      "bg-amber-500",
-      "bg-orange-500",
-      "bg-yellow-500",
-      "bg-rose-500",
-      "bg-amber-600"
-    ],
-    badgeColor: "bg-amber-500/15 text-amber-900 border border-amber-500/30",
-    iconBg: "bg-amber-606/15 text-amber-900 border border-amber-500/25",
-    trendText: "-3.5%",
-    trendUp: false,
-  },
-  cyan: {
-    circleColors: [
-      "bg-cyan-400",
-      "bg-teal-500",
-      "bg-sky-400",
-      "bg-blue-600",
-      "bg-emerald-400",
-      "bg-cyan-600"
-    ],
-    badgeColor: "bg-cyan-500/15 text-cyan-900 border border-cyan-500/30",
-    iconBg: "bg-cyan-606/15 text-cyan-800 border border-cyan-500/25",
-    trendText: "+22.7%",
-    trendUp: true,
-  },
-} as const;
-
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  brandLabel,
-  sparklinePoints,
-  variantKey,
-  isLoading,
-}: StatCardProps) {
-  const variant = STAT_VARIANTS[variantKey];
-  const strokeColor = variantKey === "blue" ? "#1d4ed8" :
-    variantKey === "purple" ? "#7e22ce" :
-      variantKey === "green" ? "#047857" :
-        variantKey === "orange" ? "#c2410c" :
-          variantKey === "amber" ? "#b45309" : "#0e7490";
-
-  return (
-    <motion.div
-      variants={itemVariants}
-      whileHover={{ y: -4, scale: 1.01 }}
-      className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] select-none group"
-    >
-      {/* Layer 1: Solid Card Base (z-0) */}
-      <div className="absolute inset-0 bg-white/25 rounded-[20px] z-0 pointer-events-none" />
-
-      {/* Layer 2: Blurred liquid background circles (z-10) */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
-        <div
-          className="absolute -inset-16 flex flex-wrap opacity-85 transition-opacity duration-300 transform-gpu will-change-[filter]"
-          style={{ filter: "blur(130px)" }}
-        >
-          {/* Circle 1 - Top Left */}
-          <div className={`absolute top-[5%] left-[5%] w-[170px] h-[170px] rounded-full ${variant.circleColors[0]}`} />
-          {/* Circle 2 - Top Right */}
-          <div className={`absolute top-[2%] right-[10%] w-[150px] h-[150px] rounded-full ${variant.circleColors[1]}`} />
-          {/* Circle 3 - Center */}
-          <div className={`absolute top-[25%] left-[25%] w-[160px] h-[160px] rounded-full ${variant.circleColors[2]}`} />
-          {/* Circle 4 - Bottom Right */}
-          <div className={`absolute bottom-[5%] right-[5%] w-[180px] h-[180px] rounded-full ${variant.circleColors[3]}`} />
-          {/* Circle 5 - Bottom Left */}
-          <div className={`absolute bottom-[2%] left-[10%] w-[140px] h-[140px] rounded-full ${variant.circleColors[4]}`} />
-          {/* Circle 6 - Mid Right */}
-          <div className={`absolute top-[15%] right-[2%] w-[130px] h-[130px] rounded-full ${variant.circleColors[5]}`} />
-        </div>
-        {/* Subtle frosted backdrop filter cover */}
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
-        {/* Stripes pattern overlay for premium tech look */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
-      </div>
-
-      {/* Layer 3: Card Content (z-20) */}
-      <div className="relative z-20 flex flex-col justify-between h-full w-full p-5">
-        {/* Top Bar: Icon */}
-        <div className="flex items-center justify-between">
-          <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
-            <Icon size={18} />
-          </div>
-        </div>
-
-        {/* Middle row: Brand & Metric */}
-        <div className="flex flex-col mt-2">
-          <span className="text-[10px] text-slate-900 font-extrabold uppercase tracking-[0.15em]">
-            {brandLabel}
-          </span>
-          {isLoading ? (
-            <Skeleton className="h-9 w-16 bg-white/30 mt-1" />
-          ) : (
-            <p className="text-3xl font-extrabold text-slate-955 tracking-tight mt-0.5 font-sans">
-              {value ?? 0}
-            </p>
-          )}
-        </div>
-
-        {/* Bottom Row: Label & Sparkline */}
-        <div className="flex items-end justify-between mt-auto">
-          <p className="text-[10px] text-slate-800 font-bold uppercase tracking-wider">
-            {label}
-          </p>
-          {!isLoading && (
-            <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-              <Sparkline points={sparklinePoints} color={strokeColor} />
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 // ─── Quick Link Card ─────────────────────────────────────────────────────────
 
@@ -608,39 +394,39 @@ export default function AdminPage() {
   const statCards: StatCardProps[] = [
     {
       label: "Total Cases",
-      value: caseStats?.total,
+      value: caseStats?.total ?? 0,
       icon: Briefcase,
-      brandLabel: "REGISTRY",
-      sparklinePoints: [8, 14, 10, 18, 15, 24],
+      description: "Indexed in blockchain ledger",
       variantKey: "green",
       isLoading: isLoadingStats,
+      metaText: "Synced",
     },
     {
       label: "Pending Review",
-      value: caseStats?.pending,
+      value: caseStats?.pending ?? 0,
       icon: Clock,
-      brandLabel: "AI SCANNER",
-      sparklinePoints: [15, 8, 12, 5, 10, 7],
+      description: "Awaiting administrative review",
       variantKey: "amber",
       isLoading: isLoadingStats,
+      metaText: "Awaiting Review",
     },
     {
       label: "High Risk",
-      value: caseStats?.highRisk,
+      value: caseStats?.highRisk ?? 0,
       icon: ShieldAlert,
-      brandLabel: "THREAT DETECT",
-      sparklinePoints: [2, 6, 3, 8, 4, 5],
+      description: "Critical incident threat alerts",
       variantKey: "orange",
       isLoading: isLoadingStats,
+      metaText: "Live",
     },
     {
       label: "Verified",
-      value: caseStats?.verified,
+      value: caseStats?.verified ?? 0,
       icon: CheckCircle2,
-      brandLabel: "LEDGER SEAL",
-      sparklinePoints: [6, 12, 9, 15, 12, 19],
+      description: "Tamper-proof signed ledger seals",
       variantKey: "cyan",
       isLoading: isLoadingStats,
+      metaText: "Verified",
     },
   ];
 
