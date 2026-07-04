@@ -23,15 +23,7 @@ function AuthPageBg() {
       <div className="absolute inset-0 [background:radial-gradient(circle_at_88%_88%,#c7d2fe_0%,transparent_38%)]" />
       {/* Soft emerald mid-left */}
       <div className="absolute inset-0 [background:radial-gradient(circle_at_8%_65%,#d1fae5_0%,transparent_35%)]" />
-      {/* Dot grid texture */}
-      <div
-        className="absolute inset-0 opacity-[0.18] pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 1px 1px, #0D9E6E 1px, transparent 0)",
-          backgroundSize: "28px 28px",
-        }}
-      />
+      {/* Dot grid texture removed as per user request */}
     </div>
   );
 }
