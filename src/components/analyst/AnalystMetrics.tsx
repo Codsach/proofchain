@@ -253,9 +253,9 @@ export function AnalystMetrics() {
     return true;
   });
 
-  const gridColsClass = 
-    activeStatCards.length === 3 
-      ? "grid-cols-1 md:grid-cols-3" 
+  const gridColsClass =
+    activeStatCards.length === 3
+      ? "grid-cols-1 md:grid-cols-3"
       : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4";
 
   return (
@@ -281,7 +281,7 @@ export function AnalystMetrics() {
 
               {/* Layer 2: Blurred liquid background circles (z-10) */}
               <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
-                <div 
+                <div
                   className="absolute -inset-16 flex flex-wrap opacity-85 transition-opacity duration-300 transform-gpu will-change-[filter]"
                   style={{ filter: "blur(130px)" }}
                 >
@@ -303,7 +303,7 @@ export function AnalystMetrics() {
                 {/* Stripes pattern overlay for premium tech look */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
               </div>
-              
+
               {/* Layer 3: Card Content (z-20) */}
               <div className="relative z-20 flex flex-col justify-between h-full w-full p-5">
                 {/* Card Content Header */}

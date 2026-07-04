@@ -49,10 +49,7 @@ export default function DashboardLayout({
       )}>
         {/* Background decoration */}
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          <div className={cn(
-            "absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,var(--dash-bg)_20%,transparent_100%)] opacity-20",
-            (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "bg-[linear-gradient(rgba(15,23,42,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(15,23,42,0.035)_1px,transparent_1px)] bg-[size:40px_40px] opacity-100"
-          )} />
+          {/* Background grid removed as per user request */}
 
           {/* 💡 Ambient Mesh Gradients for sentinel-theme-v2 to break flat white sheet */}
           {(isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && (

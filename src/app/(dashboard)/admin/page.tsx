@@ -110,9 +110,8 @@ function ServiceDot({
               <Skeleton className="h-2 w-2 rounded-full bg-dash-border" />
             ) : (
               <span
-                className={`relative inline-flex h-2 w-2 rounded-full ${
-                  ok ? "bg-emerald-500" : "bg-rose-500"
-                }`}
+                className={`relative inline-flex h-2 w-2 rounded-full ${ok ? "bg-emerald-500" : "bg-rose-500"
+                  }`}
               >
                 {ok && (
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
@@ -134,8 +133,8 @@ function ServiceDot({
           {isLoading
             ? "Checking…"
             : ok
-            ? `${label} operational · ${latency}ms`
-            : `${label} unreachable`}
+              ? `${label} operational · ${latency}ms`
+              : `${label} unreachable`}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -176,11 +175,10 @@ function SystemHealthBar({
         </span>
         {!isLoading && status && (
           <Badge
-            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0 h-5 border ${
-              allOk
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0 h-5 border ${allOk
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                 : "bg-rose-500/10 text-rose-400 border-rose-500/20"
-            }`}
+              }`}
           >
             {allOk ? "Nominal" : "Degraded"}
           </Badge>
@@ -353,10 +351,10 @@ function StatCard({
 }: StatCardProps) {
   const variant = STAT_VARIANTS[variantKey];
   const strokeColor = variantKey === "blue" ? "#1d4ed8" :
-                       variantKey === "purple" ? "#7e22ce" :
-                       variantKey === "green" ? "#047857" :
-                       variantKey === "orange" ? "#c2410c" :
-                       variantKey === "amber" ? "#b45309" : "#0e7490";
+    variantKey === "purple" ? "#7e22ce" :
+      variantKey === "green" ? "#047857" :
+        variantKey === "orange" ? "#c2410c" :
+          variantKey === "amber" ? "#b45309" : "#0e7490";
 
   return (
     <motion.div
@@ -369,7 +367,7 @@ function StatCard({
 
       {/* Layer 2: Blurred liquid background circles (z-10) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
-        <div 
+        <div
           className="absolute -inset-16 flex flex-wrap opacity-85 transition-opacity duration-300 transform-gpu will-change-[filter]"
           style={{ filter: "blur(130px)" }}
         >
@@ -692,95 +690,95 @@ export default function AdminPage() {
       <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
         <div className="space-y-8 pb-10">
 
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
-        className="relative"
-      >
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-dash-accent/50" />
-          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">
-            System Overview
-          </p>
-        </div>
-        <div className="flex items-end justify-between flex-wrap gap-4">
-          <div>
-            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Admin Dashboard</h1>
-            <p className="text-dash-muted mt-1.5 font-medium text-sm">
-              Welcome back,{" "}
-              <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.
-              Here&apos;s your operational overview.
-            </p>
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35 }}
+            className="relative"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-px w-8 bg-dash-accent/50" />
+              <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">
+                System Overview
+              </p>
+            </div>
+            <div className="flex items-end justify-between flex-wrap gap-4">
+              <div>
+                <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Admin Dashboard</h1>
+                <p className="text-dash-muted mt-1.5 font-medium text-sm">
+                  Welcome back,{" "}
+                  <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.
+                  Here&apos;s your operational overview.
+                </p>
+              </div>
+              <AnimatePresence>
+                {!isLoadingStats && caseStats && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest px-3 h-7">
+                      <span className="relative flex h-2 w-2 mr-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      </span>
+                      Live
+                    </Badge>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+
+          {/* System Health Bar */}
+          <SystemHealthBar
+            status={systemStatus}
+            isLoading={isLoadingSystem}
+            onRefresh={() => loadSystemStatus(true)}
+            isRefreshing={isRefreshingSystem}
+          />
+
+          {/* Stat Cards */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 lg:grid-cols-2 gap-6"
+          >
+            {statCards.map((card) => (
+              <StatCard key={card.label} {...card} />
+            ))}
+          </motion.div>
+
+          {/* Quick Links */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {quickLinks.map((link) => (
+              <QuickLinkCard key={link.href} {...link} />
+            ))}
           </div>
-          <AnimatePresence>
-            {!isLoadingStats && caseStats && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-center gap-2"
-              >
-                <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest px-3 h-7">
-                  <span className="relative flex h-2 w-2 mr-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                  </span>
-                  Live
-                </Badge>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
 
-      {/* System Health Bar */}
-      <SystemHealthBar
-        status={systemStatus}
-        isLoading={isLoadingSystem}
-        onRefresh={() => loadSystemStatus(true)}
-        isRefreshing={isRefreshingSystem}
-      />
+          {/* Divider */}
+          <div className="flex items-center gap-4">
+            <div className="h-px flex-1 bg-dash-border" />
+            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.3em] flex items-center gap-2">
+              {isChartsLoading && <Loader2 size={10} className="animate-spin" />}
+              Analytics
+            </p>
+            <div className="h-px flex-1 bg-dash-border" />
+          </div>
 
-      {/* Stat Cards */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-2 lg:grid-cols-2 gap-6"
-      >
-        {statCards.map((card) => (
-          <StatCard key={card.label} {...card} />
-        ))}
-      </motion.div>
-
-      {/* Quick Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {quickLinks.map((link) => (
-          <QuickLinkCard key={link.href} {...link} />
-        ))}
-      </div>
-
-      {/* Divider */}
-      <div className="flex items-center gap-4">
-        <div className="h-px flex-1 bg-dash-border" />
-        <p className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.3em] flex items-center gap-2">
-          {isChartsLoading && <Loader2 size={10} className="animate-spin" />}
-          Analytics
-        </p>
-        <div className="h-px flex-1 bg-dash-border" />
-      </div>
-
-      {/* Charts Section */}
-      <DashboardCharts
-        volumeData={chartData?.volumeData ?? EMPTY_VOLUME}
-        riskData={chartData?.riskData ?? EMPTY_RISK}
-        statusData={chartData?.statusData ?? EMPTY_STATUS}
-        tamperData={chartData?.tamperData ?? EMPTY_TAMPER}
-        userCounts={chartData?.userCounts ?? DEFAULT_USER_COUNTS}
-        recentActivity={recentActivity}
-        isLoading={isChartsLoading}
-      />
+          {/* Charts Section */}
+          <DashboardCharts
+            volumeData={chartData?.volumeData ?? EMPTY_VOLUME}
+            riskData={chartData?.riskData ?? EMPTY_RISK}
+            statusData={chartData?.statusData ?? EMPTY_STATUS}
+            tamperData={chartData?.tamperData ?? EMPTY_TAMPER}
+            userCounts={chartData?.userCounts ?? DEFAULT_USER_COUNTS}
+            recentActivity={recentActivity}
+            isLoading={isChartsLoading}
+          />
         </div>
       </div>
     </div>
