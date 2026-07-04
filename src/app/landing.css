@@ -2,7 +2,7 @@
 
 /* ── Font stacks ── */
 .lp-root {
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-geist), sans-serif;
 }
 
 .lp-root .font-heading,
@@ -10,11 +10,11 @@
 .lp-root h2,
 .lp-root h3,
 .lp-root h4 {
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
 }
 
 .lp-mono {
-  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  font-family: var(--font-geist), monospace;
 }
 
 /* Typography Scales */
@@ -458,7 +458,7 @@
   letter-spacing: 0.20em;
   text-transform: uppercase;
   color: var(--lp-primary-neon);
-  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  font-family: var(--font-geist), sans-serif;
 }
 
 /* ── Number highlight ── */
@@ -488,7 +488,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--lp-primary-neon);
-  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  font-family: var(--font-geist), sans-serif;
 }
 
 /* ── Glass card (Tech section, evidence cards) ── */

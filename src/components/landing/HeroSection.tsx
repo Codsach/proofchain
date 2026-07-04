@@ -235,7 +235,7 @@ export default function HeroSection() {
                 lineHeight: 1.75,
                 maxWidth: 500,
                 marginBottom: 40,
-                fontFamily: "var(--font-inter), sans-serif",
+                fontFamily: "var(--font-geist), sans-serif",
               }}
             >
               Every file cryptographically sealed, AI‑analysed for alterations,

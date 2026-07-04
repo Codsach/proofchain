@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Orbitron, Exo_2, Inter } from "next/font/google";
+import { Geist, Manrope } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerProvider } from "@/components/providers/ServiceWorkerProvider";
 import { AuthProvider } from "@/components/providers/AuthContext";
@@ -7,19 +7,14 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { PWAInstallPrompt } from "@/components/pwa-install-prompt";
 
-const orbitron = Orbitron({
+const geist = Geist({
   subsets: ["latin"],
-  variable: "--font-orbitron",
+  variable: "--font-geist",
 });
 
-const exo2 = Exo_2({
+const manrope = Manrope({
   subsets: ["latin"],
-  variable: "--font-exo2",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-manrope",
 });
 
 export const metadata: Metadata = {
@@ -58,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${exo2.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${geist.variable} ${manrope.variable}`} suppressHydrationWarning>
       <head>
         {/* PWA iOS meta tags */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

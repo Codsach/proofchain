@@ -253,7 +253,7 @@ export default function HowItWorks() {
                     color: "var(--lp-gray-1)",
                     marginBottom: 8,
                     lineHeight: 1.3,
-                    fontFamily: "var(--font-inter), sans-serif",
+                    fontFamily: "var(--font-manrope), sans-serif",
                   }}
                 >
                   {step.heading}
