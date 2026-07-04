@@ -95,41 +95,41 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
   });
 
   return (
-    <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
+    <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl">
       {/* Strict utilitarian top bar */}
       <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
       
-      <CardContent className="pt-8 pb-6 flex flex-col gap-6 relative">
-        <CardContainer className="flex flex-col md:flex-row gap-6 items-start md:items-center w-full">
-          {/* Avatar Section */}
-          <CardContainer className="relative group">
-            <Avatar className="h-24 w-24 rounded-xl border border-dash-border bg-dash-hover/40 shadow-inner">
-              <AvatarImage src={avatarPreview || undefined} className="object-cover" />
-              <AvatarFallback className="rounded-xl text-dash-muted flex items-center justify-center bg-dash-hover/20">
-                <User size={32} strokeWidth={1.5} />
-              </AvatarFallback>
-            </Avatar>
-            
-            <Label 
-              htmlFor="avatar-upload" 
-              className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer text-[10px] font-mono rounded-xl text-white tracking-widest font-bold"
-            >
-              {isUploading ? <Loader2 className="h-4 w-4 animate-spin mb-1" /> : <Camera className="h-4 w-4 mb-1" />}
-              {isUploading ? "UPLOADING" : "UPDATE"}
-            </Label>
-            <input 
-              type="file" 
-              id="avatar-upload" 
-              className="hidden" 
-              accept="image/*"
-              onChange={handleAvatarChange}
-              disabled={isUploading}
-            />
-          </CardContainer>
+      <CardContent className="p-[28px] flex flex-col gap-[20px] relative">
+        <CardContainer className="flex flex-col lg:flex-row gap-[20px] items-start lg:items-center justify-between w-full">
+          <CardContainer className="flex flex-col md:flex-row gap-[20px] items-start md:items-center flex-1 w-full">
+            {/* Avatar Section */}
+            <CardContainer className="relative group shrink-0">
+              <Avatar className="h-24 w-24 rounded-xl border border-dash-border bg-dash-hover/40 shadow-inner">
+                <AvatarImage src={avatarPreview || undefined} className="object-cover" />
+                <AvatarFallback className="rounded-xl text-dash-muted flex items-center justify-center bg-dash-hover/20">
+                  <User size={32} strokeWidth={1.5} />
+                </AvatarFallback>
+              </Avatar>
+              
+              <Label 
+                htmlFor="avatar-upload" 
+                className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer text-[10px] font-mono rounded-xl text-white tracking-widest font-bold"
+              >
+                {isUploading ? <Loader2 className="h-4 w-4 animate-spin mb-1" /> : <Camera className="h-4 w-4 mb-1" />}
+                {isUploading ? "UPLOADING" : "UPDATE"}
+              </Label>
+              <input 
+                type="file" 
+                id="avatar-upload" 
+                className="hidden" 
+                accept="image/*"
+                onChange={handleAvatarChange}
+                disabled={isUploading}
+              />
+            </CardContainer>
 
-          {/* Identity Section */}
-          <CardContainer className="flex-1 space-y-2 w-full">
-            <CardContainer className="flex items-center justify-between gap-3 flex-wrap w-full">
+            {/* Identity Section */}
+            <CardContainer className="flex-1 space-y-[8px] w-full">
               <div className="flex items-center gap-3 flex-wrap">
                 <h1 className="headline-sm font-bold tracking-wide uppercase font-heading text-dash-text">
                   {user.fullName}
@@ -139,64 +139,72 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
                 </Badge>
                 {user.mfaEnabled ? (
                   <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 flex items-center gap-1 px-2 py-0.5 text-xs">
-                    <ShieldCheck size={12} /> MFA Active
+                    <ShieldCheck size={12} /> Active
                   </Badge>
                 ) : (
                   <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-rose-500/10 text-rose-800 border-rose-500/20 px-2 py-0.5 text-xs">
-                    MFA Disabled
+                    Inactive
                   </Badge>
                 )}
               </div>
-              <div className="flex-shrink-0">
-                <EditDossierModal role={user.role} profile={profile} />
-              </div>
-            </CardContainer>
-            <CardContainer className="text-dash-muted font-mono text-xs uppercase tracking-wider flex items-center gap-2">
-              Status: <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold">Active Duty</Badge>
+              <CardContainer className="text-dash-muted font-mono text-xs uppercase tracking-wider flex items-center gap-2">
+                Status: <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 px-2 py-0.5 text-[10px] font-bold">Active Duty</Badge>
+              </CardContainer>
+
+              {/* Metadata inline alignment */}
+              <CardContainer className="flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1 text-[10px] text-dash-muted/70 font-mono uppercase w-full pt-2 border-t border-dash-border/40">
+                <CardContainer className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" /> Since: <span className="text-dash-text">{formattedDate}</span>
+                </CardContainer>
+                <CardContainer className="flex items-center gap-1.5">
+                  <Clock className="h-3.5 w-3.5" /> Login: <span className="text-dash-text">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</span>
+                </CardContainer>
+              </CardContainer>
             </CardContainer>
           </CardContainer>
 
-          {/* Official Data Grid */}
-          <CardContainer className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 font-mono text-xs w-full md:w-auto bg-dash-input/30 p-4 border border-dash-border/60 rounded-xl">
-            <CardContainer className="flex items-center gap-2 text-dash-muted">
-              <Mail className={`h-3.5 w-3.5 ${roleAccent}`} />
-              <span className="truncate max-w-[150px] text-dash-text">{user.email}</span>
-            </CardContainer>
-            <CardContainer className="flex items-center gap-2 text-dash-muted">
-              <Phone className={`h-3.5 w-3.5 ${roleAccent}`} />
-              <span className="text-dash-text">{profile?.phoneNumber || "Not Provided"}</span>
-            </CardContainer>
-            <CardContainer className="flex items-center gap-2 text-dash-muted sm:col-span-2">
-              <MapPin className={`h-3.5 w-3.5 ${roleAccent}`} />
-              <span className="text-dash-text">{profile?.department || "Not Provided"} - {profile?.location || "Not Provided"}</span>
+          {/* Actions & Official Data Grid */}
+          <CardContainer className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto items-start sm:items-center lg:items-end">
+            <EditDossierModal role={user.role} profile={profile} />
+            
+            <CardContainer className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 font-mono text-xs w-full lg:w-auto bg-dash-input/30 p-[16px] border border-dash-border/60 rounded-xl">
+              <CardContainer className="flex items-center gap-2 text-dash-muted">
+                <Mail className={`h-3.5 w-3.5 ${roleAccent}`} />
+                <span className="truncate max-w-[150px] text-dash-text">{user.email}</span>
+              </CardContainer>
+              <CardContainer className="flex items-center gap-2 text-dash-muted">
+                <Phone className={`h-3.5 w-3.5 ${roleAccent}`} />
+                <span className="text-dash-text">{profile?.phoneNumber || "Not Provided"}</span>
+              </CardContainer>
+              <CardContainer className="flex items-center gap-2 text-dash-muted sm:col-span-2">
+                <MapPin className={`h-3.5 w-3.5 ${roleAccent}`} />
+                <span className="text-dash-text">{profile?.department || "Not Provided"} - {profile?.location || "Not Provided"}</span>
+              </CardContainer>
             </CardContainer>
           </CardContainer>
         </CardContainer>
         
-        {/* Metadata Row */}
-        <CardContainer className="flex flex-col sm:flex-row sm:items-center gap-4 mt-2 text-[10px] text-dash-muted/70 font-mono uppercase w-full border-t border-dash-border/40 pt-4">
-          <CardContainer className="flex items-center gap-2">
-            <Calendar className="h-3.5 w-3.5" /> Member Since: <span className="text-dash-text">{formattedDate}</span>
-          </CardContainer>
-          <CardContainer className="flex items-center gap-2">
-            <Clock className="h-3.5 w-3.5" /> Last Login: <span className="text-dash-text">{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}</span>
-          </CardContainer>
-        </CardContainer>
-
         {/* Extended Dossier Data */}
-        <CardContainer className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-dash-border w-full">
-          <CardContainer className="md:col-span-2 space-y-6">
-            <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
-              <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-2 tracking-wider">Duty Notes / Bio</CardTitle>
-              <p className="body-md font-mono text-dash-text/80 whitespace-pre-wrap leading-relaxed">
-                {profile?.bio || "No duty notes recorded."}
-              </p>
-            </CardContainer>
+        <CardContainer className="grid grid-cols-1 md:grid-cols-3 gap-[20px] pt-[20px] border-t border-dash-border w-full">
+          <CardContainer className="md:col-span-2 space-y-[20px]">
+            {profile?.bio ? (
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-[20px] rounded-xl">
+                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-[8px] tracking-wider font-semibold">Duty Notes / Bio</CardTitle>
+                <p className="body-md font-mono text-dash-text/80 whitespace-pre-wrap leading-relaxed">
+                  {profile.bio}
+                </p>
+              </CardContainer>
+            ) : (
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-[16px] rounded-xl flex items-center justify-between">
+                <CardTitle className="label-sm font-mono uppercase text-dash-muted tracking-wider mb-0 font-semibold">Duty Notes / Bio</CardTitle>
+                <span className="text-[10px] text-dash-muted/50 font-mono uppercase tracking-wider">Unrecorded</span>
+              </CardContainer>
+            )}
 
             {profile?.skills && profile.skills.length > 0 && (
-              <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
-                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-3 tracking-wider">Certifications & Skills</CardTitle>
-                <CardContainer className="flex flex-wrap gap-2">
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-[20px] rounded-xl">
+                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-[8px] tracking-wider font-semibold">Certifications & Skills</CardTitle>
+                <CardContainer className="flex flex-wrap gap-[8px]">
                   {profile.skills.map((skill, i) => (
                     <Badge key={i} variant="outline" className="text-dash-muted bg-dash-input border-dash-border hover:bg-dash-hover hover:text-dash-text transition-colors font-mono text-[10px] uppercase rounded-md px-2 py-0.5">
                       {skill}
@@ -207,19 +215,19 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
             )}
           </CardContainer>
           
-          <CardContainer className="space-y-6">
+          <CardContainer className="space-y-[20px]">
             {(profile?.emergencyContactName || profile?.emergencyContactPhone) && (
-              <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
-                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-2 tracking-wider">Emergency Contact</CardTitle>
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-[20px] rounded-xl">
+                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-[8px] tracking-wider font-semibold">Emergency Contact</CardTitle>
                 <p className="body-md font-mono text-dash-text font-bold">{profile.emergencyContactName || "Unknown"}</p>
-                <p className="body-sm text-dash-muted font-mono mt-1">{profile.emergencyContactPhone || "No number listed"}</p>
+                <p className="body-sm text-dash-muted font-mono mt-[8px]">{profile.emergencyContactPhone || "No number listed"}</p>
               </CardContainer>
             )}
 
             {profile?.assignedDevices && profile.assignedDevices.length > 0 && (
-              <CardContainer className="bg-dash-input/20 border border-dash-border p-5 rounded-xl">
-                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-3 tracking-wider">Assigned Hardware</CardTitle>
-                <CardContainer className="flex flex-col gap-2">
+              <CardContainer className="bg-dash-input/20 border border-dash-border p-[20px] rounded-xl">
+                <CardTitle className="label-lg font-mono uppercase text-dash-muted mb-[8px] tracking-wider font-semibold">Assigned Hardware</CardTitle>
+                <CardContainer className="flex flex-col gap-[8px]">
                   {profile.assignedDevices.map((device, i) => (
                     <CardContainer key={i} className="text-xs text-dash-text/80 font-mono flex items-center gap-2">
                       <CardContainer className={`w-1.5 h-1.5 rounded-full ${roleBgAccent}`} />

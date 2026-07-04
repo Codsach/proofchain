@@ -37,17 +37,17 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
   ];
 
   return (
-    <Tabs defaultValue="overview" className="w-full mt-10">
-      <TabsList className="bg-dash-card border border-dash-border p-1 grid w-full grid-cols-2 md:w-[400px] rounded-xl">
+    <Tabs defaultValue="overview" className="w-full">
+      <TabsList className="bg-dash-input/50 border border-dash-border p-0.5 inline-flex w-fit rounded-lg gap-1">
         <TabsTrigger 
           value="overview" 
-          className="font-mono uppercase text-xs rounded-lg text-dash-muted transition-all data-[state=active]:bg-dash-hover data-[state=active]:text-purple-700"
+          className="font-mono uppercase text-[10px] tracking-wider rounded-md text-dash-muted transition-all px-4 py-1.5 data-[state=active]:bg-dash-card data-[state=active]:text-purple-600 data-[state=active]:shadow-2xs font-bold"
         >
           System Overview
         </TabsTrigger>
         <TabsTrigger 
           value="log" 
-          className="font-mono uppercase text-xs rounded-lg text-dash-muted transition-all data-[state=active]:bg-dash-hover data-[state=active]:text-purple-700"
+          className="font-mono uppercase text-[10px] tracking-wider rounded-md text-dash-muted transition-all px-4 py-1.5 data-[state=active]:bg-dash-card data-[state=active]:text-purple-600 data-[state=active]:shadow-2xs font-bold"
         >
           Audit Log
         </TabsTrigger>
@@ -79,28 +79,28 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
       </TabsContent>
 
       <TabsContent value="log" className="mt-6">
-        <Card className="bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
-          <CardHeader>
-            <CardTitle className="text-sm font-mono uppercase text-dash-muted flex items-center gap-2">
-              <TerminalSquare className="h-4 w-4 text-purple-700" />
+        <Card className="bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px]">
+          <CardHeader className="p-0 mb-[20px]">
+            <CardTitle className="text-xs font-mono uppercase text-dash-muted flex items-center gap-2">
+              <TerminalSquare className="h-4 w-4 text-purple-600" />
               Administrative Actions
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {recentActions.length === 0 ? (
-              <CardContainer className="text-center py-8 text-dash-muted font-mono text-sm uppercase">
-                No administrative actions recorded.
+              <CardContainer className="text-center py-6 text-[11px] text-dash-muted/60 font-mono uppercase tracking-wider">
+                No administrative actions recorded
               </CardContainer>
             ) : (
-              <CardContainer className="space-y-4">
+              <CardContainer className="space-y-[12px]">
                 {recentActions.map((action, i) => (
                   <CardContainer 
                     key={i} 
                     className="flex items-start gap-4 py-4 px-5 border border-dash-border bg-dash-hover/20 hover:bg-dash-hover/50 hover:border-purple-600/30 rounded-xl transition-all duration-300 cursor-pointer group"
                   >
-                    <Shield className="h-5 w-5 text-purple-700 mt-0.5" />
+                    <Shield className="h-5 w-5 text-purple-600 mt-0.5" />
                     <CardContainer>
-                      <p className="font-mono text-sm uppercase text-dash-text group-hover:text-purple-700 transition-colors">{action.action}</p>
+                      <p className="font-mono text-sm uppercase text-dash-text group-hover:text-purple-600 transition-colors">{action.action}</p>
                       <p className="font-mono text-xs text-dash-muted mt-1">
                         {new Date(action.createdAt).toLocaleString()} • Target: <span className="text-dash-muted">{action.targetId?.toString()?.substring(0, 12) || "SYSTEM"}</span>
                       </p>
