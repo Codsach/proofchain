@@ -227,21 +227,6 @@ const STAT_VARIANTS = {
   }
 } as const;
 
-// Variation 5: Multi-point gradient mesh (applied permanently)
-const Variation5 = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Top Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
-      {/* Bottom Center: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function InvestigatorPage() {
   const { user, getToken } = useAuth();
@@ -335,25 +320,19 @@ export default function InvestigatorPage() {
   );
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 flex flex-col overflow-hidden">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <Variation5 />
-      </div>
-
-      {/* Main Content Pane */}
-      <div className="relative z-10 flex-1 flex flex-col gap-10 p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <div className="flex flex-col gap-8 w-full">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
+          className="flex flex-col gap-1"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="h-px w-8 bg-slate-400/50" />
-            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Operative Field Dashboard</p>
+          <div className="flex items-center gap-2 mb-0.5">
+            <div className="h-px w-6 bg-slate-400/40" />
+            <p className="text-[9px] font-bold text-dash-accent uppercase tracking-[0.25em]">Operative Field Dashboard</p>
           </div>
           <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Case Modules</h1>
-          <p className="mt-2 text-dash-muted font-medium max-w-lg">
+          <p className="text-sm text-dash-muted font-medium max-w-lg mt-0.5">
             Monitor evidence submission queues, cryptographic review status, and real-time chain of custody integrity.
           </p>
         </motion.div>
@@ -366,7 +345,7 @@ export default function InvestigatorPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               asChild
-              className="border border-[var(--dash-border)] bg-transparent hover:bg-dash-hover text-dash-text font-bold h-12 px-8 rounded-xl transition-all"
+              className="border border-dash-border hover:border-dash-muted/30 bg-dash-card hover:bg-dash-hover text-dash-text font-semibold h-11 px-6 rounded-xl transition-all shadow-3xs"
             >
               <Link href="/investigator/submit">Submit Evidence</Link>
             </Button>
@@ -374,7 +353,7 @@ export default function InvestigatorPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               asChild
-              className="bg-[var(--dash-accent)] hover:bg-[var(--dash-accent)]/90 text-white font-bold h-12 px-8 rounded-xl shadow-sm"
+              className="bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold h-11 px-6 rounded-xl shadow-sm transition-all"
             >
               <Link href="/investigator/cases/new">+ New Case</Link>
             </Button>
@@ -429,21 +408,21 @@ export default function InvestigatorPage() {
         })}
       </div>
 
-      <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-xl shadow-sm">
+      <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-6 rounded-2xl shadow-sm">
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Search Cases</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Search Cases</p>
           <Input
             placeholder="Search by title or description..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-full px-5"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-xl px-4"
           />
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Taxonomy</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Taxonomy</p>
           <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
-            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-lg text-dash-muted">
+            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -456,9 +435,9 @@ export default function InvestigatorPage() {
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle State</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Lifecycle State</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-lg text-dash-muted">
+            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="System status" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -475,12 +454,12 @@ export default function InvestigatorPage() {
         </div>
 
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Tag Filter</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Tag Filter</p>
           <Input
             placeholder="Filter by exact tag..."
             value={tagFilter === "all" ? "" : tagFilter}
             onChange={(e) => setTagFilter(e.target.value || "all")}
-            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-lg px-4"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-xl px-4"
           />
         </div>
       </div>
@@ -521,7 +500,7 @@ export default function InvestigatorPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-xl border border-dash-border bg-dash-card overflow-hidden shadow-sm"
+          className="rounded-2xl border border-dash-border bg-dash-card overflow-hidden shadow-sm"
         >
           <div className="p-6 border-b border-dash-border bg-dash-card flex items-center justify-between">
             <div>
@@ -623,7 +602,6 @@ export default function InvestigatorPage() {
           </Table>
         </motion.div>
       )}
-      </div>
     </div>
   );
 }

@@ -111,7 +111,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
       {/* 1. Gantt Timeline (Custom HTML/CSS) */}
       <motion.div
         initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-        className="rounded-xl border border-dash-border border-l-4 border-l-slate-400 bg-[linear-gradient(135deg,rgba(71,85,105,0.025)_0%,rgba(255,255,255,1)_100%)] p-6 shadow-sm col-span-1 xl:col-span-2 min-w-0"
+        className="rounded-2xl border border-dash-border border-l-4 border-l-slate-400 bg-dash-card p-6 shadow-sm col-span-1 xl:col-span-2 min-w-0"
       >
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest">My Cases Timeline</h3>
@@ -162,7 +162,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
         {/* 2. Verdict Outcomes */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="rounded-xl border border-dash-border border-l-4 border-l-amber-500 bg-[linear-gradient(135deg,rgba(245,158,11,0.025)_0%,rgba(255,255,255,1)_100%)] p-6 shadow-sm relative min-w-0 flex flex-col"
+          className="rounded-2xl border border-dash-border border-l-4 border-l-amber-500 bg-dash-card p-6 shadow-sm relative min-w-0 flex flex-col"
         >
           <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-2 z-10">Verdict Outcomes</h3>
           
@@ -210,7 +210,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
         {/* 3. Evidence Submission Trends */}
         <motion.div
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-          className="rounded-xl border border-dash-border border-l-4 border-l-emerald-500 bg-[linear-gradient(135deg,rgba(16,185,129,0.025)_0%,rgba(255,255,255,1)_100%)] p-6 shadow-sm min-w-0 flex flex-col"
+          className="rounded-2xl border border-dash-border border-l-4 border-l-emerald-500 bg-dash-card p-6 shadow-sm min-w-0 flex flex-col"
         >
           <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Submission Trends</h3>
           <div className="h-[150px] w-full flex-grow min-w-0 overflow-hidden">

@@ -162,64 +162,84 @@
   font-family: var(--font-geist), sans-serif;
 }
 
+.noise-bg {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.015;
+}
+
 .sentinel-theme-v2 {
   --font-sans: var(--font-geist), sans-serif;
   --font-mono: var(--font-geist), monospace;
   --font-heading: var(--font-manrope), sans-serif;
 
   /* 💡 High contrast slate gray background and pure white cards */
-  --background: oklch(0.960 0.011 240);    /* #f1f5f9 cool slate */
-  --foreground: oklch(0.150 0.015 240);    /* #1e293b deep charcoal text */
+  --background: oklch(0.980 0.004 240);    /* #F7F9FC cool neutral background */
+  --foreground: oklch(0.250 0.015 240);    /* #1E293B deep charcoal text */
   --card: oklch(1.0 0 0);                  /* #ffffff crisp white cards */
-  --card-foreground: oklch(0.150 0.015 240);
+  --card-foreground: oklch(0.250 0.015 240);
   --popover: oklch(1.0 0 0);
-  --popover-foreground: oklch(0.150 0.015 240);
+  --popover-foreground: oklch(0.250 0.015 240);
   
   /* Primary tech colors */
   --primary: oklch(0.585 0.233 255);       /* Cobalt Blue accent (#3b82f6) */
   --primary-foreground: oklch(1.0 0 0);
-  --secondary: oklch(0.940 0.011 240);     /* #e2e8f0 inputs */
-  --secondary-foreground: oklch(0.150 0.015 240);
-  --muted: oklch(0.950 0.011 240);         /* #f1f5f9 */
-  --muted-foreground: oklch(0.450 0.015 240); /* #64748b secondary text */
-  --accent: oklch(0.950 0.015 250 / 60%);
-  --accent-foreground: oklch(0.150 0.015 240);
+  --secondary: oklch(0.975 0.004 240);     /* #F5F7FA inputs */
+  --secondary-foreground: oklch(0.250 0.015 240);
+  --muted: oklch(0.962 0.005 240);         /* #F1F3F7 hover state */
+  --muted-foreground: oklch(0.520 0.012 240); /* #5C697D secondary text */
+  --accent: oklch(0.962 0.005 240);
+  --accent-foreground: oklch(0.250 0.015 240);
   --destructive: oklch(0.550 0.220 20);     /* Crimson Red */
   --destructive-foreground: oklch(1.0 0 0);
 
   /* Soft subtle borders that don't look clinical */
-  --border: oklch(0.910 0.011 240 / 70%);  /* Soft #e2e8f0 border */
-  --input: oklch(0.965 0.005 240);
+  --border: oklch(0.920 0.002 240);        /* Soft #E4E7EB border */
+  --input: oklch(0.975 0.004 240);         /* #F5F7FA */
   --ring: oklch(0.585 0.233 255 / 40%);
   --radius: 16px;                          /* Modern, smooth rounded corners */
 
   /* Dashboard variables mapping */
-  --dash-bg:          #f1f5f9;             /* Slate background */
-  --dash-sidebar:     #ebedf1;             /* Slightly darker sidebar for layered look */
+  --dash-bg:          #F7F9FC;             /* Main cool neutral background */
+  --dash-sidebar:     #FAFBFC;             /* Slightly warmer neutral sidebar */
   --dash-card:        #ffffff;             /* Crisp white cards */
-  --dash-input:       #f8fafc;             /* Very light input backgrounds */
+  --dash-input:       #F1F3F7;             /* Input backgrounds */
   --dash-modal:       #ffffff;
-  --dash-table:       #f8fafc;
-  --dash-hover:       #f1f5f9;
-  --dash-border:      #e2e8f0;             /* Soft border */
-  --dash-text:        #1e293b;             /* Primary text */
-  --dash-muted:       #64748b;             /* Secondary muted text */
-  --dash-accent:      #10b981;             /* Vibrant emerald green active accent */
-  --dash-danger:      #ef4444;
-  --dash-info:        #3b82f6;             /* Vibrant cobalt blue info state */
+  --dash-table:       #F7F9FC;
+  --dash-hover:       #F1F3F7;
+  --dash-border:      #E4E7EB;             /* Soft border */
+  --dash-text:        #1E293B;             /* Primary text */
+  --dash-muted:       #5C697D;             /* Secondary muted text */
+  --dash-accent:      #10B981;             /* Vibrant emerald green active accent */
+  --dash-danger:      #EF4444;
+  --dash-info:        #3B82F6;             /* Vibrant cobalt blue info state */
   --dash-accent-glow: rgba(16, 185, 129, 0.15);
-  --dash-active-bg:   #e6fcf5;             /* Soft light emerald active background */
+  --dash-active-bg:   #E6FCF5;             /* Soft light emerald active background */
   --dash-active-text: #059669;             /* Emerald active text */
+
+  /* Map shadcn sidebar tokens for theme compatibility */
+  --sidebar:          var(--dash-sidebar);
+  --sidebar-background: var(--dash-sidebar);
+  --sidebar-foreground: var(--dash-text);
+  --sidebar-primary:  var(--dash-accent);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent:   var(--dash-hover);
+  --sidebar-accent-foreground: var(--dash-text);
+  --sidebar-border:   var(--dash-border);
+  --sidebar-ring:     var(--ring);
 
   font-family: var(--font-geist), sans-serif;
 }
 
-/* Override standard shadows to give a premium elevated floating look */
-.sentinel-theme-v2 .shadow-sm,
+/* Override standard shadows to give a premium flat layered look */
+.sentinel-theme-v2 .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03), 0 1px 3px 0 rgba(15, 23, 42, 0.02) !important;
+}
 .sentinel-theme-v2 .shadow,
-.sentinel-theme-v2 .shadow-md,
+.sentinel-theme-v2 .shadow-md {
+  box-shadow: 0 4px 12px 0 rgba(15, 23, 42, 0.03), 0 1px 3px 0 rgba(15, 23, 42, 0.02) !important;
+}
 .sentinel-theme-v2 .shadow-lg {
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.02), 0 12px 30px -4px rgba(15, 23, 42, 0.04) !important;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.03), 0 8px 16px -6px rgba(15, 23, 42, 0.02) !important;
 }
 
 /* Glassmorphism overrides for specific status badges on light background inside sentinel-theme-v2 */

@@ -44,12 +44,16 @@ const btnCls =
   "w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold h-11 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.20)] hover:shadow-[0_0_30px_rgba(16,185,129,0.40)] rounded-lg font-heading tracking-wide";
 
 function LoginForm() {
-  const { login, user, isLoading } = useAuth();
+  const { login, verifyMfa, user, isLoading } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showCredsDialog, setShowCredsDialog] = useState(false);
   const [dynamicCreds, setDynamicCreds] = useState<Record<string, { email: string; password: string }>>({});
+  const [step, setStep] = useState<"credentials" | "mfa">("credentials");
+  const [mfaToken, setMfaToken] = useState<string | null>(null);
+  const [mfaCode, setMfaCode] = useState("");
+  const [rememberDevice, setRememberDevice] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -117,10 +121,37 @@ function LoginForm() {
   const onSubmit = async (values: LoginInput) => {
     setIsSubmitting(true);
     try {
-      await login(values.email, values.password);
+      const result = await login(values.email, values.password);
+      if (result?.requiresMfa) {
+        setStep("mfa");
+        setMfaToken(result.mfaToken || null);
+        toast({
+          title: "Two-Factor Authentication Required",
+          description: "Please enter the code from your authenticator app.",
+        });
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Login failed";
       toast({ title: "Login failed", description: msg, variant: "destructive" });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mfaCode || !mfaToken) return;
+
+    setIsSubmitting(true);
+    try {
+      await verifyMfa(mfaCode, mfaToken, rememberDevice);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "MFA Verification failed";
+      toast({
+        title: "Verification failed",
+        description: msg,
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -156,8 +187,12 @@ function LoginForm() {
       <motion.div variants={container} initial="hidden" animate="visible" className="space-y-6">
         {/* Page title */}
         <motion.div variants={item} className="space-y-1">
-          <h1 className="headline-sm font-heading font-bold text-[#1e293b] tracking-wider uppercase">Sign in</h1>
-          <p className="body-sm text-[#64748b] font-sans">Enter your credentials to access your workspace</p>
+          <h1 className="headline-sm font-heading font-bold text-[#1e293b] tracking-wider uppercase">
+            {step === "mfa" ? "Verification" : "Sign in"}
+          </h1>
+          <p className="body-sm text-[#64748b] font-sans">
+            {step === "mfa" ? "Enter your authenticator code" : "Enter your credentials to access your workspace"}
+          </p>
         </motion.div>
 
         {/* Status banners */}
@@ -192,78 +227,143 @@ function LoginForm() {
             <div className="h-0.5 w-8 bg-[#0D9E6E] rounded-full transition-all duration-300 group-hover:w-16" />
           </div>
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-              <motion.div variants={item}>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1.5">
-                      <FormLabel className={labelCls}>Email</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="email"
-                          placeholder="name@company.com"
-                          className={inputCls}
-                          autoComplete="email"
-                          disabled={isSubmitting}
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-destructive/80" />
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
-
-              <motion.div variants={item}>
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="space-y-1.5">
-                      <div className="flex justify-between items-center">
-                        <FormLabel className={labelCls}>Password</FormLabel>
-                        <Link
-                          href="/forgot-password"
-                          className="body-sm text-[#10b981] hover:text-[#059669] transition-colors font-semibold"
-                        >
-                          Forgot password?
-                        </Link>
-                      </div>
-                      <FormControl>
-                        <div className="relative">
+          {step === "credentials" ? (
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <motion.div variants={item}>
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1.5">
+                        <FormLabel className={labelCls}>Email</FormLabel>
+                        <FormControl>
                           <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="••••••••"
-                            className={`${inputCls} pr-10`}
-                            autoComplete="current-password"
+                            type="email"
+                            placeholder="name@company.com"
+                            className={inputCls}
+                            autoComplete="email"
                             disabled={isSubmitting}
                             {...field}
                           />
-                          <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#556070] hover:text-[#1A2033] transition-colors focus:outline-none"
-                          >
-                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                          </button>
-                        </div>
-                      </FormControl>
-                      <FormMessage className="text-xs text-destructive/80" />
-                    </FormItem>
-                  )}
-                />
-              </motion.div>
+                        </FormControl>
+                        <FormMessage className="text-xs text-destructive/80" />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
 
-              <motion.div variants={item} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                <Button type="submit" className={btnCls} disabled={isSubmitting}>
-                  {isSubmitting ? "Authenticating…" : "Continue"}
+                <motion.div variants={item}>
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem className="space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <FormLabel className={labelCls}>Password</FormLabel>
+                          <Link
+                            href="/forgot-password"
+                            className="body-sm text-[#10b981] hover:text-[#059669] transition-colors font-semibold"
+                          >
+                            Forgot password?
+                          </Link>
+                        </div>
+                        <FormControl>
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              placeholder="••••••••"
+                              className={`${inputCls} pr-10`}
+                              autoComplete="current-password"
+                              disabled={isSubmitting}
+                              {...field}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPassword(!showPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#556070] hover:text-[#1A2033] transition-colors focus:outline-none"
+                            >
+                              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </div>
+                        </FormControl>
+                        <FormMessage className="text-xs text-destructive/80" />
+                      </FormItem>
+                    )}
+                  />
+                </motion.div>
+
+                <motion.div variants={item} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                  <Button type="submit" className={btnCls} disabled={isSubmitting}>
+                    {isSubmitting ? "Authenticating…" : "Continue"}
+                  </Button>
+                </motion.div>
+              </form>
+            </Form>
+          ) : (
+            <form onSubmit={onMfaSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className={labelCls}>
+                  Authenticator Code
+                </label>
+                <div className="relative">
+                  <Input
+                    type="text"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    maxLength={6}
+                    placeholder="000000"
+                    value={mfaCode}
+                    onChange={(e) => setMfaCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                    className={`${inputCls} text-center tracking-[0.5em] font-mono text-lg`}
+                    required
+                    disabled={isSubmitting}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex items-center space-x-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="rememberDevice"
+                  checked={rememberDevice}
+                  onChange={(e) => setRememberDevice(e.target.checked)}
+                  className="h-4 w-4 rounded border-[#e2e8f0] bg-[#f8fafc] text-[#10b981] focus:ring-[#10b981]/20 focus:ring-offset-0"
+                  disabled={isSubmitting}
+                />
+                <label
+                  htmlFor="rememberDevice"
+                  className="body-sm text-[#64748b] font-medium leading-none cursor-pointer hover:text-[#1e293b] transition-colors"
+                >
+                  Remember this device for 30 days
+                </label>
+              </div>
+
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+                <Button
+                  type="submit"
+                  className={btnCls}
+                  disabled={isSubmitting || mfaCode.length !== 6}
+                >
+                  {isSubmitting ? "Verifying…" : "Verify"}
                 </Button>
               </motion.div>
+
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("credentials");
+                    setMfaCode("");
+                  }}
+                  className="body-sm text-[#10b981] hover:text-[#059669] transition-colors font-semibold"
+                  disabled={isSubmitting}
+                >
+                  Back to login
+                </button>
+              </div>
             </form>
-          </Form>
+          )}
         </motion.div>
 
         <motion.p variants={item} className="text-center body-sm text-[#64748b] font-sans">

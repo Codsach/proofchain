@@ -28,21 +28,6 @@ const LocationPickerMap = dynamic(
   }
 );
 
-// Variation 5: Multi-point gradient mesh customized for forensic uploading (Emerald, Cyan, Cobalt Blue, Mint)
-const SubmissionBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Emerald green */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#a7f3d0_0%,transparent_40%)]" />
-      {/* Top Right: Cyan */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c5f2f7_0%,transparent_40%)]" />
-      {/* Bottom Center: Cobalt Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Right: Mint Green */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#a7f3d0_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function SubmitEvidencePage() {
   const router = useRouter();
@@ -273,12 +258,7 @@ export default function SubmitEvidencePage() {
 
   if (submitSuccess) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center items-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <SubmissionBackground />
-        </div>
-
+      <div className="flex justify-center items-center w-full py-12">
         <div className="relative z-10 success-card">
           <div className="success-icon">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2">
@@ -318,14 +298,8 @@ export default function SubmitEvidencePage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <SubmissionBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
-        <div className="container">
+    <div className="flex justify-center w-full">
+      <div className="container">
         <header className="page-header mb-6">
           <div className="flex items-center gap-3 mb-2 justify-center">
             <div className="h-px w-8 bg-slate-400/50" />
@@ -728,8 +702,6 @@ export default function SubmitEvidencePage() {
           </div>
 
         </div>
-
-      </div>
       </div>
 
       <style jsx>{`

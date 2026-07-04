@@ -12,7 +12,7 @@ export interface StatCardProps {
   description?: string; // Context description
   brandLabel?: string; // Alternate fallback context description
   brand?: string;
-  icon: React.ComponentType<{ className?: string; size?: number }>;
+  icon: React.ComponentType<{ className?: string; size?: number; strokeWidth?: number }>;
   variantKey?: 'blue' | 'purple' | 'green' | 'orange' | 'amber' | 'cyan' | 'red';
   isLoading?: boolean;
   className?: string;
@@ -102,7 +102,7 @@ export function StatCard({
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
-        "relative overflow-hidden w-full h-[200px] rounded-[24px] border border-dash-border bg-white shadow-[0_2px_10px_rgba(0,0,0,0.01)] hover:shadow-[0_6px_20px_rgba(0,0,0,0.03)] transition-all duration-300 group flex flex-col justify-between p-6 select-none",
+        "relative overflow-hidden w-full h-[200px] rounded-2xl border border-dash-border bg-dash-card shadow-sm hover:shadow transition-all duration-300 group flex flex-col justify-between p-6 select-none",
         config.hoverBorder,
         onClick ? "cursor-pointer" : "cursor-default",
         className
@@ -119,9 +119,9 @@ export function StatCard({
         }}
       />
 
-      {/* Background Oversized Icon for visual balance (5% - 7% opacity) */}
+      {/* Background Oversized Icon for visual balance (6% - 8% opacity) */}
       <div className={cn(
-        "absolute right-4 bottom-2 opacity-[0.05] group-hover:opacity-[0.07] transition-all duration-300 pointer-events-none z-0 scale-95 group-hover:scale-100",
+        "absolute right-4 bottom-2 opacity-[0.06] group-hover:opacity-[0.08] transition-all duration-300 pointer-events-none z-0 scale-95 group-hover:scale-100",
         config.textColor
       )}>
         <Icon size={100} strokeWidth={1} />
@@ -140,7 +140,7 @@ export function StatCard({
           </div>
 
           {metaText && (
-            <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-500 transition-colors duration-200 flex items-center gap-1.5 uppercase tracking-wider bg-slate-50/50 border border-slate-100 px-2.5 py-1 rounded-md shadow-3xs">
+            <span className="text-[10px] font-bold text-dash-muted group-hover:text-dash-text transition-colors duration-200 flex items-center gap-1.5 uppercase tracking-wider bg-dash-input/50 border border-dash-border px-2.5 py-1 rounded-md shadow-3xs">
               {metaText === "Synced" || metaText === "Live" || metaText === "Active" || metaText === "Verified" ? (
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
               ) : null}
@@ -151,27 +151,26 @@ export function StatCard({
 
         {/* Row 2: Title + Metric + Description */}
         <div className="flex flex-col mt-4 gap-1 flex-grow">
-          {/* Card Title: Medium weight, slate-600 */}
-          <span className="text-xs font-medium text-slate-600/90 tracking-tight font-heading">
+          {/* Card Title: Medium weight */}
+          <span className="text-xs font-medium text-dash-muted tracking-tight font-heading">
             {label}
           </span>
           {isLoading ? (
-            <Skeleton className="h-10 w-24 bg-slate-200 mt-1" />
+            <Skeleton className="h-10 w-24 bg-dash-hover mt-1" />
           ) : (
             <div className="flex items-baseline gap-1">
-              {/* Number size increased to text-[42px] and heavier font-black weight */}
-              <span className="text-[42px] font-black text-slate-900 leading-none tracking-tight">
+              <span className="text-[42px] font-black text-dash-text leading-none tracking-tight">
                 {value}
               </span>
               {subValue && (
-                <span className="text-[10px] font-bold text-slate-400 ml-1 font-mono uppercase">
+                <span className="text-[10px] font-bold text-dash-muted/70 ml-1 font-mono uppercase">
                   {subValue}
                 </span>
               )}
             </div>
           )}
-          {/* Description: Lower contrast slate-400, shortened to 3-6 words */}
-          <span className="text-xs text-slate-400 font-normal line-clamp-1 mt-0.5">
+          {/* Description */}
+          <span className="text-xs text-dash-muted/70 font-normal line-clamp-1 mt-0.5">
             {description || displayBrand}
           </span>
         </div>

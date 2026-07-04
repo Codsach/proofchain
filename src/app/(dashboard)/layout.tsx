@@ -48,18 +48,18 @@ export default function DashboardLayout({
         (isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && "sentinel-theme-v2"
       )}>
         {/* Background decoration */}
-        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
-          {/* Background grid removed as per user request */}
-
-          {/* 💡 Ambient Mesh Gradients for sentinel-theme-v2 to break flat white sheet */}
+        <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[var(--dash-bg)]">
+          {/* 💡 Ambient Atmospheric Canvas Gradients and Noise Overlay */}
           {(isInvestigator || isAnalyst || isProfile || isSettings || isAdmin) && (
             <>
-              {/* Top-right soft emerald glow */}
-              <div className="absolute -top-[10%] -right-[5%] w-[45%] h-[45%] rounded-full bg-emerald-500/10 blur-[130px] mix-blend-normal pointer-events-none" />
+              {/* Subtle noise texture to prevent flat color banding */}
+              <div className="absolute inset-0 noise-bg pointer-events-none mix-blend-overlay" />
+              {/* Top-right soft mint/emerald glow */}
+              <div className="absolute -top-[20%] -right-[10%] w-[80vw] h-[80vh] rounded-full bg-emerald-500/[0.06] blur-[220px] mix-blend-normal pointer-events-none" />
               {/* Bottom-left soft cobalt/blue glow */}
-              <div className="absolute -bottom-[15%] -left-[10%] w-[55%] h-[55%] rounded-full bg-blue-500/10 blur-[160px] mix-blend-normal pointer-events-none" />
-              {/* Center subtle purple glow */}
-              <div className="absolute top-[25%] left-[20%] w-[35%] h-[35%] rounded-full bg-purple-500/5 blur-[120px] mix-blend-normal pointer-events-none" />
+              <div className="absolute -bottom-[20%] -left-[10%] w-[90vw] h-[90vh] rounded-full bg-blue-500/[0.06] blur-[240px] mix-blend-normal pointer-events-none" />
+              {/* Center-left soft teal glow */}
+              <div className="absolute top-[20%] left-[20%] w-[70vw] h-[70vh] rounded-full bg-teal-500/[0.04] blur-[180px] mix-blend-normal pointer-events-none" />
             </>
           )}
         </div>
