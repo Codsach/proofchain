@@ -130,7 +130,7 @@ export function StatCard({
       {/* Main card content wrapper (z-10) */}
       <div className="relative z-10 flex flex-col h-full justify-between">
         
-        {/* Row 1: Icon container */}
+        {/* Row 1: Icon container & status badge in top right */}
         <div className="flex items-center justify-between w-full">
           <div className={cn(
             "w-9 h-9 rounded-lg flex items-center justify-center border border-current/10 shadow-3xs transition-transform duration-300 group-hover:scale-105",
@@ -138,6 +138,15 @@ export function StatCard({
           )}>
             <Icon size={16} className="stroke-[2.2]" />
           </div>
+
+          {metaText && (
+            <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-500 transition-colors duration-200 flex items-center gap-1.5 uppercase tracking-wider bg-slate-50/50 border border-slate-100 px-2.5 py-1 rounded-md shadow-3xs">
+              {metaText === "Synced" || metaText === "Live" || metaText === "Active" || metaText === "Verified" ? (
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              ) : null}
+              {metaText}
+            </span>
+          )}
         </div>
 
         {/* Row 2: Title + Metric + Description */}
@@ -166,18 +175,6 @@ export function StatCard({
             {description || displayBrand}
           </span>
         </div>
-
-        {/* Row 3: Compact status chip with generous 12-16px spacing */}
-        {metaText && (
-          <div className="flex items-center justify-end mt-auto pt-3 pr-1">
-            <span className="text-[10px] font-bold text-slate-400 group-hover:text-slate-500 transition-colors duration-200 flex items-center gap-1.5 uppercase tracking-wider bg-slate-50/50 border border-slate-100 px-2.5 py-1 rounded-md shadow-3xs">
-              {metaText === "Synced" || metaText === "Live" || metaText === "Active" || metaText === "Verified" ? (
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              ) : null}
-              {metaText}
-            </span>
-          </div>
-        )}
       </div>
     </motion.div>
   );
