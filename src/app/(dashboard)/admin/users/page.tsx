@@ -52,20 +52,6 @@ const ROLE_STYLES: Record<string, string> = {
   admin: "text-amber-400 border-amber-500/20 bg-amber-500/5",
 };
 
-const IdentityBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Violet */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#ddd6fe_0%,transparent_40%)]" />
-      {/* Top Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
-      {/* Bottom Center: Violet */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#ddd6fe_0%,transparent_40%)]" />
-      {/* Bottom Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 
 export default function AdminUsersPage() {
@@ -185,14 +171,7 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <IdentityBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
-        <div className="space-y-8">
+    <div className="w-full space-y-8">
       <div className="flex items-end justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
@@ -207,7 +186,7 @@ export default function AdminUsersPage() {
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button
             onClick={() => setCreateOpen(true)}
-            className="bg-dash-accent hover:bg-dash-accent text-black font-bold h-11 px-6 rounded-xl shadow-[0_0_20px_var(--dash-accent-glow)]"
+            className="bg-dash-accent hover:bg-dash-accent text-black font-semibold h-11 px-6 rounded-xl shadow-sm"
           >
             + Register Analyst
           </Button>
@@ -219,7 +198,7 @@ export default function AdminUsersPage() {
           {[1, 2, 3, 4].map((n) => <Skeleton key={n} className="h-16 w-full rounded-2xl bg-dash-hover" />)}
         </div>
       ) : (
-        <div className="rounded-2xl border border-dash-border bg-dash-table backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-2xl border border-dash-border bg-dash-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -427,8 +406,6 @@ export default function AdminUsersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-        </div>
-      </div>
     </div>
   );
 }
