@@ -108,28 +108,28 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
         </CardHeader>
         <CardContent className="p-0">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitPassword)} className="max-w-2xl w-full space-y-6">
-              <FormField
-                control={form.control}
-                name="oldPassword"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-[13px] font-medium text-dash-text tracking-tight">Current password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        className="bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-14 px-4 font-sans focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all"
-                        {...field}
-                      />
-                    </FormControl>
-                    <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
-                      Verify your current credentials to authenticate this change.
-                    </p>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={form.handleSubmit(onSubmitPassword)} className="w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] gap-4 lg:gap-6 items-start">
+                <FormField
+                  control={form.control}
+                  name="oldPassword"
+                  render={({ field }) => (
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[13px] font-medium text-dash-text tracking-tight">Current password</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          className="bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-14 px-4 font-sans focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all"
+                          {...field}
+                        />
+                      </FormControl>
+                      <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
+                        Verify your current credentials.
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="newPassword"
@@ -144,7 +144,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                         />
                       </FormControl>
                       <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
-                        Password must be at least 8 characters. Use a mix of letters, numbers, and symbols.
+                        Must be at least 8 characters.
                       </p>
                       <FormMessage />
                     </FormItem>
@@ -164,23 +164,24 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                         />
                       </FormControl>
                       <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
-                        Must match the new password specified above.
+                        Must match the new password.
                       </p>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              </CardContainer>
-              <CardFooter className="flex justify-end pt-0 p-0 mt-8 bg-transparent border-none">
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting || !form.formState.isDirty}
-                  className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
-                >
-                  {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {isSubmitting ? "Encrypting..." : "Update password"}
-                </Button>
-              </CardFooter>
+                <div className="w-full md:col-span-2 lg:col-span-1 flex flex-col items-end lg:items-start space-y-2">
+                  <div className="hidden md:block text-[13px] font-medium text-transparent tracking-tight select-none">Spacer</div>
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting || !form.formState.isDirty}
+                    className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
+                  >
+                    {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {isSubmitting ? "Encrypting..." : "Update password"}
+                  </Button>
+                </div>
+              </div>
             </form>
           </Form>
         </CardContent>
@@ -210,7 +211,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
           )}
         </CardHeader>
         <CardContent className="p-0">
-          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border border-dash-border bg-dash-input/30 rounded-xl gap-4 max-w-2xl w-full">
+          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border border-dash-border bg-dash-input/30 rounded-xl gap-4 w-full">
             <CardContainer className="space-y-1 pr-4">
               <p className="text-sm font-medium text-dash-text">Authenticator App</p>
               <p className="text-xs text-dash-muted leading-relaxed">Use an app like Google Authenticator or Authy to generate security codes.</p>
@@ -241,11 +242,11 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
         </CardHeader>
         <CardContent className="p-0">
           {devices.length === 0 ? (
-            <CardContainer className="p-5 text-center text-dash-muted text-xs border border-dash-border rounded-xl bg-dash-input/10 max-w-2xl w-full">
+            <CardContainer className="p-5 text-center text-dash-muted text-xs border border-dash-border rounded-xl bg-dash-input/10 w-full">
               No active sessions found.
             </CardContainer>
           ) : (
-            <div className="border border-dash-border/60 rounded-xl bg-dash-input/10 divide-y divide-dash-border/40 overflow-hidden max-w-2xl w-full">
+            <div className="border border-dash-border/60 rounded-xl bg-dash-input/10 divide-y divide-dash-border/40 overflow-hidden w-full">
               {devices.map((device, idx) => (
                 <div key={idx} className="flex items-center justify-between p-4 gap-4 hover:bg-dash-input/20 transition-colors">
                   <div className="flex items-center gap-3.5">

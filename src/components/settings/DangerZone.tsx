@@ -51,7 +51,7 @@ export function DangerZone() {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border border-rose-500/10 bg-rose-500/[0.01] rounded-xl gap-4 max-w-2xl w-full">
+          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border border-rose-500/10 bg-rose-500/[0.01] rounded-xl gap-4 w-full">
             <CardContainer className="space-y-1 pr-4">
               <p className="text-sm font-medium text-rose-800">Deactivate Account</p>
               <p className="text-xs text-rose-700/70 leading-relaxed">

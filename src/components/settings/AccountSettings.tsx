@@ -181,8 +181,8 @@ export function AccountSettings({
         </CardHeader>
         <CardContent className="p-0">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-2xl w-full">
-              <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-4 lg:gap-6 items-start">
                 <FormField
                   control={form.control}
                   name="fullName"
@@ -220,17 +220,18 @@ export function AccountSettings({
                     </FormItem>
                   )}
                 />
-              </CardContainer>
-              <CardFooter className="flex justify-end pt-0 p-0 mt-8 bg-transparent border-none">
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting || !form.formState.isDirty}
-                  className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
-                >
-                  {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {isSubmitting ? "Saving..." : "Save changes"}
-                </Button>
-              </CardFooter>
+                <div className="w-full md:col-span-2 lg:col-span-1 flex flex-col items-end lg:items-start space-y-2">
+                  <div className="hidden lg:block text-[13px] font-medium text-transparent tracking-tight select-none">Spacer</div>
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting || !form.formState.isDirty}
+                    className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
+                  >
+                    {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    {isSubmitting ? "Saving..." : "Save changes"}
+                  </Button>
+                </div>
+              </div>
             </form>
           </Form>
         </CardContent>
@@ -249,9 +250,9 @@ export function AccountSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="max-w-2xl w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2 flex flex-col">
+          <div className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_auto] gap-4 lg:gap-6 items-start">
+              <div className="space-y-2 flex flex-col w-full">
                 <label className="text-[13px] font-medium text-dash-text tracking-tight">Default landing page</label>
                 <Select value={landingPage} onValueChange={setLandingPage}>
                   <SelectTrigger className="bg-dash-input border border-dash-border text-dash-text rounded-xl !h-14 px-4 font-sans !w-full focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all">
@@ -264,7 +265,7 @@ export function AccountSettings({
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2 flex flex-col">
+              <div className="space-y-2 flex flex-col w-full">
                 <label className="text-[13px] font-medium text-dash-text tracking-tight">System time zone</label>
                 <Select value={timeZone} onValueChange={setTimeZone}>
                   <SelectTrigger className="bg-dash-input border border-dash-border text-dash-text rounded-xl !h-14 px-4 font-sans !w-full focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all">
@@ -278,16 +279,17 @@ export function AccountSettings({
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            <div className="flex justify-end pt-0 mt-8 bg-transparent border-none">
-              <Button 
-                onClick={handleSaveProfile}
-                disabled={isSavingProfile || !isProfileDirty}
-                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
-              >
-                {isSavingProfile && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {isSavingProfile ? "Saving..." : "Save preferences"}
-              </Button>
+              <div className="w-full md:col-span-2 lg:col-span-1 flex flex-col items-end lg:items-start space-y-2">
+                <div className="hidden lg:block text-[13px] font-medium text-transparent tracking-tight select-none">Spacer</div>
+                <Button 
+                  onClick={handleSaveProfile}
+                  disabled={isSavingProfile || !isProfileDirty}
+                  className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
+                >
+                  {isSavingProfile && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  {isSavingProfile ? "Saving..." : "Save preferences"}
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
@@ -306,8 +308,8 @@ export function AccountSettings({
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="max-w-2xl w-full">
-            <div className="border border-dash-border/60 rounded-xl bg-dash-input/10 divide-y divide-dash-border/40 overflow-hidden">
+          <div className="w-full">
+            <div className="border border-dash-border/60 rounded-xl bg-dash-input/10 divide-y divide-dash-border/40 overflow-hidden w-full">
               <div className="flex items-center justify-between p-5 gap-6 hover:bg-dash-input/20 transition-colors">
                 <div className="space-y-1 pr-4">
                   <p className="text-sm font-medium text-dash-text">Security Alerts</p>
@@ -329,16 +331,16 @@ export function AccountSettings({
                 </div>
                 <Switch checked={systemUpdates} onChange={setSystemUpdates} />
               </div>
-            </div>
-            <div className="flex justify-end pt-0 mt-8 bg-transparent border-none">
-              <Button 
-                onClick={handleSaveNotifications}
-                disabled={isSavingNotifications || !isNotificationsDirty}
-                className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
-              >
-                {isSavingNotifications && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {isSavingNotifications ? "Saving..." : "Save preferences"}
-              </Button>
+              <div className="flex justify-end p-4 bg-dash-input/5">
+                <Button 
+                  onClick={handleSaveNotifications}
+                  disabled={isSavingNotifications || !isNotificationsDirty}
+                  className="w-full md:w-auto bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
+                >
+                  {isSavingNotifications && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                  {isSavingNotifications ? "Saving..." : "Save preferences"}
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
