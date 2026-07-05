@@ -221,16 +221,10 @@ export default function AdminCaseDetailPage() {
 
   if (isLoadingCase) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <InspectionBackground />
-        </div>
-        <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
-          <div className="space-y-6 w-full">
-            <Skeleton className="h-8 w-48 bg-dash-hover" />
-            <Skeleton className="h-96 w-full rounded-2xl bg-dash-hover" />
-          </div>
+      <div className="flex justify-center w-full">
+        <div className="space-y-6 w-full">
+          <Skeleton className="h-8 w-48 bg-dash-hover" />
+          <Skeleton className="h-96 w-full rounded-2xl bg-dash-hover" />
         </div>
       </div>
     );
@@ -238,12 +232,8 @@ export default function AdminCaseDetailPage() {
 
   if (!caseData) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center items-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <InspectionBackground />
-        </div>
-        <div className="relative z-10 rounded-3xl border border-dash-border bg-dash-sidebar backdrop-blur-2xl p-20 text-center shadow-2xl">
+      <div className="flex justify-center items-center w-full py-20">
+        <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center">
           <p className="text-dash-muted text-sm font-medium">Case subject not found in secure storage.</p>
           <Link href="/admin/cases" className="text-dash-accent text-xs font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
             ← Return to Archives
@@ -305,14 +295,7 @@ export default function AdminCaseDetailPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <InspectionBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
-        <div className="space-y-8 pb-10">
+    <div className="w-full space-y-8 pb-10">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
@@ -354,7 +337,7 @@ export default function AdminCaseDetailPage() {
           <motion.div 
             initial={{ opacity: 0, x: -20 }} 
             animate={{ opacity: 1, x: 0 }}
-            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl relative overflow-hidden group"
+            className="rounded-2xl border border-dash-border bg-dash-card p-6 shadow-sm relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 p-4">
               <div className="text-[10px] font-bold text-dash-accent/20 uppercase tracking-[0.3em] group-hover:text-dash-accent transition-colors cursor-default">Subject Details</div>
@@ -379,7 +362,7 @@ export default function AdminCaseDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-6 shadow-2xl relative overflow-hidden group"
+            className="rounded-2xl border border-dash-border bg-dash-card p-6 space-y-6 shadow-sm relative overflow-hidden group"
           >
             <div className="flex items-center gap-4">
               <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Enclosed Evidence</h2>
@@ -611,8 +594,6 @@ export default function AdminCaseDetailPage() {
           </AnimatePresence>
 
           <CommentsPanel caseId={caseId} className="flex-1" />
-        </div>
-      </div>
         </div>
       </div>
     </div>

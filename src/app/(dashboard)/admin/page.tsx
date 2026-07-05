@@ -168,7 +168,7 @@ function SystemHealthBar({
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex items-center justify-between rounded-xl border border-dash-border bg-dash-card/60 backdrop-blur-sm px-4 py-2.5 gap-4"
+      className="flex items-center justify-between rounded-2xl border border-dash-border bg-dash-card px-4 py-2.5 gap-4 shadow-sm"
     >
       <div className="flex items-center gap-1.5">
         <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em] hidden sm:block">
@@ -246,7 +246,7 @@ function QuickLinkCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.35 }}
       whileHover={{ y: -3 }}
-      className={`group relative rounded-2xl border border-dash-border bg-dash-card p-1 transition-all duration-300 shadow-xl ${hoverBorder}`}
+      className={`group relative rounded-2xl border border-dash-border bg-dash-card p-1 transition-all duration-300 shadow-sm ${hoverBorder}`}
     >
       <div className="p-5 space-y-4">
         <div className="flex items-center gap-3">
@@ -267,7 +267,7 @@ function QuickLinkCard({
           className={`w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:text-[#050505] text-dash-text transition-all rounded-xl ${btnHover}`}
         >
           <Link href={href}>
-            <span className="text-[10px] font-bold uppercase tracking-wider">Access Module</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider">Access Module</span>
             <span className="text-lg opacity-50 group-hover:translate-x-1 transition-transform inline-block">
               →
             </span>
@@ -291,20 +291,6 @@ const EMPTY_RISK: RiskDataPoint[] = [];
 const EMPTY_STATUS: StatusDataPoint[] = [];
 const EMPTY_TAMPER: TamperDataPoint[] = [];
 
-const DashboardBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Top Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
-      {/* Bottom Center: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function AdminPage() {
   const { user, getToken } = useAuth();
@@ -467,14 +453,7 @@ export default function AdminPage() {
   ];
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <DashboardBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
-        <div className="space-y-8 pb-10">
+    <div className="w-full space-y-8 pb-10">
 
           {/* Header */}
           <motion.div
@@ -565,8 +544,6 @@ export default function AdminPage() {
             recentActivity={recentActivity}
             isLoading={isChartsLoading}
           />
-        </div>
-      </div>
     </div>
   );
 }
