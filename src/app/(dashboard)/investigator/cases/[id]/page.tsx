@@ -74,20 +74,6 @@ const INCIDENT_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-const InspectionBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Teal */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#99f6e4_0%,transparent_40%)]" />
-      {/* Top Right: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Center: Teal */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#99f6e4_0%,transparent_40%)]" />
-      {/* Bottom Right: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#bfdbfe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function InvestigatorCaseDetailPage() {
   const { id: caseId } = useParams<{ id: string }>();
@@ -186,16 +172,10 @@ export default function InvestigatorCaseDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <InspectionBackground />
-        </div>
-        <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
-          <div className="space-y-6 max-w-3xl w-full">
-            <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
-            <Skeleton className="h-64 w-full bg-dash-hover rounded-2xl" />
-          </div>
+      <div className="flex justify-center w-full">
+        <div className="space-y-6 max-w-3xl w-full">
+          <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
+          <Skeleton className="h-64 w-full bg-dash-hover rounded-2xl" />
         </div>
       </div>
     );
@@ -203,12 +183,8 @@ export default function InvestigatorCaseDetailPage() {
 
   if (!caseData) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center items-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <InspectionBackground />
-        </div>
-        <div className="relative z-10 rounded-3xl border border-dash-border bg-dash-card p-24 text-center backdrop-blur-2xl">
+      <div className="flex justify-center items-center w-full py-20">
+        <div className="rounded-3xl border border-dash-border bg-dash-card p-24 text-center">
           <p className="text-dash-muted text-sm font-medium">Forensic record not located.</p>
           <Link href="/investigator" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
             ← Back to Registry
@@ -270,14 +246,7 @@ export default function InvestigatorCaseDetailPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <InspectionBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
-        <div className="space-y-10 pb-10 w-full">
+    <div className="w-full space-y-10 pb-10">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Link href="/investigator" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2 mb-6">
               <span className="text-lg">←</span> Operative Registry
@@ -312,7 +281,7 @@ export default function InvestigatorCaseDetailPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="rounded-xl border border-dash-border border-l-4 border-l-[var(--dash-accent)] bg-dash-card p-8 space-y-8 shadow-sm relative overflow-hidden group"
+                className="rounded-2xl border border-dash-border border-l-4 border-l-[var(--dash-accent)] bg-dash-card p-8 space-y-8 shadow-sm relative overflow-hidden group"
               >
                 <div className="absolute top-0 right-0 p-6">
                   <div className="text-[10px] font-bold text-dash-accent/20 uppercase tracking-[0.3em] group-hover:text-dash-accent transition-colors">Subject Profile</div>
@@ -454,7 +423,7 @@ export default function InvestigatorCaseDetailPage() {
                 </div>
 
                 {caseData.status === "pending_ai_review" ? (
-                  <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-6 relative overflow-hidden group shadow-sm">
+                  <div className="rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 relative overflow-hidden group shadow-sm">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                       <div className="space-y-1.5 flex-1">
                         <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest flex items-center gap-2">
@@ -478,7 +447,7 @@ export default function InvestigatorCaseDetailPage() {
                     </div>
                   </div>
                 ) : caseData.overallRiskLevel ? (
-                  <div className={`rounded-xl border p-6 relative overflow-hidden group shadow-sm transition-all duration-300 ${
+                  <div className={`rounded-2xl border p-6 relative overflow-hidden group shadow-sm transition-all duration-300 ${
                     caseData.overallRiskLevel === "high"
                       ? "bg-[var(--dash-danger)]/5 border-[var(--dash-danger)]/20 border-l-4 border-l-[var(--dash-danger)]"
                       : caseData.overallRiskLevel === "medium"
@@ -516,7 +485,7 @@ export default function InvestigatorCaseDetailPage() {
                     </div>
                   </div>
                 ) : (
-                  <div className="rounded-xl border border-dash-border bg-dash-input/50 p-6 text-center">
+                  <div className="rounded-2xl border border-dash-border bg-dash-input/50 p-6 text-center">
                     <p className="text-xs text-dash-muted">AI Analysis not executed or awaiting upload process.</p>
                   </div>
                 )}
@@ -527,7 +496,7 @@ export default function InvestigatorCaseDetailPage() {
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
-                className="rounded-xl bg-dash-card border border-dash-border border-l-4 border-l-[var(--dash-info)] p-6 space-y-4 shadow-sm"
+                className="rounded-2xl bg-dash-card border border-dash-border border-l-4 border-l-[var(--dash-info)] p-6 space-y-4 shadow-sm"
               >
                 <div className="space-y-1">
                   <p className="text-xs font-bold text-dash-text uppercase tracking-tight">Public Verification Signal</p>
@@ -559,8 +528,6 @@ export default function InvestigatorCaseDetailPage() {
               <CommentsPanel caseId={caseId} />
             </div>
           </div>
-        </div>
-      </div>
     </div>
   );
 }
