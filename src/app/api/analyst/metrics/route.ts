@@ -13,31 +13,51 @@ async function getAnalystMetrics(
   try {
     await connectDB();
 
+    const { searchParams } = new URL(req.url);
+    const statusFilter = searchParams.get("status");
+    const incidentFilter = searchParams.get("incidentType");
+    const searchQuery = searchParams.get("search");
+
+    // Build filter based on active dashboard selections
+    const filter: Record<string, any> = {
+      status: statusFilter
+        ? statusFilter
+        : { $in: ["pending_review", "ai_timeout", "under_review"] },
+    };
+
+    if (incidentFilter && incidentFilter !== "all") filter.incidentType = incidentFilter;
+    if (searchQuery) {
+      filter.$or = [
+        { title: { $regex: searchQuery, $options: "i" } },
+        { description: { $regex: searchQuery, $options: "i" } },
+      ];
+    }
+
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-    // 1. My Queue Metrics
-    // Cases currently assigned to or available for this analyst
-    const assignedThisWeek = await Case.countDocuments({
-      status: { $in: ["pending_review", "under_review", "ai_timeout"] },
-    });
+    // 1. My Queue Metrics matching the filter
+    const assignedThisWeek = await Case.countDocuments(filter);
 
-    // Cases completed by this analyst in the last 7 days
-    const completedThisWeek = await Verdict.countDocuments({
+    // 2. Completed Cases by this analyst matching the filter
+    const completedFilter: Record<string, any> = {
       analystId: user.userId,
       issuedAt: { $gte: sevenDaysAgo },
-    });
+    };
+    if (statusFilter && ["verified", "rejected"].includes(statusFilter)) {
+      completedFilter.verdict = statusFilter;
+    }
+    const completedThisWeek = await Verdict.countDocuments(completedFilter);
 
-    // Fetch all verdicts issued by this analyst for accuracy and time calculations
+    // Fetch verdicts issued by this analyst for time calculations
     const analystVerdicts = await Verdict.find({ analystId: user.userId }).lean();
     
-    let verdictAccuracyRate = 100; // default if no verdicts
+    let verdictAccuracyRate = 100;
     let averageReviewTimeHours = 0;
 
     if (analystVerdicts.length > 0) {
       const caseIds = analystVerdicts.map((v) => v.caseId);
       
-      // Fetch related AI Reports and Cases
       const [aiReports, relatedCases] = await Promise.all([
         AiReport.find({ caseId: { $in: caseIds } }).lean(),
         Case.find({ caseId: { $in: caseIds } }).lean(),
@@ -46,16 +66,12 @@ async function getAnalystMetrics(
       const aiReportMap = new Map(aiReports.map((r) => [r.caseId, r]));
       const caseMap = new Map(relatedCases.map((c) => [c.caseId, c]));
 
-      // Calculate Accuracy Rate
       let accurateCount = 0;
       let reviewableCount = 0;
-
-      // Calculate Average Review Time
       let totalTimeDiffMs = 0;
       let timeCalcCount = 0;
 
       for (const verdict of analystVerdicts) {
-        // Accuracy Check
         const report = aiReportMap.get(verdict.caseId);
         if (report) {
           reviewableCount++;
@@ -67,7 +83,6 @@ async function getAnalystMetrics(
           }
         }
 
-        // Time Check
         const relatedCase = caseMap.get(verdict.caseId);
         if (relatedCase && verdict.issuedAt && relatedCase.createdAt) {
           const diff = new Date(verdict.issuedAt).getTime() - new Date(relatedCase.createdAt).getTime();
@@ -84,20 +99,16 @@ async function getAnalystMetrics(
       
       if (timeCalcCount > 0) {
         const avgMs = totalTimeDiffMs / timeCalcCount;
-        averageReviewTimeHours = Math.round((avgMs / (1000 * 60 * 60)) * 10) / 10; // e.g., 2.5
+        averageReviewTimeHours = Math.round((avgMs / (1000 * 60 * 60)) * 10) / 10;
       }
     }
 
-    // 4. High-Risk Cases Alert
-    // Find pending cases, then count how many of them have tamperScore > 70
-    const pendingCases = await Case.find({
-      status: { $in: ["pending_review", "under_review"] },
-    }).select("caseId").lean();
-    
-    const pendingCaseIds = pendingCases.map((c) => c.caseId);
+    // 3. High-Risk Cases Alert matching active filters
+    const matchedCases = await Case.find(filter).select("caseId").lean();
+    const matchedCaseIds = matchedCases.map((c) => c.caseId);
     
     const highRiskAlerts = await AiReport.countDocuments({
-      caseId: { $in: pendingCaseIds },
+      caseId: { $in: matchedCaseIds },
       tamperScore: { $gt: 70 },
     });
 

@@ -1,10 +1,9 @@
 "use client";
-
+ 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/components/providers/AuthContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Activity, CheckCircle2, Clock, AlertTriangle } from "lucide-react";
+import { Activity, Clock, AlertTriangle } from "lucide-react";
 import { StatCard } from "@/components/ui/StatCard";
 
 interface Metrics {
@@ -15,9 +14,17 @@ interface Metrics {
   highRiskAlerts: number;
 }
 
+interface AnalystMetricsProps {
+  statusFilter: string;
+  typeFilter: string;
+  searchQuery: string;
+}
 
-
-export function AnalystMetrics() {
+export function AnalystMetrics({
+  statusFilter,
+  typeFilter,
+  searchQuery,
+}: AnalystMetricsProps) {
   const { getToken } = useAuth();
   const [metrics, setMetrics] = useState<Metrics | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,9 +32,15 @@ export function AnalystMetrics() {
 
   useEffect(() => {
     const fetchMetrics = async () => {
+      setIsLoading(true);
       try {
         const token = await getToken();
-        const res = await fetch("/api/analyst/metrics", {
+        const params = new URLSearchParams();
+        if (statusFilter !== "all") params.set("status", statusFilter);
+        if (typeFilter !== "all") params.set("incidentType", typeFilter);
+        if (searchQuery) params.set("search", searchQuery);
+
+        const res = await fetch(`/api/analyst/metrics?${params}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!res.ok) throw new Error("Failed to fetch metrics");
@@ -41,7 +54,7 @@ export function AnalystMetrics() {
     };
 
     fetchMetrics();
-  }, [getToken]);
+  }, [statusFilter, typeFilter, searchQuery, getToken]);
 
   if (error) {
     return (
@@ -74,70 +87,49 @@ export function AnalystMetrics() {
     },
   };
 
+  const hasNoCompletedVerdicts = !metrics || metrics.completedThisWeek === 0;
+
   const statCards = [
     {
       label: "Queue Status",
       value: metrics?.assignedThisWeek ?? 0,
       brand: "QUEUE",
-      description: "Awaiting analyst consensus review",
-      subValue: "pending",
+      description: "Awaiting consensus review",
+      subValue: "cases",
       variantKey: "cyan" as const,
       icon: Activity,
       metaText: "Active",
     },
     {
-      label: "Accuracy Rate",
-      value: metrics?.verdictAccuracyRate !== undefined ? `${metrics.verdictAccuracyRate}%` : "100%",
-      brand: "RATING",
-      description: "Consensus integrity stability rating",
-      subValue: "stable",
-      variantKey: "green" as const,
-      icon: CheckCircle2,
-      metaText: "Live",
-    },
-    {
       label: "Avg Review Time",
-      value: metrics?.completedThisWeek === 0 ? "N/A" : `${metrics?.averageReviewTimeHours ?? 0} hrs`,
+      value: hasNoCompletedVerdicts ? "--" : metrics.averageReviewTimeHours,
       brand: "LATENCY",
       description: "Average case verdict latency",
-      subValue: "hrs / case",
+      subValue: hasNoCompletedVerdicts ? "" : "hrs",
       variantKey: "purple" as const,
       icon: Clock,
-      metaText: "Updated just now",
+      metaText: "Performance",
     },
     {
-      label: "High-Risk Alert",
+      label: "High-Risk Alerts",
       value: metrics?.highRiskAlerts ?? 0,
       brand: "ALERTS",
-      description: "Anomalous events flagged manually",
+      description: "Flagged anomalous events",
       subValue: "critical",
       variantKey: "orange" as const,
       icon: AlertTriangle,
-      metaText: "Awaiting Review",
+      metaText: "Urgent",
     }
   ];
-
-  // Filter out Accuracy Rate card if conditions are not met
-  const activeStatCards = statCards.filter(card => {
-    if (card.label === "Accuracy Rate") {
-      return isLoading || (metrics && metrics.completedThisWeek > 1);
-    }
-    return true;
-  });
-
-  const gridColsClass =
-    activeStatCards.length === 3
-      ? "grid-cols-1 md:grid-cols-3"
-      : "grid-cols-1 md:grid-cols-2 lg:grid-cols-4";
 
   return (
     <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="show"
-      className={`grid ${gridColsClass} gap-5`}
+      className="grid grid-cols-1 md:grid-cols-3 gap-5"
     >
-      {activeStatCards.map((card, idx) => {
+      {statCards.map((card) => {
         return (
           <motion.div
             key={card.label}
@@ -146,7 +138,7 @@ export function AnalystMetrics() {
           >
             <StatCard
               label={card.label}
-              value={card.value ?? 0}
+              value={card.value}
               subValue={card.subValue}
               description={card.description}
               brand={card.brand}
