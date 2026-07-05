@@ -91,30 +91,30 @@ export function NetworkOrb() {
             </radialGradient>
             {/* Glow halo */}
             <radialGradient id="haloGrad" cx="50%" cy="50%" r="50%">
-              <stop offset="0%"   stopColor="#10b981" stopOpacity="0.22" />
-              <stop offset="60%"  stopColor="#10b981" stopOpacity="0.07" />
+              <stop offset="0%"   stopColor="#10b981" stopOpacity="0.19" />
+              <stop offset="60%"  stopColor="#10b981" stopOpacity="0.06" />
               <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
             </radialGradient>
             {/* Orbital ring gradient */}
             <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%"   stopColor="#10b981" stopOpacity="0.6" />
-              <stop offset="50%"  stopColor="#3b82f6" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.1" />
+              <stop offset="0%"   stopColor="#10b981" stopOpacity="0.5" />
+              <stop offset="50%"  stopColor="#3b82f6" stopOpacity="0.34" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.08" />
             </linearGradient>
             <linearGradient id="ringGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%"   stopColor="#6366f1" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.2" />
+              <stop offset="0%"   stopColor="#6366f1" stopOpacity="0.42" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.16" />
             </linearGradient>
             {/* Soft node glow filter */}
             <filter id="nodeGlow" x="-80%" y="-80%" width="260%" height="260%">
-              <feGaussianBlur stdDeviation="3.5" result="blur" />
+              <feGaussianBlur stdDeviation="3" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
               </feMerge>
             </filter>
             <filter id="coreGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="8" result="blur" />
+              <feGaussianBlur stdDeviation="7" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -126,7 +126,7 @@ export function NetworkOrb() {
           <motion.circle
             cx="220" cy="225" r="115"
             fill="url(#haloGrad)"
-            animate={{ r: [100, 125, 100], opacity: [0.7, 1, 0.7] }}
+            animate={{ r: [100, 125, 100], opacity: [0.6, 0.85, 0.6] }}
             transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut" }}
           />
 

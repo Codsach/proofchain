@@ -6,8 +6,8 @@ import { useState } from "react";
 import type { Variants } from "framer-motion";
 import Link from "next/link";
 import { z } from "zod";
-import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, Lock } from "lucide-react";
+import { motion } from "framer-motion";
+import { User, Mail, Lock, Eye, EyeOff, Loader2, ShieldAlert } from "lucide-react";
 import { RegisterSchema } from "@/lib/schemas/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,24 +43,66 @@ const item: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" as const } },
 };
 
+// Styling variables aligned with sentinel-theme-v2 tokens
 const cardCls =
-  "rounded-2xl border border-white/70 bg-white/75 backdrop-blur-md p-8 space-y-6 shadow-[0_4px_30px_rgba(15,23,42,0.06),0_1px_8px_rgba(13,158,110,0.06)] hover:shadow-[0_8px_40px_rgba(13,158,110,0.12)] hover:border-[#10b981]/40 transition-all duration-300 group";
-const labelCls = "label-md font-heading text-[#64748b] uppercase tracking-wider";
-const iconCls = "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#94a3b8]";
+  "rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-card)] px-8 py-7 space-y-5 shadow-sm hover:shadow-md hover:border-[var(--dash-accent)]/30 transition-all duration-300 group";
+const labelCls = "label-md font-heading text-[var(--dash-muted)] uppercase tracking-wider font-semibold";
+const iconCls = "absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--dash-muted)]/50";
 const inputCls =
-  "bg-[#f8fafc] border-[#e2e8f0] focus:border-[#10b981] focus:ring-[#10b981]/20 transition-all h-11 text-[#1e293b] placeholder:text-[#94a3b8] font-sans rounded-lg";
+  "bg-[var(--dash-input)] border-[var(--dash-border)] focus:border-[var(--dash-accent)] focus:ring-[var(--dash-accent)]/20 transition-all h-12 text-[var(--dash-text)] placeholder:text-[var(--dash-muted)]/50 font-sans rounded-xl w-full border";
 const btnCls =
-  "w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold h-11 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.20)] hover:shadow-[0_0_30px_rgba(16,185,129,0.40)] rounded-lg font-heading tracking-wide";
+  "w-full bg-[var(--dash-accent)] hover:bg-[var(--dash-active-text)] text-white font-bold h-12 transition-all duration-300 shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_30px_rgba(16,185,129,0.30)] rounded-xl font-heading tracking-wide";
+
+const getPasswordStrength = (password: string) => {
+  if (!password) return 0;
+  let score = 0;
+  if (password.length >= 8) score += 1;
+  if (/[A-Z]/.test(password)) score += 1;
+  if (/[a-z]/.test(password)) score += 1;
+  if (/[0-9]/.test(password)) score += 1;
+  if (/[^A-Za-z0-9]/.test(password)) score += 1;
+  return score;
+};
+
+const getStrengthProps = (score: number) => {
+  switch (score) {
+    case 0:
+      return { width: "0%", color: "bg-transparent", label: "" };
+    case 1:
+      return { width: "20%", color: "bg-rose-500", label: "Very Weak" };
+    case 2:
+      return { width: "40%", color: "bg-rose-400", label: "Weak" };
+    case 3:
+      return { width: "60%", color: "bg-amber-500", label: "Medium" };
+    case 4:
+      return { width: "80%", color: "bg-emerald-500", label: "Strong" };
+    case 5:
+    default:
+      return { width: "100%", color: "bg-emerald-600", label: "Enterprise Secure" };
+  }
+};
 
 export default function RegisterPage() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isCapsLockOn, setIsCapsLockOn] = useState(false);
 
   const form = useForm<RegisterFormInput>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: { email: "", password: "", confirmPassword: "", fullName: "" },
   });
+
+  const password = form.watch("password") || "";
+  const strength = getPasswordStrength(password);
+  const strengthProps = getStrengthProps(strength);
+
+  const checkCapsLock = (e: React.KeyboardEvent) => {
+    const caps = e.getModifierState("CapsLock");
+    setIsCapsLockOn(caps);
+  };
 
   const onSubmit = async (values: RegisterFormInput) => {
     setIsSubmitting(true);
@@ -104,7 +146,7 @@ export default function RegisterPage() {
           transition={{ duration: 0.4 }}
           className="space-y-6 text-center"
         >
-          <div className={`${cardCls} !space-y-6`}>
+          <div className="rounded-2xl border border-[var(--dash-border)] bg-[var(--dash-card)] px-8 py-8 space-y-6 shadow-md text-center flex flex-col items-center justify-center">
             <div className="flex justify-center">
               <motion.div
                 initial={{ scale: 0 }}
@@ -116,16 +158,16 @@ export default function RegisterPage() {
               </motion.div>
             </div>
             <div className="space-y-2">
-              <h2 className="headline-sm font-heading font-bold text-[#1e293b] tracking-wider">Check your email</h2>
-              <p className="body-sm text-[#64748b] font-sans">
+              <h2 className="headline-sm font-heading font-bold text-[var(--dash-text)] tracking-wider uppercase">Check your email</h2>
+              <p className="body-sm text-[var(--dash-muted)] font-sans">
                 We sent a verification link to{" "}
-                <span className="text-[#10b981] font-semibold">{form.getValues("email")}</span>.
+                <span className="text-[var(--dash-accent)] font-semibold">{form.getValues("email")}</span>.
                 Click the link to activate your account.
               </p>
             </div>
             <Link
               href="/login"
-              className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-[#10b981] text-sm font-bold text-white transition-all hover:bg-[#059669] shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] font-heading tracking-wide"
+              className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[var(--dash-accent)] text-sm font-bold text-white transition-all hover:bg-[var(--dash-active-text)] shadow-sm font-heading tracking-wide"
             >
               Back to sign in
             </Link>
@@ -137,14 +179,14 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout leftPanel={<ChainRings />}>
-      <motion.div variants={container} initial="hidden" animate="visible" className="space-y-6">
+      <motion.div variants={container} initial="hidden" animate="visible" className="space-y-4">
         <motion.div variants={item} className="space-y-1">
-          <h1 className="headline-sm font-heading font-bold text-[#1e293b] tracking-wider uppercase">Create account</h1>
-          <p className="body-sm text-[#64748b] font-sans">Join ProofChain — secure forensic evidence platform</p>
+          <h1 className="headline-sm font-heading font-bold text-[var(--dash-text)] tracking-wider uppercase">Create account</h1>
+          <p className="body-sm text-[var(--dash-muted)] font-sans">Join ProofChain — secure forensic evidence platform</p>
         </motion.div>
 
-        <motion.div variants={item} whileHover={{ y: -2 }} className={cardCls}>
-          <div className="h-0.5 w-8 bg-[#0D9E6E] rounded-full transition-all duration-300 group-hover:w-16" />
+        <motion.div variants={item} whileHover={{ y: -1 }} className={cardCls}>
+          <div className="h-0.5 w-8 bg-[var(--dash-accent)] rounded-full transition-all duration-300 group-hover:w-16" />
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -160,7 +202,7 @@ export default function RegisterPage() {
                           <User className={iconCls} />
                           <Input
                             placeholder="Jane Smith"
-                            className={`pl-10 ${inputCls}`}
+                            className={`pl-10 pr-4 ${inputCls}`}
                             autoComplete="name"
                             disabled={isSubmitting}
                             {...field}
@@ -186,7 +228,7 @@ export default function RegisterPage() {
                           <Input
                             type="email"
                             placeholder="name@company.com"
-                            className={`pl-10 ${inputCls}`}
+                            className={`pl-10 pr-4 ${inputCls}`}
                             autoComplete="email"
                             disabled={isSubmitting}
                             {...field}
@@ -210,15 +252,61 @@ export default function RegisterPage() {
                         <div className="relative">
                           <Lock className={iconCls} />
                           <Input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="••••••••"
-                            className={`pl-10 ${inputCls}`}
+                            className={`pl-10 pr-10 ${inputCls}`}
                             autoComplete="new-password"
                             disabled={isSubmitting}
                             {...field}
+                            onBlur={(e) => {
+                              field.onBlur();
+                              setIsCapsLockOn(false);
+                            }}
+                            onKeyDown={checkCapsLock}
+                            onKeyUp={checkCapsLock}
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors focus:outline-none"
+                          >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
                         </div>
                       </FormControl>
+                      
+                      {password && (
+                        <div className="space-y-1.5 pt-1">
+                          <div className="flex justify-between items-center text-[10px] uppercase font-bold tracking-wider">
+                            <span className="text-[var(--dash-muted)]">Password Strength</span>
+                            <span className={
+                              strength <= 2 ? "text-rose-500" : strength <= 3 ? "text-amber-500" : "text-emerald-500"
+                            }>
+                              {strengthProps.label}
+                            </span>
+                          </div>
+                          <div className="h-1 w-full bg-[var(--dash-input)] rounded-full overflow-hidden">
+                            <motion.div
+                              className={`h-full ${strengthProps.color}`}
+                              initial={{ width: 0 }}
+                              animate={{ width: strengthProps.width }}
+                              transition={{ duration: 0.3 }}
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {isCapsLockOn && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="flex items-center gap-1.5 text-xs text-amber-600 font-semibold mt-1"
+                        >
+                          <ShieldAlert size={13} className="text-amber-500 animate-pulse" />
+                          <span>Caps Lock is active</span>
+                        </motion.div>
+                      )}
+
                       <FormMessage className="text-xs text-destructive/80" />
                     </FormItem>
                   )}
@@ -236,13 +324,26 @@ export default function RegisterPage() {
                         <div className="relative">
                           <Lock className={iconCls} />
                           <Input
-                            type="password"
+                            type={showConfirmPassword ? "text" : "password"}
                             placeholder="••••••••"
-                            className={`pl-10 ${inputCls}`}
+                            className={`pl-10 pr-10 ${inputCls}`}
                             autoComplete="new-password"
                             disabled={isSubmitting}
                             {...field}
+                            onBlur={(e) => {
+                              field.onBlur();
+                              setIsCapsLockOn(false);
+                            }}
+                            onKeyDown={checkCapsLock}
+                            onKeyUp={checkCapsLock}
                           />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--dash-muted)] hover:text-[var(--dash-text)] transition-colors focus:outline-none"
+                          >
+                            {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
                         </div>
                       </FormControl>
                       <FormMessage className="text-xs text-destructive/80" />
@@ -251,21 +352,30 @@ export default function RegisterPage() {
                 />
               </motion.div>
 
-              <motion.div variants={item} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+              <motion.div variants={item} whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} className="pt-1">
                 <Button type="submit" className={btnCls} disabled={isSubmitting}>
-                  {isSubmitting ? "Creating account…" : "Create account"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin inline-block" />
+                      Creating account…
+                    </>
+                  ) : (
+                    "Create account"
+                  )}
                 </Button>
               </motion.div>
+
+              <div className="text-center pt-1.5">
+                <p className="body-sm text-[var(--dash-muted)] font-sans">
+                  Already have an account?{" "}
+                  <Link href="/login" className="text-[var(--dash-accent)] hover:text-[var(--dash-active-text)] font-semibold transition-colors">
+                    Sign in
+                  </Link>
+                </p>
+              </div>
             </form>
           </Form>
         </motion.div>
-
-        <motion.p variants={item} className="text-center body-sm text-[#64748b] font-sans">
-          Already have an account?{" "}
-          <Link href="/login" className="text-[#10b981] hover:text-[#059669] font-semibold transition-colors">
-            Sign in
-          </Link>
-        </motion.p>
       </motion.div>
     </AuthLayout>
   );
