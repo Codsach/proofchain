@@ -118,3 +118,46 @@ export async function deactivateAccount() {
     return { success: false, error: error.message || "Failed to deactivate account" };
   }
 }
+
+export async function updateProfilePreferences(data: { landingPage: string; timezone: string }) {
+  try {
+    const session = await getServerSessionUser();
+    if (!session) {
+      throw new Error("Unauthorized");
+    }
+
+    await connectDB();
+    await User.findByIdAndUpdate(session.id, {
+      landingPage: data.landingPage,
+      timezone: data.timezone
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Update profile preferences error:", error);
+    return { success: false, error: error.message || "Failed to update profile preferences" };
+  }
+}
+
+export async function updateNotificationPreferences(data: { securityAlerts: boolean; caseReports: boolean; systemUpdates: boolean }) {
+  try {
+    const session = await getServerSessionUser();
+    if (!session) {
+      throw new Error("Unauthorized");
+    }
+
+    await connectDB();
+    await User.findByIdAndUpdate(session.id, {
+      notificationPreferences: {
+        securityAlerts: data.securityAlerts,
+        caseReports: data.caseReports,
+        systemUpdates: data.systemUpdates
+      }
+    });
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Update notification preferences error:", error);
+    return { success: false, error: error.message || "Failed to update notification preferences" };
+  }
+}

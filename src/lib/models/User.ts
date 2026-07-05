@@ -19,6 +19,13 @@ export interface IUser extends Document {
   passwordResetExpires: Date | null;
   mfaEnabled: boolean;
   mfaSecret: string | null;
+  landingPage?: string;
+  timezone?: string;
+  notificationPreferences?: {
+    securityAlerts: boolean;
+    caseReports: boolean;
+    systemUpdates: boolean;
+  };
   trustedDevices: {
     deviceTokenHash: string;
     expiresAt: Date;
@@ -52,6 +59,13 @@ const UserSchema = new Schema<IUser>(
     passwordResetExpires: { type: Date, default: null },
     mfaEnabled: { type: Boolean, default: false },
     mfaSecret: { type: String, default: null, select: false },
+    landingPage: { type: String, default: "dashboard" },
+    timezone: { type: String, default: "UTC" },
+    notificationPreferences: {
+      securityAlerts: { type: Boolean, default: true },
+      caseReports: { type: Boolean, default: true },
+      systemUpdates: { type: Boolean, default: false }
+    },
     trustedDevices: [
       {
         deviceTokenHash: { type: String, required: true },

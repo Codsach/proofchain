@@ -55,11 +55,11 @@ export default function DashboardLayout({
               {/* Subtle noise texture to prevent flat color banding */}
               <div className="absolute inset-0 noise-bg pointer-events-none mix-blend-overlay" />
               {/* Top-right soft mint/emerald glow */}
-              <div className="absolute -top-[20%] -right-[10%] w-[80vw] h-[80vh] rounded-full bg-emerald-500/[0.06] blur-[220px] mix-blend-normal pointer-events-none" />
+              <div className="absolute -top-[20%] -right-[10%] w-[80vw] h-[80vh] rounded-full bg-emerald-500/[0.03] blur-[220px] mix-blend-normal pointer-events-none" />
               {/* Bottom-left soft cobalt/blue glow */}
-              <div className="absolute -bottom-[20%] -left-[10%] w-[90vw] h-[90vh] rounded-full bg-blue-500/[0.06] blur-[240px] mix-blend-normal pointer-events-none" />
+              <div className="absolute -bottom-[20%] -left-[10%] w-[90vw] h-[90vh] rounded-full bg-blue-500/[0.03] blur-[240px] mix-blend-normal pointer-events-none" />
               {/* Center-left soft teal glow */}
-              <div className="absolute top-[20%] left-[20%] w-[70vw] h-[70vh] rounded-full bg-teal-500/[0.04] blur-[180px] mix-blend-normal pointer-events-none" />
+              <div className="absolute top-[20%] left-[20%] w-[70vw] h-[70vh] rounded-full bg-teal-500/[0.02] blur-[180px] mix-blend-normal pointer-events-none" />
             </>
           )}
         </div>

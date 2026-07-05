@@ -151,13 +151,22 @@ export async function POST(req: NextRequest) {
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
 
-    // 9. Determine redirect path by role — computed server-side
-    const redirectMap: Record<string, string> = {
-      admin:         "/admin",
-      analyst:       "/analyst",
-      investigator:  "/investigator",
-    };
-    const redirectTo = redirectMap[user.role] ?? "/";
+    // 9. Determine redirect path by role & user landing page preference
+    let redirectTo = "/";
+    const role = user.role;
+    const landing = user.landingPage || "dashboard";
+
+    if (role === "admin") {
+      if (landing === "cases") redirectTo = "/admin/cases";
+      else if (landing === "audit") redirectTo = "/admin/audit";
+      else redirectTo = "/admin";
+    } else if (role === "analyst") {
+      if (landing === "cases") redirectTo = "/analyst/cases";
+      else redirectTo = "/analyst";
+    } else if (role === "investigator") {
+      if (landing === "cases") redirectTo = "/investigator/cases";
+      else redirectTo = "/investigator";
+    }
 
     // 10. Audit log
     await logAction({

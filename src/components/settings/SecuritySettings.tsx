@@ -15,19 +15,19 @@ import { changePassword, revokeDevice } from "@/app/(dashboard)/settings/actions
 import { MfaSetupModal } from "@/components/MfaSetupModal";
 
 const passwordSchema = z.object({
- oldPassword: z.string().optional(),
- newPassword: z.string().min(8, "Password must be at least 8 characters"),
- confirmPassword: z.string()
+  oldPassword: z.string().optional(),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string()
 }).refine((data) => data.newPassword === data.confirmPassword, {
- message: "Passwords don't match",
- path: ["confirmPassword"],
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type PasswordFormValues = z.infer<typeof passwordSchema>;
 
 interface Device {
- deviceTokenHash: string;
- expiresAt: string;
+  deviceTokenHash: string;
+  expiresAt: string;
 }
 
 export function SecuritySettings({ role, user }: { role: "investigator" | "analyst" | "admin"; user: { mfaEnabled: boolean; trustedDevices: Device[] } }) {
@@ -48,18 +48,6 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
     admin: "text-purple-700",
   }[role];
 
-  const roleAccentGlow = {
-    investigator: "hover:border-emerald-500 focus-visible:ring-emerald-500",
-    analyst: "hover:border-cyan-500 focus-visible:ring-cyan-500",
-    admin: "hover:border-purple-500 focus-visible:ring-purple-500",
-  }[role];
-
-  const roleSubmitBtn = {
-    investigator: "bg-emerald-600 text-white hover:bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.15)] disabled:bg-emerald-600/50 disabled:cursor-not-allowed",
-    analyst: "bg-cyan-600 text-white hover:bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.15)] disabled:bg-cyan-600/50 disabled:cursor-not-allowed",
-    admin: "bg-purple-600 text-white hover:bg-purple-500 shadow-[0_0_10px_rgba(168,85,247,0.15)] disabled:bg-purple-600/50 disabled:cursor-not-allowed",
-  }[role];
-
   const form = useForm<PasswordFormValues>({
     resolver: zodResolver(passwordSchema),
     defaultValues: {
@@ -74,10 +62,14 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
     try {
       const res = await changePassword(data);
       if (res.success) {
-        toast({ title: "Password Updated", description: "Your credentials have been changed." });
-        form.reset();
+        toast({ title: "Password updated", description: "Your credentials have been changed successfully." });
+        form.reset({
+          oldPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
       } else {
-        toast({ variant: "destructive", title: "Update Failed", description: res.error });
+        toast({ variant: "destructive", title: "Update failed", description: res.error });
       }
     } catch (error) {
       toast({ variant: "destructive", title: "Error", description: "An unexpected error occurred." });
@@ -91,63 +83,69 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       const res = await revokeDevice(deviceTokenHash);
       if (res.success) {
         setDevices(devices.filter(d => d.deviceTokenHash !== deviceTokenHash));
-        toast({ title: "Device Revoked", description: "The session has been terminated." });
+        toast({ title: "Session revoked", description: "The active session has been terminated successfully." });
       } else {
-        toast({ variant: "destructive", title: "Action Failed", description: res.error });
+        toast({ variant: "destructive", title: "Action failed", description: res.error });
       }
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to revoke device." });
+      toast({ variant: "destructive", title: "Error", description: "Failed to revoke session." });
     }
   };
 
   return (
-    <CardContainer className="space-y-6">
+    <CardContainer className="space-y-8">
       {/* Password Reset */}
-      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
+      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
-        <CardHeader>
-          <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
+        <CardHeader className="p-0 gap-1.5">
+          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
             <KeyRound className={`h-5 w-5 ${roleAccent}`} />
             Authentication Key
           </CardTitle>
-          <CardDescription className="text-dash-muted font-mono text-xs uppercase tracking-wider">
+          <CardDescription className="text-sm text-dash-muted">
             Update your primary access credentials.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmitPassword)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmitPassword)} className="max-w-2xl w-full space-y-6">
               <FormField
                 control={form.control}
                 name="oldPassword"
                 render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Current Password</FormLabel>
+                  <FormItem className="space-y-2">
+                    <FormLabel className="text-[13px] font-medium text-dash-text tracking-tight">Current password</FormLabel>
                     <FormControl>
                       <Input
                         type="password"
-                        className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                        className="bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-14 px-4 font-sans focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all"
                         {...field}
                       />
                     </FormControl>
+                    <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
+                      Verify your current credentials to authenticate this change.
+                    </p>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <CardContainer className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="newPassword"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-dash-muted font-mono text-xs uppercase">New Password</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[13px] font-medium text-dash-text tracking-tight">New password</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                          className="bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-14 px-4 font-sans focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all"
                           {...field}
                         />
                       </FormControl>
+                      <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
+                        Password must be at least 8 characters. Use a mix of letters, numbers, and symbols.
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -156,28 +154,31 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
                   control={form.control}
                   name="confirmPassword"
                   render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-dash-muted font-mono text-xs uppercase">Confirm Password</FormLabel>
+                    <FormItem className="space-y-2">
+                      <FormLabel className="text-[13px] font-medium text-dash-text tracking-tight">Confirm password</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
-                          className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 font-mono focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`}
+                          className="bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-14 px-4 font-sans focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500/50 focus-visible:border-blue-500 focus-visible:outline-none transition-all"
                           {...field}
                         />
                       </FormControl>
+                      <p className="text-xs text-dash-muted mt-1.5 leading-relaxed">
+                        Must match the new password specified above.
+                      </p>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </CardContainer>
-              <CardFooter className="flex justify-end pt-4 border-t border-dash-border bg-transparent p-0">
+              <CardFooter className="flex justify-end pt-0 p-0 mt-8 bg-transparent border-none">
                 <Button 
                   type="submit" 
                   disabled={isSubmitting || !form.formState.isDirty}
-                  className={`font-mono font-bold uppercase rounded-xl h-11 px-6 transition-all ${roleSubmitBtn}`}
+                  className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-medium rounded-xl h-14 px-8 shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed normal-case"
                 >
                   {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                  {isSubmitting ? "Encrypting..." : "Update Password"}
+                  {isSubmitting ? "Encrypting..." : "Update password"}
                 </Button>
               </CardFooter>
             </form>
@@ -186,38 +187,38 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       </Card>
 
       {/* Two-Factor Auth */}
-      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
+      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
-        <CardHeader className="flex flex-row items-center justify-between pb-4 flex-wrap gap-4">
-          <CardContainer className="space-y-1">
-            <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
+        <CardHeader className="p-0 flex flex-row items-center justify-between flex-wrap gap-4">
+          <CardContainer className="space-y-1.5">
+            <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
               <Shield className={`h-5 w-5 ${roleAccent}`} />
               Two-Factor Authentication
             </CardTitle>
-            <CardDescription className="text-dash-muted font-mono text-xs uppercase tracking-wider">
+            <CardDescription className="text-sm text-dash-muted">
               Add an extra layer of security to your account.
             </CardDescription>
           </CardContainer>
           {user.mfaEnabled ? (
-            <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-emerald-500/10 text-emerald-800 border-emerald-500/20 px-2.5 py-1 text-xs">
-              <ShieldCheck size={12} className="mr-1" /> Active
+            <Badge variant="outline" className="rounded-md font-sans font-medium bg-emerald-500/10 text-emerald-800 border-emerald-500/20 px-2.5 py-1 text-xs">
+              <ShieldCheck size={12} className="mr-1 inline" /> Active
             </Badge>
           ) : (
-            <Badge variant="outline" className="rounded-md font-mono uppercase tracking-wider bg-rose-500/10 text-rose-800 border-rose-500/20 px-2.5 py-1 text-xs">
+            <Badge variant="outline" className="rounded-md font-sans font-medium bg-rose-500/10 text-rose-800 border-rose-500/20 px-2.5 py-1 text-xs">
               Inactive
             </Badge>
           )}
         </CardHeader>
-        <CardContent>
-          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border border-dash-border bg-dash-input/30 rounded-xl gap-4">
-            <CardContainer className="space-y-1">
-              <p className="text-sm font-medium font-mono uppercase text-dash-text">Authenticator App</p>
-              <p className="text-xs text-dash-muted font-mono leading-relaxed">Use an app like Google Authenticator or Authy to generate security codes.</p>
+        <CardContent className="p-0">
+          <CardContainer className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 border border-dash-border bg-dash-input/30 rounded-xl gap-4 max-w-2xl w-full">
+            <CardContainer className="space-y-1 pr-4">
+              <p className="text-sm font-medium text-dash-text">Authenticator App</p>
+              <p className="text-xs text-dash-muted leading-relaxed">Use an app like Google Authenticator or Authy to generate security codes.</p>
             </CardContainer>
             {!user.mfaEnabled && (
               <Button 
                 onClick={() => setIsMfaOpen(true)}
-                className={`font-mono font-bold uppercase rounded-xl h-11 px-6 transition-all shrink-0 ${roleSubmitBtn}`}
+                className="border border-dash-border bg-transparent text-dash-text hover:bg-dash-hover font-semibold rounded-xl h-14 px-6 transition-all shrink-0 normal-case"
               >
                 Enable 2FA
               </Button>
@@ -226,47 +227,58 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
         </CardContent>
       </Card>
 
-      {/* Trusted Devices */}
-      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-md rounded-xl">
+      {/* Trusted Devices / Active Sessions */}
+      <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
-        <CardHeader>
-          <CardTitle className="text-xl font-heading tracking-wider uppercase text-dash-text flex items-center gap-2">
+        <CardHeader className="p-0 gap-1.5">
+          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
             <Laptop className={`h-5 w-5 ${roleAccent}`} />
             Active Sessions
           </CardTitle>
-          <CardDescription className="text-dash-muted font-mono text-xs uppercase tracking-wider">
+          <CardDescription className="text-sm text-dash-muted">
             Manage your currently logged in devices.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           {devices.length === 0 ? (
-            <CardContainer className="p-4 text-center text-dash-muted font-mono text-xs uppercase border border-dash-border rounded-xl bg-dash-input/10">
+            <CardContainer className="p-5 text-center text-dash-muted text-xs border border-dash-border rounded-xl bg-dash-input/10 max-w-2xl w-full">
               No active sessions found.
             </CardContainer>
           ) : (
-            <CardContainer className="space-y-3">
+            <div className="border border-dash-border/60 rounded-xl bg-dash-input/10 divide-y divide-dash-border/40 overflow-hidden max-w-2xl w-full">
               {devices.map((device, idx) => (
-                <CardContainer key={idx} className="flex items-center justify-between p-4 border border-dash-border bg-dash-input/30 rounded-xl gap-4">
-                  <CardContainer className="flex items-center gap-4">
-                    <CardContainer className={`p-2.5 bg-dash-input border border-dash-border/60 rounded-xl ${roleAccent}`}>
-                      <Smartphone className="h-5 w-5" />
-                    </CardContainer>
-                    <CardContainer>
-                      <p className="text-sm font-medium font-mono uppercase text-dash-text">Session Token</p>
-                      <p className="text-xs text-dash-muted font-mono mt-1">Expires: {new Date(device.expiresAt).toLocaleString()}</p>
-                    </CardContainer>
-                  </CardContainer>
+                <div key={idx} className="flex items-center justify-between p-4 gap-4 hover:bg-dash-input/20 transition-colors">
+                  <div className="flex items-center gap-3.5">
+                    <div className="p-2.5 bg-dash-input border border-dash-border/60 rounded-lg text-dash-muted flex items-center justify-center shrink-0">
+                      <Laptop className="h-4.5 w-4.5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-xs font-mono font-medium text-dash-text">
+                          Token {device.deviceTokenHash.substring(0, 8)}...
+                        </span>
+                        {idx === 0 && (
+                          <span className="text-[10px] px-2 py-0.5 font-sans font-semibold rounded bg-emerald-500/10 text-emerald-700 border border-emerald-500/15">
+                            Current session
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-dash-muted mt-0.5">
+                        Expires: {new Date(device.expiresAt).toLocaleDateString()} at {new Date(device.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
                   <Button 
                     variant="outline"
                     size="sm"
                     onClick={() => handleRevokeDevice(device.deviceTokenHash)}
-                    className="border border-rose-500/35 text-rose-600 hover:bg-rose-50 hover:text-rose-700 font-mono uppercase text-xs rounded-xl h-9 px-4 transition-all"
+                    className="border border-rose-500/20 text-rose-600 hover:bg-rose-500/5 hover:text-rose-700 hover:border-rose-500/30 text-xs rounded-lg h-9 px-3.5 transition-all font-medium normal-case"
                   >
                     Revoke
                   </Button>
-                </CardContainer>
+                </div>
               ))}
-            </CardContainer>
+            </div>
           )}
         </CardContent>
       </Card>
