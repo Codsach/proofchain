@@ -41,13 +41,13 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
       <TabsList className="bg-dash-input/50 border border-dash-border p-0.5 inline-flex w-fit rounded-lg gap-1">
         <TabsTrigger 
           value="overview" 
-          className="font-mono uppercase text-[10px] tracking-wider rounded-md text-dash-muted transition-all px-4 py-1.5 data-[state=active]:bg-dash-card data-[state=active]:text-purple-600 data-[state=active]:shadow-2xs font-bold"
+          className="font-sans uppercase text-[10px] tracking-wider rounded-md text-dash-muted transition-all px-4 py-1.5 data-[state=active]:bg-dash-card data-[state=active]:text-purple-600 data-[state=active]:shadow-2xs font-bold"
         >
           System Overview
         </TabsTrigger>
         <TabsTrigger 
           value="log" 
-          className="font-mono uppercase text-[10px] tracking-wider rounded-md text-dash-muted transition-all px-4 py-1.5 data-[state=active]:bg-dash-card data-[state=active]:text-purple-600 data-[state=active]:shadow-2xs font-bold"
+          className="font-sans uppercase text-[10px] tracking-wider rounded-md text-dash-muted transition-all px-4 py-1.5 data-[state=active]:bg-dash-card data-[state=active]:text-purple-600 data-[state=active]:shadow-2xs font-bold"
         >
           Audit Log
         </TabsTrigger>
@@ -81,14 +81,14 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
       <TabsContent value="log" className="mt-6">
         <Card className="bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px]">
           <CardHeader className="p-0 mb-[20px]">
-            <CardTitle className="text-xs font-mono uppercase text-dash-muted flex items-center gap-2">
+            <CardTitle className="text-xs font-sans uppercase text-dash-muted flex items-center gap-2">
               <TerminalSquare className="h-4 w-4 text-purple-600" />
               Administrative Actions
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {recentActions.length === 0 ? (
-              <CardContainer className="text-center py-6 text-[11px] text-dash-muted/60 font-mono uppercase tracking-wider">
+              <CardContainer className="text-center py-6 text-[11px] text-dash-muted/60 font-sans uppercase tracking-wider">
                 No administrative actions recorded
               </CardContainer>
             ) : (
@@ -100,9 +100,9 @@ export function AdminDossier({ stats, recentActions }: AdminDossierProps) {
                   >
                     <Shield className="h-5 w-5 text-purple-600 mt-0.5" />
                     <CardContainer>
-                      <p className="font-mono text-sm uppercase text-dash-text group-hover:text-purple-600 transition-colors">{action.action}</p>
-                      <p className="font-mono text-xs text-dash-muted mt-1">
-                        {new Date(action.createdAt).toLocaleString()} • Target: <span className="text-dash-muted">{action.targetId?.toString()?.substring(0, 12) || "SYSTEM"}</span>
+                      <p className="font-sans text-sm uppercase text-dash-text group-hover:text-purple-600 transition-colors">{action.action}</p>
+                      <p className="font-sans text-xs text-dash-muted mt-1">
+                        {new Date(action.createdAt).toLocaleString()} • <span className="type-technical">Target: {action.targetId?.toString()?.substring(0, 12) || "SYSTEM"}</span>
                       </p>
                     </CardContainer>
                   </CardContainer>

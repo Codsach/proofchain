@@ -119,7 +119,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className={`font-mono border transition-all duration-300 rounded-xl h-9 px-4 ${roleAccent}`}>
+        <Button variant="outline" size="sm" className={`font-sans border transition-all duration-300 rounded-xl h-9 px-4 ${roleAccent}`}>
           <Edit className="w-4 h-4 mr-2" />
           Edit Dossier
         </Button>
@@ -133,16 +133,16 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <Tabs defaultValue="general" className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-dash-sidebar border border-dash-border p-1 rounded-xl">
-                <TabsTrigger value="general" className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>General</TabsTrigger>
-                <TabsTrigger value="operational" className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>Operational</TabsTrigger>
-                <TabsTrigger value="emergency" className={`font-mono text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>Emergency</TabsTrigger>
+                <TabsTrigger value="general" className={`font-sans text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>General</TabsTrigger>
+                <TabsTrigger value="operational" className={`font-sans text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>Operational</TabsTrigger>
+                <TabsTrigger value="emergency" className={`font-sans text-xs uppercase rounded-lg text-dash-muted transition-all ${roleTabsActive}`}>Emergency</TabsTrigger>
               </TabsList>
 
               <TabsContent value="general" className="space-y-4 mt-4">
                 <CardContainer className="grid grid-cols-2 gap-4">
                   <FormField control={form.control} name="phoneNumber" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-dash-muted font-mono text-xs uppercase">Phone Number</FormLabel>
+                      <FormLabel className="text-dash-muted font-sans text-xs">Phone Number</FormLabel>
                       <FormControl>
                         <Input placeholder="+1..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                       </FormControl>
@@ -151,7 +151,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                   )} />
                   <FormField control={form.control} name="department" render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-dash-muted font-mono text-xs uppercase">Department</FormLabel>
+                      <FormLabel className="text-dash-muted font-sans text-xs">Department</FormLabel>
                       <FormControl>
                         <Input placeholder="e.g. Cyber Forensics" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                       </FormControl>
@@ -162,7 +162,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
                 
                 <FormField control={form.control} name="location" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Location / Precinct</FormLabel>
+                    <FormLabel className="text-dash-muted font-sans text-xs">Location / Precinct</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. HQ - Sector 7" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
@@ -172,7 +172,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
 
                 <FormField control={form.control} name="bio" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Duty Notes / Bio</FormLabel>
+                    <FormLabel className="text-dash-muted font-sans text-xs">Duty Notes / Bio</FormLabel>
                     <FormControl>
                       <Textarea placeholder="Professional summary or active duty notes..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl p-3 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all resize-none h-24 ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
@@ -184,7 +184,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
               <TabsContent value="operational" className="space-y-4 mt-4">
                 <FormField control={form.control} name="skills" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Skills & Certifications (Comma Separated)</FormLabel>
+                    <FormLabel className="text-dash-muted font-sans text-xs">Skills & Certifications (Comma Separated)</FormLabel>
                     <FormControl>
                       <Input placeholder="OSINT, Network Forensics, CEH..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
@@ -194,7 +194,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
 
                 <FormField control={form.control} name="assignedDevices" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Assigned Devices (Comma Separated)</FormLabel>
+                    <FormLabel className="text-dash-muted font-sans text-xs">Assigned Devices (Comma Separated)</FormLabel>
                     <FormControl>
                       <Input placeholder="Laptop-AX12, Mobile-Z9..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
@@ -206,7 +206,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
               <TabsContent value="emergency" className="space-y-4 mt-4">
                 <FormField control={form.control} name="emergencyContactName" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Emergency Contact Name</FormLabel>
+                    <FormLabel className="text-dash-muted font-sans text-xs">Emergency Contact Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Full Name" className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
@@ -216,7 +216,7 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
 
                 <FormField control={form.control} name="emergencyContactPhone" render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-dash-muted font-mono text-xs uppercase">Emergency Contact Phone</FormLabel>
+                    <FormLabel className="text-dash-muted font-sans text-xs">Emergency Contact Phone</FormLabel>
                     <FormControl>
                       <Input placeholder="+1..." className={`bg-dash-input border border-dash-border text-dash-text placeholder:text-dash-muted/40 rounded-xl h-11 px-4 focus-visible:ring-1 focus-visible:ring-offset-0 focus-visible:outline-none transition-all ${roleAccentGlow}`} {...field} value={field.value || ""} />
                     </FormControl>
@@ -227,9 +227,9 @@ export function EditDossierModal({ role, profile }: EditDossierModalProps) {
             </Tabs>
 
             <CardFooter className="flex justify-end pt-4 border-t border-dash-border bg-transparent p-0">
-              <Button type="submit" disabled={isSubmitting} className={`font-mono font-bold uppercase rounded-xl h-11 px-6 transition-all ${roleSubmitBtn}`}>
+              <Button type="submit" disabled={isSubmitting} className={`font-sans font-bold rounded-xl h-11 px-6 transition-all ${roleSubmitBtn}`}>
                 {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                {isSubmitting ? "UPDATING..." : "SAVE DOSSIER"}
+                {isSubmitting ? "Updating..." : "Save Dossier"}
               </Button>
             </CardFooter>
           </form>
