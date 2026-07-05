@@ -17,11 +17,12 @@ import { DashboardCharts } from "@/components/admin/DashboardCharts";
 import { StatCard, StatCardProps } from "@/components/ui/StatCard";
 import type {
   VolumeDataPoint,
-  RiskDataPoint,
-  StatusDataPoint,
-  TamperDataPoint,
+  AiQueuePoint,
+  IncidentTypePoint,
   UserCounts,
   AuditLogEntry,
+  AttentionRequiredAlert,
+  OperationalSummary,
 } from "@/components/admin/DashboardCharts";
 import {
   Database,
@@ -31,11 +32,9 @@ import {
   Users,
   FileText,
   Briefcase,
-  TrendingUp,
   Clock,
   ShieldAlert,
   CheckCircle2,
-  AlertTriangle,
   Loader2,
 } from "lucide-react";
 
@@ -62,12 +61,25 @@ interface SystemStatus {
   };
 }
 
+interface QuickLinkMetrics {
+  totalUsers: number;
+  logsToday: number;
+  archivedCasesCount: number;
+}
+
 interface ChartData {
   volumeData: VolumeDataPoint[];
-  riskData: RiskDataPoint[];
-  statusData: StatusDataPoint[];
-  tamperData: TamperDataPoint[];
+  aiQueueData: AiQueuePoint[];
+  incidentTypeData: IncidentTypePoint[];
   userCounts: UserCounts;
+  operationalSummary: OperationalSummary;
+  quickLinkMetrics: QuickLinkMetrics;
+  attentionRequiredAlerts: AttentionRequiredAlert[];
+  lastRegisteredUser?: {
+    fullName: string;
+    role: string;
+    createdAt: string;
+  } | null;
 }
 
 // ─── Animation variants ──────────────────────────────────────────────────────
@@ -78,11 +90,6 @@ const containerVariants = {
     opacity: 1,
     transition: { staggerChildren: 0.08, delayChildren: 0.05 },
   },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 15 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
 };
 
 // ─── System Health Bar ───────────────────────────────────────────────────────
@@ -111,8 +118,9 @@ function ServiceDot({
               <Skeleton className="h-2 w-2 rounded-full bg-dash-border" />
             ) : (
               <span
-                className={`relative inline-flex h-2 w-2 rounded-full ${ok ? "bg-emerald-500" : "bg-rose-500"
-                  }`}
+                className={`relative inline-flex h-2 w-2 rounded-full ${
+                  ok ? "bg-emerald-500" : "bg-rose-500"
+                }`}
               >
                 {ok && (
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
@@ -134,8 +142,8 @@ function ServiceDot({
           {isLoading
             ? "Checking…"
             : ok
-              ? `${label} operational · ${latency}ms`
-              : `${label} unreachable`}
+            ? `${label} operational · ${latency}ms`
+            : `${label} unreachable`}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
@@ -176,10 +184,11 @@ function SystemHealthBar({
         </span>
         {!isLoading && status && (
           <Badge
-            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0 h-5 border ${allOk
+            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0 h-5 border ${
+              allOk
                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                 : "bg-rose-500/10 text-rose-400 border-rose-500/20"
-              }`}
+            }`}
           >
             {allOk ? "Nominal" : "Degraded"}
           </Badge>
@@ -213,8 +222,6 @@ function SystemHealthBar({
   );
 }
 
-
-
 // ─── Quick Link Card ─────────────────────────────────────────────────────────
 
 interface QuickLinkProps {
@@ -227,6 +234,7 @@ interface QuickLinkProps {
   hoverText: string;
   btnHover: string;
   delay: number;
+  metricText?: string;
 }
 
 function QuickLinkCard({
@@ -239,42 +247,48 @@ function QuickLinkCard({
   hoverText,
   btnHover,
   delay,
+  metricText,
 }: QuickLinkProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.35 }}
-      whileHover={{ y: -3 }}
-      className={`group relative rounded-2xl border border-dash-border bg-dash-card p-1 transition-all duration-300 shadow-sm ${hoverBorder}`}
-    >
-      <div className="p-5 space-y-4">
-        <div className="flex items-center gap-3">
-          <div className={`inline-flex p-2.5 rounded-xl ${accentColor} transition-colors`}>
-            <Icon size={18} className="text-dash-text" />
+    <Link href={href} className="block cursor-pointer">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, duration: 0.35 }}
+        whileHover={{ y: -4, scale: 1.01 }}
+        className={`group relative rounded-2xl border border-dash-border bg-dash-card p-5 transition-all duration-300 shadow-sm hover:shadow-md ${hoverBorder}`}
+      >
+        <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <div className={`inline-flex p-2.5 rounded-xl ${accentColor} transition-colors shrink-0`}>
+              <Icon size={18} className="text-dash-text" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className={`text-sm font-bold text-dash-text transition-colors ${hoverText}`}>
+                {label}
+              </p>
+              {metricText ? (
+                <p className="text-[10px] font-bold text-dash-accent tracking-wide mt-0.5">
+                  {metricText}
+                </p>
+              ) : (
+                <Skeleton className="h-3 w-20 bg-dash-border mt-1" />
+              )}
+              <p className="text-xs text-dash-muted leading-relaxed mt-2">{desc}</p>
+            </div>
           </div>
-          <div>
-            <p className={`text-sm font-bold text-dash-text transition-colors ${hoverText}`}>
-              {label}
-            </p>
-            <p className="text-xs text-dash-muted leading-relaxed mt-0.5">{desc}</p>
-          </div>
-        </div>
 
-        <Button
-          asChild
-          variant="ghost"
-          className={`w-full justify-between h-10 px-4 bg-dash-border border border-dash-border hover:text-[#050505] text-dash-text transition-all rounded-xl ${btnHover}`}
-        >
-          <Link href={href}>
+          <div
+            className={`w-full flex items-center justify-between h-10 px-4 bg-dash-border border border-dash-border hover:text-[#050505] text-dash-text transition-all rounded-xl ${btnHover}`}
+          >
             <span className="text-[10px] font-semibold uppercase tracking-wider">Access Module</span>
             <span className="text-lg opacity-50 group-hover:translate-x-1 transition-transform inline-block">
               →
             </span>
-          </Link>
-        </Button>
-      </div>
-    </motion.div>
+          </div>
+        </div>
+      </motion.div>
+    </Link>
   );
 }
 
@@ -287,10 +301,8 @@ const DEFAULT_USER_COUNTS: UserCounts = {
 };
 
 const EMPTY_VOLUME: VolumeDataPoint[] = [];
-const EMPTY_RISK: RiskDataPoint[] = [];
-const EMPTY_STATUS: StatusDataPoint[] = [];
-const EMPTY_TAMPER: TamperDataPoint[] = [];
-
+const EMPTY_QUEUE: AiQueuePoint[] = [];
+const EMPTY_INCIDENT: IncidentTypePoint[] = [];
 
 export default function AdminPage() {
   const { user, getToken } = useAuth();
@@ -299,6 +311,7 @@ export default function AdminPage() {
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [chartData, setChartData] = useState<ChartData | null>(null);
   const [recentActivity, setRecentActivity] = useState<AuditLogEntry[]>([]);
+  const [timeframe, setTimeframe] = useState("30d");
 
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isLoadingSystem, setIsLoadingSystem] = useState(true);
@@ -354,7 +367,7 @@ export default function AdminPage() {
       try {
         const token = await getToken();
         const [chartsRes, activityRes] = await Promise.all([
-          fetch("/api/admin/stats/charts", {
+          fetch(`/api/admin/stats/charts?timeframe=${timeframe}`, {
             headers: { Authorization: `Bearer ${token}` },
           }),
           fetch("/api/admin/audit-log?limit=8", {
@@ -373,16 +386,41 @@ export default function AdminPage() {
       }
     };
     load();
-  }, [getToken]);
+  }, [getToken, timeframe]);
 
   const isChartsLoading = isLoadingCharts;
+
+  // KPI Dynamic Helper text logic (Enterprise UX Requirement #8)
+  const totalCasesDesc = isLoadingStats
+    ? "Checking database registry..."
+    : caseStats?.total === 0
+    ? "No cases indexed in database"
+    : `${caseStats?.total} cases indexed in ledger`;
+
+  const pendingReviewDesc = isLoadingStats
+    ? "Awaiting pending review..."
+    : caseStats?.pending === 0
+    ? "No analyst backlog"
+    : `${caseStats?.pending} cases awaiting review`;
+
+  const highRiskDesc = isLoadingStats
+    ? "Evaluating threat levels..."
+    : caseStats?.highRisk === 0
+    ? "No high-risk threats detected"
+    : `${caseStats?.highRisk} critical security alerts`;
+
+  const verifiedDesc = isLoadingStats
+    ? "Validating ledger integrity..."
+    : caseStats?.verified && caseStats.verified > 0 && caseStats.verified === caseStats.total
+    ? "All cases verified"
+    : `${caseStats?.verified} of ${caseStats?.total ?? 0} verified`;
 
   const statCards: StatCardProps[] = [
     {
       label: "Total Cases",
       value: caseStats?.total ?? 0,
       icon: Briefcase,
-      description: "Indexed in blockchain ledger",
+      description: totalCasesDesc,
       variantKey: "green",
       isLoading: isLoadingStats,
       metaText: "Synced",
@@ -391,31 +429,32 @@ export default function AdminPage() {
       label: "Pending Review",
       value: caseStats?.pending ?? 0,
       icon: Clock,
-      description: "Awaiting administrative review",
-      variantKey: "amber",
+      description: pendingReviewDesc,
+      variantKey: caseStats?.pending === 0 ? "green" : "amber",
       isLoading: isLoadingStats,
-      metaText: "Awaiting Review",
+      metaText: caseStats?.pending === 0 ? "Clear" : "Review Queue",
     },
     {
       label: "High Risk",
       value: caseStats?.highRisk ?? 0,
       icon: ShieldAlert,
-      description: "Critical incident threat alerts",
-      variantKey: "orange",
+      description: highRiskDesc,
+      variantKey: caseStats?.highRisk === 0 ? "green" : "orange",
       isLoading: isLoadingStats,
-      metaText: "Live",
+      metaText: caseStats?.highRisk === 0 ? "Secure" : "Critical",
     },
     {
       label: "Verified",
       value: caseStats?.verified ?? 0,
       icon: CheckCircle2,
-      description: "Tamper-proof signed ledger seals",
+      description: verifiedDesc,
       variantKey: "cyan",
       isLoading: isLoadingStats,
       metaText: "Verified",
     },
   ];
 
+  // Secondary dynamic metrics for Quick Actions (Enterprise UX Requirement #7)
   const quickLinks: QuickLinkProps[] = [
     {
       label: "Identity & Access",
@@ -427,6 +466,9 @@ export default function AdminPage() {
       hoverText: "group-hover:text-blue-400",
       btnHover: "hover:bg-blue-500 hover:border-blue-500 hover:text-black group-hover:shadow-[0_0_20px_rgba(59,130,246,0.2)]",
       delay: 0.4,
+      metricText: chartData?.quickLinkMetrics
+        ? `${chartData.quickLinkMetrics.totalUsers} registered users`
+        : undefined,
     },
     {
       label: "Operational Audit",
@@ -438,6 +480,9 @@ export default function AdminPage() {
       hoverText: "group-hover:text-amber-400",
       btnHover: "hover:bg-amber-500 hover:border-amber-500 hover:text-black group-hover:shadow-[0_0_20px_rgba(245,158,11,0.2)]",
       delay: 0.5,
+      metricText: chartData?.quickLinkMetrics
+        ? `${chartData.quickLinkMetrics.logsToday} logs today`
+        : undefined,
     },
     {
       label: "Global Repository",
@@ -449,101 +494,109 @@ export default function AdminPage() {
       hoverText: "group-hover:text-emerald-400",
       btnHover: "hover:bg-emerald-500 hover:border-emerald-500 hover:text-black group-hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]",
       delay: 0.6,
+      metricText: chartData?.quickLinkMetrics
+        ? `${chartData.quickLinkMetrics.archivedCasesCount} archived cases`
+        : undefined,
     },
   ];
 
   return (
-    <div className="w-full space-y-8 pb-10">
-
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35 }}
-            className="relative"
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-px w-8 bg-dash-accent/50" />
-              <p className="type-eyebrow">
-                System Overview
-              </p>
-            </div>
-            <div className="flex items-end justify-between flex-wrap gap-4">
-              <div>
-                <h1 className="type-display-xl">Admin Dashboard</h1>
-                <p className="text-dash-muted mt-1.5 font-medium text-sm">
-                  Welcome back,{" "}
-                  <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.
-                  Here&apos;s your operational overview.
-                </p>
-              </div>
-              <AnimatePresence>
-                {!isLoadingStats && caseStats && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center gap-2"
-                  >
-                    <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest px-3 h-7">
-                      <span className="relative flex h-2 w-2 mr-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-                      </span>
-                      Live
-                    </Badge>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </motion.div>
-
-          {/* System Health Bar */}
-          <SystemHealthBar
-            status={systemStatus}
-            isLoading={isLoadingSystem}
-            onRefresh={() => loadSystemStatus(true)}
-            isRefreshing={isRefreshingSystem}
-          />
-
-          {/* Stat Cards */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="grid grid-cols-2 lg:grid-cols-2 gap-6"
-          >
-            {statCards.map((card) => (
-              <StatCard key={card.label} {...card} />
-            ))}
-          </motion.div>
-
-          {/* Quick Links */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {quickLinks.map((link) => (
-              <QuickLinkCard key={link.href} {...link} />
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div className="flex items-center gap-4">
-            <div className="h-px flex-1 bg-dash-border" />
-            <p className="type-eyebrow flex items-center gap-2">
-              {isChartsLoading && <Loader2 size={10} className="animate-spin" />}
-              Analytics
+    <div className="w-full space-y-6 pb-10">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="relative"
+      >
+        <div className="flex items-center gap-3 mb-1">
+          <div className="h-px w-8 bg-dash-accent/50" />
+          <p className="type-eyebrow">
+            System Overview
+          </p>
+        </div>
+        <div className="flex items-end justify-between flex-wrap gap-4">
+          <div>
+            <h1 className="type-display-xl">Admin Dashboard</h1>
+            <p className="text-dash-muted mt-1 font-medium text-sm">
+              Welcome back,{" "}
+              <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.
+              Here&apos;s your operational overview.
             </p>
-            <div className="h-px flex-1 bg-dash-border" />
           </div>
+          <AnimatePresence>
+            {!isLoadingStats && caseStats && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2"
+              >
+                <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest px-3 h-7">
+                  <span className="relative flex h-2 w-2 mr-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  </span>
+                  Live
+                </Badge>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
 
-          {/* Charts Section */}
-          <DashboardCharts
-            volumeData={chartData?.volumeData ?? EMPTY_VOLUME}
-            riskData={chartData?.riskData ?? EMPTY_RISK}
-            statusData={chartData?.statusData ?? EMPTY_STATUS}
-            tamperData={chartData?.tamperData ?? EMPTY_TAMPER}
-            userCounts={chartData?.userCounts ?? DEFAULT_USER_COUNTS}
-            recentActivity={recentActivity}
-            isLoading={isChartsLoading}
-          />
+      {/* 1. System Health Bar */}
+      <SystemHealthBar
+        status={systemStatus}
+        isLoading={isLoadingSystem}
+        onRefresh={() => loadSystemStatus(true)}
+        isRefreshing={isRefreshingSystem}
+      />
+
+      {/* 2. KPI Cards */}
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+        className="grid grid-cols-2 lg:grid-cols-2 gap-5"
+      >
+        {statCards.map((card) => (
+          <StatCard key={card.label} {...card} />
+        ))}
+      </motion.div>
+
+      {/* 3. Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        {quickLinks.map((link) => (
+          <QuickLinkCard key={link.href} {...link} />
+        ))}
+      </div>
+
+      {/* Divider */}
+      <div className="flex items-center gap-4 py-1">
+        <div className="h-px flex-1 bg-dash-border" />
+        <p className="type-eyebrow flex items-center gap-2">
+          {isChartsLoading && <Loader2 size={10} className="animate-spin" />}
+          Analytics
+        </p>
+        <div className="h-px flex-1 bg-dash-border" />
+      </div>
+
+      {/* 4 to 7: Charts, Queue, Incident Types, and Attention Required */}
+      <DashboardCharts
+        volumeData={chartData?.volumeData ?? EMPTY_VOLUME}
+        aiQueueData={chartData?.aiQueueData ?? EMPTY_QUEUE}
+        incidentTypeData={chartData?.incidentTypeData ?? EMPTY_INCIDENT}
+        userCounts={chartData?.userCounts ?? DEFAULT_USER_COUNTS}
+        recentActivity={recentActivity}
+        isLoading={isChartsLoading}
+        systemStatus={systemStatus}
+        operationalSummary={chartData?.operationalSummary}
+        attentionRequiredAlerts={chartData?.attentionRequiredAlerts ?? []}
+        lastRegisteredUser={chartData?.lastRegisteredUser}
+        timeframe={timeframe}
+        setTimeframe={setTimeframe}
+        onRefreshSystemStatus={() => loadSystemStatus(true)}
+      />
     </div>
   );
 }
