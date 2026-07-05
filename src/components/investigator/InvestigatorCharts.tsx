@@ -3,19 +3,23 @@
 import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
   ResponsiveContainer,
   PieChart,
   Pie,
   Cell,
+  Tooltip
 } from "recharts";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { FolderOpen, Brain, Clock } from "lucide-react";
+import {
+  FolderOpen,
+  Brain,
+  Clock,
+  Cpu,
+  ShieldAlert,
+  Database,
+  CheckCircle2,
+  ShieldCheck,
+  MapPin
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getStatusGroup, STATUS_COLORS } from "@/lib/statusConfig";
 
@@ -26,10 +30,23 @@ type InvestigatorCase = {
   incidentType: string;
   status: string;
   createdAt: string;
+  overallTamperScore: number | null;
+  overallRiskLevel: "low" | "medium" | "high" | null;
+  onChainTxHash: string | null;
+  files: Array<{
+    fileId: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    gpsLat: number | null;
+    gpsLng: number | null;
+  }>;
 };
 
 interface InvestigatorChartsProps {
   cases: InvestigatorCase[];
+  aiFilter: string | null;
+  onApplyAiFilter: (filter: string | null) => void;
   selectedCaseId: string | null;
   hoveredCaseId: string | null;
   onSelectCase: (caseId: string) => void;
@@ -38,32 +55,130 @@ interface InvestigatorChartsProps {
 
 export function InvestigatorCharts({
   cases,
+  aiFilter,
+  onApplyAiFilter,
   selectedCaseId,
   hoveredCaseId,
   onSelectCase,
   onHoverCase,
 }: InvestigatorChartsProps) {
-  // Keep track of active segment for accessible legend and chart interaction
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
-  // 1. Evidence Submission Trends
-  const submissionTrends = useMemo(() => {
-    const countsByDate: Record<string, number> = {};
+  // 1. Calculate dynamic AI insights list based on the active filtered cases
+  const insights = useMemo(() => {
+    // Total Files
+    const totalFiles = cases.reduce((sum, c) => sum + (c.files?.length || 0), 0);
     
-    // Sort cases by date ascending so the chart goes left-to-right
-    const sorted = [...cases].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    // Files missing GPS coordinates
+    const missingGps = cases.reduce((sum, c) => sum + (c.files?.filter(f => f.gpsLat === null || f.gpsLng === null).length || 0), 0);
     
-    sorted.forEach((c) => {
-      const d = new Date(c.createdAt);
-      // Format as MM/DD
-      const dateStr = `${d.getMonth() + 1}/${d.getDate()}`;
-      countsByDate[dateStr] = (countsByDate[dateStr] || 0) + 1;
-    });
+    // Medium risk/tamper warnings
+    const inconsistencies = cases.filter(c => c.overallRiskLevel === "medium" || (c.overallTamperScore !== null && c.overallTamperScore > 30 && c.overallTamperScore <= 60)).length;
+    
+    // Critical tampering
+    const tampering = cases.filter(c => c.overallRiskLevel === "high" || (c.overallTamperScore !== null && c.overallTamperScore > 60)).length;
+    
+    // Blockchain verification anchors
+    const blockchain = cases.filter(c => c.onChainTxHash !== null).length;
+    
+    // Authenticity verified files (low tamper scores)
+    const validated = cases.filter(c => c.overallRiskLevel === "low" || (c.overallTamperScore !== null && c.overallTamperScore <= 30)).reduce((sum, c) => sum + (c.files?.length || 0), 0);
 
-    return Object.entries(countsByDate).map(([date, count]) => ({
-      date,
-      submissions: count,
-    }));
+    // PDF files
+    const pdfs = cases.reduce((sum, c) => sum + (c.files?.filter(f => f.mimeType === "application/pdf" || f.originalName.toLowerCase().endsWith(".pdf")).length || 0), 0);
+
+    const list = [];
+
+    // 1. Critical tampering row
+    if (tampering > 0) {
+      list.push({
+        id: "tampering",
+        type: "tampering",
+        icon: ShieldAlert,
+        colorClass: "text-rose-500 bg-rose-500/10 border-rose-500/20",
+        message: `${tampering} potential evidence tampering detected`,
+        severity: "critical" as const,
+      });
+    }
+
+    // 2. Warning metadata inconsistencies
+    if (inconsistencies > 0) {
+      list.push({
+        id: "inconsistency",
+        type: "inconsistency",
+        icon: ShieldAlert,
+        colorClass: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+        message: `${inconsistencies} potential metadata inconsistency detected`,
+        severity: "warning" as const,
+      });
+    }
+
+    // 3. Warning missing GPS
+    if (missingGps > 0) {
+      list.push({
+        id: "missing_gps",
+        type: "missing_gps",
+        icon: MapPin,
+        colorClass: "text-amber-500 bg-amber-500/10 border-amber-500/20",
+        message: `${missingGps} file${missingGps > 1 ? "s" : ""} missing GPS metadata`,
+        severity: "warning" as const,
+      });
+    }
+
+    // 4. Healthy validation row
+    if (validated > 0) {
+      list.push({
+        id: "validated",
+        type: "validated",
+        icon: CheckCircle2,
+        colorClass: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
+        message: `${validated} file${validated > 1 ? "s" : ""} passed authenticity validation`,
+        severity: "healthy" as const,
+      });
+    }
+
+    // 5. Healthy blockchain row
+    if (blockchain > 0) {
+      list.push({
+        id: "blockchain",
+        type: "blockchain",
+        icon: Database,
+        colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+        message: `${blockchain} blockchain anchor${blockchain > 1 ? "s" : ""} verified`,
+        severity: "healthy" as const,
+      });
+    }
+
+    // 6. PDF validation check
+    if (pdfs > 0) {
+      list.push({
+        id: "pdf",
+        type: "pdf",
+        icon: ShieldCheck,
+        colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+        message: `${pdfs} PDF${pdfs > 1 ? "s" : ""} contain verified text layers`,
+        severity: "info" as const,
+      });
+    }
+
+    // 7. Info general analyzed row (always visible as long as files exist)
+    if (totalFiles > 0) {
+      list.push({
+        id: "processed",
+        type: "processed",
+        icon: Cpu,
+        colorClass: "text-blue-500 bg-blue-500/10 border-blue-500/20",
+        message: `AI processed ${totalFiles} evidence file${totalFiles > 1 ? "s" : ""}`,
+        severity: "info" as const,
+      });
+    }
+
+    return list.slice(0, 6);
+  }, [cases]);
+
+  // Check if cases exist but all of them are pending AI review (score is null)
+  const isAiPending = useMemo(() => {
+    return cases.length > 0 && cases.every(c => c.overallTamperScore === null);
   }, [cases]);
 
   // 2. Verdict Outcomes (Pie Chart) - Unified status configuration mapping
@@ -79,7 +194,6 @@ export function InvestigatorCharts({
       else pending++;
     });
 
-    // We maintain a strict, stable ordering for index-based highlight mapping
     return [
       { 
         name: STATUS_COLORS.verified.label, 
@@ -102,7 +216,6 @@ export function InvestigatorCharts({
     ];
   }, [cases]);
 
-  // Calculate center total based on sum of visible segment values
   const totalVisible = useMemo(() => {
     return verdictOutcomes.reduce((sum, item) => sum + item.value, 0);
   }, [verdictOutcomes]);
@@ -119,7 +232,6 @@ export function InvestigatorCharts({
     if (activeId) {
       const activeCase = sorted.find(c => c.caseId === activeId);
       if (activeCase && !topCases.some(c => c.caseId === activeId)) {
-        // Append active case to the timeline so the user can interact with it
         topCases = [...topCases, activeCase];
       }
     }
@@ -139,7 +251,7 @@ export function InvestigatorCharts({
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-6 mb-10">
       
-      {/* 1. Gantt Timeline (Custom HTML/CSS) */}
+      {/* 1. Gantt Timeline */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -252,7 +364,7 @@ export function InvestigatorCharts({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="rounded-2xl border border-dash-border border-l-4 border-l-amber-500 bg-dash-card p-6 shadow-sm relative min-w-0 flex flex-col min-h-[300px] justify-between"
+          className="rounded-2xl border border-dash-border border-l-4 border-l-amber-500 bg-dash-card p-6 shadow-sm relative min-w-0 flex flex-col min-h-[300px] justify-between animate-in fade-in duration-300"
         >
           <h3 className="type-card-heading text-dash-text mb-2 z-10">Verdict Outcomes</h3>
           
@@ -313,7 +425,6 @@ export function InvestigatorCharts({
             </div>
           )}
           
-          {/* Reusable legend generated from matching segments, fully interactive */}
           <div className="flex flex-wrap justify-center gap-2 mt-2 pt-2 border-t border-dash-border/40 select-none">
             {verdictOutcomes.map((v, index) => {
               const isHovered = activeIndex === index;
@@ -342,44 +453,88 @@ export function InvestigatorCharts({
           </div>
         </motion.div>
 
-        {/* 3. Evidence Submission Trends */}
+        {/* 3. AI Insights Feed */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-2xl border border-dash-border border-l-4 border-l-emerald-500 bg-dash-card p-6 shadow-sm min-w-0 flex flex-col min-h-[220px]"
+          className="rounded-2xl border border-dash-border border-l-4 border-l-emerald-500 bg-dash-card p-6 shadow-sm min-w-0 flex flex-col min-h-[300px] justify-between"
         >
-          <h3 className="type-card-heading text-dash-text mb-6">Submission Trends</h3>
-          {cases.length > 0 ? (
-            <div className="h-[150px] w-full flex-grow min-w-0 overflow-hidden">
-              <ChartContainer config={{ submissions: { label: "Submissions", color: "var(--dash-accent)" } }} className="h-full w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={submissionTrends} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--dash-border)" vertical={false} />
-                    <XAxis dataKey="date" stroke="var(--dash-muted)" fontSize={10} tickLine={false} axisLine={false} />
-                    <YAxis stroke="var(--dash-muted)" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Line
-                      type="monotone"
-                      dataKey="submissions"
-                      stroke="var(--dash-accent)"
-                      strokeWidth={3}
-                      dot={{ r: 3, fill: "var(--dash-card)", strokeWidth: 2 }}
-                      activeDot={{ r: 5, fill: "var(--dash-accent)" }}
-                      isAnimationActive={true}
-                      animationDuration={300}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+          <div className="flex flex-col gap-1 mb-3">
+            <h3 className="type-card-heading text-dash-text">AI Insights</h3>
+            <p className="text-[10px] text-dash-muted font-medium">
+              Automated analysis of your assigned evidence.
+            </p>
+          </div>
+
+          {isAiPending ? (
+            <div className="h-[185px] w-full flex flex-col items-center justify-center text-center flex-grow select-none">
+              <div className="w-10 h-10 rounded-full bg-dash-input flex items-center justify-center mb-2">
+                <Brain className="w-5 h-5 text-dash-muted/40 animate-pulse" />
+              </div>
+              <p className="text-xs font-bold text-dash-text">AI Analysis Pending</p>
+              <p className="text-[10px] text-dash-muted mt-1 max-w-[200px] leading-normal mx-auto">
+                Upload or process evidence to receive automated forensic insights.
+              </p>
+            </div>
+          ) : insights.length > 0 ? (
+            <div className="h-[185px] overflow-y-auto pr-1 space-y-2 custom-scrollbar flex-grow">
+              <AnimatePresence mode="popLayout">
+                {insights.map((insight) => {
+                  const IconComp = insight.icon;
+                  const isActive = aiFilter === insight.type;
+                  
+                  return (
+                    <motion.div
+                      key={insight.id}
+                      layout
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -15 }}
+                      transition={{ duration: 0.28 }}
+                      onClick={() => {
+                        if (insight.type !== "processed") {
+                          onApplyAiFilter(isActive ? null : insight.type);
+                        }
+                      }}
+                      className={cn(
+                        "flex items-center gap-3 p-2.5 rounded-xl transition-all border border-transparent select-none group border-b border-dash-border/30 last:border-0 pb-2.5",
+                        insight.type !== "processed" 
+                          ? cn(
+                              "cursor-pointer hover:bg-dash-hover/40 hover:border-dash-border/40",
+                              isActive && "bg-[var(--dash-active-bg)] border-[var(--dash-accent)]/20 shadow-3xs"
+                            ) 
+                          : "cursor-default"
+                      )}
+                    >
+                      <div className={cn(
+                        "w-7 h-7 rounded-lg flex items-center justify-center border shrink-0",
+                        configColorOverrides(insight.type, insight.colorClass, isActive)
+                      )}>
+                        <IconComp className="w-3.5 h-3.5 stroke-[2.2]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          "text-xs font-bold text-dash-text leading-tight group-hover:text-dash-accent transition-colors",
+                          isActive && "text-[var(--dash-active-text)]"
+                        )}>
+                          {insight.message}
+                        </p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-10 text-center flex-grow">
+            <div className="h-[185px] w-full flex flex-col items-center justify-center text-center flex-grow select-none">
               <div className="w-10 h-10 rounded-full bg-dash-input flex items-center justify-center mb-2">
-                <Clock className="w-5 h-5 text-dash-muted/40" />
+                <Brain className="w-5 h-5 text-dash-muted/40" />
               </div>
-              <p className="text-xs font-bold text-dash-text">No submission trends</p>
-              <p className="text-[10px] text-dash-muted mt-1">No data matches current search parameters.</p>
+              <p className="text-xs font-bold text-dash-text">No insights matching filters</p>
+              <p className="text-[10px] text-dash-muted mt-1 max-w-[200px] leading-normal mx-auto">
+                No active evidence fits the selected filters.
+              </p>
             </div>
           )}
         </motion.div>
@@ -387,4 +542,20 @@ export function InvestigatorCharts({
 
     </div>
   );
+}
+
+// Subtle override for active state background icons
+function configColorOverrides(type: string, colorClass: string, isActive: boolean): string {
+  if (!isActive) return colorClass;
+  switch (type) {
+    case "tampering":
+      return "text-rose-600 bg-rose-500/20 border-rose-500/35";
+    case "inconsistency":
+    case "missing_gps":
+      return "text-amber-600 bg-amber-500/20 border-amber-500/35";
+    case "validated":
+      return "text-emerald-600 bg-emerald-500/20 border-emerald-500/35";
+    default:
+      return "text-blue-600 bg-blue-500/20 border-blue-500/35";
+  }
 }

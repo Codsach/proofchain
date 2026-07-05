@@ -37,9 +37,19 @@ type InvestigatorCase = {
   incidentType: string;
   status: string;
   tags: string[];
-  files: Array<{ fileId: string }>;
+  files: Array<{
+    fileId: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    gpsLat: number | null;
+    gpsLng: number | null;
+  }>;
   createdAt: string;
   incidentDate: string;
+  overallTamperScore: number | null;
+  overallRiskLevel: "low" | "medium" | "high" | null;
+  onChainTxHash: string | null;
 };
 
 type CasesResponse = {
@@ -244,6 +254,7 @@ export default function InvestigatorPage() {
 
   const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
   const [hoveredCaseId, setHoveredCaseId] = useState<string | null>(null);
+  const [aiFilter, setAiFilter] = useState<string | null>(null);
 
   // Load all cases on mount once
   useEffect(() => {
@@ -329,18 +340,43 @@ export default function InvestigatorPage() {
         const matchesId = c.caseId?.toLowerCase().includes(query);
         if (!matchesTitle && !matchesDesc && !matchesId) return false;
       }
+      // AI Insights Filter
+      if (aiFilter === "missing_gps") {
+        const hasMissingGps = c.files?.some(f => f.gpsLat === null || f.gpsLng === null);
+        if (!hasMissingGps) return false;
+      }
+      if (aiFilter === "tampering") {
+        const hasTampering = c.overallRiskLevel === "high" || (c.overallTamperScore !== null && c.overallTamperScore > 60);
+        if (!hasTampering) return false;
+      }
+      if (aiFilter === "inconsistency") {
+        const hasInconsistency = c.overallRiskLevel === "medium" || (c.overallTamperScore !== null && c.overallTamperScore > 30 && c.overallTamperScore <= 60);
+        if (!hasInconsistency) return false;
+      }
+      if (aiFilter === "blockchain") {
+        if (!c.onChainTxHash) return false;
+      }
+      if (aiFilter === "pdf") {
+        const hasPdf = c.files?.some(f => f.mimeType === "application/pdf" || f.originalName.toLowerCase().endsWith(".pdf"));
+        if (!hasPdf) return false;
+      }
+      if (aiFilter === "validated") {
+        const hasValidated = c.overallRiskLevel === "low" || (c.overallTamperScore !== null && c.overallTamperScore <= 30);
+        if (!hasValidated) return false;
+      }
       
       return true;
     });
-  }, [allCases, statusFilter, incidentTypeFilter, tagFilter, searchQuery]);
+  }, [allCases, statusFilter, incidentTypeFilter, tagFilter, searchQuery, aiFilter]);
 
-  const isFilterActive = statusFilter !== "all" || incidentTypeFilter !== "all" || (tagFilter !== "all" && tagFilter !== "") || searchQuery !== "";
+  const isFilterActive = statusFilter !== "all" || incidentTypeFilter !== "all" || (tagFilter !== "all" && tagFilter !== "") || searchQuery !== "" || aiFilter !== null;
 
   const resetFilters = () => {
     setStatusFilter("all");
     setIncidentTypeFilter("all");
     setTagFilter("all");
     setSearchQuery("");
+    setAiFilter(null);
   };
 
   const handleSelectCase = (caseId: string) => {
@@ -508,6 +544,21 @@ export default function InvestigatorPage() {
           />
         </div>
 
+        {aiFilter && (
+          <div className="flex items-end pb-0.5 animate-in fade-in duration-200">
+            <span className="bg-dash-accent/10 text-dash-accent border border-dash-accent/20 text-[10px] font-bold uppercase tracking-wider px-3 h-11 rounded-xl flex items-center gap-1.5 shadow-3xs shrink-0 select-none">
+              <span>AI Filter: {aiFilter.replace(/_/g, " ")}</span>
+              <button 
+                onClick={() => setAiFilter(null)}
+                className="hover:text-rose-500 font-bold ml-1 transition-colors outline-none"
+                title="Clear AI Filter"
+              >
+                ✕
+              </button>
+            </span>
+          </div>
+        )}
+
         {isFilterActive && (
           <div className="flex items-end pb-0.5 animate-in fade-in slide-in-from-right-2 duration-200">
             <Button
@@ -524,6 +575,8 @@ export default function InvestigatorPage() {
       {!isLoadingCases && !error && allCases.length > 0 && (
         <InvestigatorCharts
           cases={cases}
+          aiFilter={aiFilter}
+          onApplyAiFilter={setAiFilter}
           selectedCaseId={selectedCaseId}
           hoveredCaseId={hoveredCaseId}
           onSelectCase={handleSelectCase}
