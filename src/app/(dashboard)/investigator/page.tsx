@@ -1,7 +1,7 @@
 "use client";
-
+ 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Folder, Brain, Shield, FolderOpen, Copy, Clock, Cpu, Database } from "lucide-react";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
@@ -28,10 +28,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 type InvestigatorCase = {
   _id: string;
   caseId: string;
   title: string;
+  description?: string;
   incidentType: string;
   status: string;
   tags: string[];
@@ -231,7 +233,7 @@ const STAT_VARIANTS = {
 export default function InvestigatorPage() {
   const { user, getToken } = useAuth();
   const { toast } = useToast();
-  const [cases, setCases] = useState<InvestigatorCase[]>([]);
+  const [allCases, setAllCases] = useState<InvestigatorCase[]>([]);
   const [isLoadingCases, setIsLoadingCases] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -239,15 +241,11 @@ export default function InvestigatorPage() {
   const [incidentTypeFilter, setIncidentTypeFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 500);
-    return () => clearTimeout(handler);
-  }, [searchQuery]);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [hoveredCaseId, setHoveredCaseId] = useState<string | null>(null);
 
+  // Load all cases on mount once
   useEffect(() => {
     let isCancelled = false;
 
@@ -267,13 +265,8 @@ export default function InvestigatorPage() {
           throw new Error("Your session expired. Please log in again.");
         }
 
-        const params = new URLSearchParams();
-        if (statusFilter !== "all") params.set("status", statusFilter);
-        if (incidentTypeFilter !== "all") params.set("incidentType", incidentTypeFilter);
-        if (tagFilter !== "all") params.set("tag", tagFilter);
-        if (debouncedSearch) params.set("search", debouncedSearch);
-
-        const res = await fetch(`/api/cases?${params}`, {
+        // Fetch all cases without pagination for local sync and animations
+        const res = await fetch("/api/cases?limit=all", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -289,7 +282,7 @@ export default function InvestigatorPage() {
         }
 
         if (!isCancelled) {
-          setCases(data.cases ?? []);
+          setAllCases(data.cases ?? []);
         }
       } catch (loadError) {
         if (!isCancelled) {
@@ -311,7 +304,59 @@ export default function InvestigatorPage() {
     return () => {
       isCancelled = true;
     };
-  }, [user, getToken, statusFilter, incidentTypeFilter, tagFilter, debouncedSearch]);
+  }, [user, getToken]);
+
+  // Client-side filtering logic
+  const cases = useMemo(() => {
+    return allCases.filter((c) => {
+      // 1. Status Filter
+      if (statusFilter !== "all" && c.status !== statusFilter) return false;
+      
+      // 2. Incident Type (Taxonomy) Filter
+      if (incidentTypeFilter !== "all" && c.incidentType !== incidentTypeFilter) return false;
+      
+      // 3. Tag Filter
+      if (tagFilter !== "all" && tagFilter !== "") {
+        const matchesTag = c.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase()));
+        if (!matchesTag) return false;
+      }
+      
+      // 4. Search Query (title, description, caseId)
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        const matchesTitle = c.title?.toLowerCase().includes(query);
+        const matchesDesc = c.description?.toLowerCase().includes(query);
+        const matchesId = c.caseId?.toLowerCase().includes(query);
+        if (!matchesTitle && !matchesDesc && !matchesId) return false;
+      }
+      
+      return true;
+    });
+  }, [allCases, statusFilter, incidentTypeFilter, tagFilter, searchQuery]);
+
+  const isFilterActive = statusFilter !== "all" || incidentTypeFilter !== "all" || (tagFilter !== "all" && tagFilter !== "") || searchQuery !== "";
+
+  const resetFilters = () => {
+    setStatusFilter("all");
+    setIncidentTypeFilter("all");
+    setTagFilter("all");
+    setSearchQuery("");
+  };
+
+  const handleSelectCase = (caseId: string) => {
+    setSelectedCaseId(caseId === selectedCaseId ? null : caseId);
+    if (caseId !== selectedCaseId) {
+      setTimeout(() => {
+        const element = document.getElementById(`row-${caseId}`);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        }
+      }, 100);
+    }
+  };
 
   const openCases = getOpenCaseCount(cases);
   const totalFiles = cases.reduce(
@@ -367,21 +412,21 @@ export default function InvestigatorPage() {
             label: "Assigned Cases",
             value: cases.length,
             description: "Assigned to your profile",
-            variantKey: "blue" as const,
+            variantKey: "cyan" as const,
             metaText: "Active",
           },
           {
             label: "Pending Analysis",
             value: openCases,
             description: "Awaiting consensus review",
-            variantKey: "purple" as const,
+            variantKey: "green" as const,
             metaText: "Awaiting Review",
           },
           {
             label: "Evidence Integrity",
             value: totalFiles,
             description: "On-chain evidence files",
-            variantKey: "green" as const,
+            variantKey: "blue" as const,
             metaText: "Verified",
           },
         ].map((stat, idx) => {
@@ -412,7 +457,7 @@ export default function InvestigatorPage() {
         <div className="flex-1 min-w-[200px] space-y-1.5">
           <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Search Cases</p>
           <Input
-            placeholder="Search by title or description..."
+            placeholder="Search by title, description, or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-xl px-4"
@@ -462,9 +507,29 @@ export default function InvestigatorPage() {
             className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-xl px-4"
           />
         </div>
+
+        {isFilterActive && (
+          <div className="flex items-end pb-0.5 animate-in fade-in slide-in-from-right-2 duration-200">
+            <Button
+              onClick={resetFilters}
+              variant="outline"
+              className="border-dash-border hover:border-dash-muted/30 bg-dash-input hover:bg-dash-hover text-dash-muted hover:text-dash-text h-11 px-4 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider flex items-center gap-1.5 shrink-0 shadow-3xs"
+            >
+              Reset Filters
+            </Button>
+          </div>
+        )}
       </div>
 
-      {!isLoadingCases && !error && cases.length > 0 && <InvestigatorCharts cases={cases} />}
+      {!isLoadingCases && !error && allCases.length > 0 && (
+        <InvestigatorCharts
+          cases={cases}
+          selectedCaseId={selectedCaseId}
+          hoveredCaseId={hoveredCaseId}
+          onSelectCase={handleSelectCase}
+          onHoverCase={setHoveredCaseId}
+        />
+      )}
 
       {isLoadingCases ? (
         <div className="space-y-4">
@@ -481,7 +546,7 @@ export default function InvestigatorPage() {
             Re-Initialize
           </Button>
         </div>
-      ) : cases.length === 0 ? (
+      ) : allCases.length === 0 ? (
         <div className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center backdrop-blur-2xl shadow-2xl">
           <div className="w-16 h-16 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-6 border border-dash-border">
             <FolderOpen className="w-8 h-8 text-dash-muted" />
@@ -503,9 +568,23 @@ export default function InvestigatorPage() {
           className="rounded-2xl border border-dash-border bg-dash-card overflow-hidden shadow-sm"
         >
           <div className="p-6 border-b border-dash-border bg-dash-card flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Operational Stream</h2>
-              <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1 italic">Sorted by temporal priority</p>
+            <div className="flex items-baseline gap-4">
+              <div>
+                <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Operational Stream</h2>
+                <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1 italic">Sorted by temporal priority</p>
+              </div>
+              {isFilterActive && (
+                <div className="flex items-center gap-2 text-xs font-semibold text-dash-muted">
+                  <span>Showing {cases.length} of {allCases.length} cases</span>
+                  <span className="text-dash-border font-light">|</span>
+                  <button
+                    onClick={resetFilters}
+                    className="text-[10px] font-bold uppercase tracking-wider text-dash-accent hover:text-dash-accent/80 transition-colors"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              )}
             </div>
             <div className="h-2 w-2 rounded-full bg-[var(--dash-accent)] animate-pulse" />
           </div>
@@ -522,82 +601,118 @@ export default function InvestigatorPage() {
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-dash-border">
-              <AnimatePresence>
-                {cases.map((caseItem, idx) => (
-                  <TableRow
-                    key={caseItem._id}
-                    className="border-b border-dash-border hover:bg-dash-hover/40 transition-colors group cursor-pointer"
-                    onClick={() => window.location.href = `/investigator/cases/${caseItem.caseId}`}
-                  >
-                    <TableCell className="px-6 py-5">
-                      <div className="flex flex-col">
-                        <p className="font-bold text-dash-text group-hover:text-dash-accent transition-colors">
-                          {caseItem.title}
-                        </p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(caseItem.caseId);
-                            toast({ title: "Copied", description: "Case ID copied to clipboard." });
-                          }}
-                          className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-dash-input hover:bg-dash-hover px-1.5 py-0.5 rounded border border-dash-border transition-colors w-fit"
-                          title="Copy Case ID"
-                        >
-                          <span>ID: {caseItem.caseId.slice(0, 8)}...</span>
-                          <Copy size={8} />
-                        </button>
-                        {caseItem.tags && caseItem.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {caseItem.tags.map((tag) => (
-                              <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-input text-dash-muted px-1.5 py-0.5 rounded border border-dash-border">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+              {cases.length > 0 ? (
+                <AnimatePresence>
+                  {cases.map((caseItem) => {
+                    const isSelected = caseItem.caseId === selectedCaseId;
+                    const isHovered = caseItem.caseId === hoveredCaseId;
+                    const isHighlighted = isSelected || isHovered;
+
+                    return (
+                      <TableRow
+                        key={caseItem._id}
+                        id={`row-${caseItem.caseId}`}
+                        onMouseEnter={() => setHoveredCaseId(caseItem.caseId)}
+                        onMouseLeave={() => setHoveredCaseId(null)}
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest('a') || (e.target as HTMLElement).closest('button')) {
+                            return;
+                          }
+                          handleSelectCase(caseItem.caseId);
+                        }}
+                        className={cn(
+                          "border-b border-dash-border hover:bg-dash-hover/40 transition-colors group cursor-pointer",
+                          isHighlighted && "bg-[var(--dash-active-bg)] hover:bg-[var(--dash-active-bg)]"
                         )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <span className="text-[10px] font-bold text-dash-muted uppercase tracking-tight">
-                        {INCIDENT_TYPE_LABELS[caseItem.incidentType] ?? "N/A"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <CaseStatusBadge status={caseItem.status} />
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <span className="text-[10px] font-bold text-dash-muted bg-dash-card border border-dash-border px-2 py-0.5 rounded italic">
-                        {caseItem.files.length} ITEMS
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <div className="flex flex-col">
-                        <p className="text-[10px] font-bold text-dash-muted tracking-tight">{formatDate(caseItem.createdAt)}</p>
-                        <p className="text-[9px] text-dash-muted/70 font-medium uppercase tracking-tighter">
-                          Incident: {formatDate(caseItem.incidentDate)}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          href={`/verify/${caseItem.caseId}`}
-                          target="_blank"
-                          className="text-[10px] font-bold uppercase tracking-widest text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors border border-[var(--dash-accent)]/20 bg-[var(--dash-accent)]/5 px-3 py-1.5 rounded-lg hover:bg-[var(--dash-accent)]/10"
-                        >
-                          Verify ↗
-                        </Link>
-                        <Link
-                          href={`/investigator/cases/${caseItem.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text transition-colors border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg"
-                        >
-                          Inspect →
-                        </Link>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </AnimatePresence>
+                      >
+                        <TableCell className="px-6 py-5">
+                          <div className="flex flex-col">
+                            <p className="font-bold text-dash-text group-hover:text-dash-accent transition-colors">
+                              {caseItem.title}
+                            </p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(caseItem.caseId);
+                                toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                              }}
+                              className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-dash-input hover:bg-dash-hover px-1.5 py-0.5 rounded border border-dash-border transition-colors w-fit"
+                              title="Copy Case ID"
+                            >
+                              <span>ID: {caseItem.caseId.slice(0, 8)}...</span>
+                              <Copy size={8} />
+                            </button>
+                            {caseItem.tags && caseItem.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {caseItem.tags.map((tag) => (
+                                  <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-input text-dash-muted px-1.5 py-0.5 rounded border border-dash-border">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <span className="text-[10px] font-bold text-dash-muted uppercase tracking-tight">
+                            {INCIDENT_TYPE_LABELS[caseItem.incidentType] ?? "N/A"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <CaseStatusBadge status={caseItem.status} />
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <span className="text-[10px] font-bold text-dash-muted bg-dash-card border border-dash-border px-2 py-0.5 rounded italic">
+                            {caseItem.files.length} ITEMS
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <div className="flex flex-col">
+                            <p className="text-[10px] font-bold text-dash-muted tracking-tight">{formatDate(caseItem.createdAt)}</p>
+                            <p className="text-[9px] text-dash-muted/70 font-medium uppercase tracking-tighter">
+                              Incident: {formatDate(caseItem.incidentDate)}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-end gap-2">
+                            <Link
+                              href={`/verify/${caseItem.caseId}`}
+                              target="_blank"
+                              className="text-[10px] font-bold uppercase tracking-widest text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors border border-[var(--dash-accent)]/20 bg-[var(--dash-accent)]/5 px-3 py-1.5 rounded-lg hover:bg-[var(--dash-accent)]/10"
+                            >
+                              Verify ↗
+                            </Link>
+                            <Link
+                              href={`/investigator/cases/${caseItem.caseId}`}
+                              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text transition-colors border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg"
+                            >
+                              Inspect →
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </AnimatePresence>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-48 text-center bg-dash-card">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <FolderOpen className="w-8 h-8 text-dash-muted/40" />
+                      <p className="font-bold text-sm text-dash-text">No cases matching filter criteria</p>
+                      <p className="text-xs text-dash-muted">Clear your active filters to view all cases.</p>
+                      <Button 
+                        onClick={resetFilters} 
+                        variant="outline" 
+                        className="mt-2 text-xs font-bold text-dash-accent hover:text-dash-accent/80 border border-dash-border hover:bg-dash-hover rounded-xl h-8 px-4"
+                      >
+                        Reset Filters
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </motion.div>
@@ -605,4 +720,3 @@ export default function InvestigatorPage() {
     </div>
   );
 }
-

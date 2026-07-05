@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, animate } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -78,6 +78,30 @@ const VARIANT_CONFIGS = {
     textColor: "text-rose-500",
   },
 };
+
+function AnimatedNumber({ value }: { value: number }) {
+  const ref = React.useRef<HTMLSpanElement>(null);
+  const prevValueRef = React.useRef(value);
+
+  React.useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+
+    const from = prevValueRef.current;
+    const controls = animate(from, value, {
+      duration: 0.35, // Keep under 400ms
+      ease: "easeOut",
+      onUpdate(current) {
+        node.textContent = Math.round(current).toLocaleString();
+      },
+    });
+
+    prevValueRef.current = value;
+    return () => controls.stop();
+  }, [value]);
+
+  return <span ref={ref}>{prevValueRef.current}</span>;
+}
 
 export function StatCard({
   label,
@@ -160,7 +184,11 @@ export function StatCard({
           ) : (
             <div className="flex items-baseline gap-1">
               <span className="type-statistic text-dash-text leading-none">
-                {value}
+                {typeof value === "number" ? (
+                  <AnimatedNumber value={value} />
+                ) : (
+                  value
+                )}
               </span>
               {subValue && (
                 <span className="text-[10px] font-bold text-dash-muted/70 ml-1 font-mono uppercase">
