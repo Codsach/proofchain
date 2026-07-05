@@ -171,7 +171,7 @@ export function AccountSettings({
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="p-0 gap-1.5">
-          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
+          <CardTitle className="type-section-heading text-dash-text flex items-center gap-2">
             <User className={`h-5 w-5 ${roleAccent}`} />
             Identity Protocol
           </CardTitle>
@@ -241,7 +241,7 @@ export function AccountSettings({
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="p-0 gap-1.5">
-          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
+          <CardTitle className="type-section-heading text-dash-text flex items-center gap-2">
             <Sliders className={`h-5 w-5 ${roleAccent}`} />
             Profile Configuration
           </CardTitle>
@@ -299,7 +299,7 @@ export function AccountSettings({
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="p-0 gap-1.5">
-          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
+          <CardTitle className="type-section-heading text-dash-text flex items-center gap-2">
             <Bell className={`h-5 w-5 ${roleAccent}`} />
             Notification Registry
           </CardTitle>

@@ -171,7 +171,7 @@ function SystemHealthBar({
       className="flex items-center justify-between rounded-2xl border border-dash-border bg-dash-card px-4 py-2.5 gap-4 shadow-sm"
     >
       <div className="flex items-center gap-1.5">
-        <span className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em] hidden sm:block">
+        <span className="type-eyebrow hidden sm:block">
           System Status
         </span>
         {!isLoading && status && (
@@ -464,13 +464,13 @@ export default function AdminPage() {
           >
             <div className="flex items-center gap-3 mb-2">
               <div className="h-px w-8 bg-dash-accent/50" />
-              <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">
+              <p className="type-eyebrow">
                 System Overview
               </p>
             </div>
             <div className="flex items-end justify-between flex-wrap gap-4">
               <div>
-                <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Admin Dashboard</h1>
+                <h1 className="type-display-xl">Admin Dashboard</h1>
                 <p className="text-dash-muted mt-1.5 font-medium text-sm">
                   Welcome back,{" "}
                   <span className="text-dash-text font-semibold">{user?.fullName ?? "Admin"}</span>.
@@ -527,7 +527,7 @@ export default function AdminPage() {
           {/* Divider */}
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-dash-border" />
-            <p className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.3em] flex items-center gap-2">
+            <p className="type-eyebrow flex items-center gap-2">
               {isChartsLoading && <Loader2 size={10} className="animate-spin" />}
               Analytics
             </p>

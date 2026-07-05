@@ -173,9 +173,9 @@ export default function AdminCasesPage() {
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-slate-400/50" />
-          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Evidence Repository</p>
+          <p className="type-eyebrow">Evidence Repository</p>
         </div>
-        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Global Archives</h1>
+        <h1 className="type-display-xl">Global Archives</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Accessing <span className="text-dash-text">{cases.length}</span> forensic subjects in this sector. 
         </p>
@@ -325,7 +325,7 @@ export default function AdminCasesPage() {
                               setCopiedId(c.caseId);
                               setTimeout(() => setCopiedId(null), 1500);
                             }}
-                            className={`text-[10px] font-mono mt-0.5 tracking-tighter flex items-center gap-1 px-1.5 py-0.5 rounded border transition-colors w-fit ${
+                            className={`type-technical mt-0.5 tracking-tighter flex items-center gap-1 px-1.5 py-0.5 rounded border transition-colors w-fit ${
                               copiedId === c.caseId
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
                                 : "text-dash-muted hover:text-dash-accent bg-dash-input hover:bg-dash-hover border-dash-border"

@@ -159,7 +159,7 @@ export function StatCard({
             <Skeleton className="h-10 w-24 bg-dash-hover mt-1" />
           ) : (
             <div className="flex items-baseline gap-1">
-              <span className="text-[42px] font-black text-dash-text leading-none tracking-tight">
+              <span className="type-statistic text-dash-text leading-none">
                 {value}
               </span>
               {subValue && (

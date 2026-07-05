@@ -303,10 +303,10 @@ export default function SubmitEvidencePage() {
         <header className="page-header mb-6">
           <div className="flex items-center gap-3 mb-2 justify-center">
             <div className="h-px w-8 bg-slate-400/50" />
-            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Forensic Capture Module</p>
+            <p className="type-eyebrow">Forensic Capture Module</p>
             <div className="h-px w-8 bg-slate-400/50" />
           </div>
-          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg text-center">Submit Evidence</h1>
+          <h1 className="type-display-xl text-center">Submit Evidence</h1>
           <p className="mt-2 text-dash-muted font-medium max-w-md mx-auto text-sm text-center">
             All submissions are hashed, IPFS-stored, and blockchain-anchored.
           </p>

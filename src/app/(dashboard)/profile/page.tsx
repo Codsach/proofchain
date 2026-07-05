@@ -118,8 +118,8 @@ export default async function ProfilePage() {
   return (
     <div className="w-full flex flex-col sentinel-theme-v2 font-sans">
       <div className="flex flex-col gap-1.5 mb-8">
-        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Dossier</h1>
-        <p className="text-dash-muted font-mono uppercase tracking-widest label-sm">Classified Personnel Record</p>
+        <h1 className="type-display-xl">Dossier</h1>
+        <p className="type-eyebrow">Classified Personnel Record</p>
       </div>
 
       <DossierHeader user={userProps} profile={profileProps} />

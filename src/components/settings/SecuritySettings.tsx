@@ -98,7 +98,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="p-0 gap-1.5">
-          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
+          <CardTitle className="type-section-heading text-dash-text flex items-center gap-2">
             <KeyRound className={`h-5 w-5 ${roleAccent}`} />
             Authentication Key
           </CardTitle>
@@ -192,7 +192,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="p-0 flex flex-row items-center justify-between flex-wrap gap-4">
           <CardContainer className="space-y-1.5">
-            <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
+            <CardTitle className="type-section-heading text-dash-text flex items-center gap-2">
               <Shield className={`h-5 w-5 ${roleAccent}`} />
               Two-Factor Authentication
             </CardTitle>
@@ -232,7 +232,7 @@ export function SecuritySettings({ role, user }: { role: "investigator" | "analy
       <Card className="relative overflow-hidden bg-dash-card border border-dash-border ring-0 shadow-sm rounded-2xl p-[28px] gap-6 flex flex-col">
         <CardContainer className={`absolute top-0 left-0 h-[2px] w-full ${roleBarTheme}`} />
         <CardHeader className="p-0 gap-1.5">
-          <CardTitle className="text-lg font-heading font-semibold text-dash-text flex items-center gap-2">
+          <CardTitle className="type-section-heading text-dash-text flex items-center gap-2">
             <Laptop className={`h-5 w-5 ${roleAccent}`} />
             Active Sessions
           </CardTitle>

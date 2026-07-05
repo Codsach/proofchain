@@ -104,8 +104,8 @@ export interface DashboardChartsProps {
 function SectionHeader({ title, subtitle }: { title: string; subtitle?: string }) {
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest">{title}</h3>
-      {subtitle && <p className="text-xs text-dash-muted mt-0.5">{subtitle}</p>}
+      <h3 className="type-card-heading text-dash-text">{title}</h3>
+      {subtitle && <p className="type-helper text-dash-muted mt-0.5">{subtitle}</p>}
     </div>
   );
 }

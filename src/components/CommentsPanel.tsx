@@ -133,7 +133,7 @@ export function CommentsPanel({ caseId, className }: Props) {
       <div className="flex items-center justify-between border-b border-dash-border pb-3">
         <div className="flex items-center gap-2">
           <MessageSquare className="w-4 h-4 text-dash-accent" />
-          <h3 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">
+          <h3 className="type-section-heading text-dash-text">
             Case Communications
           </h3>
         </div>

@@ -302,10 +302,10 @@ export default function AdminCaseDetailPage() {
             <span className="text-lg">←</span> Forensic Archives
           </Link>
           <div className="flex flex-wrap items-center gap-4 mt-4">
-            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">{caseData.title}</h1>
+            <h1 className="type-display-xl">{caseData.title}</h1>
             <CaseStatusBadge status={caseData.status} />
           </div>
-          <p className="text-[10px] text-dash-muted font-mono mt-2 tracking-widest">
+          <p className="type-technical text-dash-muted mt-2 tracking-widest uppercase">
             ACCESS_TOKEN::{caseData.caseId}
           </p>
         </div>
@@ -395,7 +395,7 @@ export default function AdminCaseDetailPage() {
                   </div>
                   <div className="space-y-1.5">
                     <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Digital Fingerprint</p>
-                    <p className="text-[10px] font-mono text-dash-accent/60 break-all bg-dash-input/50 rounded px-2 py-1.5 border border-dash-border font-medium">
+                    <p className="type-technical text-dash-accent/60 break-all bg-dash-input/50 rounded px-2 py-1.5 border border-dash-border">
                       {file.sha256Hash}
                     </p>
                   </div>

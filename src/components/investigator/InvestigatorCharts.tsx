@@ -114,7 +114,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
         className="rounded-2xl border border-dash-border border-l-4 border-l-slate-400 bg-dash-card p-6 shadow-sm col-span-1 xl:col-span-2 min-w-0"
       >
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest">My Cases Timeline</h3>
+          <h3 className="type-card-heading text-dash-text">My Cases Timeline</h3>
           <span className="text-[10px] text-dash-muted font-bold tracking-widest uppercase italic">Live Progression</span>
         </div>
         
@@ -164,7 +164,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
           className="rounded-2xl border border-dash-border border-l-4 border-l-amber-500 bg-dash-card p-6 shadow-sm relative min-w-0 flex flex-col"
         >
-          <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-2 z-10">Verdict Outcomes</h3>
+          <h3 className="type-card-heading text-dash-text mb-2 z-10">Verdict Outcomes</h3>
           
           <div className="h-[200px] w-full relative flex-grow">
             <ResponsiveContainer width="100%" height="100%">
@@ -212,7 +212,7 @@ export function InvestigatorCharts({ cases }: InvestigatorChartsProps) {
           initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
           className="rounded-2xl border border-dash-border border-l-4 border-l-emerald-500 bg-dash-card p-6 shadow-sm min-w-0 flex flex-col"
         >
-          <h3 className="text-sm font-bold text-dash-text uppercase tracking-widest mb-6">Submission Trends</h3>
+          <h3 className="type-card-heading text-dash-text mb-6">Submission Trends</h3>
           <div className="h-[150px] w-full flex-grow min-w-0 overflow-hidden">
             <ChartContainer config={{ submissions: { label: "Submissions", color: "var(--dash-accent)" } }} className="h-full w-full">
               <ResponsiveContainer width="100%" height="100%">

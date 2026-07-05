@@ -46,8 +46,8 @@ export default async function SettingsPage() {
     <div className="flex justify-center w-full">
       <Card className="flex-1 w-full max-w-5xl p-0 space-y-8 bg-transparent text-[var(--dash-text)] border-none shadow-none ring-0 sentinel-theme-v2 font-sans">
         <CardHeader className="flex flex-col gap-1.5 p-0">
-          <CardTitle className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Control Room</CardTitle>
-          <CardDescription className="text-dash-muted font-mono uppercase tracking-widest label-sm">System Preferences & Security</CardDescription>
+          <CardTitle className="type-display-xl">Control Room</CardTitle>
+          <CardDescription className="type-eyebrow">System Preferences & Security</CardDescription>
         </CardHeader>
 
         <SettingsTabs user={serializedUser} />

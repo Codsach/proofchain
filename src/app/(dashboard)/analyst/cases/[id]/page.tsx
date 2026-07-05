@@ -327,10 +327,10 @@ export default function AnalystCaseReviewPage() {
             <span className="text-lg">←</span> Authentication Queue
           </Link>
           <div className="flex flex-wrap items-center gap-4">
-            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">{caseData.title}</h1>
+            <h1 className="type-display-xl">{caseData.title}</h1>
             <CaseStatusBadge status={caseData.status} />
           </div>
-          <p className="text-[10px] text-dash-muted/60 font-mono mt-2 tracking-widest">
+          <p className="type-technical text-dash-muted/60 mt-2 tracking-widest uppercase">
             TARGET_ID::{caseData.caseId}
           </p>
         </div>
@@ -447,7 +447,7 @@ export default function AnalystCaseReviewPage() {
                   </div>
                   <div className="space-y-1.5">
                     <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">SHA-256 Fingerprint</p>
-                    <p className="text-[10px] font-mono text-dash-accent/80 dark:text-dash-accent/40 break-all bg-dash-input rounded-xl px-4 py-2 border border-dash-border">
+                    <p className="type-technical text-dash-accent/80 dark:text-dash-accent/40 break-all bg-dash-input rounded-xl px-4 py-2 border border-dash-border">
                       {file.sha256Hash}
                     </p>
                   </div>

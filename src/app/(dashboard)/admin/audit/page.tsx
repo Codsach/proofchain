@@ -90,9 +90,9 @@ export default function AdminAuditPage() {
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-slate-400/50" />
-          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Security Audit</p>
+          <p className="type-eyebrow">Security Audit</p>
         </div>
-        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">System Events</h1>
+        <h1 className="type-display-xl">System Events</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Real-time append-only ledger of all platform operations and cryptographic events.
         </p>
@@ -174,11 +174,11 @@ export default function AdminAuditPage() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Temporal Index</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Action Protocol</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Identity Actor</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Target Object</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden lg:table-cell">Source IP</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted">Temporal Index</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted">Action Protocol</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted hidden sm:table-cell">Identity Actor</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted hidden md:table-cell">Target Object</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted hidden lg:table-cell">Source IP</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dash-border font-medium">

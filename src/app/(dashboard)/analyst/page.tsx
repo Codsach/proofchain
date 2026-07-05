@@ -86,9 +86,9 @@ export default function AnalystPage() {
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-12">
             <div className="flex items-center gap-3 mb-2">
               <div className="h-px w-8 bg-emerald-500/50" />
-              <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Forensic Authentication Center</p>
+              <p className="type-eyebrow">Forensic Authentication Center</p>
             </div>
-            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Case Queue</h1>
+            <h1 className="type-display-xl">Case Queue</h1>
             <p className="mt-3 text-sm text-dash-muted font-medium max-w-lg leading-relaxed">
               Welcome back, <span className="text-dash-text">{user?.fullName}</span>. Please review the pending evidence submissions for cryptographic and visual integrity.
             </p>

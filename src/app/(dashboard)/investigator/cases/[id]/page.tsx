@@ -253,7 +253,7 @@ export default function InvestigatorCaseDetailPage() {
             </Link>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-4">
-                <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">{caseData.title}</h1>
+                <h1 className="type-display-xl">{caseData.title}</h1>
                 <CaseStatusBadge status={caseData.status} />
               </div>
               {caseData.status === "verified" && token && (
@@ -268,7 +268,7 @@ export default function InvestigatorCaseDetailPage() {
                 </motion.a>
               )}
             </div>
-            <p className="text-[10px] text-dash-muted/60 font-mono mt-2 tracking-widest">
+            <p className="type-technical text-dash-muted/60 mt-2 tracking-widest uppercase">
               SYSTEM_UID::{caseData.caseId}
             </p>
           </motion.div>
@@ -307,7 +307,7 @@ export default function InvestigatorCaseDetailPage() {
                         href={`https://amoy.polygonscan.com/tx/${caseData.onChainTxHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-dash-accent font-mono hover:text-dash-accent transition-colors flex items-center gap-2 group/link"
+                        className="text-dash-accent type-technical hover:text-dash-accent transition-colors flex items-center gap-2 group/link"
                       >
                         <span className="truncate max-w-[140px]">{caseData.onChainTxHash}</span>
                         <span className="text-[10px] opacity-0 group-hover/link:opacity-100 transition-opacity">↗</span>
@@ -384,7 +384,7 @@ export default function InvestigatorCaseDetailPage() {
                         </div>
                         <div className="space-y-1.5 pt-1">
                           <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">Digital Fingerprint (SHA-256)</p>
-                          <p className="text-[10px] font-mono text-dash-accent/80 break-all bg-dash-input rounded-lg px-4 py-2 border border-dash-border">
+                          <p className="type-technical text-dash-accent/80 break-all bg-dash-input rounded-lg px-4 py-2 border border-dash-border">
                             {file.sha256Hash}
                           </p>
                           {file.gpsLat !== null && file.gpsLng !== null && (

@@ -71,7 +71,7 @@ export function CustodyTimeline({ nodes, isPublic = false, className }: CustodyT
       {/* Widget Header with Pulse */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">
+          <h2 className="type-section-heading text-dash-text">
             Custody Chain Flow
           </h2>
           <span className="flex h-2 w-2 relative">
@@ -193,8 +193,8 @@ export function CustodyTimeline({ nodes, isPublic = false, className }: CustodyT
 
                           {/* Transaction hash link */}
                           {node.txHash && (
-                            <div className="flex items-center justify-between text-[9px] bg-dash-bg/50 p-2 rounded-lg border border-dash-border font-mono">
-                              <span className="text-dash-muted/80 uppercase font-bold tracking-wider">Anchor Tx</span>
+                            <div className="flex items-center justify-between bg-dash-bg/50 p-2 rounded-lg border border-dash-border type-technical text-dash-muted">
+                              <span className="text-[11px] font-sans text-dash-muted/80 uppercase font-bold tracking-wider">Anchor Tx</span>
                               <a
                                 href={`https://amoy.polygonscan.com/tx/${node.txHash}`}
                                 target="_blank"
