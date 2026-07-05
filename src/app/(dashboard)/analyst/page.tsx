@@ -36,20 +36,6 @@ const INCIDENT_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-const DashboardBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Top Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
-      {/* Bottom Center: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function AnalystPage() {
   const { user, getToken } = useAuth();
@@ -96,14 +82,7 @@ export default function AnalystPage() {
   }, [statusFilter, typeFilter, debouncedSearch]);
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <DashboardBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
-        <div className="space-y-10 pb-10">
+    <div className="w-full space-y-10 pb-10">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="mb-12">
             <div className="flex items-center gap-3 mb-2">
               <div className="h-px w-8 bg-emerald-500/50" />
@@ -122,7 +101,7 @@ export default function AnalystPage() {
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex gap-4 flex-wrap bg-dash-card/50 border border-dash-border p-5 rounded-2xl"
+            className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-6 rounded-2xl"
           >
             <div className="flex-1 min-w-[200px] space-y-1.5">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Search Queue</p>
@@ -130,14 +109,14 @@ export default function AnalystPage() {
                 placeholder="Search by title or description..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-dash-input border-dash-border hover:border-dash-accent/55 focus-visible:ring-1 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-full px-5"
+                className="bg-dash-input border-dash-border hover:border-dash-accent/55 focus-visible:ring-1 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl px-4"
               />
             </div>
 
             <div className="space-y-1.5">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle State</p>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-52 h-11 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-dash-muted">
+                <SelectTrigger className="w-full sm:w-52 h-11 bg-dash-input border-dash-border hover:border-dash-accent/55 transition-all rounded-xl text-dash-text focus:ring-0 focus:ring-offset-0 focus:outline-none">
                   <SelectValue placeholder="System status" />
                 </SelectTrigger>
                 <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -155,7 +134,7 @@ export default function AnalystPage() {
             <div className="space-y-1.5">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Taxonomy</p>
               <Select value={typeFilter} onValueChange={setTypeFilter}>
-                <SelectTrigger className="w-52 h-11 bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all rounded-xl text-dash-muted">
+                <SelectTrigger className="w-full sm:w-52 h-11 bg-dash-input border-dash-border hover:border-dash-accent/55 transition-all rounded-xl text-dash-text focus:ring-0 focus:ring-offset-0 focus:outline-none">
                   <SelectValue placeholder="All types" />
                 </SelectTrigger>
                 <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -184,7 +163,7 @@ export default function AnalystPage() {
               </button>
             </div>
           ) : cases.length === 0 ? (
-            <div className="rounded-3xl border border-dash-border bg-dash-card/50 p-20 text-center backdrop-blur-2xl">
+            <div className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center">
               <h2 className="text-xl font-bold text-dash-text mb-2">Queue Clear</h2>
               <p className="text-dash-muted max-w-xs mx-auto text-sm font-medium">No pending forensic targets assigned to your node.</p>
             </div>
@@ -192,7 +171,7 @@ export default function AnalystPage() {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              className="rounded-2xl border border-dash-border bg-dash-card/30 overflow-hidden shadow-2xl"
+              className="rounded-2xl border border-dash-border bg-dash-card overflow-hidden shadow-sm"
             >
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
@@ -287,8 +266,6 @@ export default function AnalystPage() {
               </div>
             </motion.div>
           )}
-        </div>
-      </div>
     </div>
   );
 }
