@@ -154,7 +154,7 @@ export default function HeroInteractiveWidget() {
 
   return (
     <div
-      className="relative w-full max-w-[440px] mx-auto lg:mr-0 lg:ml-auto select-none"
+      className="relative w-full max-w-[470px] mx-auto lg:mr-0 lg:ml-auto select-none"
       style={{
         background: "linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.88) 100%)",
         backdropFilter: "blur(32px)",
