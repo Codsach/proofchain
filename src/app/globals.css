@@ -553,4 +553,18 @@
   font-family: var(--font-manrope), monospace;
   font-size: 13px;
   font-weight: 500;
+}
+
+/* ── Dark Mode Typography Overrides ── */
+.dark .type-display-xl {
+  color: var(--dash-text) !important;
+}
+.dark .type-eyebrow {
+  color: var(--dash-muted) !important;
+}
+.dark .type-body {
+  color: #CBD5E1 !important;
+}
+.dark .type-form-label {
+  color: var(--dash-text) !important;
 }
