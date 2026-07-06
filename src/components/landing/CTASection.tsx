@@ -25,10 +25,10 @@ function useMagnetic(strength = 0.35) {
 
     const onMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect();
-      const cx   = rect.left + rect.width  / 2;
-      const cy   = rect.top  + rect.height / 2;
-      const dx   = (e.clientX - cx) * strength;
-      const dy   = (e.clientY - cy) * strength;
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) * strength;
+      const dy = (e.clientY - cy) * strength;
       el.style.transform = `translate(${dx}px, ${dy}px)`;
     };
     const onLeave = () => {
@@ -53,25 +53,25 @@ function useMagnetic(strength = 0.35) {
 }
 
 export default function CTASection() {
-  const sectionRef   = useRef<HTMLElement>(null);
-  const magneticRef  = useMagnetic(0.30);
+  const sectionRef = useRef<HTMLElement>(null);
+  const magneticRef = useMagnetic(0.30);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
-  const bgY      = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const headingY = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
   const contentY = useTransform(scrollYProgress, [0, 1], ["-2%", "2%"]);
 
   return (
     <section
-  ref={sectionRef}
-  className="relative py-20 px-4 font-sans flex justify-center"
-  style={{ borderTop: "1px solid rgba(15,23,42,0.03)" }}
-  
->
+      ref={sectionRef}
+      className="relative py-20 px-4 font-sans flex justify-center"
+      style={{ borderTop: "1px solid rgba(15,23,42,0.03)" }}
+
+    >
       {/* ── Soft ambient glow — top center ── */}
       <motion.div
         aria-hidden
@@ -269,7 +269,7 @@ export default function CTASection() {
             className="mt-8 text-xs tracking-wider font-mono uppercase"
             style={{ color: "rgba(15,23,42,0.38)" }}
           >
-            Designed for law enforcement · Forensic labs · Cyber incident response teams
+            Forensic labs · Cyber incident response teams
           </motion.p>
         </motion.div>
 

@@ -101,12 +101,23 @@ export function NotificationBell() {
   const updateDropdownPosition = useCallback(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      setDropdownStyle({
-        position: 'fixed',
-        bottom: window.innerHeight - rect.top + 8,
-        left: Math.max(16, rect.left), // Ensure it doesn't go off-screen to the left
-        zIndex: 9999
-      });
+      const isTop = rect.top < window.innerHeight / 2;
+      
+      if (isTop) {
+        setDropdownStyle({
+          position: 'fixed',
+          top: rect.bottom + 8,
+          right: Math.max(16, window.innerWidth - rect.right),
+          zIndex: 9999
+        });
+      } else {
+        setDropdownStyle({
+          position: 'fixed',
+          bottom: window.innerHeight - rect.top + 8,
+          left: Math.max(16, rect.left), // Ensure it doesn't go off-screen to the left
+          zIndex: 9999
+        });
+      }
     }
   }, [isOpen]);
 

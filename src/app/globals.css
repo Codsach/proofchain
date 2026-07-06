@@ -58,6 +58,8 @@
   --color-dash-accent: var(--dash-accent);
   --color-dash-table: var(--dash-table);
   --color-dash-modal: var(--dash-modal);
+  --color-dash-topbar: var(--dash-topbar);
+  --color-dash-page-bg: var(--dash-page-bg);
 }
 
 :root {
@@ -201,6 +203,8 @@
   /* Dashboard variables mapping */
   --dash-bg:          #F7F9FC;             /* Main cool neutral background */
   --dash-sidebar:     #FAFBFC;             /* Slightly warmer neutral sidebar */
+  --dash-topbar:      #FAFBFC;             /* Topbar background */
+  --dash-page-bg:     transparent;         /* Transparent page background */
   --dash-card:        #ffffff;             /* Crisp white cards */
   --dash-input:       #F1F3F7;             /* Input backgrounds */
   --dash-modal:       #ffffff;
@@ -230,6 +234,65 @@
   font-family: var(--font-geist), sans-serif;
 }
 
+/* ── Dark Theme Overrides for Sentinel Theme v2 ── */
+.dark .sentinel-theme-v2,
+.sentinel-theme-v2.dark {
+  /* Shadcn / Tailwind base overrides */
+  --background: oklch(0.13 0.02 245);      /* #111827 page background */
+  --foreground: oklch(0.98 0.01 240);      /* #F8FAFC primary text */
+  --card: oklch(0.18 0.02 245);            /* #182235 primary cards */
+  --card-foreground: oklch(0.98 0.01 240);
+  --popover: oklch(0.18 0.02 245);
+  --popover-foreground: oklch(0.98 0.01 240);
+  
+  --primary: oklch(0.620 0.155 162);       /* Deeper emerald on light, vibrant on dark */
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.22 0.02 245);       /* #1E293B secondary surfaces */
+  --secondary-foreground: oklch(0.98 0.01 240);
+  --muted: oklch(0.22 0.02 245);           /* #1E293B */
+  --muted-foreground: oklch(0.65 0.01 240);/* #CBD5E1 */
+  --accent: oklch(0.22 0.02 245);          /* #1E293B */
+  --accent-foreground: oklch(0.98 0.01 240);
+  
+  --destructive: oklch(0.550 0.220 20);     /* Crimson Red */
+  --destructive-foreground: oklch(1.0 0 0);
+  
+  --border: rgba(255, 255, 255, 0.08);     /* Borders: rgba(255,255,255,0.08) */
+  --input: oklch(0.22 0.02 245);           /* #1E293B */
+  --ring: oklch(0.620 0.155 162 / 40%);
+
+  /* Dashboard variables mapping for Dark Mode */
+  --dash-bg:          #0F172A;  /* App background */
+  --dash-page-bg:     #111827;  /* Page background */
+  --dash-sidebar:     #101827;  /* Sidebar background */
+  --dash-topbar:      #111827;  /* Topbar background */
+  --dash-card:        #182235;  /* Primary card / panel surface */
+  --dash-input:       #1E293B;  /* Input background */
+  --dash-modal:       #1E293B;  /* Modal / dialog background */
+  --dash-table:       #111827;  /* Table background */
+  --dash-hover:       #1E293B;  /* Hover state background */
+  --dash-border:      rgba(255, 255, 255, 0.08); /* Borders */
+  --dash-text:        #F8FAFC;  /* Primary text */
+  --dash-muted:       #94A3B8;  /* Muted text */
+  --dash-accent:      #10B981;  /* Emerald brand color */
+  --dash-danger:      #EF4444;
+  --dash-info:        #3B82F6;
+  --dash-accent-glow: rgba(16, 185, 129, 0.15);
+  --dash-active-bg:   rgba(16, 185, 129, 0.15); /* Soft emerald green for active item */
+  --dash-active-text: #10B981;
+
+  /* Map shadcn sidebar tokens for theme compatibility */
+  --sidebar:          var(--dash-sidebar);
+  --sidebar-background: var(--dash-sidebar);
+  --sidebar-foreground: var(--dash-text);
+  --sidebar-primary:  var(--dash-accent);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent:   rgba(255, 255, 255, 0.04);
+  --sidebar-accent-foreground: var(--dash-text);
+  --sidebar-border:   var(--dash-border);
+  --sidebar-ring:     var(--ring);
+}
+
 /* Override standard shadows to give a premium flat layered look */
 .sentinel-theme-v2 .shadow-sm {
   box-shadow: 0 1px 2px 0 rgba(15, 23, 42, 0.03), 0 1px 3px 0 rgba(15, 23, 42, 0.02) !important;
@@ -240,6 +303,22 @@
 }
 .sentinel-theme-v2 .shadow-lg {
   box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.03), 0 8px 16px -6px rgba(15, 23, 42, 0.02) !important;
+}
+
+/* Dark Mode shadow overrides */
+.dark .sentinel-theme-v2 .shadow-sm,
+.sentinel-theme-v2.dark .shadow-sm {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3) !important;
+}
+.dark .sentinel-theme-v2 .shadow,
+.dark .sentinel-theme-v2 .shadow-md,
+.sentinel-theme-v2.dark .shadow,
+.sentinel-theme-v2.dark .shadow-md {
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.4) !important;
+}
+.dark .sentinel-theme-v2 .shadow-lg,
+.sentinel-theme-v2.dark .shadow-lg {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Glassmorphism overrides for specific status badges on light background inside sentinel-theme-v2 */
@@ -267,6 +346,38 @@
   background-color: rgba(16, 185, 129, 0.15) !important;
   color: #064e3b !important;
   border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Dark Mode status badges overrides */
+.dark .sentinel-theme-v2 .bg-blue-900\/40,
+.sentinel-theme-v2.dark .bg-blue-900\/40 {
+  background-color: rgba(59, 130, 246, 0.15) !important;
+  color: #93C5FD !important;
+  border-color: rgba(59, 130, 246, 0.25) !important;
+}
+.dark .sentinel-theme-v2 .bg-amber-900\/40,
+.sentinel-theme-v2.dark .bg-amber-900\/40 {
+  background-color: rgba(245, 158, 11, 0.15) !important;
+  color: #FDE68A !important;
+  border-color: rgba(245, 158, 11, 0.25) !important;
+}
+.dark .sentinel-theme-v2 .bg-red-900\/40,
+.sentinel-theme-v2.dark .bg-red-900\/40 {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  color: #FECACA !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+}
+.dark .sentinel-theme-v2 .bg-cyan-900\/40,
+.sentinel-theme-v2.dark .bg-cyan-900\/40 {
+  background-color: rgba(6, 182, 212, 0.15) !important;
+  color: #A5F3FC !important;
+  border-color: rgba(6, 182, 212, 0.25) !important;
+}
+.dark .sentinel-theme-v2 .bg-green-900\/40,
+.sentinel-theme-v2.dark .bg-green-900\/40 {
+  background-color: rgba(16, 185, 129, 0.15) !important;
+  color: #A7F3D0 !important;
+  border-color: rgba(16, 185, 129, 0.25) !important;
 }
 
 /* Typography Scale classes inside sentinel-theme-v2 */
