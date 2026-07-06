@@ -174,26 +174,15 @@ export default function HeroSection() {
         }}
         className="relative w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center min-h-screen lg:min-h-0 lg:py-36">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center pt-28 pb-16 lg:py-24">
 
           {/* ── Left: Text ── */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
 
-            {/* Trust badge */}
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="visible" custom={0}
-              className="lp-badge mb-8"
-            >
-              <span className="lp-badge-dot" />
-              <span style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em" }}>
-                Blockchain-anchored · AI-analysed · Tamper-proof
-              </span>
-            </motion.div>
-
             {/* Headline */}
             <motion.h1
-              variants={fadeUp} initial="hidden" animate="visible" custom={1}
-              className="font-heading font-black tracking-tight mb-5"
+              variants={fadeUp} initial="hidden" animate="visible" custom={0}
+              className="font-heading font-black tracking-tight mb-4"
               style={{ lineHeight: 1.0, fontSize: "clamp(3.0rem, 7vw, 5.4rem)" }}
             >
               <span className="block hero-shimmer">
@@ -218,9 +207,9 @@ export default function HeroSection() {
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 1.1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                width: 56, height: 2.5, borderRadius: 99, marginBottom: 24,
+                width: 56, height: 2.5, borderRadius: 99, marginBottom: 16,
                 background: "linear-gradient(90deg, #059669, #047857)",
                 transformOrigin: "left",
                 boxShadow: "0 0 8px rgba(5,150,105,0.20)",
@@ -228,13 +217,13 @@ export default function HeroSection() {
             />
 
             <motion.p
-              variants={fadeUp} initial="hidden" animate="visible" custom={2}
+              variants={fadeUp} initial="hidden" animate="visible" custom={1}
               style={{
                 fontSize: "clamp(0.92rem, 1.35vw, 1.03rem)",
                 color: "var(--lp-gray-2)",
                 lineHeight: 1.75,
                 maxWidth: 500,
-                marginBottom: 40,
+                marginBottom: 24,
                 fontFamily: "var(--font-geist), sans-serif",
               }}
             >
@@ -244,8 +233,8 @@ export default function HeroSection() {
             </motion.p>
 
             <motion.div
-              variants={fadeUp} initial="hidden" animate="visible" custom={3}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-8"
+              variants={fadeUp} initial="hidden" animate="visible" custom={2}
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-0"
             >
               <Link
                 href="/login"
@@ -270,7 +259,7 @@ export default function HeroSection() {
           {/* ── Right: Widget ── */}
           <motion.div
             className="lg:col-span-6 w-full flex justify-center lg:justify-end items-center relative"
-            variants={fadeUp} initial="hidden" animate="visible" custom={2.5}
+            variants={fadeUp} initial="hidden" animate="visible" custom={1.5}
             style={{
               x: parallax.x * 8,
               y: parallax.y * 8,
