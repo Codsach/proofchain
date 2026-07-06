@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Fetch ALL users by email (since email+role is unique)
     const users = await User.find({ email }).select(
-      "+passwordHash +loginAttempts +lockUntil"
+      "+passwordHash +loginAttempts +lockUntil +trustedDevices"
     ).sort({ role: 1 }); // admin (a), analyst (an), investigator (i)
 
     if (!users || users.length === 0) {
