@@ -1,6 +1,12 @@
 import logging
 import io
+import warnings
 from typing import Dict, Any
+
+# Suppress Hugging Face deprecation and legacy model configuration warnings
+warnings.filterwarnings("ignore", category=FutureWarning, module="huggingface_hub")
+warnings.filterwarnings("ignore", category=UserWarning, module="transformers")
+warnings.filterwarnings("ignore", message="Could not find image processor class")
 
 logger = logging.getLogger(__name__)
 

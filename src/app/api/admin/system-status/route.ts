@@ -24,7 +24,7 @@ async function getSystemStatus(
   // AI service check (internal FastAPI service)
   let aiOk = false;
   let aiLatency = 0;
-  const aiUrl = process.env.AI_SERVICE_URL;
+  const aiUrl = process.env.AI_SERVICE_URL || process.env.FASTAPI_URL;
   if (aiUrl) {
     try {
       const t0 = Date.now();
@@ -44,7 +44,10 @@ async function getSystemStatus(
   // Blockchain RPC check (Ethereum or similar JSON-RPC endpoint)
   let chainOk = false;
   let chainLatency = 0;
-  const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL ?? process.env.RPC_URL;
+  const rpcUrl =
+    process.env.POLYGON_RPC_URL ??
+    process.env.NEXT_PUBLIC_RPC_URL ??
+    process.env.RPC_URL;
   if (rpcUrl) {
     try {
       const t0 = Date.now();
