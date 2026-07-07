@@ -107,10 +107,15 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu className="gap-3">
             {items.map((item) => {
-              const isActive =
-                item.href === "/investigator" || item.href === "/admin" || item.href === "/analyst"
-                  ? pathname === item.href
-                  : pathname.startsWith(item.href);
+              const isActive = (() => {
+                if (item.href === "/investigator" || item.href === "/admin" || item.href === "/analyst") {
+                  return pathname === item.href;
+                }
+                if (item.href === "/admin/cases" && pathname === "/admin/cases/new") {
+                  return false;
+                }
+                return pathname.startsWith(item.href);
+              })();
 
               const Icon = item.icon;
 

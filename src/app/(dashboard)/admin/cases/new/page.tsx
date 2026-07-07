@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import { FolderSearch, FileText, AlignLeft, Tags, LayoutTemplate } from "lucide-react";
+import { LayoutTemplate, Camera, Upload, MapPin, Check, X, Info, FileText } from "lucide-react";
 import { CameraCapture } from "@/components/evidence/CameraCapture";
 import { GPSStatusBadge } from "@/components/evidence/GPSStatusBadge";
 import { useGPS, type GPSCoordinates } from "@/hooks/useGPS";
@@ -85,6 +85,26 @@ export default function CreateCasePage() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Local state for template cards selection
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+
+  // Dynamic visual indicators
+  const [draftCaseId, setDraftCaseId] = useState("");
+  const [formattedDate, setFormattedDate] = useState("");
+
+  useEffect(() => {
+    setDraftCaseId(`CAS-${Math.floor(100000 + Math.random() * 900000)}`);
+    const dateOpts: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "short",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    };
+    setFormattedDate(new Date().toLocaleString("en-US", dateOpts).replace(",", ""));
+  }, []);
+
   // GPS
   const { coords, status: gpsStatus, error: gpsError, requestGPS, clearGPS } = useGPS({
     autoStart: true,
@@ -159,6 +179,7 @@ export default function CreateCasePage() {
       setShowCamera(false);
       // Auto-fill title if empty
       setTitle((t) => t || `Field ${mode === "photo" ? "Photo" : "Video"} - ${capturedAt.toLocaleDateString()}`);
+      setSelectedTemplateId(null);
     },
     []
   );
@@ -242,6 +263,7 @@ export default function CreateCasePage() {
     setFilePreviewUrl(null);
     setSubmitMode(null);
     clearGPS();
+    setSelectedTemplateId(null);
   };
 
   if (submitSuccess) {
@@ -253,12 +275,8 @@ export default function CreateCasePage() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
-          <h2>
-            Case Created
-          </h2>
-          <p>
-            Your new case and initial evidence have been securely submitted. AI analysis is in progress.
-          </p>
+          <h2>Case Created</h2>
+          <p>Your new case and initial evidence have been securely submitted. AI analysis is in progress.</p>
           <button className="btn-primary" onClick={() => router.push("/admin/cases")}>
             Go to Archives
           </button>
@@ -278,16 +296,34 @@ export default function CreateCasePage() {
   return (
     <div className="page">
       <div className="container">
-        <header className="page-header mb-6">
+        <header className="page-header mb-2">
           <div className="flex items-center gap-3 mb-2 justify-center">
-            <div className="h-px w-8 bg-slate-400/50" />
+            <div className="h-px w-8 bg-slate-400/30" />
             <p className="type-eyebrow">Operative Case Manager</p>
-            <div className="h-px w-8 bg-slate-400/50" />
+            <div className="h-px w-8 bg-slate-400/30" />
           </div>
-          <h1 className="type-display-xl text-center">Initiate New Case</h1>
-          <p className="mt-2 text-dash-muted font-medium max-w-md mx-auto text-sm text-center">
+          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg text-center mb-1">
+            Initiate New Case
+          </h1>
+          <p className="text-dash-muted max-w-md mx-auto text-xs text-center">
             Select a template or manually enter case details.
           </p>
+
+          {/* Metadata Strip */}
+          <div className="flex flex-wrap items-center justify-center gap-4 text-[11px] text-dash-muted/80 border-y border-dash-border/40 py-2.5 mt-5 max-w-xl mx-auto">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+              <span className="font-semibold uppercase tracking-wider text-[9px] text-amber-500">Draft Status</span>
+            </div>
+            <div className="h-3 w-px bg-dash-border/40" />
+            <div>
+              Preview Case ID: <span className="font-mono font-bold text-dash-text">{draftCaseId || "Generating..."}</span>
+            </div>
+            <div className="h-3 w-px bg-dash-border/40" />
+            <div>
+              Date & Time: <span className="font-semibold text-dash-text">{formattedDate || "Initializing..."}</span>
+            </div>
+          </div>
         </header>
 
         <div className="rounded-xl border border-dash-border bg-dash-card p-6 md:p-8 shadow-sm form-card">
@@ -298,319 +334,437 @@ export default function CreateCasePage() {
               handleSubmit();
             }}
           >
-            <div className="field">
-              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Case Templates</Label>
-              <div className="template-cards">
-                {CASE_TEMPLATES.map((t) => (
-                  <Button
-                    key={t.id}
-                    type="button"
-                    variant="outline"
-                    onClick={() => applyTemplate(t.id)}
-                    className="h-9 px-4 rounded-xl border border-dash-border bg-dash-card hover:bg-dash-hover text-dash-accent font-semibold transition-all shadow-3xs flex items-center gap-1.5"
-                  >
-                    <LayoutTemplate className="w-4 h-4" />
-                    {t.label}
-                  </Button>
-                ))}
+            {/* Group 1: Case Templates */}
+            <div className="form-section">
+              <div className="section-header">
+                <h3 className="section-title">Case Templates</h3>
+                <p className="section-subtitle">Select a template to prefill case configuration (optional)</p>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+                {CASE_TEMPLATES.map((t) => {
+                  const isSelected = selectedTemplateId === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedTemplateId(null);
+                          resetForm();
+                        } else {
+                          setSelectedTemplateId(t.id);
+                          applyTemplate(t.id);
+                        }
+                      }}
+                      className={`text-left p-4 rounded-xl border transition-all flex flex-col justify-between h-full group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dash-accent/50 ${
+                        isSelected
+                          ? "border-dash-accent bg-dash-accent/5 shadow-[0_0_12px_rgba(var(--dash-accent-rgb),0.15)]"
+                          : "border-dash-border bg-dash-card hover:bg-dash-hover/60 hover:border-dash-border/80"
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className={`text-sm font-semibold tracking-tight transition-colors ${isSelected ? "text-dash-accent" : "text-dash-text group-hover:text-dash-accent"}`}>
+                            {t.label}
+                          </span>
+                          <LayoutTemplate className={`w-4 h-4 shrink-0 transition-colors ${isSelected ? "text-dash-accent" : "text-dash-muted/70 group-hover:text-dash-accent"}`} />
+                        </div>
+                        <p className="text-xs text-dash-muted line-clamp-2 leading-relaxed">
+                          {t.description}
+                        </p>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-mono tracking-wider text-dash-muted/70">
+                          {t.incidentType.replace("_", " ")}
+                        </span>
+                        {isSelected && (
+                          <span className="text-[10px] font-bold text-dash-accent uppercase tracking-wider flex items-center gap-1">
+                            <span className="h-1.5 w-1.5 rounded-full bg-dash-accent animate-pulse" />
+                            Applied
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="field">
-              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Incident Type *</Label>
-              <Select value={incidentType} onValueChange={setIncidentType}>
-                <SelectTrigger className="w-full bg-dash-input border-dash-border text-dash-text h-11 rounded-xl focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-dash-accent transition-all">
-                  <SelectValue placeholder="Select incident type" />
-                </SelectTrigger>
-                <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
-                  <SelectItem value="other">Other</SelectItem>
-                  <SelectItem value="phishing">Phishing</SelectItem>
-                  <SelectItem value="malware">Malware / Ransomware</SelectItem>
-                  <SelectItem value="data_breach">Data Breach</SelectItem>
-                  <SelectItem value="insider_threat">Insider Threat</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Title */}
-            <div className="field">
-              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Evidence Title *</Label>
-              <div className="input-with-icon">
-                <FileText className="input-icon" />
-                <Input
-                  type="text"
-                  placeholder="Brief description of evidence"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none"
-                  required
-                />
+            {/* Group 2: Case Information */}
+            <div className="form-section">
+              <div className="section-header">
+                <h3 className="section-title">Case Information</h3>
+                <p className="section-subtitle">Core classifications for index logging</p>
               </div>
-            </div>
-
-            {/* Description */}
-            <div className="field">
-              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Description</Label>
-              <div className="input-with-icon">
-                <AlignLeft className="input-icon" style={{ top: "12px" }} />
-                <Textarea
-                  placeholder="Optional: additional context about where and how this was captured"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none min-h-[80px]"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            <div className="field">
-              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Evidence Tags</Label>
-              <div className="input-with-icon">
-                <Tags className="input-icon" />
-                <Input
-                  type="text"
-                  placeholder="Type and press Enter (e.g. priority:high, project-x)"
-                  value={tagInput}
-                  onChange={(e) => setTagInput(e.target.value)}
-                  onKeyDown={handleAddTag}
-                  className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none"
-                />
-              </div>
-              {tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {tags.map((tag) => (
-                    <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-dash-border/40 text-xs font-bold text-dash-text uppercase tracking-wider">
-                      {tag}
-                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400">×</button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Capture method */}
-            <div className="field">
-              <label>Capture Method *</label>
-              <div className="method-tabs">
-                <button
-                  type="button"
-                  className={`method-tab ${submitMode === "camera" ? "active" : ""}`}
-                  onClick={() => setSubmitMode("camera")}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                    <circle cx="12" cy="13" r="4" />
-                  </svg>
-                  Use Camera
-                </button>
-                <button
-                  type="button"
-                  className={`method-tab ${submitMode === "upload" ? "active" : ""}`}
-                  onClick={() => setSubmitMode("upload")}
-                >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                    <polyline points="17 8 12 3 7 8" />
-                    <line x1="12" y1="3" x2="12" y2="15" />
-                  </svg>
-                  Upload File
-                </button>
-              </div>
-            </div>
-
-            {/* Camera flow */}
-            {submitMode === "camera" && (
-              <div className="field">
-                <div className="capture-type-row">
-                  <button
-                    type="button"
-                    className={`capture-type-btn ${captureMode === "photo" ? "active" : ""}`}
-                    onClick={() => setCaptureMode("photo")}
-                  >
-                    Photo
-                  </button>
-                  <button
-                    type="button"
-                    className={`capture-type-btn ${captureMode === "video" ? "active" : ""}`}
-                    onClick={() => setCaptureMode("video")}
-                  >
-                    Video
-                  </button>
+              <div className="form-grid">
+                {/* Row 1: Case ID & Incident Type */}
+                <div className="field col-half">
+                  <Label className="field-label">Case ID</Label>
+                  <Input
+                    type="text"
+                    value={draftCaseId || "Generating ID..."}
+                    disabled
+                    className="bg-dash-input border-dash-border text-dash-muted h-11 rounded-xl cursor-not-allowed opacity-80"
+                  />
                 </div>
 
-                {!selectedFile ? (
-                  <button
-                    type="button"
-                    className="open-camera-btn"
-                    onClick={() => setShowCamera(true)}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                      <circle cx="12" cy="13" r="4" />
-                    </svg>
-                    Open Camera
-                  </button>
-                ) : (
-                  <div className="file-preview-row">
-                    {selectedFile.type.startsWith("image/") ? (
-                      <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
-                    ) : (
-                      <video src={filePreviewUrl!} className="file-thumb" muted />
-                    )}
-                    <div className="file-info">
-                      <span className="file-name">{selectedFile.name}</span>
-                      <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                      {capturedAt && (
-                        <span className="file-time">{capturedAt.toLocaleString()}</span>
-                      )}
+                <div className="field col-half">
+                  <Label className="field-label">Incident Type *</Label>
+                  <Select value={incidentType} onValueChange={(val) => { setIncidentType(val); setSelectedTemplateId(null); }}>
+                    <SelectTrigger className="w-full bg-dash-input border-dash-border text-dash-text h-11 rounded-xl focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-dash-accent transition-all">
+                      <SelectValue placeholder="Select incident type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
+                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="phishing">Phishing</SelectItem>
+                      <SelectItem value="malware">Malware / Ransomware</SelectItem>
+                      <SelectItem value="data_breach">Data Breach</SelectItem>
+                      <SelectItem value="insider_threat">Insider Threat</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+
+            {/* Group 3: Evidence Details */}
+            <div className="form-section">
+              <div className="section-header">
+                <h3 className="section-title">Evidence Details</h3>
+                <p className="section-subtitle">Specific description and descriptors of the record</p>
+              </div>
+              <div className="form-grid">
+                {/* Row 2: Evidence Title & Evidence Category */}
+                <div className="field col-half">
+                  <Label className="field-label">Evidence Title *</Label>
+                  <Input
+                    type="text"
+                    placeholder="Brief description of evidence"
+                    value={title}
+                    onChange={(e) => { setTitle(e.target.value); setSelectedTemplateId(null); }}
+                    className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl focus-visible:ring-offset-0 focus-visible:outline-none"
+                    required
+                  />
+                </div>
+
+                <div className="field col-half">
+                  <Label className="field-label">Evidence Category</Label>
+                  <Input
+                    type="text"
+                    value="Digital Forensic Specimen"
+                    disabled
+                    className="bg-dash-input border-dash-border text-dash-muted h-11 rounded-xl cursor-not-allowed opacity-80"
+                  />
+                </div>
+
+                {/* Row 3: Tags & Classification */}
+                <div className="field col-half">
+                  <Label className="field-label">Evidence Tags</Label>
+                  <Input
+                    type="text"
+                    placeholder="Press Enter or comma to insert tags"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleAddTag}
+                    className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl focus-visible:ring-offset-0 focus-visible:outline-none"
+                  />
+                  {tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      {tags.map((tag) => (
+                        <span key={tag} className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-dash-border/40 text-[10px] font-bold text-dash-text uppercase tracking-wider border border-dash-border/50">
+                          {tag}
+                          <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400 font-bold ml-0.5 text-xs">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="field col-half">
+                  <Label className="field-label">Classification Status</Label>
+                  <div className="flex items-center h-11 px-3 bg-dash-input border border-dash-border rounded-xl text-xs text-dash-muted gap-2 select-none">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="font-mono tracking-wider font-semibold text-[10px]">RESTRICTED // CHAIN-OF-CUSTODY AUDITED</span>
+                  </div>
+                </div>
+
+                {/* Row 4: Description (Full Width) */}
+                <div className="field col-full">
+                  <Label className="field-label">Description</Label>
+                  <Textarea
+                    placeholder="Optional: additional context about where and how this was captured"
+                    value={description}
+                    onChange={(e) => { setDescription(e.target.value); setSelectedTemplateId(null); }}
+                    className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text rounded-xl focus-visible:ring-offset-0 focus-visible:outline-none min-h-[90px]"
+                    rows={3}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Group 4: Acquisition & Geotagging */}
+            <div className="form-section">
+              <div className="section-header">
+                <h3 className="section-title">Acquisition & Geotagging</h3>
+                <p className="section-subtitle">Select capture medium and document exact localized origin</p>
+              </div>
+              <div className="form-grid">
+                {/* Row 5: Capture Method (Full Width) */}
+                <div className="field col-full">
+                  <Label className="field-label">Capture Method *</Label>
+                  <div className="method-tabs">
+                    <button
+                      type="button"
+                      className={`method-tab ${submitMode === "camera" ? "active" : ""}`}
+                      onClick={() => setSubmitMode("camera")}
+                    >
+                      <Camera className="w-4 h-4 shrink-0 text-dash-muted" />
+                      Use Camera
+                    </button>
+                    <button
+                      type="button"
+                      className={`method-tab ${submitMode === "upload" ? "active" : ""}`}
+                      onClick={() => setSubmitMode("upload")}
+                    >
+                      <Upload className="w-4 h-4 shrink-0 text-dash-muted" />
+                      Upload File
+                    </button>
+                  </div>
+                </div>
+
+                {/* Row 6: Camera Preview / Upload Area (Full Width) */}
+                {submitMode === "camera" && (
+                  <div className="field col-full">
+                    <div className="capture-type-row">
                       <button
                         type="button"
-                        className="reopen-camera"
-                        onClick={() => {
-                          setSelectedFile(null);
-                          setFilePreviewUrl(null);
-                          setShowCamera(true);
-                        }}
+                        className={`capture-type-btn ${captureMode === "photo" ? "active" : ""}`}
+                        onClick={() => setCaptureMode("photo")}
                       >
-                        Recapture
+                        Photo
+                      </button>
+                      <button
+                        type="button"
+                        className={`capture-type-btn ${captureMode === "video" ? "active" : ""}`}
+                        onClick={() => setCaptureMode("video")}
+                      >
+                        Video
                       </button>
                     </div>
-                  </div>
-                )}
 
-                {showCamera && (
-                  <div className="camera-modal-backdrop">
-                    <div className="camera-modal">
-                      <CameraCapture
-                        mode={captureMode}
-                        onCapture={handleCameraCapture}
-                        onCancel={() => setShowCamera(false)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* File upload flow */}
-            {submitMode === "upload" && (
-              <div className="field">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*,video/mp4,video/webm,application/pdf"
-                  onChange={handleFileSelect}
-                  className="hidden-input"
-                />
-                {!selectedFile ? (
-                  <button
-                    type="button"
-                    className="upload-zone"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                      <polyline points="17 8 12 3 7 8" />
-                      <line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                    <span>Tap to select file</span>
-                    <small>Images, video, PDF — max 200MB</small>
-                  </button>
-                ) : (
-                  <div className="file-preview-row">
-                    {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
-                      <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
+                    {!selectedFile ? (
+                      <button
+                        type="button"
+                        className="open-camera-btn"
+                        onClick={() => setShowCamera(true)}
+                      >
+                        <Camera className="w-5 h-5 text-dash-muted" />
+                        Open Capture Interface
+                      </button>
                     ) : (
-                      <div className="file-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-                          <polyline points="13 2 13 9 20 9" />
-                        </svg>
+                      <div className="file-preview-row">
+                        {selectedFile.type.startsWith("image/") ? (
+                          <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
+                        ) : (
+                          <video src={filePreviewUrl!} className="file-thumb" muted />
+                        )}
+                        <div className="file-info">
+                          <span className="file-name">{selectedFile.name}</span>
+                          <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                          {capturedAt && (
+                            <span className="file-time">{capturedAt.toLocaleString()}</span>
+                          )}
+                          <button
+                            type="button"
+                            className="reopen-camera"
+                            onClick={() => {
+                              setSelectedFile(null);
+                              setFilePreviewUrl(null);
+                              setShowCamera(true);
+                            }}
+                          >
+                            Recapture Specimen
+                          </button>
+                        </div>
                       </div>
                     )}
-                    <div className="file-info">
-                      <span className="file-name">{selectedFile.name}</span>
-                      <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+
+                    {showCamera && (
+                      <div className="camera-modal-backdrop">
+                        <div className="camera-modal">
+                          <CameraCapture
+                            mode={captureMode}
+                            onCapture={handleCameraCapture}
+                            onCancel={() => setShowCamera(false)}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {submitMode === "upload" && (
+                  <div className="field col-full">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*,video/mp4,video/webm,application/pdf"
+                      onChange={handleFileSelect}
+                      className="hidden-input"
+                    />
+                    {!selectedFile ? (
                       <button
                         type="button"
-                        className="reopen-camera"
+                        className="upload-zone"
                         onClick={() => fileInputRef.current?.click()}
                       >
-                        Change File
+                        <Upload className="w-6 h-6 text-dash-muted" />
+                        <span>Select Cryptographic Specimen File</span>
+                        <small>Images, video, PDF — max 200MB</small>
                       </button>
+                    ) : (
+                      <div className="file-preview-row">
+                        {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
+                          <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
+                        ) : (
+                          <div className="file-icon">
+                            <FileText className="w-6 h-6 text-dash-muted" />
+                          </div>
+                        )}
+                        <div className="file-info">
+                          <span className="file-name">{selectedFile.name}</span>
+                          <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                          <button
+                            type="button"
+                            className="reopen-camera"
+                            onClick={() => fileInputRef.current?.click()}
+                          >
+                            Change File
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Rows 7 & 8: GPS Information & Map (Full Width) */}
+                {submitMode && (
+                  <div className="field col-full gps-box">
+                    <div className="flex items-center gap-1.5 mb-1.5 ml-0.5">
+                      <MapPin className="w-4 h-4 text-dash-muted" />
+                      <Label className="field-label mb-0">Secure Geotag Origin</Label>
                     </div>
+                    <GPSStatusBadge
+                      status={refinedCoords ? "acquired" : gpsStatus}
+                      coords={refinedCoords}
+                      error={gpsError}
+                      onRequest={requestGPS}
+                      onClear={() => {
+                        clearGPS();
+                        setRefinedCoords(null);
+                      }}
+                    />
+
+                    {refinedCoords ? (
+                      <div className="w-full mt-3 rounded-xl overflow-hidden border border-dash-border">
+                        <LocationPickerMap
+                          lat={refinedCoords.latitude}
+                          lng={refinedCoords.longitude}
+                          accuracy={refinedCoords.accuracy}
+                          onChange={handleMapChange}
+                        />
+                      </div>
+                    ) : (
+                      (gpsStatus === "denied" || gpsStatus === "unavailable" || gpsStatus === "timeout" || gpsStatus === "idle") && (
+                        <Button
+                          type="button"
+                          variant="link"
+                          className="mt-2 text-xs text-dash-accent hover:underline flex items-center gap-1.5 w-fit font-bold uppercase tracking-wider text-left p-0 h-auto"
+                          onClick={() => {
+                            setRefinedCoords({
+                              latitude: 40.7128,
+                              longitude: -74.0060,
+                              altitude: null,
+                              accuracy: 15,
+                              capturedAt: new Date(),
+                            });
+                          }}
+                        >
+                          📍 Pin Location Manually on Map
+                        </Button>
+                      )
+                    )}
                   </div>
                 )}
               </div>
-            )}
+            </div>
 
-            {/* GPS panel */}
-            {submitMode && (
-              <div className="field gps-box">
-                <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">GPS Geotag</Label>
-                <GPSStatusBadge
-                  status={refinedCoords ? "acquired" : gpsStatus}
-                  coords={refinedCoords}
-                  error={gpsError}
-                  onRequest={requestGPS}
-                  onClear={() => {
-                    clearGPS();
-                    setRefinedCoords(null);
-                  }}
-                />
+            {/* Group 5: Additional Information */}
+            <div className="form-section">
+              <div className="section-header">
+                <h3 className="section-title">Additional Information</h3>
+                <p className="section-subtitle">System trust standard notes</p>
+              </div>
+              <div className="rounded-xl border border-dash-border/60 bg-dash-bg/40 p-4 flex gap-3 text-xs leading-relaxed text-dash-muted select-none">
+                <Info className="w-5 h-5 text-dash-accent shrink-0 mt-0.5 animate-pulse" />
+                <div className="space-y-1">
+                  <p className="font-semibold text-dash-text">Blockchain Integrity & Compliance</p>
+                  <p>
+                    All evidence submitted to ProofChain is run through cryptographic hashing (SHA-256) on device and anchored to the tamper-evident ledger. The localized coordinates and device timestamp are cryptographically bound, ensuring strict compliance with legal chain-of-custody standards. Modifying files after creation will invalidate their signature.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-                {refinedCoords ? (
-                  <LocationPickerMap
-                    lat={refinedCoords.latitude}
-                    lng={refinedCoords.longitude}
-                    accuracy={refinedCoords.accuracy}
-                    onChange={handleMapChange}
-                  />
-                ) : (
-                  (gpsStatus === "denied" || gpsStatus === "unavailable" || gpsStatus === "timeout" || gpsStatus === "idle") && (
+            {/* Group 6: Submission Area */}
+            <div className="form-section pt-6 border-t border-dash-border/40 flex flex-col gap-4">
+              {submitError && (
+                <div className="error-banner flex items-center gap-2">
+                  <X className="w-4 h-4 shrink-0 text-dash-danger" />
+                  <span>{submitError}</span>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                {submitMode ? (
+                  <>
+                    <Button
+                      type="submit"
+                      className="submit-btn w-full sm:flex-1 h-12 bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold rounded-xl shadow-sm transition-all text-base flex items-center justify-center gap-2"
+                      disabled={isSubmitting || !selectedFile || !title || !refinedCoords}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className="spinner-sm mr-2" />
+                          Creating Case…
+                        </>
+                      ) : (
+                        <>
+                          <Check className="w-4 h-4" />
+                          Create Case
+                        </>
+                      )}
+                    </Button>
                     <Button
                       type="button"
-                      variant="link"
-                      className="mt-2 text-xs text-dash-accent hover:underline flex items-center gap-1.5 w-fit font-bold uppercase tracking-wider text-left p-0 h-auto"
-                      onClick={() => {
-                        setRefinedCoords({
-                          latitude: 40.7128,
-                          longitude: -74.0060,
-                          altitude: null,
-                          accuracy: 15,
-                          capturedAt: new Date(),
-                        });
-                      }}
+                      variant="outline"
+                      className="w-full sm:w-auto h-12 px-6 border-dash-border hover:bg-dash-hover text-dash-text rounded-xl font-medium"
+                      onClick={() => router.push("/admin/cases")}
                     >
-                      📍 Pin Location Manually on Map
+                      Cancel
                     </Button>
-                  )
-                )}
-              </div>
-            )}
-
-            {/* Error */}
-            {submitError && (
-              <div className="error-banner">{submitError}</div>
-            )}
-
-            {/* Submit */}
-            {submitMode && (
-              <Button
-                type="submit"
-                className="submit-btn w-full h-12 bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold rounded-xl shadow-sm transition-all text-base mt-2"
-                disabled={isSubmitting || !selectedFile || !title || !refinedCoords}
-              >
-                {isSubmitting ? (
-                  <>
-                    <span className="spinner-sm mr-2" />
-                    Creating Case…
                   </>
                 ) : (
-                  "Create Case"
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full h-12 border-dash-border hover:bg-dash-hover text-dash-text rounded-xl font-medium"
+                    onClick={() => router.push("/admin/cases")}
+                  >
+                    Cancel / Go Back
+                  </Button>
                 )}
-              </Button>
-            )}
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -623,115 +777,72 @@ export default function CreateCasePage() {
           color: var(--dash-text);
         }
         .container {
-          max-width: 560px;
+          max-width: 960px;
           margin: 0 auto;
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 24px;
         }
-        .page-header { padding-bottom: 4px; text-align: center; }
-        .page-header h1 { margin: 0 0 4px; color: var(--dash-text); }
-        .page-header p { font-size: 13px; color: var(--dash-muted); margin: 0; }
-        .form { display: flex; flex-direction: column; gap: 16px; }
+        .page-header { padding-bottom: 4px; }
+        .form { display: flex; flex-direction: column; gap: 32px; }
+        .form-section { display: flex; flex-direction: column; gap: 16px; }
+        .section-header { border-bottom: 1px solid var(--dash-border); padding-bottom: 8px; margin-bottom: 4px; }
+        .section-title { font-size: 15px; font-weight: 600; color: var(--dash-text); }
+        .section-subtitle { font-size: 11px; color: var(--dash-muted); margin-top: 1px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; width: 100%; }
+        .col-full { grid-column: span 12; }
+        .col-half { grid-column: span 6; }
+
         .field { display: flex; flex-direction: column; gap: 6px; }
-        label { font-size: 13px; font-weight: 500; color: var(--dash-muted); }
-        input[type="text"], textarea {
-          background: var(--dash-input);
-          border: 1px solid var(--dash-border);
-          border-radius: 8px;
-          color: var(--dash-text);
-          padding: 10px 12px;
-          font-size: 14px;
-          outline: none;
-          transition: border-color 0.15s;
-          font-family: inherit;
-          resize: vertical;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .input-with-icon { position: relative; width: 100%; }
-        .input-with-icon input[type="text"], .input-with-icon textarea {
-          padding-left: 40px;
-        }
-        .input-with-icon .input-icon {
-          position: absolute;
-          left: 12px;
-          top: 10px;
-          color: var(--dash-muted);
-          width: 18px;
-          height: 18px;
-          pointer-events: none;
-        }
-        .custom-select {
-          background: var(--dash-input);
-          border: 1px solid var(--dash-border);
-          border-radius: 8px;
-          color: var(--dash-text);
-          padding: 10px 12px;
-          font-size: 14px;
-          outline: none;
-          width: 100%;
-        }
-        .custom-select option { background: var(--dash-bg); color: var(--dash-text); }
-        input:focus, textarea:focus, .custom-select:focus { border-color: var(--dash-accent); }
-        input::placeholder, textarea::placeholder { color: var(--dash-muted); opacity: 0.5; }
-        .template-cards {
-          display: flex;
-          gap: 8px;
-          flex-wrap: wrap;
-        }
-        .template-btn {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          background: rgba(30, 41, 59, 0.08);
-          border: 1px solid rgba(30, 41, 59, 0.15);
-          color: var(--dash-accent);
-          padding: 6px 12px;
-          border-radius: 6px;
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-        .template-btn:hover {
-          background: rgba(30, 41, 59, 0.15);
-        }
-        .method-tabs { display: flex; gap: 8px; }
+        .field-label { font-size: 12px; font-weight: 600; color: var(--dash-muted); margin-bottom: 2px; }
+
+        .method-tabs { display: flex; gap: 12px; }
         .method-tab {
           flex: 1;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 7px;
-          padding: 10px;
-          border-radius: 8px;
+          gap: 8px;
+          padding: 12px;
+          border-radius: 12px;
           border: 1px solid var(--dash-border);
           background: var(--dash-input);
           color: var(--dash-muted);
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
-          transition: all 0.15s;
+          transition: all 0.15s ease-in-out;
+        }
+        .method-tab:hover {
+          background: var(--dash-hover);
+          color: var(--dash-text);
         }
         .method-tab.active {
           border-color: var(--dash-accent);
-          background: rgba(30, 41, 59, 0.08);
+          background: rgba(16, 185, 129, 0.06);
           color: var(--dash-accent);
+          box-shadow: 0 0 10px rgba(16, 185, 129, 0.05);
         }
-        .capture-type-row { display: flex; gap: 6px; margin-bottom: 10px; }
+        .capture-type-row { display: flex; gap: 8px; margin-bottom: 12px; }
         .capture-type-btn {
-          padding: 5px 14px;
-          border-radius: 6px;
+          padding: 6px 14px;
+          border-radius: 8px;
           border: 1px solid var(--dash-border);
           background: transparent;
           color: var(--dash-muted);
-          font-size: 13px;
+          font-size: 12px;
+          font-weight: 600;
           cursor: pointer;
+          transition: all 0.15s;
+        }
+        .capture-type-btn:hover {
+          border-color: var(--dash-border-hover);
+          color: var(--dash-text);
         }
         .capture-type-btn.active {
           border-color: var(--dash-accent);
-          background: rgba(30, 41, 59, 0.08);
+          background: rgba(16, 185, 129, 0.06);
           color: var(--dash-accent);
         }
         .open-camera-btn {
@@ -740,13 +851,13 @@ export default function CreateCasePage() {
           justify-content: center;
           gap: 8px;
           width: 100%;
-          padding: 14px;
-          border-radius: 10px;
+          padding: 16px;
+          border-radius: 12px;
           border: 1.5px dashed var(--dash-border);
           background: var(--dash-input);
           color: var(--dash-muted);
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
           transition: all 0.15s;
         }
@@ -762,101 +873,98 @@ export default function CreateCasePage() {
           justify-content: center;
           gap: 8px;
           width: 100%;
-          padding: 24px;
-          border-radius: 10px;
+          padding: 32px;
+          border-radius: 12px;
           border: 1.5px dashed var(--dash-border);
           background: var(--dash-input);
           color: var(--dash-muted);
           cursor: pointer;
           text-align: center;
+          transition: all 0.15s;
         }
-        .upload-zone span { font-size: 14px; font-weight: 500; color: var(--dash-text); }
-        .upload-zone small { font-size: 12px; color: var(--dash-muted); }
+        .upload-zone:hover {
+          border-color: var(--dash-accent);
+          background: var(--dash-hover);
+        }
+        .upload-zone span { font-size: 14px; font-weight: 600; color: var(--dash-text); }
+        .upload-zone small { font-size: 11px; color: var(--dash-muted); }
         .hidden-input { display: none; }
         .file-preview-row {
           display: flex;
-          gap: 12px;
+          gap: 16px;
           align-items: center;
-          padding: 10px;
-          border-radius: 8px;
+          padding: 12px;
+          border-radius: 12px;
           border: 1px solid var(--dash-border);
           background: var(--dash-input);
         }
         .file-thumb {
-          width: 64px;
-          height: 64px;
+          width: 72px;
+          height: 72px;
           object-fit: cover;
-          border-radius: 6px;
+          border-radius: 8px;
           flex-shrink: 0;
+          border: 1px solid var(--dash-border);
         }
         .file-icon {
-          width: 64px;
-          height: 64px;
+          width: 72px;
+          height: 72px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: var(--dash-bg);
-          border-radius: 6px;
+          border-radius: 8px;
           color: var(--dash-muted);
           flex-shrink: 0;
+          border: 1px solid var(--dash-border);
         }
-        .file-info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-        .file-name { font-size: 13px; color: var(--dash-text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .file-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+        .file-name { font-size: 13px; color: var(--dash-text); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .file-size, .file-time { font-size: 11px; color: var(--dash-muted); }
         .reopen-camera {
           font-size: 12px;
+          font-weight: 600;
           color: var(--dash-accent);
           background: none;
           border: none;
           cursor: pointer;
           padding: 0;
-          margin-top: 2px;
+          margin-top: 4px;
           text-align: left;
+          width: fit-content;
+        }
+        .reopen-camera:hover {
+          text-decoration: underline;
         }
         .camera-modal-backdrop {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.8);
+          background: rgba(0,0,0,0.85);
           z-index: 100;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 16px;
+          backdrop-filter: blur(4px);
         }
         .camera-modal {
           width: 100%;
-          max-width: 480px;
-          background: var(--dash-modal);
-          border-radius: 16px;
-          padding: 16px;
-          border: 1px solid var(--dash-border);
+          max-width: 640px;
+          background: #09090b;
+          border-radius: 20px;
+          padding: 24px;
+          border: 1px solid rgba(255, 255, 255, 0.15);
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         .error-banner {
-          background: rgba(239,68,68,0.1);
-          border: 1px solid rgba(239,68,68,0.3);
-          border-radius: 8px;
-          padding: 10px 14px;
+          background: rgba(239, 68, 68, 0.08);
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          border-radius: 12px;
+          padding: 12px 16px;
           font-size: 13px;
           color: var(--dash-danger);
+          font-weight: 500;
         }
-        .submit-btn {
-          width: 100%;
-          padding: 13px;
-          border-radius: 10px;
-          border: none;
-          background: var(--dash-accent);
-          color: white;
-          font-size: 15px;
-          font-weight: 600;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          transition: background 0.15s;
-        }
-        .submit-btn:hover:not(:disabled) { opacity: 0.9; }
-        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .spinner-sm {
           width: 16px;
           height: 16px;
@@ -866,6 +974,22 @@ export default function CreateCasePage() {
           animation: spin 0.7s linear infinite;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 767px) {
+          .col-half {
+            grid-column: span 12;
+          }
+          .form-grid {
+            gap: 16px;
+          }
+          .form-card {
+            padding: 20px 16px !important;
+          }
+          .method-tabs {
+            flex-direction: column;
+            gap: 8px;
+          }
+        }
       `}</style>
     </div>
   );
