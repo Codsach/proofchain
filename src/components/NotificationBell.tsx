@@ -27,6 +27,12 @@ export function NotificationBell() {
   const [mounted, setMounted] = useState(false);
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
   
+  // Track open state for unread red dot/badge visibility
+  const [hasOpened, setHasOpened] = useState(false);
+  
+  // Keep track of the unread notification IDs to detect new notifications on poll
+  const prevUnreadIds = useRef<Set<string>>(new Set());
+
   // Track the ID of the most recent notification we have seen to know when to play sound
   const latestSeenId = useRef<string | null>(null);
 
@@ -74,6 +80,21 @@ export function NotificationBell() {
         const data = await res.json();
         const notifs: Notification[] = data.notifications || [];
         setNotifications(notifs);
+
+        // Check for new unread notifications that were not present in the last fetch
+        const currentUnreadIds = new Set(notifs.filter(n => !n.isRead).map(n => n._id));
+        let hasNewUnread = false;
+        for (const id of currentUnreadIds) {
+          if (!prevUnreadIds.current.has(id)) {
+            hasNewUnread = true;
+            break;
+          }
+        }
+
+        if (hasNewUnread) {
+          setHasOpened(false); // Reset tracking so badge displays again
+        }
+        prevUnreadIds.current = currentUnreadIds;
 
         if (notifs.length > 0) {
           const newest = notifs[0];
@@ -186,6 +207,24 @@ export function NotificationBell() {
     }
   };
 
+  const markAllAsRead = async () => {
+    try {
+      const token = await getToken();
+      const res = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        setNotifications(prev =>
+          prev.map(n => ({ ...n, isRead: true }))
+        );
+        prevUnreadIds.current.clear();
+      }
+    } catch (err) {
+      console.error("Failed to mark all notifications as read", err);
+    }
+  };
+
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   if (!user) return null;
@@ -194,12 +233,17 @@ export function NotificationBell() {
     <>
       <button
         ref={buttonRef}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (!isOpen) {
+            setHasOpened(true);
+          }
+        }}
         className="relative p-2 rounded-xl text-dash-muted hover:text-dash-text hover:bg-dash-hover transition-colors"
       >
         <Bell size={20} />
-        {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-dash-sidebar" />
+        {unreadCount > 0 && !hasOpened && (
+          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-dash-card animate-pulse" />
         )}
       </button>
 
@@ -217,9 +261,16 @@ export function NotificationBell() {
             >
               <div className="p-4 border-b border-dash-border sticky top-0 bg-dash-card/90 backdrop-blur-md z-10 flex items-center justify-between">
                 <h3 className="text-sm font-bold text-dash-text uppercase tracking-wider">Notifications</h3>
-                {unreadCount > 0 && (
-                  <span className="text-[10px] font-bold bg-dash-accent/20 text-dash-accent px-2 py-0.5 rounded-full">
-                    {unreadCount} new
+                {unreadCount > 0 ? (
+                  <button
+                    onClick={markAllAsRead}
+                    className="text-[10px] font-bold text-dash-accent hover:underline uppercase tracking-wider h-auto p-0 bg-transparent border-none cursor-pointer"
+                  >
+                    Mark all as read
+                  </button>
+                ) : (
+                  <span className="text-[10px] font-bold text-dash-muted uppercase tracking-wider">
+                    All read
                   </span>
                 )}
               </div>
