@@ -299,5 +299,5 @@ async function listCases(
 }
 
 // Export routes with auth middleware
-export const POST = withAuth(createCase, ["investigator"]);
+export const POST = withAuth(createCase, ["investigator", "admin"]);
 export const GET = withAuth(listCases, ["investigator", "analyst", "admin"]);

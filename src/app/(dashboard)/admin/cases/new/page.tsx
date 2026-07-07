@@ -222,7 +222,7 @@ export default function CreateCasePage() {
       } else {
         setSubmitSuccess(true);
         resetForm();
-        setTimeout(() => router.push("/investigator"), 2000);
+        setTimeout(() => router.push("/admin/cases"), 2000);
       }
     } catch {
       setSubmitError("Submission failed. Network error.");
@@ -259,8 +259,8 @@ export default function CreateCasePage() {
           <p>
             Your new case and initial evidence have been securely submitted. AI analysis is in progress.
           </p>
-          <button className="btn-primary" onClick={() => setSubmitSuccess(false)}>
-            Submit Another
+          <button className="btn-primary" onClick={() => router.push("/admin/cases")}>
+            Go to Archives
           </button>
         </div>
         <style jsx>{`

@@ -170,15 +170,25 @@ export default function AdminCasesPage() {
 
   return (
     <div className="w-full space-y-10">
-      <div className="relative">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="h-px w-8 bg-slate-400/50" />
-          <p className="type-eyebrow">Evidence Repository</p>
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="relative">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="h-px w-8 bg-slate-400/50" />
+            <p className="type-eyebrow">Evidence Repository</p>
+          </div>
+          <h1 className="type-display-xl">Global Archives</h1>
+          <p className="text-dash-muted mt-2 font-medium">
+            Accessing <span className="text-dash-text">{cases.length}</span> forensic subjects in this sector. 
+          </p>
         </div>
-        <h1 className="type-display-xl">Global Archives</h1>
-        <p className="text-dash-muted mt-2 font-medium">
-          Accessing <span className="text-dash-text">{cases.length}</span> forensic subjects in this sector. 
-        </p>
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="shrink-0">
+          <Button
+            asChild
+            className="bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold h-11 px-6 rounded-xl shadow-sm transition-all"
+          >
+            <Link href="/admin/cases/new">+ New Case</Link>
+          </Button>
+        </motion.div>
       </div>
 
       <div className="flex flex-col sm:flex-row bg-dash-card border border-dash-border p-6 rounded-2xl shadow-sm gap-4">

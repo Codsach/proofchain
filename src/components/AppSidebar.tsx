@@ -28,13 +28,15 @@ import {
   Briefcase,
   User,
   Settings,
-  Fingerprint
+  Fingerprint,
+  FolderPlus,
 } from "lucide-react";
 
 
 const navItems = {
   investigator: [
     { label: "My Cases", href: "/investigator", icon: Search },
+    { label: "New Case", href: "/investigator/cases/new", icon: FolderPlus },
     { label: "Submit Evidence", href: "/investigator/submit", icon: ShieldCheck },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
@@ -46,6 +48,7 @@ const navItems = {
   ],
   admin: [
     { label: "Dashboard", href: "/admin", icon: Hexagon },
+    { label: "New Case", href: "/admin/cases/new", icon: FolderPlus },
     { label: "Cases", href: "/admin/cases", icon: Briefcase },
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
