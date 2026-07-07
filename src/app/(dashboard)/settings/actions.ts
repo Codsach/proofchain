@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getServerSessionUser } from "@/lib/server-session";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
@@ -27,6 +28,8 @@ export async function updateAccountDetails(data: { fullName: string; email: stri
       fullName: data.fullName,
       email: data.email
     });
+
+    revalidatePath("/settings");
 
     return { success: true };
   } catch (error: any) {
@@ -132,6 +135,8 @@ export async function updateProfilePreferences(data: { landingPage: string; time
       timezone: data.timezone
     });
 
+    revalidatePath("/settings");
+
     return { success: true };
   } catch (error: any) {
     console.error("Update profile preferences error:", error);
@@ -154,6 +159,8 @@ export async function updateNotificationPreferences(data: { securityAlerts: bool
         systemUpdates: data.systemUpdates
       }
     });
+
+    revalidatePath("/settings");
 
     return { success: true };
   } catch (error: any) {

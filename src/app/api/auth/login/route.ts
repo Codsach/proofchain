@@ -161,11 +161,9 @@ export async function POST(req: NextRequest) {
       else if (landing === "audit") redirectTo = "/admin/audit";
       else redirectTo = "/admin";
     } else if (role === "analyst") {
-      if (landing === "cases") redirectTo = "/analyst/cases";
-      else redirectTo = "/analyst";
+      redirectTo = "/analyst";
     } else if (role === "investigator") {
-      if (landing === "cases") redirectTo = "/investigator/cases";
-      else redirectTo = "/investigator";
+      redirectTo = "/investigator";
     }
 
     // 10. Audit log
