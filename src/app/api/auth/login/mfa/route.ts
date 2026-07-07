@@ -109,6 +109,7 @@ export async function POST(req: NextRequest) {
         role: user.role,
         avatarUrl: profile?.avatarUrl || null,
         mfaEnabled: user.mfaEnabled || false,
+        landingPage: user.landingPage || "dashboard",
       },
     });
 

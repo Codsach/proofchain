@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     // Re-validate user from DB
     await connectDB();
     const user = await User.findById(payload.userId).select(
-      "role isActive isVerified email fullName mfaEnabled"
+      "role isActive isVerified email fullName mfaEnabled landingPage"
     );
 
     if (!user || !user.isActive || !user.isVerified) {
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
         role: user.role,
         avatarUrl: profile?.avatarUrl || null,
         mfaEnabled: user.mfaEnabled || false,
+        landingPage: user.landingPage || "dashboard",
       },
     });
 

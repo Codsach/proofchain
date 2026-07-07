@@ -18,6 +18,7 @@ interface AuthUser {
   role: "investigator" | "analyst" | "admin";
   avatarUrl: string | null;
   mfaEnabled: boolean;
+  landingPage?: string;
 }
 
 interface AuthContextValue {

@@ -62,28 +62,30 @@ function LoginForm() {
   const message = searchParams.get("message");
   const error = searchParams.get("error");
 
+  const getRedirectPath = (role: string, landing?: string) => {
+    const landingPage = landing || "dashboard";
+    if (role === "admin") {
+      if (landingPage === "cases") return "/admin/cases";
+      if (landingPage === "audit") return "/admin/audit";
+      return "/admin";
+    }
+    if (role === "analyst") return "/analyst";
+    if (role === "investigator") return "/investigator";
+    return "/";
+  };
+
   // Redirect if already logged in and not in success state
   useEffect(() => {
     if (!isLoading && user && !isSuccess) {
-      const redirectMap: Record<string, string> = {
-        admin: "/admin",
-        analyst: "/analyst",
-        investigator: "/investigator",
-      };
-      router.push(redirectMap[user.role] || "/");
+      router.push(getRedirectPath(user.role, user.landingPage));
     }
   }, [user, isLoading, router, isSuccess]);
 
   // Handle redirect after success transition completes
   useEffect(() => {
     if (isSuccess && user) {
-      const redirectMap: Record<string, string> = {
-        admin: "/admin",
-        analyst: "/analyst",
-        investigator: "/investigator",
-      };
       const timer = setTimeout(() => {
-        router.push(redirectMap[user.role] || "/");
+        router.push(getRedirectPath(user.role, user.landingPage));
       }, 1500);
       return () => clearTimeout(timer);
     }
