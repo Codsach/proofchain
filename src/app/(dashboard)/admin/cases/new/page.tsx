@@ -179,7 +179,7 @@ export default function CreateCasePage() {
     fd.append("description", description);
     fd.append("incidentType", incidentType);
     fd.append("incidentDate", refinedCoords ? refinedCoords.capturedAt.toISOString() : new Date().toISOString());
-    
+
     tags.forEach(tag => fd.append("tags", tag));
 
     if (refinedCoords) {
@@ -298,319 +298,319 @@ export default function CreateCasePage() {
               handleSubmit();
             }}
           >
-          <div className="field">
-            <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Case Templates</Label>
-            <div className="template-cards">
-              {CASE_TEMPLATES.map((t) => (
-                <Button
-                  key={t.id}
-                  type="button"
-                  variant="outline"
-                  onClick={() => applyTemplate(t.id)}
-                  className="h-9 px-4 rounded-xl border border-dash-border bg-dash-card hover:bg-dash-hover text-dash-accent font-semibold transition-all shadow-3xs flex items-center gap-1.5"
-                >
-                  <LayoutTemplate className="w-4 h-4" />
-                  {t.label}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          <div className="field">
-            <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Incident Type *</Label>
-            <Select value={incidentType} onValueChange={setIncidentType}>
-              <SelectTrigger className="w-full bg-dash-input border-dash-border text-dash-text h-11 rounded-xl focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-dash-accent transition-all">
-                <SelectValue placeholder="Select incident type" />
-              </SelectTrigger>
-              <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
-                <SelectItem value="other">Other</SelectItem>
-                <SelectItem value="phishing">Phishing</SelectItem>
-                <SelectItem value="malware">Malware / Ransomware</SelectItem>
-                <SelectItem value="data_breach">Data Breach</SelectItem>
-                <SelectItem value="insider_threat">Insider Threat</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Title */}
-          <div className="field">
-            <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Evidence Title *</Label>
-            <div className="input-with-icon">
-              <FileText className="input-icon" />
-              <Input
-                type="text"
-                placeholder="Brief description of evidence"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="field">
-            <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Description</Label>
-            <div className="input-with-icon">
-              <AlignLeft className="input-icon" style={{ top: "12px" }} />
-              <Textarea
-                placeholder="Optional: additional context about where and how this was captured"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none min-h-[80px]"
-                rows={3}
-              />
-            </div>
-          </div>
-
-          <div className="field">
-            <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Evidence Tags</Label>
-            <div className="input-with-icon">
-              <Tags className="input-icon" />
-              <Input
-                type="text"
-                placeholder="Type and press Enter (e.g. priority:high, project-x)"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleAddTag}
-                className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none"
-              />
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {tags.map((tag) => (
-                  <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-dash-border/40 text-xs font-bold text-dash-text uppercase tracking-wider">
-                    {tag}
-                    <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400">×</button>
-                  </span>
+            <div className="field">
+              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Case Templates</Label>
+              <div className="template-cards">
+                {CASE_TEMPLATES.map((t) => (
+                  <Button
+                    key={t.id}
+                    type="button"
+                    variant="outline"
+                    onClick={() => applyTemplate(t.id)}
+                    className="h-9 px-4 rounded-xl border border-dash-border bg-dash-card hover:bg-dash-hover text-dash-accent font-semibold transition-all shadow-3xs flex items-center gap-1.5"
+                  >
+                    <LayoutTemplate className="w-4 h-4" />
+                    {t.label}
+                  </Button>
                 ))}
               </div>
-            )}
-          </div>
-
-          {/* Capture method */}
-          <div className="field">
-            <label>Capture Method *</label>
-            <div className="method-tabs">
-              <button
-                type="button"
-                className={`method-tab ${submitMode === "camera" ? "active" : ""}`}
-                onClick={() => setSubmitMode("camera")}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-                  <circle cx="12" cy="13" r="4" />
-                </svg>
-                Use Camera
-              </button>
-              <button
-                type="button"
-                className={`method-tab ${submitMode === "upload" ? "active" : ""}`}
-                onClick={() => setSubmitMode("upload")}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                Upload File
-              </button>
             </div>
-          </div>
 
-          {/* Camera flow */}
-          {submitMode === "camera" && (
             <div className="field">
-              <div className="capture-type-row">
-                <button
-                  type="button"
-                  className={`capture-type-btn ${captureMode === "photo" ? "active" : ""}`}
-                  onClick={() => setCaptureMode("photo")}
-                >
-                  Photo
-                </button>
-                <button
-                  type="button"
-                  className={`capture-type-btn ${captureMode === "video" ? "active" : ""}`}
-                  onClick={() => setCaptureMode("video")}
-                >
-                  Video
-                </button>
-              </div>
+              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Incident Type *</Label>
+              <Select value={incidentType} onValueChange={setIncidentType}>
+                <SelectTrigger className="w-full bg-dash-input border-dash-border text-dash-text h-11 rounded-xl focus:ring-0 focus:ring-offset-0 focus:outline-none focus:border-dash-accent transition-all">
+                  <SelectValue placeholder="Select incident type" />
+                </SelectTrigger>
+                <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
+                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="phishing">Phishing</SelectItem>
+                  <SelectItem value="malware">Malware / Ransomware</SelectItem>
+                  <SelectItem value="data_breach">Data Breach</SelectItem>
+                  <SelectItem value="insider_threat">Insider Threat</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              {!selectedFile ? (
+            {/* Title */}
+            <div className="field">
+              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Evidence Title *</Label>
+              <div className="input-with-icon">
+                <FileText className="input-icon" />
+                <Input
+                  type="text"
+                  placeholder="Brief description of evidence"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="field">
+              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Description</Label>
+              <div className="input-with-icon">
+                <AlignLeft className="input-icon" style={{ top: "12px" }} />
+                <Textarea
+                  placeholder="Optional: additional context about where and how this was captured"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none min-h-[80px]"
+                  rows={3}
+                />
+              </div>
+            </div>
+
+            <div className="field">
+              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">Evidence Tags</Label>
+              <div className="input-with-icon">
+                <Tags className="input-icon" />
+                <Input
+                  type="text"
+                  placeholder="Type and press Enter (e.g. priority:high, project-x)"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={handleAddTag}
+                  className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 focus-visible:border-dash-accent transition-all text-dash-text h-11 rounded-xl pl-10 focus-visible:ring-offset-0 focus-visible:outline-none"
+                />
+              </div>
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {tags.map((tag) => (
+                    <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 rounded bg-dash-border/40 text-xs font-bold text-dash-text uppercase tracking-wider">
+                      {tag}
+                      <button type="button" onClick={() => removeTag(tag)} className="hover:text-red-400">×</button>
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Capture method */}
+            <div className="field">
+              <label>Capture Method *</label>
+              <div className="method-tabs">
                 <button
                   type="button"
-                  className="open-camera-btn"
-                  onClick={() => setShowCamera(true)}
+                  className={`method-tab ${submitMode === "camera" ? "active" : ""}`}
+                  onClick={() => setSubmitMode("camera")}
                 >
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                     <circle cx="12" cy="13" r="4" />
                   </svg>
-                  Open Camera
+                  Use Camera
                 </button>
-              ) : (
-                <div className="file-preview-row">
-                  {selectedFile.type.startsWith("image/") ? (
-                    <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
-                  ) : (
-                    <video src={filePreviewUrl!} className="file-thumb" muted />
-                  )}
-                  <div className="file-info">
-                    <span className="file-name">{selectedFile.name}</span>
-                    <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                    {capturedAt && (
-                      <span className="file-time">{capturedAt.toLocaleString()}</span>
-                    )}
-                    <button
-                      type="button"
-                      className="reopen-camera"
-                      onClick={() => {
-                        setSelectedFile(null);
-                        setFilePreviewUrl(null);
-                        setShowCamera(true);
-                      }}
-                    >
-                      Recapture
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {showCamera && (
-                <div className="camera-modal-backdrop">
-                  <div className="camera-modal">
-                    <CameraCapture
-                      mode={captureMode}
-                      onCapture={handleCameraCapture}
-                      onCancel={() => setShowCamera(false)}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* File upload flow */}
-          {submitMode === "upload" && (
-            <div className="field">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*,video/mp4,video/webm,application/pdf"
-                onChange={handleFileSelect}
-                className="hidden-input"
-              />
-              {!selectedFile ? (
                 <button
                   type="button"
-                  className="upload-zone"
-                  onClick={() => fileInputRef.current?.click()}
+                  className={`method-tab ${submitMode === "upload" ? "active" : ""}`}
+                  onClick={() => setSubmitMode("upload")}
                 >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                   </svg>
-                  <span>Tap to select file</span>
-                  <small>Images, video, PDF — max 200MB</small>
+                  Upload File
                 </button>
-              ) : (
-                <div className="file-preview-row">
-                  {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
-                    <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
-                  ) : (
-                    <div className="file-icon">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-                        <polyline points="13 2 13 9 20 9" />
-                      </svg>
-                    </div>
-                  )}
-                  <div className="file-info">
-                    <span className="file-name">{selectedFile.name}</span>
-                    <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                    <button
-                      type="button"
-                      className="reopen-camera"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      Change File
-                    </button>
-                  </div>
-                </div>
-              )}
+              </div>
             </div>
-          )}
 
-          {/* GPS panel */}
-          {submitMode && (
-            <div className="field gps-box">
-              <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">GPS Geotag</Label>
-              <GPSStatusBadge
-                status={refinedCoords ? "acquired" : gpsStatus}
-                coords={refinedCoords}
-                error={gpsError}
-                onRequest={requestGPS}
-                onClear={() => {
-                  clearGPS();
-                  setRefinedCoords(null);
-                }}
-              />
-              
-              {refinedCoords ? (
-                <LocationPickerMap
-                  lat={refinedCoords.latitude}
-                  lng={refinedCoords.longitude}
-                  accuracy={refinedCoords.accuracy}
-                  onChange={handleMapChange}
-                />
-              ) : (
-                (gpsStatus === "denied" || gpsStatus === "unavailable" || gpsStatus === "timeout" || gpsStatus === "idle") && (
-                  <Button
+            {/* Camera flow */}
+            {submitMode === "camera" && (
+              <div className="field">
+                <div className="capture-type-row">
+                  <button
                     type="button"
-                    variant="link"
-                    className="mt-2 text-xs text-dash-accent hover:underline flex items-center gap-1.5 w-fit font-bold uppercase tracking-wider text-left p-0 h-auto"
-                    onClick={() => {
-                      setRefinedCoords({
-                        latitude: 40.7128,
-                        longitude: -74.0060,
-                        altitude: null,
-                        accuracy: 15,
-                        capturedAt: new Date(),
-                      });
-                    }}
+                    className={`capture-type-btn ${captureMode === "photo" ? "active" : ""}`}
+                    onClick={() => setCaptureMode("photo")}
                   >
-                    📍 Pin Location Manually on Map
-                  </Button>
-                )
-              )}
-            </div>
-          )}
+                    Photo
+                  </button>
+                  <button
+                    type="button"
+                    className={`capture-type-btn ${captureMode === "video" ? "active" : ""}`}
+                    onClick={() => setCaptureMode("video")}
+                  >
+                    Video
+                  </button>
+                </div>
 
-          {/* Error */}
-          {submitError && (
-            <div className="error-banner">{submitError}</div>
-          )}
+                {!selectedFile ? (
+                  <button
+                    type="button"
+                    className="open-camera-btn"
+                    onClick={() => setShowCamera(true)}
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                      <circle cx="12" cy="13" r="4" />
+                    </svg>
+                    Open Camera
+                  </button>
+                ) : (
+                  <div className="file-preview-row">
+                    {selectedFile.type.startsWith("image/") ? (
+                      <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
+                    ) : (
+                      <video src={filePreviewUrl!} className="file-thumb" muted />
+                    )}
+                    <div className="file-info">
+                      <span className="file-name">{selectedFile.name}</span>
+                      <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                      {capturedAt && (
+                        <span className="file-time">{capturedAt.toLocaleString()}</span>
+                      )}
+                      <button
+                        type="button"
+                        className="reopen-camera"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          setFilePreviewUrl(null);
+                          setShowCamera(true);
+                        }}
+                      >
+                        Recapture
+                      </button>
+                    </div>
+                  </div>
+                )}
 
-          {/* Submit */}
-          {submitMode && (
-            <Button
-              type="submit"
-              className="submit-btn w-full h-12 bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold rounded-xl shadow-sm transition-all text-base mt-2"
-              disabled={isSubmitting || !selectedFile || !title || !refinedCoords}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="spinner-sm mr-2" />
-                  Creating Case…
-                </>
-              ) : (
-                "Create Case"
-              )}
-            </Button>
-          )}
+                {showCamera && (
+                  <div className="camera-modal-backdrop">
+                    <div className="camera-modal">
+                      <CameraCapture
+                        mode={captureMode}
+                        onCapture={handleCameraCapture}
+                        onCancel={() => setShowCamera(false)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* File upload flow */}
+            {submitMode === "upload" && (
+              <div className="field">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,video/mp4,video/webm,application/pdf"
+                  onChange={handleFileSelect}
+                  className="hidden-input"
+                />
+                {!selectedFile ? (
+                  <button
+                    type="button"
+                    className="upload-zone"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <span>Tap to select file</span>
+                    <small>Images, video, PDF — max 200MB</small>
+                  </button>
+                ) : (
+                  <div className="file-preview-row">
+                    {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
+                      <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
+                    ) : (
+                      <div className="file-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                          <polyline points="13 2 13 9 20 9" />
+                        </svg>
+                      </div>
+                    )}
+                    <div className="file-info">
+                      <span className="file-name">{selectedFile.name}</span>
+                      <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
+                      <button
+                        type="button"
+                        className="reopen-camera"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Change File
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* GPS panel */}
+            {submitMode && (
+              <div className="field gps-box">
+                <Label className="text-xs font-bold text-dash-muted uppercase tracking-wider mb-1 ml-0.5">GPS Geotag</Label>
+                <GPSStatusBadge
+                  status={refinedCoords ? "acquired" : gpsStatus}
+                  coords={refinedCoords}
+                  error={gpsError}
+                  onRequest={requestGPS}
+                  onClear={() => {
+                    clearGPS();
+                    setRefinedCoords(null);
+                  }}
+                />
+
+                {refinedCoords ? (
+                  <LocationPickerMap
+                    lat={refinedCoords.latitude}
+                    lng={refinedCoords.longitude}
+                    accuracy={refinedCoords.accuracy}
+                    onChange={handleMapChange}
+                  />
+                ) : (
+                  (gpsStatus === "denied" || gpsStatus === "unavailable" || gpsStatus === "timeout" || gpsStatus === "idle") && (
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="mt-2 text-xs text-dash-accent hover:underline flex items-center gap-1.5 w-fit font-bold uppercase tracking-wider text-left p-0 h-auto"
+                      onClick={() => {
+                        setRefinedCoords({
+                          latitude: 40.7128,
+                          longitude: -74.0060,
+                          altitude: null,
+                          accuracy: 15,
+                          capturedAt: new Date(),
+                        });
+                      }}
+                    >
+                      📍 Pin Location Manually on Map
+                    </Button>
+                  )
+                )}
+              </div>
+            )}
+
+            {/* Error */}
+            {submitError && (
+              <div className="error-banner">{submitError}</div>
+            )}
+
+            {/* Submit */}
+            {submitMode && (
+              <Button
+                type="submit"
+                className="submit-btn w-full h-12 bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold rounded-xl shadow-sm transition-all text-base mt-2"
+                disabled={isSubmitting || !selectedFile || !title || !refinedCoords}
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="spinner-sm mr-2" />
+                    Creating Case…
+                  </>
+                ) : (
+                  "Create Case"
+                )}
+              </Button>
+            )}
           </form>
         </div>
       </div>
