@@ -83,7 +83,7 @@ export function TamperGauge({ score }: Props) {
             cy={center}
             r={radius}
             fill="none"
-            stroke="rgba(255, 255, 255, 0.04)"
+            stroke="var(--dash-border)"
             strokeWidth={strokeWidth}
             strokeDasharray={strokeDasharray}
             strokeLinecap="round"

@@ -63,20 +63,20 @@ interface Props {
 export function AiReportPanel({ report, isLoading }: Props) {
   if (isLoading) {
     return (
-      <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 space-y-4 animate-pulse">
-        <div className="h-4 bg-white/5 rounded-full w-1/3" />
-        <div className="h-3 bg-white/5 rounded-full w-full" />
-        <div className="h-3 bg-white/5 rounded-full w-2/3" />
+      <div className="rounded-2xl border border-dash-border bg-dash-card/50 p-6 space-y-4 animate-pulse">
+        <div className="h-4 bg-dash-input rounded-full w-1/3" />
+        <div className="h-3 bg-dash-input rounded-full w-full" />
+        <div className="h-3 bg-dash-input rounded-full w-2/3" />
       </div>
     );
   }
 
   if (!report) {
     return (
-      <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 backdrop-blur-xl">
+      <div className="rounded-2xl border border-dash-border bg-dash-card/50 p-6 backdrop-blur-xl">
         <div className="flex items-center gap-3">
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
+          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">
             Analysis Protocol In Progress...
           </p>
         </div>
@@ -108,7 +108,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
   };
 
   return (
-    <div className="rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-2xl p-6 space-y-6 shadow-2xl relative overflow-hidden group">
+    <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-2xl p-6 space-y-6 shadow-2xl relative overflow-hidden group">
       {/* Background Decorative Element */}
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
 
@@ -118,7 +118,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
           <TamperGauge score={report.tamperScore} />
         </div>
         <div className="text-right self-start pt-2">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest mb-1">Temporal Scan</p>
+          <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest mb-1">Temporal Scan</p>
           <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
             {new Date(report.analysedAt).toLocaleString(undefined, {
               hour: '2-digit', minute: '2-digit', second: '2-digit'
@@ -131,11 +131,11 @@ export function AiReportPanel({ report, isLoading }: Props) {
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="rounded-xl bg-white/[0.03] border border-white/5 px-4 py-4 relative group/summary"
+        className="rounded-xl bg-dash-input/30 border border-dash-border px-4 py-4 relative group/summary"
       >
         <div className="absolute top-0 left-0 w-1 h-full bg-emerald-500/20 group-hover/summary:bg-emerald-500/40 transition-colors" />
         <p className="text-[10px] font-bold text-emerald-500/40 uppercase tracking-widest mb-2 ml-1">AI Executive Summary</p>
-        <p className="text-sm text-white/70 leading-relaxed font-medium ml-1">
+        <p className="text-sm text-dash-text/80 leading-relaxed font-medium ml-1">
           {report.plainNotesSummary}
         </p>
       </motion.div>
@@ -143,7 +143,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
       {/* Score Breakdown Chart */}
       {report.scoreBreakdown && Object.keys(report.scoreBreakdown).length > 0 && (
         <div className="space-y-3 pt-2">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+          <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest ml-1">
             Forensic Risk Breakdown
           </p>
           <ScoreBreakdownChart scoreBreakdown={report.scoreBreakdown} />
@@ -153,7 +153,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
       {/* EXIF flags */}
       {report.exifData.flags && report.exifData.flags.length > 0 && (
         <div className="space-y-3">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+          <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest ml-1">
             Anomalous Metadata
           </p>
           <div className="space-y-2">
@@ -167,7 +167,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="flex items-start gap-3 text-[10px] text-amber-400 font-bold uppercase tracking-widest bg-amber-500/5 border border-amber-500/10 rounded-xl px-4 py-3"
+                  className="flex items-start gap-3 text-[10px] text-amber-600 dark:text-amber-400 font-bold uppercase tracking-widest bg-amber-500/5 border border-amber-500/10 rounded-xl px-4 py-3"
                 >
                   <span className="mt-0.5 shrink-0 text-amber-500/60">⚡</span>
                   <div className="flex flex-col gap-0.5">
@@ -186,13 +186,13 @@ export function AiReportPanel({ report, isLoading }: Props) {
       {/* Gemini visual findings */}
       {report.geminiResult.findings && report.geminiResult.findings.length > 0 && (
         <div className="space-y-3 pt-2">
-          <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1 flex justify-between">
+          <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest ml-1 flex justify-between">
             <span>Visual Neural Findings</span>
             <span className="text-emerald-500/40 text-[9px]">CONF::{report.geminiResult.confidence}</span>
           </p>
           <div className="space-y-2">
             {report.geminiResult.findings.map((f, i) => (
-              <div key={i} className="text-[11px] text-white/50 font-medium flex gap-3 px-1 group/finding">
+              <div key={i} className="text-[11px] text-dash-text/70 font-medium flex gap-3 px-1 group/finding">
                 <span className="text-emerald-500/20 group-hover:text-emerald-500/50 transition-colors shrink-0">■</span>
                 {f}
               </div>
@@ -202,13 +202,13 @@ export function AiReportPanel({ report, isLoading }: Props) {
       )}
 
       {/* EXIF metadata table */}
-      <div className="pt-4 border-t border-white/5 space-y-3">
-        <p className="text-[10px] font-bold text-white/20 uppercase tracking-widest ml-1">
+      <div className="pt-4 border-t border-dash-border space-y-3">
+        <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest ml-1">
           Raw Metadata Registry
         </p>
-        <div className="rounded-xl overflow-hidden border border-white/5 bg-black/20">
+        <div className="rounded-xl overflow-hidden border border-dash-border bg-dash-bg/30">
           <table className="w-full text-[10px] font-bold uppercase tracking-tight">
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-dash-border">
               {[
                 ["Software", report.exifData.software],
                 ["Device", report.exifData.device],
@@ -216,11 +216,11 @@ export function AiReportPanel({ report, isLoading }: Props) {
                 ["Modified", report.exifData.modification_timestamp],
                 ["GPS", report.exifData.gps_present ? "Present" : "Absent"],
               ].map(([label, value]) => (
-                <tr key={label as string} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="py-2.5 px-4 text-white/30 w-32">{label}</td>
+                <tr key={label as string} className="hover:bg-dash-hover/20 transition-colors">
+                  <td className="py-2.5 px-4 text-dash-muted/60 w-32">{label}</td>
                   <td
                     className={`py-2.5 px-4 font-mono tracking-tighter ${
-                      value ? "text-white/60" : "text-white/10 italic"
+                      value ? "text-dash-text/80" : "text-dash-muted/20 italic"
                     }`}
                   >
                     {value ?? "N/A"}
