@@ -156,17 +156,18 @@ export default function HeroInteractiveWidget() {
     <div
       className="relative w-full max-w-[470px] mx-auto lg:mr-0 lg:ml-auto select-none"
       style={{
-        background: "linear-gradient(160deg, rgba(255,255,255,0.96) 0%, rgba(255,255,255,0.88) 100%)",
-        backdropFilter: "blur(32px)",
-        WebkitBackdropFilter: "blur(32px)",
-        border: `1px solid ${cfg.borderColor}`,
+        background: "linear-gradient(160deg, rgba(255,255,255,0.98) 0%, rgba(250,252,251,0.95) 100%)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+        border: "1px solid rgba(255, 255, 255, 0.35)",
         borderRadius: 24,
         padding: 24,
         boxShadow: `
-          0 1px 3px rgba(15,23,42,0.04),
-          0 8px 24px rgba(15,23,42,0.07),
-          0 24px 56px rgba(15,23,42,0.06),
-          inset 0 1px 0 rgba(255,255,255,1)
+          0 1px 2px rgba(0, 0, 0, 0.05),
+          0 4px 12px rgba(0, 0, 0, 0.05),
+          0 16px 36px rgba(0, 0, 0, 0.08),
+          0 32px 80px rgba(0, 0, 0, 0.12),
+          inset 0 1px 0 rgba(255, 255, 255, 0.9)
         `,
         transition: "border-color 0.5s ease, box-shadow 0.5s ease",
       }}
@@ -275,7 +276,7 @@ export default function HeroInteractiveWidget() {
                 style={{
                   width: "100%", height: 140, borderRadius: 14,
                   border: "1px solid rgba(59,130,246,0.20)",
-                  background: "rgba(248,250,252,0.90)",
+                  background: "#f8fafc",
                   position: "relative", overflow: "hidden",
                   display: "flex", alignItems: "center", justifyContent: "center",
                 }}
@@ -295,7 +296,7 @@ export default function HeroInteractiveWidget() {
                 <FileText size={34} style={{ color: "rgba(59,130,246,0.30)", position: "absolute" }} />
                 <div style={{
                   position: "absolute", bottom: 10, left: 10,
-                  background: "rgba(255,255,255,0.95)",
+                  background: "#ffffff",
                   border: "1px solid rgba(59,130,246,0.25)",
                   padding: "3px 10px", borderRadius: 6,
                   fontSize: 9, fontFamily: "var(--font-geist-mono, monospace)",
@@ -374,7 +375,7 @@ export default function HeroInteractiveWidget() {
                     style={{
                       padding: "9px 10px",
                       borderRadius: 10,
-                      background: item.highlight ? "rgba(5,150,105,0.05)" : "rgba(248,250,252,0.80)",
+                       background: item.highlight ? "#edfcf7" : "#f8fafc",
                       border: `1px solid ${item.highlight ? "rgba(5,150,105,0.18)" : "rgba(15,23,42,0.07)"}`,
                       fontFamily: "var(--font-geist-mono, monospace)",
                     }}
@@ -503,7 +504,7 @@ export default function HeroInteractiveWidget() {
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "7px 10px",
                     borderRadius: 9,
-                    background: "rgba(248,250,252,0.80)",
+                    background: "#f8fafc",
                     border: "1px solid rgba(15,23,42,0.06)",
                     fontFamily: "var(--font-geist-mono, monospace)",
                   }}
@@ -589,7 +590,7 @@ export default function HeroInteractiveWidget() {
                     width: "100%", display: "flex",
                     justifyContent: "space-between", alignItems: "center",
                     padding: "7px 12px", borderRadius: 9,
-                    background: "rgba(248,250,252,0.80)",
+                    background: "#f8fafc",
                     border: "1px solid rgba(15,23,42,0.06)",
                     fontFamily: "var(--font-geist-mono, monospace)",
                   }}
@@ -763,8 +764,8 @@ export default function HeroInteractiveWidget() {
                       ? p.accentColor
                       : isCompleted
                         ? "#059669"
-                        : "rgba(255,255,255,0.95)",
-                    border: `1.5px solid ${isActive ? p.accentColor : isCompleted ? "#059669" : "rgba(15,23,42,0.12)"}`,
+                        : "#ffffff",
+                    border: `1px solid ${isActive ? p.accentColor : isCompleted ? "#059669" : "rgba(15,23,42,0.12)"}`,
                     display: "flex", alignItems: "center", justifyContent: "center",
                     transition: "all 0.5s cubic-bezier(0.16,1,0.3,1)",
                     boxShadow: isActive ? `0 0 0 3px ${p.accentColor}22` : "none",

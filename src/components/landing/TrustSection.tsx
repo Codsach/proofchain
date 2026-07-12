@@ -361,19 +361,6 @@ function StatItem({
           transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        {/* Featured Card Indicator Band */}
-        {(index === 0 || index === 2) && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0, left: 0, right: 0,
-              height: 3,
-              background: stat.color,
-              borderRadius: "20px 20px 0 0",
-              zIndex: 10,
-            }}
-          />
-        )}
 
         {/* Glow layer */}
         <div
