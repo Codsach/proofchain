@@ -30,7 +30,7 @@ export default function VerifyLookupPage() {
       <header className="relative z-10 max-w-4xl mx-auto w-full px-6 py-6 flex items-center justify-between border-b border-white/5">
         <Link href="/" className="flex items-center gap-3 group">
           <div className="flex size-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 overflow-hidden">
-            <Image src="/logo.png" alt="ProofChain Icon" width={24} height={24} className="object-contain" />
+            <Image src="/logo.png" alt="ProofChain Icon" width={24} height={24} className="object-contain rounded-md" />
           </div>
           <span className="text-lg font-bold tracking-tight">
             <span className="text-white">Proof</span>

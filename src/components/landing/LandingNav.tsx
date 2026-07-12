@@ -97,12 +97,44 @@ export default function LandingNav() {
       >
         {/* Left: Logo */}
         <div style={{ display: "flex", alignItems: "center", flex: "1 1 0%", minWidth: 0 }}>
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <img src="/logo.png" alt="ProofChain Logo" width="24" height="24" style={{ objectFit: "contain" }} />
-            <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em" }}>
-              <span style={{ color: "#ffffff", transition: "color 0.4s ease" }}>Proof</span>
-              <span style={{ color: "#059669" }}>Chain</span>
-            </span>
+          <Link href="/" style={{ textDecoration: "none" }}>
+            <motion.div
+              style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}
+              whileHover="hover"
+            >
+              <motion.img 
+                src="/logo.png" 
+                alt="ProofChain Logo" 
+                width="24" 
+                height="24" 
+                style={{ objectFit: "contain", borderRadius: "6px" }}
+                variants={{
+                  hover: { scale: 1.08, rotate: 12 },
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              />
+              <motion.span 
+                style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em" }}
+                variants={{
+                  hover: { x: 2 },
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              >
+                <span style={{ color: "#ffffff", transition: "color 0.4s ease" }}>Proof</span>
+                <motion.span 
+                  style={{ color: "#059669", display: "inline-block" }}
+                  variants={{
+                    hover: { 
+                      color: "#10b981",
+                      textShadow: "0 0 8px rgba(16,185,129,0.4)" 
+                    }
+                  }}
+                  transition={{ duration: 0.3 }}
+                >
+                  Chain
+                </motion.span>
+              </motion.span>
+            </motion.div>
           </Link>
         </div>
 

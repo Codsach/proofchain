@@ -85,7 +85,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <div className={`flex items-center w-full ${isCollapsed ? 'justify-center' : 'gap-3'}`}>
               <div className="flex size-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/5 shrink-0 overflow-hidden">
-                <Image src="/logo.png" alt="ProofChain Icon" width={28} height={28} className="object-contain" />
+                <Image src="/logo.png" alt="ProofChain Icon" width={28} height={28} className="object-contain rounded-md" />
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col flex-1 overflow-hidden">

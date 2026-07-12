@@ -78,7 +78,7 @@ export function AuthLayout({ leftPanel, children }: AuthLayoutProps) {
                 alt="ProofChain Icon"
                 width={36}
                 height={36}
-                className="object-contain"
+                className="object-contain rounded-md"
                 priority
               />
             </motion.div>

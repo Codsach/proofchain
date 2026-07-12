@@ -17,12 +17,24 @@ const fadeUp: Variants = {
   }),
 };
 
-const headlineEntrance: Variants = {
+const headlineContainerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.16,
+    },
+  },
+};
+
+const headlineLineVariants: Variants = {
   hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] },
+    transition: {
+      duration: 1.1, // Slow paced (1100ms)
+      ease: [0.22, 1, 0.36, 1], // Premium ease
+    },
   },
 };
 
@@ -70,10 +82,13 @@ export default function HeroSection() {
         __html: `
         @keyframes metallicSweep {
           0% {
-            background-position: 200% 0, 0 0;
+            background-position: 100% 0;
+          }
+          30% {
+            background-position: 0% 0;
           }
           100% {
-            background-position: -200% 0, 0 0;
+            background-position: 0% 0;
           }
         }
         @keyframes livingMotion {
@@ -96,33 +111,27 @@ export default function HeroSection() {
           -moz-osx-font-smoothing: grayscale;
           text-rendering: optimizeLegibility;
           will-change: transform, filter, background-position;
-          background-repeat: no-repeat, no-repeat;
+          background-repeat: no-repeat;
         }
         .line-immutable {
-          background-image: 
-            linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%),
-            linear-gradient(to bottom, #ffffff 10%, #e2e8f0 50%, #cbd5e1 90%);
-          background-size: 200% 100%, 100% 100%;
+          background-image: linear-gradient(110deg, #e2e8f0 30%, #cbd5e1 42%, #ffffff 50%, #cbd5e1 58%, #e2e8f0 70%);
+          background-size: 300% 100%;
           animation: 
             metallicSweep 6.6s ease-in-out infinite,
             livingMotion 12s ease-in-out infinite;
           animation-delay: 0s, 0s;
         }
         .line-evidence {
-          background-image: 
-            linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.12) 50%, transparent 70%),
-            linear-gradient(to bottom, #ffffff 10%, #cbd5e1 55%, #94a3b8 90%);
-          background-size: 200% 100%, 100% 100%;
+          background-image: linear-gradient(110deg, #e2e8f0 30%, #cbd5e1 42%, #ffffff 50%, #cbd5e1 58%, #e2e8f0 70%);
+          background-size: 300% 100%;
           animation: 
             metallicSweep 7.2s ease-in-out infinite,
             livingMotion 12s ease-in-out infinite;
           animation-delay: 0s, 0s;
         }
         .line-onchain {
-          background-image: 
-            linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.16) 50%, transparent 70%),
-            linear-gradient(to bottom, #34d399 10%, #059669 50%, #047857 90%);
-          background-size: 200% 100%, 100% 100%;
+          background-image: linear-gradient(110deg, #059669 30%, #059669 42%, #34d399 50%, #059669 58%, #059669 70%);
+          background-size: 300% 100%;
           animation: 
             metallicSweep 7.8s ease-in-out infinite,
             livingMotion 12s ease-in-out infinite;
@@ -131,7 +140,7 @@ export default function HeroSection() {
         @media (prefers-reduced-motion: reduce) {
           .line-immutable, .line-evidence, .line-onchain {
             animation: none !important;
-            background-position: -200% 0, 0 0 !important;
+            background-position: 0% 0 !important;
             transform: none !important;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) !important;
           }
@@ -180,7 +189,7 @@ export default function HeroSection() {
 
             {/* Headline */}
             <motion.h1
-              variants={headlineEntrance} initial="hidden" animate="visible"
+              variants={headlineContainerVariants} initial="hidden" animate="visible"
               className="font-heading mb-4"
               style={{
                 lineHeight: 1.08,
@@ -190,15 +199,27 @@ export default function HeroSection() {
                 alignItems: "flex-start",
               }}
             >
-              <span className="line-base line-immutable" style={{ fontWeight: 900, letterSpacing: "-0.035em", fontSize: "1.02em" }}>
+              <motion.span
+                variants={headlineLineVariants}
+                className="line-base line-immutable"
+                style={{ fontWeight: 900, letterSpacing: "-0.035em", fontSize: "1.02em" }}
+              >
                 Immutable
-              </span>
-              <span className="line-base line-evidence" style={{ fontWeight: 900, letterSpacing: "-0.03em", fontSize: "1.0em" }}>
+              </motion.span>
+              <motion.span
+                variants={headlineLineVariants}
+                className="line-base line-evidence"
+                style={{ fontWeight: 900, letterSpacing: "-0.03em", fontSize: "1.0em" }}
+              >
                 Evidence.
-              </span>
-              <span className="line-base line-onchain" style={{ fontWeight: 800, letterSpacing: "-0.025em", fontSize: "0.95em" }}>
+              </motion.span>
+              <motion.span
+                variants={headlineLineVariants}
+                className="line-base line-onchain"
+                style={{ fontWeight: 800, letterSpacing: "-0.025em", fontSize: "0.95em" }}
+              >
                 On Chain.
-              </span>
+              </motion.span>
             </motion.h1>
 
             <motion.div

@@ -141,7 +141,7 @@ export default function LandingFooter() {
               href="/"
               style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none", marginBottom: 14 }}
             >
-              <img src="/logo.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: "contain" }} />
+              <img src="/logo.png" alt="ProofChain Logo" width="22" height="22" style={{ objectFit: "contain", borderRadius: "5px" }} />
               <span style={{ fontSize: 16, fontWeight: 700, letterSpacing: "-0.02em" }}>
                 <span style={{ color: "rgba(255, 255, 255, 0.95)" }}>Proof</span>
                 <span style={{ color: "#059669" }}>Chain</span>
