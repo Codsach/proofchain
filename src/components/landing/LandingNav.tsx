@@ -56,12 +56,16 @@ export default function LandingNav() {
     return map[user.role] || "/";
   };
 
+  const navLinkDefaultColor = scrolled ? "rgba(15,23,42,0.50)" : "rgba(255,255,255,0.65)";
+  const navLinkHoverColor   = scrolled ? "#0f172a" : "#ffffff";
+  const navHoverBg          = scrolled ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.08)";
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -20, x: "-50%" }}
       animate={{ opacity: 1, y: 0, x: "-50%" }}
       transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className={`lp-nav ${scrolled ? "scrolled" : ""}`}
+      className={`lp-nav ${scrolled ? "scrolled" : "dark-hero"}`}
     >
       {/* ── Scroll progress bar — clean emerald, no neon glow ── */}
       <motion.div
@@ -94,7 +98,7 @@ export default function LandingNav() {
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
             <img src="/logo.png" alt="ProofChain Logo" width="24" height="24" style={{ objectFit: "contain" }} />
             <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em" }}>
-              <span style={{ color: "var(--lp-gray-1)" }}>Proof</span>
+              <span style={{ color: scrolled ? "var(--lp-gray-1)" : "#ffffff" }}>Proof</span>
               <span style={{ color: "#059669" }}>Chain</span>
             </span>
           </Link>
@@ -123,7 +127,7 @@ export default function LandingNav() {
                   position: "relative",
                   fontSize: 14,
                   fontWeight: isActive ? 600 : 500,
-                  color: isActive ? "#059669" : (isHovered ? "#0f172a" : "rgba(15,23,42,0.50)"),
+                  color: isActive ? "#059669" : (isHovered ? navLinkHoverColor : navLinkDefaultColor),
                   padding: "6px 16px",
                   borderRadius: 10,
                   textDecoration: "none",
@@ -140,7 +144,7 @@ export default function LandingNav() {
                     style={{
                       position: "absolute",
                       inset: 0,
-                      backgroundColor: "rgba(15,23,42,0.04)",
+                      backgroundColor: navHoverBg,
                       borderRadius: 10,
                       zIndex: -1,
                     }}
@@ -185,7 +189,7 @@ export default function LandingNav() {
           <div className="md:hidden flex items-center">
             <Sheet>
               <SheetTrigger asChild>
-                <button className="text-slate-600 p-2 flex items-center justify-center cursor-pointer">
+                <button className={`p-2 flex items-center justify-center cursor-pointer ${scrolled ? "text-slate-600" : "text-white"}`}>
                   <Menu className="w-5 h-5" />
                 </button>
               </SheetTrigger>

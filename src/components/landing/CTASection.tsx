@@ -68,9 +68,8 @@ export default function CTASection() {
   return (
     <section
       ref={sectionRef}
-      className="relative py-20 px-4 font-sans flex justify-center"
-      style={{ borderTop: "1px solid rgba(15,23,42,0.03)" }}
-
+      className="relative py-20 px-4 font-sans flex justify-center lp-section-cta-dark"
+      style={{ borderTop: "1px solid rgba(5, 150, 105, 0.20)" }}
     >
       {/* ── Soft ambient glow — top center ── */}
       <motion.div
@@ -83,7 +82,7 @@ export default function CTASection() {
           width: "65%",
           maxWidth: 780,
           height: 460,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.07) 0%, rgba(5,150,105,0.03) 45%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.15) 0%, rgba(5,150,105,0.05) 45%, transparent 70%)",
           filter: "blur(70px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -108,10 +107,10 @@ export default function CTASection() {
         aria-hidden
         style={{
           position: "absolute", inset: 0,
-          opacity: 0.015,
+          opacity: 0.03,
           fontFamily: "var(--font-geist-mono, monospace)",
           fontSize: 10,
-          color: "var(--lp-gray-1)",
+          color: "rgba(255, 255, 255, 0.50)",
           pointerEvents: "none",
           zIndex: 0,
         }}
@@ -132,11 +131,11 @@ export default function CTASection() {
           top: "18%", left: "8%",
           width: 48, height: 48,
           borderRadius: 14,
-          border: "1px solid rgba(5,150,105,0.12)",
-          background: "rgba(255,255,255,0.60)",
+          border: "1px solid rgba(5,150,105,0.20)",
+          background: "rgba(255,255,255,0.06)",
           backdropFilter: "blur(8px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(15,23,42,0.05)",
+          display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.20)",
           pointerEvents: "none", zIndex: 1,
         }}
       >
@@ -151,11 +150,11 @@ export default function CTASection() {
           top: "25%", right: "9%",
           width: 40, height: 40,
           borderRadius: 12,
-          border: "1px solid rgba(139,92,246,0.14)",
-          background: "rgba(255,255,255,0.60)",
+          border: "1px solid rgba(139,92,246,0.25)",
+          background: "rgba(255,255,255,0.06)",
           backdropFilter: "blur(8px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(15,23,42,0.04)",
+          display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.20)",
           pointerEvents: "none", zIndex: 1,
         }}
       >
@@ -170,9 +169,11 @@ export default function CTASection() {
           zIndex: 1,
           padding: "64px 48px",
           borderRadius: 24,
-          background: "linear-gradient(180deg, #fbfdfe 0%, #eef6f9 100%)",
-          boxShadow: "0 10px 30px rgba(15,23,42,0.06)",
-          border: "1px solid rgba(15,23,42,0.04)",
+          background: "rgba(255, 255, 255, 0.03)",
+          backdropFilter: "blur(40px)",
+          WebkitBackdropFilter: "blur(40px)",
+          boxShadow: "0 10px 40px rgba(0,0,0,0.30)",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
           textAlign: "center",
         }}
       >
@@ -197,10 +198,10 @@ export default function CTASection() {
             custom={1}
             className="font-heading font-bold mb-6 leading-tight"
             style={{
-              color: "#0f172a",
+              color: "#ffffff",
               fontSize: "clamp(1.9rem, 3.6vw, 2.8rem)",
               letterSpacing: "-0.02em",
-              whiteSpace: "nowrap",
+              whiteSpace: "normal",
               overflow: "hidden",
               textOverflow: "ellipsis",
             }}
@@ -231,7 +232,7 @@ export default function CTASection() {
             variants={revealVariant}
             custom={0}
             className="font-sans leading-relaxed mb-8 mx-auto"
-            style={{ color: "rgba(15,23,42,0.7)", fontSize: "clamp(0.95rem, 1.2vw, 1.02rem)", lineHeight: 1.6, maxWidth: 760 }}
+            style={{ color: "rgba(255,255,255,0.70)", fontSize: "clamp(0.95rem, 1.2vw, 1.02rem)", lineHeight: 1.6, maxWidth: 760 }}
           >
             Built for cybersecurity and digital forensics teams who need
             cryptographically guaranteed chain of custody — not just a file store.
@@ -256,7 +257,7 @@ export default function CTASection() {
             <a
               href="#features"
               id="cta-features"
-              className="lp-btn-ghost font-sans no-underline"
+              className="lp-btn-ghost-dark font-sans no-underline"
               style={{ padding: "14px 28px", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}
             >
               View Features
@@ -267,7 +268,7 @@ export default function CTASection() {
             variants={revealVariant}
             custom={2}
             className="mt-8 text-xs tracking-wider font-mono uppercase"
-            style={{ color: "rgba(15,23,42,0.38)" }}
+            style={{ color: "rgba(255, 255, 255, 0.45)" }}
           >
             Forensic labs · Cyber incident response teams
           </motion.p>

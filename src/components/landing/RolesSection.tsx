@@ -102,7 +102,7 @@ export default function RolesSection() {
       {/* Subtle blockchain connection graphic */}
       <svg
         aria-hidden
-        className="absolute inset-0 w-full h-full opacity-[0.015] pointer-events-none"
+        className="absolute inset-0 w-full h-full opacity-[0.03] pointer-events-none"
         xmlns="http://www.w3.org/2000/svg"
       >
         <circle cx="80" cy="180" r="3" fill="var(--lp-gray-1)" />
@@ -132,7 +132,7 @@ export default function RolesSection() {
           position: "absolute",
           top: "10%", left: "-5%",
           width: 500, height: 500,
-          background: "radial-gradient(ellipse at center, rgba(5,150,105,0.07) 0%, rgba(4,120,87,0.02) 50%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(5,150,105,0.03) 0%, rgba(4,120,87,0.02) 50%, transparent 70%)",
           filter: "blur(80px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -148,7 +148,7 @@ export default function RolesSection() {
           position: "absolute",
           bottom: "5%", right: "0%",
           width: 400, height: 400,
-          background: "radial-gradient(circle, rgba(217,119,6,0.05) 0%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(217,119,6,0.03) 0%, transparent 70%)",
           filter: "blur(80px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -187,7 +187,7 @@ export default function RolesSection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            style={{ marginTop: 16, fontSize: 15, color: "var(--lp-gray-3)", lineHeight: 1.7, maxWidth: 480 }}
+            style={{ marginTop: 16, fontSize: 15, color: "rgba(15,23,42,0.55)", lineHeight: 1.7, maxWidth: 480 }}
           >
             Every action is scoped to role. No role can delete records.
             Investigator identity is hidden from analysts to prevent bias.
@@ -212,13 +212,13 @@ export default function RolesSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
               custom={i}
-              className="lp-role-card"
+              className="lp-role-card relative"
               style={{
                 willChange: "transform, opacity",
                 borderRadius: 24,
                 background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${role.accent}02 60%, ${role.accent}08 100%)`,
                 borderColor: `${role.accent}14`,
-                position: "relative",
+                padding: role.name === "Investigator" ? "36px 32px 32px" : (role.name === "Analyst" ? "30px 26px 26px" : "24px 20px 20px"),
                 overflow: "hidden",
               }}
               whileHover="hover"
@@ -244,12 +244,11 @@ export default function RolesSection() {
                 }
               }}
             >
-              {/* Top accent line */}
+              {/* Card top band */}
               <div
+                className="card-role-top-band"
                 style={{
-                  position: "absolute", top: 0, left: "10%", right: "10%", height: 1,
-                  background: `linear-gradient(90deg, transparent, ${role.accent}55, transparent)`,
-                  opacity: 0.7,
+                  background: role.accent,
                 }}
               />
 
@@ -287,7 +286,7 @@ export default function RolesSection() {
               <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 9 }}>
                 {role.permissions.map((p) => (
                   <li key={p} style={{ display: "flex", alignItems: "flex-start", gap: 10, fontSize: 13, color: "var(--lp-gray-2)", lineHeight: 1.5 }}>
-                    <Check size={13} color={role.accent} strokeWidth={2.5} style={{ flexShrink: 0, marginTop: 2, opacity: 0.85 }} />
+                    <Check size={14} color={role.accent} strokeWidth={3} style={{ flexShrink: 0, marginTop: 2, opacity: 1 }} />
                     {p}
                   </li>
                 ))}

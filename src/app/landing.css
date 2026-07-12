@@ -56,6 +56,12 @@
   --lp-secondary-neon-dim: rgba(4, 120, 87, 0.08);
   --lp-accent-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
 
+  /* Dark section backgrounds */
+  --hero-dark-bg:   #080e1e;
+  --hiw-dark-bg:    #0d1117;
+  --cta-dark-bg:    #0b1623;
+  --footer-dark-bg: #080e1e;
+
   /* Spacing Scale — 8px grid */
   --lp-space-none: 0;
   --lp-space-xs:   4px;
@@ -235,6 +241,25 @@
   box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
 }
 .lp-btn-ghost:active { transform: scale(0.97); }
+
+/* ── Ghost button — dark surface variant ── */
+.lp-btn-ghost-dark {
+  color: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--lp-radius-full);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+.lp-btn-ghost-dark:hover {
+  color: #ffffff;
+  border-color: rgba(5, 150, 105, 0.50);
+  background: rgba(255, 255, 255, 0.13);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
+}
+.lp-btn-ghost-dark:active { transform: scale(0.97); }
 
 /* ── Glass Cards (Features & Roles) ── */
 .lp-feature-card, .lp-role-card {
@@ -653,33 +678,47 @@
 html { scroll-behavior: smooth; }
 #features, #how-it-works, #roles { scroll-margin-top: 88px; }
 
-/* ── Section tints & alternate backgrounds to avoid large white areas ── */
+/* ── Section structural positions ── */
 #features, #how-it-works, #roles {
   position: relative;
 }
 
-/* Gentle alternating banding for visual depth */
-#features { background: linear-gradient(180deg, rgba(250,251,252,0) 0%, rgba(247,250,249,0.6) 100%) !important; }
-#how-it-works { background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(250,251,252,0.65) 100%) !important; }
-#roles { background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.7) 100%) !important; }
-
-/* Override inline white card backgrounds for a unified premium surface */
-.bento-glass,
-.bento-glass-lg,
-.lp-feature-card,
-.lp-role-card,
-.glass-card-emer,
-.kpi-card,
-.backdrop-blur-xl,
-.feature-card-border-animated {
-  background: var(--lp-card-bg) !important;
-  border-color: rgba(15,23,42,0.06) !important;
-  box-shadow: 0 8px 20px rgba(15,23,42,0.05) !important;
+/* ── Features: subtle warm-green tint ── */
+.lp-section-features-tint {
+  background: linear-gradient(180deg, #f7fbf9 0%, #f0f7f5 100%);
 }
 
-/* Cards that intentionally use tiny white translucency keep a subtle sheen */
-.backdrop-blur-xl[style], .bento-glass[style], .bento-glass-lg[style] {
-  background-blend-mode: overlay !important;
+/* ── HowItWorks: deep dark zone ── */
+.lp-section-howitworks-dark {
+  background: linear-gradient(180deg, #0d1117 0%, #111827 100%);
+}
+
+/* Step cards inside dark HowItWorks — scoped override (no global !important) */
+.lp-section-howitworks-dark .feature-card-border-animated {
+  background: rgba(14, 22, 38, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+.lp-section-howitworks-dark .feature-card-border-animated:hover {
+  background: rgba(20, 30, 52, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* ── Roles: explicit clean white ground ── */
+#roles {
+  background: #ffffff;
+}
+
+/* ── CTA: dark close ── */
+.lp-section-cta-dark {
+  background: linear-gradient(160deg, #0b1623 0%, #0f1e2e 60%, #091218 100%);
+}
+
+/* ── Footer: dark ground ── */
+.lp-footer-dark {
+  background: var(--footer-dark-bg);
 }
 
 /* Slightly darken text on tinted panels for contrast */
@@ -687,8 +726,7 @@ html { scroll-behavior: smooth; }
   color: inherit;
 }
 
-/* Footer grounding */
-.lp-footer { background: linear-gradient(180deg, rgba(250,251,252,0), rgba(244,246,245,0.6)); }
+/* Footer grounding — handled by .lp-footer-dark class */
 
 /* ── Footer responsive ── */
 @media (max-width: 900px) {
@@ -703,6 +741,21 @@ html { scroll-behavior: smooth; }
   .lp-nav { width: calc(100% - 24px); top: 10px; border-radius: 14px; }
 }
 
+/* ── Hero Aurora Canvas ── */
+/* Absolutely fills the hero section, rendered at 0.5× resolution for perf.
+   CSS scales it back up — imperceptible for a blurry aurora effect.       */
+.hero-aurora-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 1;
+  /* imageRendering: auto is browser default — lets the GPU bilinear-scale
+     the low-res canvas smoothly without pixelation. */
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .lp-glow-sphere,
@@ -710,11 +763,50 @@ html { scroll-behavior: smooth; }
   .lp-badge-dot,
   .scanline-glow,
   .lp-float,
-  .lp-float-delayed { animation: none !important; transition-duration: 0.01ms !important; }
+  .lp-float-delayed,
+  .node-pulse,
+  .border-sweep,
+  .gradient-flow { animation: none !important; transition-duration: 0.01ms !important; }
   .lp-feature-card,
   .lp-role-card,
   .bento-glass,
   .bento-glass-lg,
   .glass-card-emer { transition: none !important; }
   .kpi-card::after, .kpi-shimmer-sweep { animation: none !important; }
+  .hero-aurora-canvas { display: none !important; }
+}
+
+/* ── Disable scroll-driven parallax on mobile ── */
+@media (max-width: 768px) {
+  /* Framer Motion will-change transforms that drive parallax — suppress jank */
+  [style*="will-change: transform"] {
+    will-change: auto !important;
+  }
+}
+
+/* ── Nav — dark-hero variant (atop dark Hero, unscrolled) ── */
+.lp-nav.dark-hero {
+  background: rgba(6, 13, 28, 0.35);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ── Card role top-band ── */
+.card-role-top-band {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 24px 24px 0 0;
+}
+
+/* ── Feature hero card top color band ── */
+.card-feature-top-band {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 24px 24px 0 0;
 }

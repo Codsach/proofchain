@@ -69,6 +69,7 @@ export default function HowItWorks() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeStep, setActiveStep] = useState(0);
 
   // Detect screen size on mount and resize
   useEffect(() => {
@@ -101,6 +102,13 @@ export default function HowItWorks() {
           scrub: 0.8,
           end: () => "+=" + (trackRef.current?.offsetWidth ?? 0),
           invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            const idx = Math.min(
+              steps.length - 1,
+              Math.max(0, Math.floor(self.progress * 1.05 * steps.length))
+            );
+            setActiveStep(idx);
+          },
         },
       });
     },
@@ -116,9 +124,10 @@ export default function HowItWorks() {
       <section
         id="how-it-works"
         ref={mobileRef}
+        className="lp-section-howitworks-dark"
         style={{
-          borderTop: "1px solid rgba(15,23,42,0.08)",
-          borderBottom: "1px solid rgba(15,23,42,0.08)",
+          borderTop: "1px solid rgba(5,150,105,0.20)",
+          borderBottom: "1px solid rgba(5,150,105,0.20)",
           padding: "72px 20px",
           position: "relative",
           overflow: "hidden",
@@ -135,7 +144,7 @@ export default function HowItWorks() {
             width: "80vw",
             height: "60vw",
             maxWidth: 500,
-            background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(5,150,105,0.12) 0%, transparent 70%)",
             filter: "blur(50px)",
             borderRadius: "50%",
             pointerEvents: "none",
@@ -152,7 +161,7 @@ export default function HowItWorks() {
           <p className="lp-section-label" style={{ marginBottom: 12 }}>Workflow</p>
           <h2
             className="font-heading font-bold"
-            style={{ fontSize: "clamp(1.8rem, 7vw, 2.8rem)", color: "var(--lp-gray-1)", lineHeight: 1.1 }}
+            style={{ fontSize: "clamp(1.8rem, 7vw, 2.8rem)", color: "#ffffff", lineHeight: 1.1 }}
           >
             The Journey of Truth
           </h2>
@@ -168,7 +177,7 @@ export default function HowItWorks() {
               top: 16,
               bottom: 16,
               width: 1,
-              background: "linear-gradient(180deg, transparent, rgba(15,23,42,0.10) 20%, rgba(15,23,42,0.10) 80%, transparent)",
+              background: "linear-gradient(180deg, transparent, rgba(5,150,105,0.30) 20%, rgba(5,150,105,0.30) 80%, transparent)",
             }}
           />
 
@@ -209,12 +218,12 @@ export default function HowItWorks() {
               <div
                 style={{
                   flex: 1,
-                  background: "rgba(255,255,255,0.88)",
+                  background: "rgba(14, 22, 38, 0.92)",
                   backdropFilter: "blur(16px)",
-                  border: "1px solid rgba(15,23,42,0.09)",
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
                   borderRadius: 20,
                   padding: "20px 20px 18px",
-                  boxShadow: "0 4px 20px rgba(15,23,42,0.05)",
+                  boxShadow: "0 4px 32px rgba(0, 0, 0, 0.28)",
                   position: "relative",
                   overflow: "hidden",
                 }}
@@ -250,7 +259,7 @@ export default function HowItWorks() {
                   style={{
                     fontSize: 16,
                     fontWeight: 700,
-                    color: "var(--lp-gray-1)",
+                    color: "#ffffff",
                     marginBottom: 8,
                     lineHeight: 1.3,
                     fontFamily: "var(--font-manrope), sans-serif",
@@ -261,7 +270,7 @@ export default function HowItWorks() {
                 <p
                   style={{
                     fontSize: 13,
-                    color: "var(--lp-gray-2)",
+                    color: "rgba(255, 255, 255, 0.70)",
                     lineHeight: 1.65,
                     marginBottom: 12,
                   }}
@@ -298,10 +307,10 @@ export default function HowItWorks() {
     <section
       ref={containerRef}
       id="how-it-works"
-      className="overflow-hidden h-screen flex flex-col relative"
+      className="overflow-hidden h-screen flex flex-col relative lp-section-howitworks-dark"
       style={{
-        borderTop: "1px solid rgba(15,23,42,0.08)",
-        borderBottom: "1px solid rgba(15,23,42,0.08)",
+        borderTop: "1px solid rgba(5,150,105,0.20)",
+        borderBottom: "1px solid rgba(5,150,105,0.20)",
       }}
     >
       {/* Central emerald glow */}
@@ -311,7 +320,7 @@ export default function HowItWorks() {
         style={{
           width: "70vw", height: "70vw",
           maxWidth: 720, maxHeight: 720,
-          background: "radial-gradient(circle, rgba(5,150,105,0.06) 0%, rgba(4,120,87,0.02) 40%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(5,150,105,0.12) 0%, rgba(4,120,87,0.04) 40%, transparent 70%)",
           filter: "blur(60px)",
           borderRadius: "50%",
         }}
@@ -321,7 +330,7 @@ export default function HowItWorks() {
       <div className="w-full pt-24 md:pt-28 px-6 md:px-24 pb-4 flex flex-col md:flex-row md:items-end justify-between z-10 pointer-events-none gap-4">
         <div>
           <p className="lp-section-label mb-2">Workflow</p>
-          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "var(--lp-gray-1)", lineHeight: 1.15 }}>
+          <h2 className="font-heading text-3xl md:text-4xl lg:text-5xl font-bold" style={{ color: "#ffffff", lineHeight: 1.15 }}>
             The Journey of Truth
           </h2>
           {/* Scroll hint */}
@@ -330,7 +339,7 @@ export default function HowItWorks() {
               marginTop: 8,
               fontSize: 10,
               fontFamily: "var(--font-geist-mono, monospace)",
-              color: "var(--lp-gray-3)",
+              color: "rgba(255, 255, 255, 0.70)",
               textTransform: "uppercase",
               letterSpacing: "0.15em",
               display: "flex",
@@ -343,7 +352,7 @@ export default function HowItWorks() {
                 display: "inline-block",
                 width: 16,
                 height: 1,
-                background: "var(--lp-gray-3)",
+                background: "rgba(255, 255, 255, 0.70)",
                 borderRadius: 1,
               }}
             />
@@ -364,10 +373,10 @@ export default function HowItWorks() {
             <div
               key={step.num}
               style={{
-                width: i === 0 ? 24 : 8,
+                width: i === activeStep ? 24 : 8,
                 height: 3,
                 borderRadius: 99,
-                background: i === 0 ? steps[0].color : "rgba(15,23,42,0.12)",
+                background: i === activeStep ? step.color : "rgba(255,255,255,0.25)",
                 transition: "all 0.4s ease",
               }}
             />
@@ -383,7 +392,7 @@ export default function HowItWorks() {
             position: "absolute",
             left: 0, right: 0, top: "50%",
             height: 1.5,
-            background: "linear-gradient(90deg, transparent, rgba(5,150,105,0.08) 20%, rgba(139,92,246,0.08) 80%, transparent)",
+            background: "linear-gradient(90deg, transparent, rgba(5,150,105,0.30) 20%, rgba(139,92,246,0.30) 80%, transparent)",
             zIndex: 0,
             pointerEvents: "none",
           }}
@@ -401,9 +410,9 @@ export default function HowItWorks() {
                   height: "calc(100vh - 340px)",
                   minHeight: "380px",
                   maxHeight: "480px",
-                  background: `linear-gradient(135deg, rgba(255,255,255,0.88) 0%, ${step.color}02 60%, ${step.color}08 100%)`,
-                  border: "1px solid rgba(15,23,42,0.09)",
-                  boxShadow: "0 4px 32px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.95)",
+                  background: `linear-gradient(135deg, rgba(14, 22, 38, 0.92) 0%, ${step.color}02 60%, ${step.color}08 100%)`,
+                  border: "1px solid rgba(255, 255, 255, 0.08)",
+                  boxShadow: "0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06)",
                   "--card-accent-grad": `linear-gradient(135deg, ${step.color}00 0%, ${step.color}35 50%, ${step.color}00 100%)`
                 } as React.CSSProperties}
                 whileHover="hover"
@@ -412,15 +421,15 @@ export default function HowItWorks() {
                   hover: {
                     y: -6,
                     borderColor: `${step.color}30`,
-                    background: `linear-gradient(135deg, rgba(255,255,255,0.95) 0%, ${step.color}04 60%, ${step.color}0d 100%)`,
-                    boxShadow: `0 16px 48px rgba(15,23,42,0.10), 0 0 0 1px ${step.color}18, inset 0 1px 0 rgba(255,255,255,1)`,
+                    background: `linear-gradient(135deg, rgba(20, 30, 52, 0.94) 0%, ${step.color}04 60%, ${step.color}0d 100%)`,
+                    boxShadow: `0 16px 48px rgba(0,0,0,0.35), 0 0 0 1px ${step.color}18, inset 0 1px 0 rgba(255,255,255,0.1)`,
                     transition: { duration: 0.4 }
                   },
                   rest: {
                     y: 0,
-                    borderColor: "rgba(15,23,42,0.09)",
-                    background: `linear-gradient(135deg, rgba(255,255,255,0.88) 0%, ${step.color}02 60%, ${step.color}08 100%)`,
-                    boxShadow: "0 4px 32px rgba(15,23,42,0.07), inset 0 1px 0 rgba(255,255,255,0.95)",
+                    borderColor: "rgba(255, 255, 255, 0.08)",
+                    background: `linear-gradient(135deg, rgba(14, 22, 38, 0.92) 0%, ${step.color}02 60%, ${step.color}08 100%)`,
+                    boxShadow: "0 4px 32px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.06)",
                     transition: { duration: 0.4 }
                   }
                 }}
@@ -460,7 +469,7 @@ export default function HowItWorks() {
 
                 <div className="relative z-10 flex flex-col gap-6 h-full">
                   {/* Step number + Icon row */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "space-between" }}>
                     <span
                       style={{
                         fontSize: 10,
@@ -497,11 +506,11 @@ export default function HowItWorks() {
                   <div className="flex flex-col flex-grow justify-center">
                     <h3
                       className="text-xl md:text-2xl lg:text-3xl font-heading font-bold mb-3 transition-colors duration-300"
-                      style={{ color: "var(--lp-gray-1)" }}
+                      style={{ color: "#ffffff" }}
                     >
                       {step.heading}
                     </h3>
-                    <p className="font-sans text-sm md:text-base leading-relaxed mb-6" style={{ color: "var(--lp-gray-2)" }}>
+                    <p className="font-sans text-sm md:text-base leading-relaxed mb-6" style={{ color: "rgba(255, 255, 255, 0.70)" }}>
                       {step.body}
                     </p>
                     <div className="mt-auto">

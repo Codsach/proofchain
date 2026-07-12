@@ -37,6 +37,7 @@ const stats = [
     isDecimal: true,
     status: "SECURE",
     progressValue: 99.98,
+    telemetry: "HASH_VERIF",
   },
   {
     value: 60,
@@ -50,6 +51,7 @@ const stats = [
     noCount: true,
     status: "SYNCED",
     progressValue: 88,
+    telemetry: "CHAIN_SYNC",
   },
   {
     value: 100,
@@ -61,6 +63,7 @@ const stats = [
     isDecimal: false,
     status: "IMMUTABLE",
     progressValue: 100,
+    telemetry: "CUST_TRACK",
   },
   {
     value: 12,
@@ -72,6 +75,7 @@ const stats = [
     isDecimal: false,
     status: "MONITORING",
     progressValue: 75,
+    telemetry: "AI_SIG_DET",
   },
   {
     value: 24,
@@ -84,6 +88,7 @@ const stats = [
     noCount: true,
     status: "PUBLIC",
     progressValue: 100,
+    telemetry: "PUB_CHECK",
   },
   {
     value: 0,
@@ -96,6 +101,7 @@ const stats = [
     noCount: true,
     status: "LOCKED",
     progressValue: 100,
+    telemetry: "WRITE_LOCK",
   },
 ];
 
@@ -121,7 +127,7 @@ export default function TrustSection() {
   return (
     <div
       ref={sectionRef}
-      style={{ position: "relative", overflow: "hidden" }}
+      style={{ position: "relative", overflow: "hidden", background: "linear-gradient(180deg, #f7fbf9 0%, #f0f7f5 100%)" }}
     >
       {/* Top separator */}
       <div
@@ -196,8 +202,8 @@ export default function TrustSection() {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-center mt-16"
             style={{
-              fontSize: 11,
-              color: "rgba(15,23,42,0.32)",
+              fontSize: 12,
+              color: "rgba(15,23,42,0.55)",
               fontFamily: "var(--font-geist-mono, monospace)",
               textTransform: "uppercase",
               letterSpacing: "0.18em",
@@ -212,8 +218,8 @@ export default function TrustSection() {
           style={{
             borderTop: "1px solid rgba(15,23,42,0.06)",
             borderBottom: "1px solid rgba(15,23,42,0.06)",
-            padding: "16px 24px",
-            background: "rgba(255,255,255,0.40)",
+            padding: "24px 24px",
+            background: "#f0f5f3",
           }}
         >
           <div
@@ -328,7 +334,7 @@ function StatItem({
       initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.75, delay: 0.15 + index * 0.10, ease: [0.16, 1, 0.3, 1] }}
-      style={{ display: "flex", flex: 1 }}
+      style={{ display: "flex", flex: 1, position: "relative" }}
     >
       <div
         onMouseEnter={() => setHovered(true)}
@@ -355,6 +361,20 @@ function StatItem({
           transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), background 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
+        {/* Featured Card Indicator Band */}
+        {(index === 0 || index === 2) && (
+          <div
+            style={{
+              position: "absolute",
+              top: 0, left: 0, right: 0,
+              height: 3,
+              background: stat.color,
+              borderRadius: "20px 20px 0 0",
+              zIndex: 10,
+            }}
+          />
+        )}
+
         {/* Glow layer */}
         <div
           style={{
@@ -389,7 +409,7 @@ function StatItem({
             fontFamily: "var(--font-geist-mono, monospace)",
             letterSpacing: "0.08em",
           }}>
-            SYS_MTRX_STB
+            {stat.telemetry}
           </span>
         </div>
 

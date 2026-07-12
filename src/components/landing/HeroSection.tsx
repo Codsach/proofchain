@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import HeroInteractiveWidget from "./HeroInteractiveWidget";
+import HeroAuroraBackground from "./HeroAuroraBackground";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
@@ -53,6 +54,7 @@ export default function HeroSection() {
     <div
       ref={sectionRef}
       className="noise-overlay relative min-h-screen flex items-center justify-center overflow-hidden w-full"
+      style={{ backgroundColor: "var(--hero-dark-bg)" }}
     >
       {/* ─── Keyframes ─── */}
       <style dangerouslySetInnerHTML={{
@@ -65,12 +67,12 @@ export default function HeroSection() {
         .hero-shimmer {
           background: linear-gradient(
             110deg,
-            #0f172a 0%,
-            #334155 22%,
-            #059669 42%,
-            #047857 58%,
-            #334155 78%,
-            #0f172a 100%
+            #ffffff 0%,
+            #e2e8f0 22%,
+            #10b981 42%,
+            #059669 58%,
+            #e2e8f0 78%,
+            #ffffff 100%
           );
           background-size: 280% auto;
           color: transparent;
@@ -80,7 +82,7 @@ export default function HeroSection() {
         }
       `}} />
 
-      {/* ─── Layer 2: Ambient lighting — soft, no large circles ─── */}
+      {/* ─── Layer 2: Chromatic aurora + edge fades ─── */}
       <motion.div
         style={{
           position: "absolute", inset: 0,
@@ -88,81 +90,22 @@ export default function HeroSection() {
           pointerEvents: "none", willChange: "transform, opacity",
         }}
       >
-        {/* Edge fades */}
+        {/* Aurora canvas — sits below the edge fades in DOM order */}
+        <HeroAuroraBackground />
+
+        {/* Left + right edge fades — keep text columns crisp */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to right, var(--lp-bg) 0%, transparent 18%, transparent 82%, var(--lp-bg) 100%)",
+          background: "linear-gradient(to right, var(--hero-dark-bg) 0%, transparent 18%, transparent 82%, var(--hero-dark-bg) 100%)",
+          pointerEvents: "none",
         }} />
+
+        {/* Bottom edge fade — only 20% to avoid washing out lower aurora blobs */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to top, var(--lp-bg) 0%, transparent 50%)",
-        }} />
-
-        {/* Very soft top-center radial — no animation, no large circle */}
-        <div style={{
-          position: "absolute",
-          top: "-4%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "55%",
-          maxWidth: 760,
-          height: 380,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.08) 0%, rgba(5,150,105,0.03) 45%, transparent 70%)",
-          filter: "blur(60px)",
+          background: "linear-gradient(to top, var(--hero-dark-bg) 0%, transparent 20%)",
           pointerEvents: "none",
         }} />
-
-        {/* Soft blue accent — right edge */}
-        <div style={{
-          position: "absolute",
-          top: "20%",
-          right: "-4%",
-          width: 320,
-          height: 320,
-          background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)",
-          filter: "blur(70px)",
-          pointerEvents: "none",
-        }} />
-
-        {/* Warm amber — lower left */}
-        <div style={{
-          position: "absolute",
-          bottom: "8%",
-          left: "5%",
-          width: 280,
-          height: 280,
-          background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)",
-          filter: "blur(60px)",
-          pointerEvents: "none",
-        }} />
-
-        {/* Subtle background nodes & connections */}
-        <svg
-          className="absolute top-24 left-1/4 w-[600px] h-[500px] opacity-[0.02] pointer-events-none"
-          viewBox="0 0 600 500"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="100" cy="150" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="280" cy="100" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="480" cy="180" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="180" cy="380" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="380" cy="300" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="500" cy="400" r="3" fill="var(--lp-gray-1)" />
-
-          <line x1="100" y1="150" x2="280" y2="100" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="280" y1="100" x2="480" y2="180" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="100" y1="150" x2="180" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="180" y1="380" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="280" y1="100" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="380" y1="300" x2="500" y2="400" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="480" y1="180" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-
-          <text x="120" y="145" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">0x7f4e</text>
-          <text x="300" y="95" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">bafybeig</text>
-          <text x="400" y="295" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">sha256</text>
-          <text x="200" y="375" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">polygon</text>
-        </svg>
       </motion.div>
 
       {/* ─── Layer 3: Foreground ─── */}
@@ -188,7 +131,7 @@ export default function HeroSection() {
               <span className="block hero-shimmer">
                 Immutable
               </span>
-              <span className="block" style={{ color: "var(--lp-gray-1)" }}>
+              <span className="block" style={{ color: "rgba(255, 255, 255, 0.95)" }}>
                 Evidence.
               </span>
               <span
@@ -220,7 +163,7 @@ export default function HeroSection() {
               variants={fadeUp} initial="hidden" animate="visible" custom={1}
               style={{
                 fontSize: "clamp(0.92rem, 1.35vw, 1.03rem)",
-                color: "var(--lp-gray-2)",
+                color: "rgba(255, 255, 255, 0.70)",
                 lineHeight: 1.75,
                 maxWidth: 500,
                 marginBottom: 24,
@@ -247,7 +190,7 @@ export default function HeroSection() {
               <a
                 href="#features"
                 id="hero-cta-secondary"
-                className="lp-btn-ghost font-sans flex items-center justify-center gap-2 no-underline"
+                className="lp-btn-ghost-dark font-sans flex items-center justify-center gap-2 no-underline"
                 style={{ height: 52, paddingLeft: 28, paddingRight: 28, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
                 View Features
@@ -301,7 +244,7 @@ export default function HeroSection() {
         <span
           style={{
             fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
-            color: "rgba(15,23,42,0.28)",
+            color: "rgba(255, 255, 255, 0.45)",
             fontFamily: "var(--font-geist-mono, monospace)",
           }}
         >
