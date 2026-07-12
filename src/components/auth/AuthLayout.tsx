@@ -74,7 +74,7 @@ export function AuthLayout({ leftPanel, children }: AuthLayoutProps) {
               transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
             >
               <Image
-                src="/icon-v2.png"
+                src="/logo.png"
                 alt="ProofChain Icon"
                 width={36}
                 height={36}

@@ -92,7 +92,7 @@ export default function LandingNav() {
         {/* Left: Logo */}
         <div style={{ display: "flex", alignItems: "center", flex: "1 1 0%", minWidth: 0 }}>
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-            <img src="/icon-v2.png" alt="ProofChain Logo" width="24" height="24" style={{ objectFit: "contain" }} />
+            <img src="/logo.png" alt="ProofChain Logo" width="24" height="24" style={{ objectFit: "contain" }} />
             <span style={{ fontSize: 17, fontWeight: 700, letterSpacing: "-0.02em" }}>
               <span style={{ color: "var(--lp-gray-1)" }}>Proof</span>
               <span style={{ color: "#059669" }}>Chain</span>

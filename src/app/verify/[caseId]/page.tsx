@@ -261,7 +261,7 @@ export default function PublicVerifyPage() {
         </Link>
         <Link href="/" className="flex items-center gap-3 group">
           <div className="flex size-8 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/5 overflow-hidden">
-            <Image src="/icon-v2.png" alt="ProofChain Icon" width={18} height={18} className="object-contain" />
+            <Image src="/logo.png" alt="ProofChain Icon" width={18} height={18} className="object-contain" />
           </div>
           <span className="text-sm font-bold tracking-tight">
             <span className="text-white">Proof</span>
