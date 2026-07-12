@@ -28,11 +28,11 @@ const roles = [
       "Receive verdict notifications",
     ],
     note: "Self-registration with email verification",
-    accent: "#059669",
-    accentDim: "rgba(5,150,105,0.10)",
-    accentHover: "rgba(5,150,105,0.04)",
-    borderHover: "rgba(5,150,105,0.28)",
-    shadowHover: "rgba(5,150,105,0.12)",
+    accent: "#3b82f6",
+    accentDim: "rgba(59,130,246,0.10)",
+    accentHover: "rgba(59,130,246,0.04)",
+    borderHover: "rgba(59,130,246,0.28)",
+    shadowHover: "rgba(59,130,246,0.12)",
     Icon: ShieldAlert,
   },
   {
@@ -68,11 +68,11 @@ const roles = [
       "Cannot alter any evidence record",
     ],
     note: "Seeded at deployment · No self-registration",
-    accent: "#64748b",
-    accentDim: "rgba(100,116,139,0.10)",
-    accentHover: "rgba(100,116,139,0.04)",
-    borderHover: "rgba(100,116,139,0.25)",
-    shadowHover: "rgba(100,116,139,0.12)",
+    accent: "#6366f1",
+    accentDim: "rgba(99,102,241,0.10)",
+    accentHover: "rgba(99,102,241,0.04)",
+    borderHover: "rgba(99,102,241,0.25)",
+    shadowHover: "rgba(99,102,241,0.12)",
     Icon: Settings,
   },
 ];
@@ -212,7 +212,7 @@ export default function RolesSection() {
               whileInView="visible"
               viewport={{ once: true, margin: "-60px" }}
               custom={i}
-              className="lp-role-card relative"
+              className="lp-role-card group relative"
               style={{
                 willChange: "transform, opacity",
                 borderRadius: 24,
@@ -228,7 +228,7 @@ export default function RolesSection() {
                 visible: revealVariant.visible,
                 hover: {
                   y: -6,
-                  scale: 1.015,
+                  scale: 1.025,
                   borderColor: role.accent,
                   boxShadow: `0 24px 56px -12px ${role.shadowHover}, 0 0 0 1px ${role.accent}10, inset 0 1px 0 rgba(255,255,255,1)`,
                   background: `linear-gradient(135deg, rgba(255, 255, 255, 0.97) 0%, ${role.accent}05 60%, ${role.accent}0c 100%)`,
@@ -244,11 +244,13 @@ export default function RolesSection() {
                 }
               }}
             >
-              {/* Card top band */}
+            
+
+              {/* Hover glow sweep */}
               <div
-                className="card-role-top-band"
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
                 style={{
-                  background: role.accent,
+                  background: `radial-gradient(ellipse at 30% 0%, ${role.accent}0c 0%, transparent 60%)`,
                 }}
               />
 
@@ -263,7 +265,7 @@ export default function RolesSection() {
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}
                     variants={{
-                      hover: { scale: 1.1, rotate: 5, transition: { duration: 0.3 } },
+                      hover: { scale: 1.1, rotate: 12, transition: { duration: 0.3 } },
                       rest: { scale: 1, rotate: 0, transition: { duration: 0.3 } }
                     }}
                   >

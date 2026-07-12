@@ -17,6 +17,15 @@ const fadeUp: Variants = {
   }),
 };
 
+const headlineEntrance: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1.0, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
 // Very subtle mouse parallax
 function useMouseParallax(strength = 0.012) {
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -59,26 +68,73 @@ export default function HeroSection() {
       {/* ─── Keyframes ─── */}
       <style dangerouslySetInnerHTML={{
         __html: `
-        @keyframes heroGradientText {
-          0%   { background-position: 0% 50%; }
-          50%  { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+        @keyframes metallicSweep {
+          0% {
+            background-position: 200% 0, 0 0;
+          }
+          100% {
+            background-position: -200% 0, 0 0;
+          }
         }
-        .hero-shimmer {
-          background: linear-gradient(
-            110deg,
-            #ffffff 0%,
-            #e2e8f0 22%,
-            #10b981 42%,
-            #059669 58%,
-            #e2e8f0 78%,
-            #ffffff 100%
-          );
-          background-size: 280% auto;
-          color: transparent;
+        @keyframes livingMotion {
+          0%, 100% {
+            transform: translateY(0) translateZ(0);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) drop-shadow(0 1px 1px rgba(255, 255, 255, 0.05)) brightness(1);
+          }
+          50% {
+            transform: translateY(-0.8px) translateZ(0);
+            filter: drop-shadow(0 3.5px 7px rgba(0, 0, 0, 0.42)) drop-shadow(0 1.5px 1.5px rgba(255, 255, 255, 0.06)) brightness(1.03);
+          }
+        }
+        .line-base {
+          display: block;
           -webkit-background-clip: text;
           background-clip: text;
-          animation: heroGradientText 10s ease infinite;
+          color: transparent;
+          -webkit-text-fill-color: transparent;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
+          will-change: transform, filter, background-position;
+          background-repeat: no-repeat, no-repeat;
+        }
+        .line-immutable {
+          background-image: 
+            linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.15) 50%, transparent 70%),
+            linear-gradient(to bottom, #ffffff 10%, #e2e8f0 50%, #cbd5e1 90%);
+          background-size: 200% 100%, 100% 100%;
+          animation: 
+            metallicSweep 6.6s ease-in-out infinite,
+            livingMotion 12s ease-in-out infinite;
+          animation-delay: 0s, 0s;
+        }
+        .line-evidence {
+          background-image: 
+            linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.12) 50%, transparent 70%),
+            linear-gradient(to bottom, #ffffff 10%, #cbd5e1 55%, #94a3b8 90%);
+          background-size: 200% 100%, 100% 100%;
+          animation: 
+            metallicSweep 7.2s ease-in-out infinite,
+            livingMotion 12s ease-in-out infinite;
+          animation-delay: 0s, 0s;
+        }
+        .line-onchain {
+          background-image: 
+            linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.16) 50%, transparent 70%),
+            linear-gradient(to bottom, #34d399 10%, #059669 50%, #047857 90%);
+          background-size: 200% 100%, 100% 100%;
+          animation: 
+            metallicSweep 7.8s ease-in-out infinite,
+            livingMotion 12s ease-in-out infinite;
+          animation-delay: 0s, 0s;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .line-immutable, .line-evidence, .line-onchain {
+            animation: none !important;
+            background-position: -200% 0, 0 0 !important;
+            transform: none !important;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) !important;
+          }
         }
       `}} />
 
@@ -124,25 +180,23 @@ export default function HeroSection() {
 
             {/* Headline */}
             <motion.h1
-              variants={fadeUp} initial="hidden" animate="visible" custom={0}
-              className="font-heading font-black tracking-tight mb-4"
-              style={{ lineHeight: 1.0, fontSize: "clamp(3.0rem, 7vw, 5.4rem)" }}
+              variants={headlineEntrance} initial="hidden" animate="visible"
+              className="font-heading mb-4"
+              style={{
+                lineHeight: 1.08,
+                fontSize: "clamp(3.0rem, 7vw, 5.4rem)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
             >
-              <span className="block hero-shimmer">
+              <span className="line-base line-immutable" style={{ fontWeight: 900, letterSpacing: "-0.035em", fontSize: "1.02em" }}>
                 Immutable
               </span>
-              <span className="block" style={{ color: "rgba(255, 255, 255, 0.95)" }}>
+              <span className="line-base line-evidence" style={{ fontWeight: 900, letterSpacing: "-0.03em", fontSize: "1.0em" }}>
                 Evidence.
               </span>
-              <span
-                className="block"
-                style={{
-                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
-              >
+              <span className="line-base line-onchain" style={{ fontWeight: 800, letterSpacing: "-0.025em", fontSize: "0.95em" }}>
                 On Chain.
               </span>
             </motion.h1>

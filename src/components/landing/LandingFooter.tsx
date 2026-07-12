@@ -10,25 +10,25 @@ const links = [
   {
     heading: "Platform",
     items: [
-      { label: "Features",     href: "#features"      },
-      { label: "How It Works", href: "#how-it-works"  },
-      { label: "Roles",        href: "#roles"         },
-      { label: "Sign In",      href: "/login"         },
+      { label: "Features", href: "#features" },
+      { label: "How It Works", href: "#how-it-works" },
+      { label: "Roles", href: "#roles" },
+      { label: "Sign In", href: "/login" },
     ],
   },
   {
     heading: "Technology",
     items: [
-      { label: "Polygon Amoy",      href: "https://amoy.polygonscan.com", external: true  },
-      { label: "IPFS / web3.storage", href: "https://web3.storage",       external: true  },
-      { label: "Public Verify",     href: "/verify",                       external: false },
+      { label: "Polygon Amoy", href: "https://amoy.polygonscan.com", external: true },
+      { label: "IPFS / web3.storage", href: "https://web3.storage", external: true },
+      { label: "Public Verify", href: "/verify", external: false },
     ],
   },
   {
     heading: "Project",
     items: [
-      { label: "PRD v2.0",       href: "#" },
-      { label: "Audit Log",      href: "#" },
+      { label: "PRD v2.0", href: "#" },
+      { label: "Audit Log", href: "#" },
       { label: "Smart Contract", href: "#" },
     ],
   },
@@ -69,8 +69,17 @@ export default function LandingFooter() {
       }}
     >
       {/* Very soft top ambient */}
-      <div
+      <motion.div
         aria-hidden
+        animate={{
+          opacity: [0.6, 0.9, 0.6],
+          scale: [1, 1.05, 1],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
         style={{
           position: "absolute",
           top: 0, left: "25%", right: "25%", height: 160,
@@ -80,7 +89,42 @@ export default function LandingFooter() {
         }}
       />
 
-      <div style={{ maxWidth: 1200, margin: "0 auto", position: "relative", zIndex: 1 }}>
+      {/* Giant faded background text */}
+      <motion.div
+        initial={{ opacity: 0, y: 35, x: "-50%" }}
+        whileInView={{ opacity: 1, y: 0, x: "-50%" }}
+        viewport={{ once: true, margin: "-20px" }}
+        transition={{ duration: 1.4, ease: "easeOut" }}
+        style={{
+          position: "absolute",
+          bottom: "38px",
+          left: "50%",
+          fontSize: "clamp(3rem, 14vw, 9.5rem)",
+          fontWeight: 900,
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          fontFamily: "var(--font-heading), sans-serif",
+          pointerEvents: "none",
+          userSelect: "none",
+          zIndex: 0,
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          background: "linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 65%, transparent 100%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          filter: "blur(0.8px)",
+        }}
+      >
+        PROOFCHAIN
+      </motion.div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
+        style={{ maxWidth: 1200, margin: "0 auto", position: "relative", zIndex: 1 }}
+      >
         {/* Top row */}
         <div
           style={{
@@ -231,13 +275,13 @@ export default function LandingFooter() {
           }}
         >
           <p style={{ fontSize: 12, color: "rgba(255, 255, 255, 0.45)", margin: 0, fontFamily: "var(--font-geist-mono, monospace)" }}>
-            © 2026 ProofChain · Sachin R — MCA241221
+            © 2026 ProofChain · Sachin R
           </p>
           <p style={{ fontSize: 11, color: "rgba(255, 255, 255, 0.40)", margin: 0, fontFamily: "var(--font-geist-mono, monospace)" }}>
-            Not a court-admissible system · Academic &amp; forensic demonstration
+            Not a court-admissible system
           </p>
         </div>
-      </div>
+      </motion.div>
     </footer>
   );
 }
