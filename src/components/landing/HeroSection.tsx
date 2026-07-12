@@ -36,18 +36,18 @@ function useMouseParallax(strength = 0.012) {
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const parallax    = useMouseParallax(0.010);
+  const parallax = useMouseParallax(0.010);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const midY  = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+  const midY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
   const midOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgY   = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const fgOp  = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgSc  = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
+  const fgY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const fgOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgSc = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
 
   return (
     <div
@@ -149,7 +149,7 @@ export default function HeroSection() {
           <circle cx="180" cy="380" r="3" fill="var(--lp-gray-1)" />
           <circle cx="380" cy="300" r="3" fill="var(--lp-gray-1)" />
           <circle cx="500" cy="400" r="3" fill="var(--lp-gray-1)" />
-          
+
           <line x1="100" y1="150" x2="280" y2="100" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
           <line x1="280" y1="100" x2="480" y2="180" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
           <line x1="100" y1="150" x2="180" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
@@ -157,7 +157,7 @@ export default function HeroSection() {
           <line x1="280" y1="100" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
           <line x1="380" y1="300" x2="500" y2="400" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
           <line x1="480" y1="180" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          
+
           <text x="120" y="145" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">0x7f4e</text>
           <text x="300" y="95" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">bafybeig</text>
           <text x="400" y="295" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">sha256</text>
