@@ -27,7 +27,7 @@ class TestPhase4Forensics(unittest.TestCase):
         mock_doc.__len__.return_value = 1
         
         mock_page = MagicMock()
-        mock_page.get_text.return_value = "This is a clean PDF document with more than fifty characters to pass the text layer threshold."
+        mock_page.get_text.return_value = "This is a clean PDF document with more than fifty characters to pass the text layer threshold. And here is some more text to push the total character count well over one hundred."
         mock_doc.__getitem__.return_value = mock_page
         
         mock_doc.get_ocgs.return_value = None
