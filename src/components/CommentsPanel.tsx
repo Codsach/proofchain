@@ -128,24 +128,24 @@ export function CommentsPanel({ caseId, className }: Props) {
   };
 
   return (
-    <div className={cn("rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl flex flex-col gap-4", className)}>
+    <div className={cn("rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 shadow-2xl flex flex-col gap-4 w-full min-w-0", className)}>
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-dash-border pb-3">
-        <div className="flex items-center gap-2">
-          <MessageSquare className="w-4 h-4 text-dash-accent" />
-          <h3 className="type-section-heading text-dash-text">
+      <div className="flex items-center justify-between gap-4 border-b border-dash-border pb-3 flex-wrap sm:flex-nowrap">
+        <div className="flex items-center gap-2 min-w-0">
+          <MessageSquare className="w-4 h-4 text-dash-accent shrink-0" />
+          <h3 className="type-section-heading text-dash-text truncate">
             Case Communications
           </h3>
         </div>
-        <span className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest">
-          {comments.length} Messages
+        <span className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest shrink-0">
+          {comments.length} {comments.length === 1 ? "Message" : "Messages"}
         </span>
       </div>
 
       {/* Scrollable Message List */}
       <div
         ref={scrollRef}
-        className="max-h-64 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-dash-border scrollbar-track-transparent min-h-[120px] flex-1"
+        className="max-h-64 overflow-y-auto space-y-3 pr-2 scrollbar-thin scrollbar-thumb-dash-border scrollbar-track-transparent min-h-[120px] flex-1 min-w-0"
       >
         {isLoading ? (
           <div className="flex flex-col gap-3">
@@ -169,39 +169,39 @@ export function CommentsPanel({ caseId, className }: Props) {
                 key={comment._id}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`rounded-xl p-3 border transition-colors ${
+                className={`rounded-xl p-3 border transition-colors min-w-0 w-full ${
                   comment.isInternal
                     ? "bg-amber-500/5 border-amber-500/20 hover:border-amber-500/30"
                     : "bg-dash-input/30 border-dash-border hover:bg-dash-hover/30"
                 }`}
               >
                 {/* Meta details */}
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-dash-text truncate max-w-[120px]">
+                <div className="flex items-center justify-between gap-2 mb-1.5 min-w-0 flex-wrap sm:flex-nowrap">
+                  <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                    <span className="text-xs font-bold text-dash-text truncate max-w-[100px] sm:max-w-[120px] shrink-0">
                       {comment.authorName}
                     </span>
                     <span
-                      className={`text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded border tracking-wider ${getRoleBadgeClass(
+                      className={`text-[8px] font-extrabold uppercase px-1.5 py-0.5 rounded border tracking-wider shrink-0 ${getRoleBadgeClass(
                         comment.authorRole
                       )}`}
                     >
                       {comment.authorRole}
                     </span>
                     {comment.isInternal && (
-                      <span className="flex items-center gap-1 text-[8px] font-extrabold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                      <span className="flex items-center gap-1 text-[8px] font-extrabold text-amber-500 uppercase tracking-wider bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 shrink-0">
                         <EyeOff className="w-2.5 h-2.5" />
                         Internal
                       </span>
                     )}
                   </div>
-                  <span className="text-[9px] font-medium text-dash-muted">
+                  <span className="text-[9px] font-medium text-dash-muted shrink-0">
                     {formatRelativeTime(comment.createdAt)}
                   </span>
                 </div>
 
                 {/* Content */}
-                <p className="text-xs text-dash-text/80 leading-relaxed break-words whitespace-pre-wrap">
+                <p className="text-xs text-dash-text/80 leading-relaxed break-all [word-break:break-word] whitespace-pre-wrap">
                   {comment.content}
                 </p>
               </motion.div>

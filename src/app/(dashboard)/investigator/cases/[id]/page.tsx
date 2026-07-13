@@ -409,7 +409,7 @@ export default function InvestigatorCaseDetailPage() {
             </div>
 
             {/* Right Column */}
-            <div className="space-y-6">
+            <div className="space-y-6 min-w-0">
               {/* Neural Scan Diagnostics */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
