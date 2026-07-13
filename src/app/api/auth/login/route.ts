@@ -118,10 +118,10 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     // 7. Check if MFA is enabled
-    if (user.mfaEnabled) {
-      const trustedDeviceCookie = req.cookies.get("trustedDevice")?.value;
-      let bypassMfa = false;
+    let bypassMfa = false;
+    const trustedDeviceCookie = req.cookies.get("trustedDevice")?.value;
 
+    if (user.mfaEnabled) {
       if (trustedDeviceCookie && user.trustedDevices) {
         const hashedToken = crypto.createHash("sha256").update(trustedDeviceCookie).digest("hex");
         const validDevice = user.trustedDevices.find(
@@ -192,21 +192,23 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Track active session
-    const rawToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30);
-    
-    if (!user.trustedDevices) user.trustedDevices = [];
-    user.trustedDevices.push({ deviceTokenHash: hashedToken, expiresAt });
-    if (user.trustedDevices.length > 5) {
-      user.trustedDevices = user.trustedDevices.slice(-5);
-    }
-    user.markModified("trustedDevices");
-    await user.save();
+    // Track active session (extend existing trusted device token if bypassed, do not generate new cookie/tokens)
+    if (user.mfaEnabled && bypassMfa && trustedDeviceCookie) {
+      const hashedToken = crypto.createHash("sha256").update(trustedDeviceCookie).digest("hex");
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
 
-    setTrustedDeviceCookie(res, rawToken);
+      const device = user.trustedDevices.find(
+        (d: any) => d.deviceTokenHash === hashedToken
+      );
+      if (device) {
+        device.expiresAt = expiresAt;
+        user.markModified("trustedDevices");
+        await user.save();
+      }
+      setTrustedDeviceCookie(res, trustedDeviceCookie);
+    }
+
     setRefreshCookie(res, refreshToken);
     return res;
   } catch (err) {
