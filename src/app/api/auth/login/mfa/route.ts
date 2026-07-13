@@ -135,6 +135,7 @@ export async function POST(req: NextRequest) {
         user.trustedDevices = user.trustedDevices.slice(-5);
       }
 
+      user.markModified("trustedDevices");
       await user.save();
       setTrustedDeviceCookie(res, rawToken);
     } else {

@@ -141,7 +141,6 @@ export default function LandingNav() {
         {/* Centre links — absolutely centered */}
         <nav
           style={{
-            display: "flex",
             gap: 2,
             position: "absolute",
             left: "50%",
@@ -208,6 +207,7 @@ export default function LandingNav() {
         {/* Right: CTA + mobile */}
         <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "1 1 0%", justifyContent: "flex-end" }}>
           <motion.div
+            className="hidden md:block"
             whileHover={{ scale: 1.03, y: -0.5 }}
             whileTap={{ scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}

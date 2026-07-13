@@ -50,21 +50,27 @@ export function verifyMfaToken(token: string): { userId: string } {
 
 // ── Refresh cookie helpers ────────────────────────────────────────────────────
 export function setRefreshCookie(res: NextResponse, token: string): void {
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
   res.cookies.set("refreshToken", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 7 * 24 * 60 * 60, // 7 days in seconds
+    expires: expiresAt,
     path: "/",
   });
 }
 
 export function setTrustedDeviceCookie(res: NextResponse, token: string): void {
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
   res.cookies.set("trustedDevice", token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+    expires: expiresAt,
     path: "/",
   });
 }
@@ -73,8 +79,9 @@ export function clearTrustedDeviceCookie(res: NextResponse): void {
   res.cookies.set("trustedDevice", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 0,
+    expires: new Date(0),
     path: "/",
   });
 }
@@ -83,11 +90,13 @@ export function clearRefreshCookie(res: NextResponse): void {
   res.cookies.set("refreshToken", "", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    sameSite: "lax",
     maxAge: 0,
+    expires: new Date(0),
     path: "/",
   });
 }
+
 
 // ── withAuth middleware wrapper ───────────────────────────────────────────────
 // Usage: export const POST = withAuth(handler, ["analyst", "admin"])
