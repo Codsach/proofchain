@@ -295,7 +295,7 @@ export default function AdminCaseDetailPage() {
   }
 
   return (
-    <div className="w-full space-y-8 pb-10">
+    <div className="w-full space-y-8 pb-10 overflow-x-hidden">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
@@ -342,7 +342,7 @@ export default function AdminCaseDetailPage() {
             <div className="absolute top-0 right-0 p-4">
               <div className="text-[10px] font-bold text-dash-accent/20 uppercase tracking-[0.3em] group-hover:text-dash-accent transition-colors cursor-default">Subject Details</div>
             </div>
-            <div className="grid grid-cols-2 gap-8 text-sm pt-4">
+            <div className="grid grid-cols-2 gap-6 text-sm pt-2">
               <div className="space-y-1">
                 <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Incident Category</p>
                 <p className="text-dash-text font-medium">{INCIDENT_LABELS[caseData.incidentType] ?? caseData.incidentType}</p>
@@ -352,7 +352,7 @@ export default function AdminCaseDetailPage() {
                 <p className="text-dash-text font-medium">{new Date(caseData.incidentDate).toLocaleDateString()}</p>
               </div>
             </div>
-            <div className="mt-8 space-y-2">
+            <div className="mt-5 space-y-2">
               <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Description</p>
               <p className="text-sm text-dash-text/80 leading-relaxed font-normal">{caseData.description}</p>
             </div>
@@ -377,27 +377,60 @@ export default function AdminCaseDetailPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.2 + idx * 0.05 }}
-                  className="rounded-2xl bg-dash-bg border border-dash-border hover:border-emerald-500/20 p-5 space-y-4 transition-all group/file hover:shadow-[0_0_20px_rgba(16,185,129,0.05)]"
+                  className="rounded-2xl bg-dash-bg border border-dash-border hover:border-emerald-500/20 p-5 space-y-3 transition-all group/file hover:shadow-[0_0_20px_rgba(16,185,129,0.05)]"
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
+                  {/* File header */}
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold text-dash-text truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
-                      <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
+                      <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
                     </div>
                     <a
                       href={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[10px] font-bold uppercase tracking-[0.2em] text-dash-accent/60 hover:text-dash-accent transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded"
+                      className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-dash-accent/60 hover:text-dash-accent transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded"
                     >
                       Gateway
                     </a>
                   </div>
+
+                  {/* GPS Capture Info */}
+                  {file.gpsLat !== null && file.gpsLng !== null ? (
+                    <div className="flex items-center gap-2 rounded-lg bg-emerald-500/5 border border-emerald-500/15 px-3 py-2">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2.5" className="shrink-0">
+                        <circle cx="12" cy="12" r="3" />
+                        <path d="M12 2v3M12 19v3M2 12h3M19 12h3" />
+                      </svg>
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest shrink-0">GPS Captured</span>
+                        <span className="text-[10px] font-mono text-emerald-300/80 truncate">
+                          {file.gpsLat.toFixed(6)}°, {file.gpsLng.toFixed(6)}°
+                          {file.gpsAccuracy != null ? ` ±${Math.round(file.gpsAccuracy)}m` : ""}
+                        </span>
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {/* Digital Fingerprint */}
                   <div className="space-y-1.5">
                     <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest">Digital Fingerprint</p>
-                    <p className="type-technical text-dash-accent/60 break-all bg-dash-input/50 rounded px-2 py-1.5 border border-dash-border">
-                      {file.sha256Hash}
-                    </p>
+                    <div className="flex items-center gap-2 bg-dash-input/50 rounded border border-dash-border px-2 py-1.5 group/hash">
+                      <p className="type-technical text-dash-accent/60 truncate flex-1 text-[11px]">
+                        {file.sha256Hash}
+                      </p>
+                      <button
+                        type="button"
+                        title="Copy hash"
+                        onClick={() => navigator.clipboard?.writeText(file.sha256Hash)}
+                        className="shrink-0 text-dash-muted/40 hover:text-dash-accent transition-colors p-0.5 rounded opacity-0 group-hover/hash:opacity-100"
+                      >
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <rect x="9" y="9" width="13" height="13" rx="2" />
+                          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))}
@@ -430,7 +463,7 @@ export default function AdminCaseDetailPage() {
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.15 }}
-            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-6 shadow-2xl relative overflow-hidden group"
+            className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-5 space-y-5 shadow-2xl relative overflow-hidden group"
           >
             <div className="flex items-center gap-4">
               <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
@@ -447,16 +480,17 @@ export default function AdminCaseDetailPage() {
                 ? "bg-emerald-500/5 border-emerald-500/20"
                 : "bg-dash-input border-dash-border animate-pulse"
             }`}>
-              <div className="flex items-center justify-between gap-4">
-                <div className="space-y-1">
+              <div className="flex items-start gap-5">
+                {/* Left: text info */}
+                <div className="flex-1 min-w-0 space-y-2">
                   <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">
                     Overall Risk Assessment
                   </p>
-                  <h3 className="text-base font-bold text-dash-text tracking-tight">
+                  <h3 className="text-sm font-bold text-dash-text tracking-tight leading-snug">
                     {caseData.overallRiskLevel ? (
-                      <span className="uppercase">{caseData.overallRiskLevel} RISK DETECTED</span>
+                      <span className="uppercase">{caseData.overallRiskLevel} Risk Detected</span>
                     ) : (
-                      <span>AWAITING SCAN</span>
+                      <span>Awaiting Scan</span>
                     )}
                   </h3>
                   <p className="text-[11px] text-dash-muted leading-relaxed font-normal">
@@ -466,12 +500,21 @@ export default function AdminCaseDetailPage() {
                       ? "Potential anomalies detected in image metadata or structure. Further review suggested."
                       : caseData.overallRiskLevel === "low"
                       ? "All assets verified with low tamper indicators. Digital signature authentic."
-                      : "Forensic scanner is conducting deep neural scan on uploaded assets..."}
+                      : "Forensic scanner is conducting a deep neural scan on uploaded assets..."}
                   </p>
                 </div>
-                <div className="shrink-0 flex flex-col items-center justify-center p-3 rounded-xl bg-dash-bg border border-dash-border min-w-[70px]">
-                  <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-0.5">SCORE</span>
-                  <span className={`text-lg font-extrabold ${
+                {/* Right: score badge */}
+                <div className={`shrink-0 flex flex-col items-center justify-center p-4 rounded-xl bg-dash-bg border min-w-[90px] ${
+                  caseData.overallRiskLevel === "high"
+                    ? "border-red-500/30 shadow-[0_0_12px_rgba(239,68,68,0.08)]"
+                    : caseData.overallRiskLevel === "medium"
+                    ? "border-amber-500/30 shadow-[0_0_12px_rgba(245,158,11,0.08)]"
+                    : caseData.overallRiskLevel === "low"
+                    ? "border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.08)]"
+                    : "border-dash-border"
+                }`}>
+                  <span className="text-[8px] font-bold text-dash-muted uppercase tracking-wider mb-1">SCORE</span>
+                  <span className={`text-2xl font-extrabold leading-none tracking-tight ${
                     caseData.overallRiskLevel === "high"
                       ? "text-red-400"
                       : caseData.overallRiskLevel === "medium"
@@ -480,8 +523,9 @@ export default function AdminCaseDetailPage() {
                       ? "text-emerald-400"
                       : "text-dash-muted"
                   }`}>
-                    {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "--"}
+                    {caseData.overallTamperScore !== null ? caseData.overallTamperScore : "--"}
                   </span>
+                  <span className="text-[8px] text-dash-muted/60 font-mono mt-1">/ 100</span>
                 </div>
               </div>
             </div>
@@ -540,8 +584,31 @@ export default function AdminCaseDetailPage() {
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
                           transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
                         >
-                          <div className="border-t border-dash-border p-4 bg-dash-bg/40">
+                          <div className="border-t border-dash-border p-4 bg-dash-bg/40 space-y-4">
+                            {/* GPS Capture Record */}
+                            {file.gpsLat !== null && file.gpsLng !== null && (
+                              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 space-y-2">
+                                <p className="text-[9px] font-bold text-emerald-400/60 uppercase tracking-widest">GPS Capture Record</p>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px]">
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Latitude</span>
+                                    <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}°</span>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Longitude</span>
+                                    <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}°</span>
+                                  </div>
+                                  {file.gpsAccuracy != null && (
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Accuracy</span>
+                                      <span className="font-mono text-emerald-300/90">±{Math.round(file.gpsAccuracy)}m</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            )}
                             {report ? (
                               <AiReportPanel report={report} isLoading={false} />
                             ) : (
@@ -562,7 +629,7 @@ export default function AdminCaseDetailPage() {
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-4 shadow-2xl"
+                className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-5 space-y-4 shadow-2xl"
               >
                 <div className="flex items-center justify-between">
                   <h2 className="text-[10px] font-bold text-dash-muted uppercase tracking-[0.2em]">Terminal Verdict</h2>

@@ -92,6 +92,16 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
 
         raw_text = response.text.strip()
 
+        # Strip markdown code fences if Gemini wraps output in ```json ... ```
+        # This can happen even when response_mime_type="application/json" is set.
+        if raw_text.startswith("```"):
+            # Remove opening fence (```json or ```)
+            raw_text = raw_text.split("\n", 1)[-1]
+            # Remove closing fence
+            if raw_text.endswith("```"):
+                raw_text = raw_text.rsplit("```", 1)[0]
+            raw_text = raw_text.strip()
+
         # Parse and validate JSON
         parsed = json.loads(raw_text)
 

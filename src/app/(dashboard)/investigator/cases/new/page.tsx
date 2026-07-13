@@ -69,15 +69,19 @@ export default function CreateCasePage() {
   const [captureMode, setCaptureMode] = useState<CaptureMode>("photo");
   const [showCamera, setShowCamera] = useState(false);
 
+  interface SelectedFileItem {
+    file: File;
+    previewUrl: string;
+    capturedAt?: Date;
+  }
+
   // Form fields
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [incidentType, setIncidentType] = useState("other");
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [capturedAt, setCapturedAt] = useState<Date | null>(null);
-  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFileItem[]>([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -173,9 +177,17 @@ export default function CreateCasePage() {
 
   const handleCameraCapture = useCallback(
     (file: File, capturedAt: Date, mode: CaptureMode) => {
-      setSelectedFile(file);
-      setCapturedAt(capturedAt);
-      setFilePreviewUrl(URL.createObjectURL(file));
+      setSelectedFiles((prev) => {
+        if (prev.length >= 3) return prev;
+        return [
+          ...prev,
+          {
+            file,
+            previewUrl: URL.createObjectURL(file),
+            capturedAt,
+          },
+        ];
+      });
       setShowCamera(false);
       // Auto-fill title if empty
       setTitle((t) => t || `Field ${mode === "photo" ? "Photo" : "Video"} - ${capturedAt.toLocaleDateString()}`);
@@ -185,17 +197,51 @@ export default function CreateCasePage() {
   );
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setSelectedFile(file);
-    setCapturedAt(new Date());
-    setFilePreviewUrl(URL.createObjectURL(file));
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+
+    setSelectedFiles((prev) => {
+      const newItems: SelectedFileItem[] = [];
+      const remainingSlots = 3 - prev.length;
+
+      for (let i = 0; i < Math.min(filesArray.length, remainingSlots); i++) {
+        const file = filesArray[i];
+        newItems.push({
+          file,
+          previewUrl: URL.createObjectURL(file),
+          capturedAt: new Date(),
+        });
+      }
+
+      if (filesArray.length > remainingSlots) {
+        setSubmitError(`Only up to 3 files can be selected. Extra files were ignored.`);
+      }
+
+      return [...prev, ...newItems];
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, []);
+
+  const handleRemoveFile = useCallback((index: number) => {
+    setSelectedFiles((prev) => {
+      const updated = [...prev];
+      const removed = updated.splice(index, 1)[0];
+      if (removed) {
+        URL.revokeObjectURL(removed.previewUrl);
+      }
+      return updated;
+    });
   }, []);
 
   const buildFormData = useCallback(() => {
-    if (!selectedFile || !title) return null;
+    if (selectedFiles.length === 0 || !title) return null;
     const fd = new FormData();
-    fd.append("files", selectedFile, selectedFile.name); // NOTE: /api/cases expects "files"
+    selectedFiles.forEach((item) => {
+      fd.append("files", item.file, item.file.name); // NOTE: /api/cases expects "files"
+    });
     fd.append("title", title);
     fd.append("description", description);
     fd.append("incidentType", incidentType);
@@ -209,11 +255,24 @@ export default function CreateCasePage() {
       fd.append("gpsAccuracy", String(refinedCoords.accuracy));
     }
     return fd;
-  }, [selectedFile, title, description, incidentType, tags, refinedCoords]);
+  }, [selectedFiles, title, description, incidentType, tags, refinedCoords]);
+
+  const resetForm = useCallback(() => {
+    setTitle("");
+    setDescription("");
+    setIncidentType("other");
+    setTags([]);
+    selectedFiles.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    setSelectedFiles([]);
+    setSubmitMode(null);
+    clearGPS();
+    setSelectedTemplateId(null);
+    setRefinedCoords(null);
+  }, [selectedFiles, clearGPS]);
 
   const handleSubmit = useCallback(async () => {
-    if (!selectedFile || !title.trim()) {
-      setSubmitError("Title and file are required.");
+    if (selectedFiles.length === 0 || !title.trim()) {
+      setSubmitError("Title and at least one file are required.");
       return;
     }
 
@@ -250,21 +309,7 @@ export default function CreateCasePage() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [selectedFile, title, description, incidentType, tags, coords, getToken, buildFormData, router]);
-
-  const resetForm = () => {
-    setTitle("");
-    setDescription("");
-    setIncidentType("other");
-    setTags([]);
-    setSelectedFile(null);
-    setCapturedAt(null);
-    if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
-    setFilePreviewUrl(null);
-    setSubmitMode(null);
-    clearGPS();
-    setSelectedTemplateId(null);
-  };
+  }, [selectedFiles, title, getToken, buildFormData, router, resetForm]);
 
   if (submitSuccess) {
     return (
@@ -551,41 +596,46 @@ export default function CreateCasePage() {
                       </button>
                     </div>
 
-                    {!selectedFile ? (
+                    {selectedFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {selectedFiles.map((item, idx) => (
+                          <div key={idx} className="file-preview-row">
+                            {item.file.type.startsWith("image/") ? (
+                              <img src={item.previewUrl} alt="Preview" className="file-thumb" />
+                            ) : (
+                              <video src={item.previewUrl} className="file-thumb" muted />
+                            )}
+                            <div className="file-info">
+                              <span className="file-name">{item.file.name}</span>
+                              <span className="file-size">{(item.file.size / 1024 / 1024).toFixed(2)} MB</span>
+                              {item.capturedAt && (
+                                <span className="file-time">{item.capturedAt.toLocaleString()}</span>
+                              )}
+                              <button
+                                type="button"
+                                className="reopen-camera"
+                                style={{ color: 'var(--dash-error)' }}
+                                onClick={() => handleRemoveFile(idx)}
+                              >
+                                Remove Specimen
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedFiles.length < 3 ? (
                       <button
                         type="button"
                         className="open-camera-btn"
                         onClick={() => setShowCamera(true)}
                       >
                         <Camera className="w-5 h-5 text-dash-muted" />
-                        Open Capture Interface
+                        Add Camera Specimen ({selectedFiles.length}/3)
                       </button>
                     ) : (
-                      <div className="file-preview-row">
-                        {selectedFile.type.startsWith("image/") ? (
-                          <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
-                        ) : (
-                          <video src={filePreviewUrl!} className="file-thumb" muted />
-                        )}
-                        <div className="file-info">
-                          <span className="file-name">{selectedFile.name}</span>
-                          <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                          {capturedAt && (
-                            <span className="file-time">{capturedAt.toLocaleString()}</span>
-                          )}
-                          <button
-                            type="button"
-                            className="reopen-camera"
-                            onClick={() => {
-                              setSelectedFile(null);
-                              setFilePreviewUrl(null);
-                              setShowCamera(true);
-                            }}
-                          >
-                            Recapture Specimen
-                          </button>
-                        </div>
-                      </div>
+                      <p className="text-xs text-amber-500 font-medium">Maximum limit of 3 files reached.</p>
                     )}
 
                     {showCamera && (
@@ -607,41 +657,54 @@ export default function CreateCasePage() {
                     <input
                       ref={fileInputRef}
                       type="file"
+                      multiple
                       accept="image/*,video/mp4,video/webm,application/pdf"
                       onChange={handleFileSelect}
                       className="hidden-input"
                     />
-                    {!selectedFile ? (
+
+                    {selectedFiles.length > 0 && (
+                      <div className="space-y-2 mb-3">
+                        {selectedFiles.map((item, idx) => (
+                          <div key={idx} className="file-preview-row">
+                            {item.file.type.startsWith("image/") ? (
+                              <img src={item.previewUrl} alt="Preview" className="file-thumb" />
+                            ) : item.file.type.startsWith("video/") ? (
+                              <video src={item.previewUrl} className="file-thumb" muted />
+                            ) : (
+                              <div className="file-icon">
+                                <FileText className="w-6 h-6 text-dash-muted" />
+                              </div>
+                            )}
+                            <div className="file-info">
+                              <span className="file-name">{item.file.name}</span>
+                              <span className="file-size">{(item.file.size / 1024 / 1024).toFixed(2)} MB</span>
+                              <button
+                                type="button"
+                                className="reopen-camera"
+                                style={{ color: 'var(--dash-error)' }}
+                                onClick={() => handleRemoveFile(idx)}
+                              >
+                                Remove File
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedFiles.length < 3 ? (
                       <button
                         type="button"
                         className="upload-zone"
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <Upload className="w-6 h-6 text-dash-muted" />
-                        <span>Select Cryptographic Specimen File</span>
-                        <small>Images, video, PDF — max 200MB</small>
+                        <span>Select Cryptographic Specimen File ({selectedFiles.length}/3)</span>
+                        <small>Images, video, PDF — max 200MB per file</small>
                       </button>
                     ) : (
-                      <div className="file-preview-row">
-                        {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
-                          <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
-                        ) : (
-                          <div className="file-icon">
-                            <FileText className="w-6 h-6 text-dash-muted" />
-                          </div>
-                        )}
-                        <div className="file-info">
-                          <span className="file-name">{selectedFile.name}</span>
-                          <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                          <button
-                            type="button"
-                            className="reopen-camera"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            Change File
-                          </button>
-                        </div>
-                      </div>
+                      <p className="text-xs text-amber-500 font-medium">Maximum limit of 3 files reached.</p>
                     )}
                   </div>
                 )}
@@ -730,7 +793,7 @@ export default function CreateCasePage() {
                     <Button
                       type="submit"
                       className="submit-btn w-full sm:flex-1 h-12 bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold rounded-xl shadow-sm transition-all text-base flex items-center justify-center gap-2"
-                      disabled={isSubmitting || !selectedFile || !title || !refinedCoords}
+                      disabled={isSubmitting || selectedFiles.length === 0 || !title || !refinedCoords}
                     >
                       {isSubmitting ? (
                         <>

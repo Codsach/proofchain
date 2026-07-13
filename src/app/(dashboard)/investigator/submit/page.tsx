@@ -37,31 +37,37 @@ export default function SubmitEvidencePage() {
   const [captureMode, setCaptureMode] = useState<CaptureMode>("photo");
   const [showCamera, setShowCamera] = useState(false);
 
+  interface SelectedFileItem {
+    file: File;
+    previewUrl: string;
+    capturedAt?: Date;
+  }
+
   // Form fields
   const [caseId, setCaseId] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [capturedAt, setCapturedAt] = useState<Date | null>(null);
-  const [filePreviewUrl, setFilePreviewUrl] = useState<string | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<SelectedFileItem[]>([]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [mockHash, setMockHash] = useState<string | null>(null);
+  const [mockHashes, setMockHashes] = useState<string[]>([]);
 
   useEffect(() => {
-    if (selectedFile) {
-      // Create a deterministic pseudo-hash based on filename and size
-      const hash = Array.from(selectedFile.name + selectedFile.size)
-        .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)
-        .toString(16)
-        .padStart(8, '0');
-      setMockHash(`f02b9e83a9a834d89a74421b${hash}d73c71ea4012e8790ba45112e`);
+    if (selectedFiles.length > 0) {
+      const hashes = selectedFiles.map(item => {
+        const hash = Array.from(item.file.name + item.file.size)
+          .reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) | 0, 0)
+          .toString(16)
+          .padStart(8, '0');
+        return `f02b9e83a9a834d89a74421b${hash}d73c71ea4012e8790ba45112e`;
+      });
+      setMockHashes(hashes);
     } else {
-      setMockHash(null);
+      setMockHashes([]);
     }
-  }, [selectedFile]);
+  }, [selectedFiles]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -113,9 +119,17 @@ export default function SubmitEvidencePage() {
 
   const handleCameraCapture = useCallback(
     (file: File, capturedAt: Date, mode: CaptureMode) => {
-      setSelectedFile(file);
-      setCapturedAt(capturedAt);
-      setFilePreviewUrl(URL.createObjectURL(file));
+      setSelectedFiles((prev) => {
+        if (prev.length >= 3) return prev;
+        return [
+          ...prev,
+          {
+            file,
+            previewUrl: URL.createObjectURL(file),
+            capturedAt,
+          },
+        ];
+      });
       setShowCamera(false);
       // Auto-fill title if empty
       setTitle((t) => t || `Field ${mode === "photo" ? "Photo" : "Video"} - ${capturedAt.toLocaleDateString()}`);
@@ -124,39 +138,59 @@ export default function SubmitEvidencePage() {
   );
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setSelectedFile(file);
-    setCapturedAt(new Date());
-    setFilePreviewUrl(URL.createObjectURL(file));
+    if (!e.target.files) return;
+    const filesArray = Array.from(e.target.files);
+
+    setSelectedFiles((prev) => {
+      const newItems: SelectedFileItem[] = [];
+      const remainingSlots = 3 - prev.length;
+
+      for (let i = 0; i < Math.min(filesArray.length, remainingSlots); i++) {
+        const file = filesArray[i];
+        newItems.push({
+          file,
+          previewUrl: URL.createObjectURL(file),
+          capturedAt: new Date(),
+        });
+      }
+
+      if (filesArray.length > remainingSlots) {
+        setSubmitError(`Only up to 3 files can be selected. Extra files were ignored.`);
+      }
+
+      return [...prev, ...newItems];
+    });
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }, []);
 
-  const buildFormData = useCallback(() => {
-    if (!selectedFile || !caseId || !title) return null;
-    const fd = new FormData();
-    fd.append("file", selectedFile, selectedFile.name);
-    fd.append("caseId", caseId);
-    fd.append("title", title);
-    fd.append("description", description);
-    fd.append("captureMethod", submitMode === "camera" ? "camera" : "upload");
-    if (refinedCoords) {
-      fd.append("latitude", String(refinedCoords.latitude));
-      fd.append("longitude", String(refinedCoords.longitude));
-      if (refinedCoords.altitude !== null) fd.append("altitude", String(refinedCoords.altitude));
-      fd.append("gpsAccuracy", String(refinedCoords.accuracy));
-      fd.append("capturedAt", refinedCoords.capturedAt.toISOString());
-    }
-    const deviceInfo = {
-      userAgent: navigator.userAgent,
-      platform: navigator.platform,
-    };
-    fd.append("deviceInfo", JSON.stringify(deviceInfo));
-    return fd;
-  }, [selectedFile, caseId, title, description, submitMode, refinedCoords]);
+  const handleRemoveFile = useCallback((index: number) => {
+    setSelectedFiles((prev) => {
+      const updated = [...prev];
+      const removed = updated.splice(index, 1)[0];
+      if (removed) {
+        URL.revokeObjectURL(removed.previewUrl);
+      }
+      return updated;
+    });
+  }, []);
+
+  const resetForm = useCallback(() => {
+    // Retain caseId so investigators can easily submit multiple files sequentially!
+    setTitle("");
+    setDescription("");
+    selectedFiles.forEach((item) => URL.revokeObjectURL(item.previewUrl));
+    setSelectedFiles([]);
+    setSubmitMode(null);
+    clearGPS();
+    setRefinedCoords(null);
+  }, [selectedFiles, clearGPS]);
 
   const handleSubmit = useCallback(async () => {
-    if (!selectedFile || !caseId.trim() || !title.trim()) {
-      setSubmitError("Case ID, title, and file are required.");
+    if (selectedFiles.length === 0 || !caseId.trim() || !title.trim()) {
+      setSubmitError("Case ID, title, and at least one file are required.");
       return;
     }
 
@@ -165,44 +199,47 @@ export default function SubmitEvidencePage() {
 
     const token = await getToken();
 
-    // If offline, queue it
-    if (!isOnline || !token) {
-      try {
-        await addToQueue({
-          caseId,
-          title,
-          description,
-          fileName: selectedFile.name,
-          fileType: selectedFile.type,
-          fileSize: selectedFile.size,
-          fileBlob: selectedFile,
-          latitude: refinedCoords?.latitude ?? null,
-          longitude: refinedCoords?.longitude ?? null,
-          altitude: refinedCoords?.altitude ?? null,
-          gpsAccuracy: refinedCoords?.accuracy ?? null,
-          capturedAt: refinedCoords?.capturedAt.toISOString() ?? new Date().toISOString(),
-          captureMethod: submitMode === "camera" ? "camera" : "upload",
-          deviceInfo: JSON.stringify({ userAgent: navigator.userAgent }),
-        });
-        setSubmitSuccess(true);
-        setIsSubmitting(false);
-        resetForm();
-      } catch {
-        setSubmitError("Failed to queue submission. Please try again.");
-        setIsSubmitting(false);
+    // Helper to queue a single file offline
+    const queueFile = async (item: SelectedFileItem, index: number) => {
+      await addToQueue({
+        caseId,
+        title: selectedFiles.length > 1 ? `${title} (${index + 1}/${selectedFiles.length})` : title,
+        description: description || `Uploaded file: ${item.file.name}`,
+        fileName: item.file.name,
+        fileType: item.file.type,
+        fileSize: item.file.size,
+        fileBlob: item.file,
+        latitude: refinedCoords?.latitude ?? null,
+        longitude: refinedCoords?.longitude ?? null,
+        altitude: refinedCoords?.altitude ?? null,
+        gpsAccuracy: refinedCoords?.accuracy ?? null,
+        capturedAt: item.capturedAt?.toISOString() ?? refinedCoords?.capturedAt.toISOString() ?? new Date().toISOString(),
+        captureMethod: submitMode === "camera" ? "camera" : "upload",
+        deviceInfo: JSON.stringify({ userAgent: navigator.userAgent }),
+      });
+    };
+
+    // Helper to upload a single file directly
+    const uploadFile = async (item: SelectedFileItem, index: number) => {
+      const fd = new FormData();
+      fd.append("file", item.file, item.file.name);
+      fd.append("caseId", caseId);
+      fd.append("title", selectedFiles.length > 1 ? `${title} (${index + 1}/${selectedFiles.length})` : title);
+      fd.append("description", description);
+      fd.append("captureMethod", submitMode === "camera" ? "camera" : "upload");
+      if (refinedCoords) {
+        fd.append("latitude", String(refinedCoords.latitude));
+        fd.append("longitude", String(refinedCoords.longitude));
+        if (refinedCoords.altitude !== null) fd.append("altitude", String(refinedCoords.altitude));
+        fd.append("gpsAccuracy", String(refinedCoords.accuracy));
+        fd.append("capturedAt", item.capturedAt?.toISOString() ?? refinedCoords.capturedAt.toISOString());
       }
-      return;
-    }
+      const deviceInfo = {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+      };
+      fd.append("deviceInfo", JSON.stringify(deviceInfo));
 
-    // Online: submit directly
-    const fd = buildFormData();
-    if (!fd) {
-      setSubmitError("Please fill all required fields.");
-      setIsSubmitting(false);
-      return;
-    }
-
-    try {
       const res = await fetch("/api/evidence/upload", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
@@ -210,42 +247,51 @@ export default function SubmitEvidencePage() {
       });
 
       const data = await res.json();
-
       if (!res.ok) {
-        setSubmitError(data.error || "Submission failed. Please try again.");
-      } else {
-        setSubmitSuccess(true);
-        resetForm();
+        throw new Error(data.error || `Upload failed for ${item.file.name}`);
       }
-    } catch {
-      // Network failure — queue it instead of blocking
+    };
+
+    // If offline, queue all of them
+    if (!isOnline || !token) {
       try {
-        await addToQueue({
-          caseId,
-          title,
-          description,
-          fileName: selectedFile.name,
-          fileType: selectedFile.type,
-          fileSize: selectedFile.size,
-          fileBlob: selectedFile,
-          latitude: refinedCoords?.latitude ?? null,
-          longitude: refinedCoords?.longitude ?? null,
-          altitude: refinedCoords?.altitude ?? null,
-          gpsAccuracy: refinedCoords?.accuracy ?? null,
-          capturedAt: refinedCoords?.capturedAt.toISOString() ?? new Date().toISOString(),
-          captureMethod: submitMode === "camera" ? "camera" : "upload",
-          deviceInfo: JSON.stringify({ userAgent: navigator.userAgent }),
-        });
+        for (let i = 0; i < selectedFiles.length; i++) {
+          await queueFile(selectedFiles[i], i);
+        }
         setSubmitSuccess(true);
         resetForm();
       } catch {
-        setSubmitError("Submission failed and offline queue is unavailable.");
+        setSubmitError("Failed to queue submission. Please try again.");
+      } finally {
+        setIsSubmitting(false);
+      }
+      return;
+    }
+
+    // Online: upload each
+    try {
+      for (let i = 0; i < selectedFiles.length; i++) {
+        await uploadFile(selectedFiles[i], i);
+      }
+      setSubmitSuccess(true);
+      resetForm();
+    } catch (err: any) {
+      console.error(err);
+      // Queue all of them on failure
+      try {
+        for (let i = 0; i < selectedFiles.length; i++) {
+          await queueFile(selectedFiles[i], i);
+        }
+        setSubmitSuccess(true);
+        resetForm();
+      } catch {
+        setSubmitError(err.message || "Submission failed and offline queue is unavailable.");
       }
     } finally {
       setIsSubmitting(false);
     }
   }, [
-    selectedFile,
+    selectedFiles,
     caseId,
     title,
     description,
@@ -253,22 +299,9 @@ export default function SubmitEvidencePage() {
     submitMode,
     isOnline,
     getToken,
-    buildFormData,
     addToQueue,
+    resetForm,
   ]);
-
-  const resetForm = () => {
-    // Retain caseId so investigators can easily submit multiple files sequentially!
-    setTitle("");
-    setDescription("");
-    setSelectedFile(null);
-    setCapturedAt(null);
-    if (filePreviewUrl) URL.revokeObjectURL(filePreviewUrl);
-    setFilePreviewUrl(null);
-    setSubmitMode(null);
-    clearGPS();
-    setRefinedCoords(null);
-  };
 
   if (submitSuccess) {
     return (
@@ -456,7 +489,39 @@ export default function SubmitEvidencePage() {
                       </button>
                     </div>
 
-                    {!selectedFile ? (
+                    {selectedFiles.length > 0 && (
+                      <div className="space-y-2 mt-2">
+                        {selectedFiles.map((item, idx) => (
+                          <div key={idx} className="file-preview-row">
+                            {item.file.type.startsWith("image/") ? (
+                              <img src={item.previewUrl} alt="Preview" className="file-thumb" />
+                            ) : (
+                              <video src={item.previewUrl} className="file-thumb" muted />
+                            )}
+                            <div className="file-info">
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span className="file-name">{item.file.name}</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                              </div>
+                              <span className="file-size">{(item.file.size / 1024 / 1024).toFixed(2)} MB</span>
+                              {item.capturedAt && (
+                                <span className="file-time">{item.capturedAt.toLocaleString()}</span>
+                              )}
+                              <button
+                                type="button"
+                                className="reopen-camera"
+                                style={{ color: 'var(--dash-error)' }}
+                                onClick={() => handleRemoveFile(idx)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedFiles.length < 3 ? (
                       <button
                         type="button"
                         className="open-camera-btn"
@@ -466,37 +531,10 @@ export default function SubmitEvidencePage() {
                           <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
                           <circle cx="12" cy="13" r="4" />
                         </svg>
-                        Open Camera
+                        Add Photo / Video ({selectedFiles.length}/3)
                       </button>
                     ) : (
-                      <div className="file-preview-row">
-                        {selectedFile.type.startsWith("image/") ? (
-                          <img src={filePreviewUrl!} alt="Preview" className="file-thumb" />
-                        ) : (
-                          <video src={filePreviewUrl!} className="file-thumb" muted />
-                        )}
-                        <div className="file-info">
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span className="file-name">{selectedFile.name}</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                          </div>
-                          <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                          {capturedAt && (
-                            <span className="file-time">{capturedAt.toLocaleString()}</span>
-                          )}
-                          <button
-                            type="button"
-                            className="reopen-camera"
-                            onClick={() => {
-                              setSelectedFile(null);
-                              setFilePreviewUrl(null);
-                              setShowCamera(true);
-                            }}
-                          >
-                            Recapture
-                          </button>
-                        </div>
-                      </div>
+                      <p className="text-xs text-amber-500 font-medium">Maximum limit of 3 files reached.</p>
                     )}
 
                     {showCamera && (
@@ -519,11 +557,49 @@ export default function SubmitEvidencePage() {
                     <input
                       ref={fileInputRef}
                       type="file"
+                      multiple
                       accept="image/*,video/mp4,video/webm,application/pdf"
                       onChange={handleFileSelect}
                       className="hidden-input"
                     />
-                    {!selectedFile ? (
+
+                    {selectedFiles.length > 0 && (
+                      <div className="space-y-2 mb-3">
+                        {selectedFiles.map((item, idx) => (
+                          <div key={idx} className="file-preview-row">
+                            {item.file.type.startsWith("image/") ? (
+                              <img src={item.previewUrl} alt="Preview" className="file-thumb" />
+                            ) : item.file.type.startsWith("video/") ? (
+                              <video src={item.previewUrl} className="file-thumb" muted />
+                            ) : (
+                              <div className="file-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+                                  <polyline points="13 2 13 9 20 9" />
+                                </svg>
+                              </div>
+                            )}
+                            <div className="file-info">
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span className="file-name">{item.file.name}</span>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
+                              </div>
+                              <span className="file-size">{(item.file.size / 1024 / 1024).toFixed(2)} MB</span>
+                              <button
+                                type="button"
+                                className="reopen-camera"
+                                style={{ color: 'var(--dash-error)' }}
+                                onClick={() => handleRemoveFile(idx)}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {selectedFiles.length < 3 ? (
                       <button
                         type="button"
                         className="upload-zone"
@@ -534,36 +610,11 @@ export default function SubmitEvidencePage() {
                           <polyline points="17 8 12 3 7 8" />
                           <line x1="12" y1="3" x2="12" y2="15" />
                         </svg>
-                        <span>Tap to select file</span>
-                        <small>Images, video, PDF — max 200MB</small>
+                        <span>Select File ({selectedFiles.length}/3)</span>
+                        <small>Images, video, PDF — max 200MB per file</small>
                       </button>
                     ) : (
-                      <div className="file-preview-row">
-                        {selectedFile.type.startsWith("image/") && filePreviewUrl ? (
-                          <img src={filePreviewUrl} alt="Preview" className="file-thumb" />
-                        ) : (
-                          <div className="file-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
-                              <polyline points="13 2 13 9 20 9" />
-                            </svg>
-                          </div>
-                        )}
-                        <div className="file-info">
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span className="file-name">{selectedFile.name}</span>
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--dash-info)" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
-                          </div>
-                          <span className="file-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</span>
-                          <button
-                            type="button"
-                            className="reopen-camera"
-                            onClick={() => fileInputRef.current?.click()}
-                          >
-                            Change File
-                          </button>
-                        </div>
-                      </div>
+                      <p className="text-xs text-amber-500 font-medium">Maximum limit of 3 files reached.</p>
                     )}
                   </div>
                 )}
@@ -636,7 +687,7 @@ export default function SubmitEvidencePage() {
                     <button
                       type="submit"
                       className="submit-btn"
-                      disabled={isSubmitting || !selectedFile || !caseId || !title || !refinedCoords}
+                      disabled={isSubmitting || selectedFiles.length === 0 || !caseId || !title || !refinedCoords}
                     >
                       {isSubmitting ? (
                         <>
@@ -667,7 +718,7 @@ export default function SubmitEvidencePage() {
             <Card className="border border-dash-border bg-dash-card shadow-sm rounded-xl overflow-hidden">
               <CardHeader className="border-b border-dash-border pb-3">
                 <CardTitle className="text-xs font-bold text-dash-text uppercase tracking-widest flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${selectedFile ? "bg-amber-500 animate-pulse" : "bg-dash-muted"}`} />
+                  <span className={`w-2 h-2 rounded-full ${selectedFiles.length > 0 ? "bg-amber-500 animate-pulse" : "bg-dash-muted"}`} />
                   Chain Processing Preview
                 </CardTitle>
                 <CardDescription className="text-[10px] text-dash-muted uppercase tracking-wider">
@@ -675,31 +726,42 @@ export default function SubmitEvidencePage() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="pt-4 space-y-3 font-mono text-[10px]">
-                <div className="space-y-1">
-                  <span className="text-dash-muted font-bold uppercase tracking-wider block">SHA-256 Hash</span>
-                  <span className="text-dash-text break-all font-semibold block bg-dash-input/50 p-2 rounded text-[9px] border border-dash-border/30">
-                    {mockHash ? mockHash : "Awaiting file selection..."}
-                  </span>
+                <div className="space-y-2">
+                  <span className="text-dash-muted font-bold uppercase tracking-wider block">SHA-256 Hash(es)</span>
+                  {mockHashes.length === 0 ? (
+                    <span className="text-dash-text break-all font-semibold block bg-dash-input/50 p-2 rounded text-[9px] border border-dash-border/30">
+                      Awaiting file selection...
+                    </span>
+                  ) : (
+                    <div className="space-y-1 max-h-[150px] overflow-y-auto pr-1">
+                      {mockHashes.map((h, i) => (
+                        <div key={i} className="text-dash-text break-all font-semibold bg-dash-input/50 p-1.5 rounded text-[8px] border border-dash-border/30">
+                          <span className="text-[7px] text-dash-muted block truncate font-sans mb-0.5">{selectedFiles[i]?.file.name}</span>
+                          {h}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex justify-between items-center pt-2 border-t border-dash-border/30">
                   <span className="text-dash-muted font-bold uppercase tracking-wider">IPFS Status</span>
-                  <span className={`font-bold uppercase ${selectedFile ? "text-amber-500" : "text-dash-muted"}`}>
-                    {selectedFile ? "Ready to Pin" : "Awaiting Media"}
+                  <span className={`font-bold uppercase ${selectedFiles.length > 0 ? "text-amber-500" : "text-dash-muted"}`}>
+                    {selectedFiles.length > 0 ? "Ready to Pin" : "Awaiting Media"}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center pt-2 border-t border-dash-border/30">
                   <span className="text-dash-muted font-bold uppercase tracking-wider">Blockchain Node</span>
-                  <span className={`font-bold uppercase ${selectedFile ? "text-amber-500" : "text-dash-muted"}`}>
-                    {selectedFile ? "Tx Gen Pending" : "Awaiting Media"}
+                  <span className={`font-bold uppercase ${selectedFiles.length > 0 ? "text-amber-500" : "text-dash-muted"}`}>
+                    {selectedFiles.length > 0 ? "Tx Gen Pending" : "Awaiting Media"}
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center pt-2 border-t border-dash-border/30">
                   <span className="text-dash-muted font-bold uppercase tracking-wider">AI Verification</span>
-                  <span className={`font-bold uppercase ${selectedFile ? "text-amber-500" : "text-dash-muted"}`}>
-                    {selectedFile ? "Queued" : "Awaiting Media"}
+                  <span className={`font-bold uppercase ${selectedFiles.length > 0 ? "text-amber-500" : "text-dash-muted"}`}>
+                    {selectedFiles.length > 0 ? "Queued" : "Awaiting Media"}
                   </span>
                 </div>
               </CardContent>

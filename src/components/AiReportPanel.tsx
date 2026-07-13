@@ -112,18 +112,58 @@ export function AiReportPanel({ report, isLoading }: Props) {
       {/* Background Decorative Element */}
       <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/5 blur-[100px] rounded-full group-hover:bg-emerald-500/10 transition-colors duration-700" />
 
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4 relative">
-        <div className="-ml-3">
+      {/* Header — compact horizontal: gauge left, info right */}
+      <div className="flex items-center gap-5 relative">
+        {/* Left: compact arc gauge */}
+        <div className="shrink-0">
           <TamperGauge score={report.tamperScore} />
         </div>
-        <div className="text-right self-start pt-2">
-          <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest mb-1">Temporal Scan</p>
-          <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
-            {new Date(report.analysedAt).toLocaleString(undefined, {
-              hour: '2-digit', minute: '2-digit', second: '2-digit'
-            })}
-          </p>
+
+        {/* Right: risk info */}
+        <div className="flex-1 min-w-0 space-y-2">
+          {/* Risk level badge */}
+          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest border ${
+            report.riskLevel === "high"
+              ? "text-red-400 border-red-500/30 bg-red-500/10"
+              : report.riskLevel === "medium"
+              ? "text-amber-400 border-amber-500/30 bg-amber-500/10"
+              : "text-emerald-400 border-emerald-500/30 bg-emerald-500/10"
+          }`}>
+            <span className="w-1.5 h-1.5 rounded-full bg-current" />
+            {report.riskLevel ?? "low"} risk
+          </div>
+
+          {/* Score label + fraction */}
+          <div>
+            <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest mb-0.5">
+              Integrity Score
+            </p>
+            <div className="flex items-baseline gap-1">
+              <span className={`text-2xl font-extrabold leading-none tracking-tight ${
+                report.riskLevel === "high"
+                  ? "text-red-400"
+                  : report.riskLevel === "medium"
+                  ? "text-amber-400"
+                  : "text-emerald-400"
+              }`}>
+                {report.tamperScore}
+              </span>
+              <span className="text-[10px] text-dash-muted/60 font-mono">/ 100</span>
+            </div>
+          </div>
+
+          {/* Timestamp */}
+          <div>
+            <p className="text-[9px] font-bold text-dash-muted/40 uppercase tracking-widest">
+              Analysed
+            </p>
+            <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
+              {new Date(report.analysedAt).toLocaleString(undefined, {
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                day: '2-digit', month: 'short'
+              })}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -214,12 +254,12 @@ export function AiReportPanel({ report, isLoading }: Props) {
                 ["Device", report.exifData.device],
                 ["Created", report.exifData.creation_timestamp],
                 ["Modified", report.exifData.modification_timestamp],
-                ["GPS", report.exifData.gps_present ? "Present" : "Absent"],
+                ["EXIF GPS", report.exifData.gps_present ? "Present" : "Not in EXIF"],
               ].map(([label, value]) => (
                 <tr key={label as string} className="hover:bg-dash-hover/20 transition-colors">
-                  <td className="py-2.5 px-4 text-dash-muted/60 w-32">{label}</td>
+                  <td className="py-3 px-4 text-dash-muted/60 w-36 shrink-0">{label}</td>
                   <td
-                    className={`py-2.5 px-4 font-mono tracking-tighter ${
+                    className={`py-3 px-4 font-mono tracking-tighter break-words ${
                       value ? "text-dash-text/80" : "text-dash-muted/20 italic"
                     }`}
                   >

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Case from "@/lib/models/Case";
 import AiReport from "@/lib/models/AiReport";
+import { EvidenceModel } from "@/lib/models/Evidence";
 import { logAction } from "@/lib/audit";
 import { Types } from "mongoose";
 
@@ -75,6 +76,11 @@ export async function POST(req: NextRequest) {
     caseDoc.overallTamperScore = overallScore;
     caseDoc.overallRiskLevel = overallRisk;
     await caseDoc.save();
+
+    // 5. Update the individual Evidence document status so UI evidence lists
+    //    no longer show stale "pending_ai_review" after analysis finishes.
+    const evidenceStatus = status === "timeout" ? "ai_timeout" : "pending_review";
+    await EvidenceModel.findByIdAndUpdate(fileId, { $set: { status: evidenceStatus } });
 
     await logAction({
       actorId: null,
