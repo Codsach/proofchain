@@ -12,16 +12,22 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
-CANONICAL_PROMPT = """You are a digital forensics assistant. Analyse the provided image for two distinct threats: (A) digital manipulation/tampering and (B) AI generation.
+CANONICAL_PROMPT = """You are a digital forensics assistant. Analyse the provided file for two distinct threats: (A) digital manipulation/tampering and (B) AI generation.
 
-Check for the following:
+For MANIPULATION, check for:
 1. Inconsistent lighting or shadows between objects
 2. Cloning or copy-paste artifacts (repeated textures or patterns)
 3. Splicing boundaries (hard edges where image regions have different noise profiles)
 4. Compression inconsistencies (different JPEG quality blocks within one image)
 5. Unnatural text or UI overlays (added text, doctored screenshots)
 6. Metadata inconsistency clues visible in the image content
-7. AI generation artifacts: unnaturally perfect or plastic-looking skin/surfaces, dreamlike or non-photorealistic backgrounds, uncanny valley facial features, perfectly symmetrical or repetitive fine-detail patterns (e.g. hair, fur, fabric), absence of real-world imperfections (sensor noise, lens distortion, chromatic aberration, grain), synthetic and overly uniform noise distribution, hallucinated or nonsensical text/signage/logos, inconsistent finger counts or limb geometry, and an overall "rendered" aesthetic inconsistent with real photography
+
+For AI GENERATION, check for ALL of these — including digital art and illustrations:
+7. Photographic AI artifacts: unnaturally perfect or plastic-looking skin/surfaces, dreamlike backgrounds, uncanny valley facial features, synthetic and overly uniform noise, hallucinated or nonsensical text/signage/logos, inconsistent finger counts or limb geometry
+8. AI-generated DIGITAL ART artifacts: perfectly smooth and uniform brush strokes with no natural variation, unnaturally perfect symmetry in facial features or body proportions, backgrounds that are rendered with repetitive or procedural-looking texture, lighting that is technically correct but has no natural imperfections, line art that is too clean and consistent to be hand-drawn, shading gradients that are perfectly smooth without any organic variation, unnaturally perfect hair or fabric rendering, absence of the micro-errors and idiosyncrasies typical of human artists
+9. DALL-E / ChatGPT / Midjourney / Stable Diffusion signatures: stylistically over-polished rendering even in "anime" or "cartoon" style, perfectly balanced composition that looks algorithmically generated, text within images that is slightly distorted or non-standard, overly consistent color palette without the spontaneous color choices of a human artist
+
+IMPORTANT: Do NOT assume that because an image looks like "digital art" or "anime/manga style" it must be human-made. AI image generators like DALL-E, Midjourney, and Stable Diffusion are widely used to create digital illustrations and anime-style art. Evaluate the visual characteristics carefully.
 
 Respond in this exact JSON format and nothing else:
 {
@@ -85,12 +91,22 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
             contents=[CANONICAL_PROMPT, image_part],
             config=types.GenerateContentConfig(
                 temperature=0.1,  # Low temperature for consistent forensic analysis
-                max_output_tokens=1024,  # Raised from 512 — prompt now has 4 fields + up to 10 findings
+                max_output_tokens=8192,  # Raised from 1024 to accommodate reasoning/thinking tokens and prevent truncation
                 response_mime_type="application/json",
             ),
         )
 
         raw_text = response.text.strip()
+
+        # Strip markdown code fences if Gemini wraps output in ```json ... ```
+        # This can happen even when response_mime_type="application/json" is set.
+        if raw_text.startswith("```"):
+            # Remove opening fence (```json or ```)
+            raw_text = raw_text.split("\n", 1)[-1]
+            # Remove closing fence
+            if raw_text.endswith("```"):
+                raw_text = raw_text.rsplit("```", 1)[0]
+            raw_text = raw_text.strip()
 
         # Parse and validate JSON
         parsed = json.loads(raw_text)

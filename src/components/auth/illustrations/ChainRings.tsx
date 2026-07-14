@@ -6,11 +6,11 @@ import { motion } from "framer-motion";
    Concentric blockchain chain-link rings expanding outward. */
 
 const rings = [
-  { r: 30, delay: 0, duration: 3.2, strokeOpacity: 0.7 },
-  { r: 65, delay: 0.3, duration: 3.8, strokeOpacity: 0.55 },
-  { r: 100, delay: 0.6, duration: 4.4, strokeOpacity: 0.40 },
-  { r: 138, delay: 0.9, duration: 5.0, strokeOpacity: 0.28 },
-  { r: 175, delay: 1.2, duration: 5.6, strokeOpacity: 0.16 },
+  { r: 30, delay: 0, duration: 3.2, strokeOpacity: 0.6 },
+  { r: 65, delay: 0.3, duration: 3.8, strokeOpacity: 0.48 },
+  { r: 100, delay: 0.6, duration: 4.4, strokeOpacity: 0.35 },
+  { r: 138, delay: 0.9, duration: 5.0, strokeOpacity: 0.24 },
+  { r: 175, delay: 1.2, duration: 5.6, strokeOpacity: 0.14 },
 ];
 
 const linkCount = 8;
@@ -45,7 +45,7 @@ export function ChainRings() {
               <stop offset="100%" stopColor="#0D9E6E" />
             </radialGradient>
             <filter id="chainGlow">
-              <feGaussianBlur stdDeviation="2.5" result="blur" />
+              <feGaussianBlur stdDeviation="2" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -87,10 +87,10 @@ export function ChainRings() {
                 width="10" height="6"
                 rx="3"
                 fill="#0D9E6E"
-                fillOpacity="0.7"
+                fillOpacity="0.6"
                 filter="url(#chainGlow)"
                 animate={{
-                  fillOpacity: [0.4, 0.9, 0.4],
+                  fillOpacity: [0.35, 0.8, 0.35],
                   scale: [0.9, 1.1, 0.9],
                 }}
                 transition={{

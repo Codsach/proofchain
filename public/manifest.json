@@ -11,31 +11,7 @@
   "categories": ["security", "productivity"],
   "icons": [
     {
-      "src": "/icons/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/icons/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icons/icon-512x512.png",
+      "src": "/logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -47,14 +23,14 @@
       "short_name": "Submit",
       "description": "Capture and submit new field evidence",
       "url": "/investigator/submit",
-      "icons": [{ "src": "/icons/shortcut-submit.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
     },
     {
       "name": "My Cases",
       "short_name": "Cases",
       "description": "View your evidence submissions",
       "url": "/investigator/dashboard",
-      "icons": [{ "src": "/icons/shortcut-cases.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/logo.png", "sizes": "512x512" }]
     }
   ],
   "permissions": ["geolocation", "camera", "microphone"],

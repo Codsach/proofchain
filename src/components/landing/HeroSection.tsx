@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import HeroInteractiveWidget from "./HeroInteractiveWidget";
+import HeroAuroraBackground from "./HeroAuroraBackground";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 32, filter: "blur(8px)" },
@@ -14,6 +15,27 @@ const fadeUp: Variants = {
     filter: "blur(0px)",
     transition: { duration: 1.2, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] },
   }),
+};
+
+const headlineContainerVariants: Variants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.16,
+    },
+  },
+};
+
+const headlineLineVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 1.1, // Slow paced (1100ms)
+      ease: [0.22, 1, 0.36, 1], // Premium ease
+    },
+  },
 };
 
 // Very subtle mouse parallax
@@ -36,52 +58,96 @@ function useMouseParallax(strength = 0.012) {
 
 export default function HeroSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const parallax    = useMouseParallax(0.010);
+  const parallax = useMouseParallax(0.010);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
   });
 
-  const midY  = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
+  const midY = useTransform(scrollYProgress, [0, 1], ["0%", "10%"]);
   const midOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgY   = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
-  const fgOp  = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const fgSc  = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
+  const fgY = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
+  const fgOp = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  const fgSc = useTransform(scrollYProgress, [0, 0.6], [1, 0.98]);
 
   return (
     <div
       ref={sectionRef}
       className="noise-overlay relative min-h-screen flex items-center justify-center overflow-hidden w-full"
-      style={{ background: "transparent" }}
+      style={{ backgroundColor: "var(--hero-dark-bg)" }}
     >
       {/* ─── Keyframes ─── */}
       <style dangerouslySetInnerHTML={{
         __html: `
-        @keyframes heroGradientText {
-          0%   { background-position: 0% 50%; }
-          50%  { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+        @keyframes metallicSweep {
+          0% {
+            background-position: 100% 0;
+          }
+          30% {
+            background-position: 0% 0;
+          }
+          100% {
+            background-position: 0% 0;
+          }
         }
-        .hero-shimmer {
-          background: linear-gradient(
-            110deg,
-            #0f172a 0%,
-            #334155 22%,
-            #059669 42%,
-            #047857 58%,
-            #334155 78%,
-            #0f172a 100%
-          );
-          background-size: 280% auto;
-          color: transparent;
+        @keyframes livingMotion {
+          0%, 100% {
+            transform: translateY(0) translateZ(0);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) drop-shadow(0 1px 1px rgba(255, 255, 255, 0.05)) brightness(1);
+          }
+          50% {
+            transform: translateY(-0.8px) translateZ(0);
+            filter: drop-shadow(0 3.5px 7px rgba(0, 0, 0, 0.42)) drop-shadow(0 1.5px 1.5px rgba(255, 255, 255, 0.06)) brightness(1.03);
+          }
+        }
+        .line-base {
+          display: block;
           -webkit-background-clip: text;
           background-clip: text;
-          animation: heroGradientText 10s ease infinite;
+          color: transparent;
+          -webkit-text-fill-color: transparent;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+          text-rendering: optimizeLegibility;
+          will-change: transform, filter, background-position;
+          background-repeat: no-repeat;
+        }
+        .line-immutable {
+          background-image: linear-gradient(110deg, #e2e8f0 30%, #cbd5e1 42%, #ffffff 50%, #cbd5e1 58%, #e2e8f0 70%);
+          background-size: 300% 100%;
+          animation: 
+            metallicSweep 6.6s ease-in-out infinite,
+            livingMotion 12s ease-in-out infinite;
+          animation-delay: 0s, 0s;
+        }
+        .line-evidence {
+          background-image: linear-gradient(110deg, #e2e8f0 30%, #cbd5e1 42%, #ffffff 50%, #cbd5e1 58%, #e2e8f0 70%);
+          background-size: 300% 100%;
+          animation: 
+            metallicSweep 7.2s ease-in-out infinite,
+            livingMotion 12s ease-in-out infinite;
+          animation-delay: 0s, 0s;
+        }
+        .line-onchain {
+          background-image: linear-gradient(110deg, #059669 30%, #059669 42%, #34d399 50%, #059669 58%, #059669 70%);
+          background-size: 300% 100%;
+          animation: 
+            metallicSweep 7.8s ease-in-out infinite,
+            livingMotion 12s ease-in-out infinite;
+          animation-delay: 0s, 0s;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .line-immutable, .line-evidence, .line-onchain {
+            animation: none !important;
+            background-position: 0% 0 !important;
+            transform: none !important;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35)) !important;
+          }
         }
       `}} />
 
-      {/* ─── Layer 2: Ambient lighting — soft, no large circles ─── */}
+      {/* ─── Layer 2: Chromatic aurora + edge fades ─── */}
       <motion.div
         style={{
           position: "absolute", inset: 0,
@@ -89,81 +155,22 @@ export default function HeroSection() {
           pointerEvents: "none", willChange: "transform, opacity",
         }}
       >
-        {/* Edge fades */}
+        {/* Aurora canvas — sits below the edge fades in DOM order */}
+        <HeroAuroraBackground />
+
+        {/* Left + right edge fades — keep text columns crisp */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to right, var(--lp-bg) 0%, transparent 18%, transparent 82%, var(--lp-bg) 100%)",
+          background: "linear-gradient(to right, var(--hero-dark-bg) 0%, transparent 18%, transparent 82%, var(--hero-dark-bg) 100%)",
+          pointerEvents: "none",
         }} />
+
+        {/* Bottom edge fade — only 20% to avoid washing out lower aurora blobs */}
         <div style={{
           position: "absolute", inset: 0,
-          background: "linear-gradient(to top, var(--lp-bg) 0%, transparent 50%)",
-        }} />
-
-        {/* Very soft top-center radial — no animation, no large circle */}
-        <div style={{
-          position: "absolute",
-          top: "-4%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "55%",
-          maxWidth: 760,
-          height: 380,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.08) 0%, rgba(5,150,105,0.03) 45%, transparent 70%)",
-          filter: "blur(60px)",
+          background: "linear-gradient(to top, var(--hero-dark-bg) 0%, transparent 20%)",
           pointerEvents: "none",
         }} />
-
-        {/* Soft blue accent — right edge */}
-        <div style={{
-          position: "absolute",
-          top: "20%",
-          right: "-4%",
-          width: 320,
-          height: 320,
-          background: "radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 70%)",
-          filter: "blur(70px)",
-          pointerEvents: "none",
-        }} />
-
-        {/* Warm amber — lower left */}
-        <div style={{
-          position: "absolute",
-          bottom: "8%",
-          left: "5%",
-          width: 280,
-          height: 280,
-          background: "radial-gradient(circle, rgba(245,158,11,0.05) 0%, transparent 70%)",
-          filter: "blur(60px)",
-          pointerEvents: "none",
-        }} />
-
-        {/* Subtle background nodes & connections */}
-        <svg
-          className="absolute top-24 left-1/4 w-[600px] h-[500px] opacity-[0.02] pointer-events-none"
-          viewBox="0 0 600 500"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="100" cy="150" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="280" cy="100" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="480" cy="180" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="180" cy="380" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="380" cy="300" r="3" fill="var(--lp-gray-1)" />
-          <circle cx="500" cy="400" r="3" fill="var(--lp-gray-1)" />
-          
-          <line x1="100" y1="150" x2="280" y2="100" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="280" y1="100" x2="480" y2="180" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="100" y1="150" x2="180" y2="380" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="180" y1="380" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="280" y1="100" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="380" y1="300" x2="500" y2="400" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          <line x1="480" y1="180" x2="380" y2="300" stroke="var(--lp-gray-1)" strokeWidth="1" strokeDasharray="3 3" />
-          
-          <text x="120" y="145" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">0x7f4e</text>
-          <text x="300" y="95" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">bafybeig</text>
-          <text x="400" y="295" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">sha256</text>
-          <text x="200" y="375" fill="var(--lp-gray-1)" fontSize="9" fontFamily="monospace" opacity="0.6">polygon</text>
-        </svg>
       </motion.div>
 
       {/* ─── Layer 3: Foreground ─── */}
@@ -175,53 +182,52 @@ export default function HeroSection() {
         }}
         className="relative w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-12"
       >
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center min-h-screen lg:min-h-0 lg:py-36">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center pt-28 pb-16 lg:py-24">
 
           {/* ── Left: Text ── */}
           <div className="lg:col-span-6 flex flex-col items-start text-left">
 
-            {/* Trust badge */}
-            <motion.div
-              variants={fadeUp} initial="hidden" animate="visible" custom={0}
-              className="lp-badge mb-8"
-            >
-              <span className="lp-badge-dot" />
-              <span style={{ fontSize: 12, fontWeight: 500, letterSpacing: "0.04em" }}>
-                Blockchain-anchored · AI-analysed · Tamper-proof
-              </span>
-            </motion.div>
-
             {/* Headline */}
             <motion.h1
-              variants={fadeUp} initial="hidden" animate="visible" custom={1}
-              className="font-heading font-black tracking-tight mb-5"
-              style={{ lineHeight: 1.0, fontSize: "clamp(3.0rem, 7vw, 5.4rem)" }}
+              variants={headlineContainerVariants} initial="hidden" animate="visible"
+              className="font-heading mb-4"
+              style={{
+                lineHeight: 1.08,
+                fontSize: "clamp(3.0rem, 7vw, 5.4rem)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+              }}
             >
-              <span className="block hero-shimmer">
+              <motion.span
+                variants={headlineLineVariants}
+                className="line-base line-immutable"
+                style={{ fontWeight: 900, letterSpacing: "-0.035em", fontSize: "1.02em" }}
+              >
                 Immutable
-              </span>
-              <span className="block" style={{ color: "var(--lp-gray-1)" }}>
+              </motion.span>
+              <motion.span
+                variants={headlineLineVariants}
+                className="line-base line-evidence"
+                style={{ fontWeight: 900, letterSpacing: "-0.03em", fontSize: "1.0em" }}
+              >
                 Evidence.
-              </span>
-              <span
-                className="block"
-                style={{
-                  backgroundImage: "linear-gradient(135deg, #059669 0%, #047857 100%)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                }}
+              </motion.span>
+              <motion.span
+                variants={headlineLineVariants}
+                className="line-base line-onchain"
+                style={{ fontWeight: 800, letterSpacing: "-0.025em", fontSize: "0.95em" }}
               >
                 On Chain.
-              </span>
+              </motion.span>
             </motion.h1>
 
             <motion.div
               initial={{ scaleX: 0, opacity: 0 }}
               animate={{ scaleX: 1, opacity: 1 }}
-              transition={{ duration: 1.1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
               style={{
-                width: 56, height: 2.5, borderRadius: 99, marginBottom: 24,
+                width: 56, height: 2.5, borderRadius: 99, marginBottom: 16,
                 background: "linear-gradient(90deg, #059669, #047857)",
                 transformOrigin: "left",
                 boxShadow: "0 0 8px rgba(5,150,105,0.20)",
@@ -229,14 +235,14 @@ export default function HeroSection() {
             />
 
             <motion.p
-              variants={fadeUp} initial="hidden" animate="visible" custom={2}
+              variants={fadeUp} initial="hidden" animate="visible" custom={1}
               style={{
                 fontSize: "clamp(0.92rem, 1.35vw, 1.03rem)",
-                color: "var(--lp-gray-2)",
+                color: "rgba(255, 255, 255, 0.70)",
                 lineHeight: 1.75,
                 maxWidth: 500,
-                marginBottom: 40,
-                fontFamily: "var(--font-inter), sans-serif",
+                marginBottom: 24,
+                fontFamily: "var(--font-geist), sans-serif",
               }}
             >
               Every file cryptographically sealed, AI‑analysed for alterations,
@@ -245,8 +251,8 @@ export default function HeroSection() {
             </motion.p>
 
             <motion.div
-              variants={fadeUp} initial="hidden" animate="visible" custom={3}
-              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-8"
+              variants={fadeUp} initial="hidden" animate="visible" custom={2}
+              className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-0"
             >
               <Link
                 href="/login"
@@ -259,7 +265,7 @@ export default function HeroSection() {
               <a
                 href="#features"
                 id="hero-cta-secondary"
-                className="lp-btn-ghost font-sans flex items-center justify-center gap-2 no-underline"
+                className="lp-btn-ghost-dark font-sans flex items-center justify-center gap-2 no-underline"
                 style={{ height: 52, paddingLeft: 28, paddingRight: 28, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }}
               >
                 View Features
@@ -271,7 +277,7 @@ export default function HeroSection() {
           {/* ── Right: Widget ── */}
           <motion.div
             className="lg:col-span-6 w-full flex justify-center lg:justify-end items-center relative"
-            variants={fadeUp} initial="hidden" animate="visible" custom={2.5}
+            variants={fadeUp} initial="hidden" animate="visible" custom={1.5}
             style={{
               x: parallax.x * 8,
               y: parallax.y * 8,
@@ -313,7 +319,7 @@ export default function HeroSection() {
         <span
           style={{
             fontSize: 9, letterSpacing: "0.22em", textTransform: "uppercase",
-            color: "rgba(15,23,42,0.28)",
+            color: "rgba(255, 255, 255, 0.45)",
             fontFamily: "var(--font-geist-mono, monospace)",
           }}
         >

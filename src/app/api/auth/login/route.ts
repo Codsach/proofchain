@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Fetch ALL users by email (since email+role is unique)
     const users = await User.find({ email }).select(
-      "+passwordHash +loginAttempts +lockUntil"
+      "+passwordHash +loginAttempts +lockUntil +trustedDevices"
     ).sort({ role: 1 }); // admin (a), analyst (an), investigator (i)
 
     if (!users || users.length === 0) {
@@ -118,10 +118,10 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     // 7. Check if MFA is enabled
-    if (user.mfaEnabled) {
-      const trustedDeviceCookie = req.cookies.get("trustedDevice")?.value;
-      let bypassMfa = false;
+    let bypassMfa = false;
+    const trustedDeviceCookie = req.cookies.get("trustedDevice")?.value;
 
+    if (user.mfaEnabled) {
       if (trustedDeviceCookie && user.trustedDevices) {
         const hashedToken = crypto.createHash("sha256").update(trustedDeviceCookie).digest("hex");
         const validDevice = user.trustedDevices.find(
@@ -151,13 +151,20 @@ export async function POST(req: NextRequest) {
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
 
-    // 9. Determine redirect path by role — computed server-side
-    const redirectMap: Record<string, string> = {
-      admin:         "/admin",
-      analyst:       "/analyst",
-      investigator:  "/investigator",
-    };
-    const redirectTo = redirectMap[user.role] ?? "/";
+    // 9. Determine redirect path by role & user landing page preference
+    let redirectTo = "/";
+    const role = user.role;
+    const landing = user.landingPage || "dashboard";
+
+    if (role === "admin") {
+      if (landing === "cases") redirectTo = "/admin/cases";
+      else if (landing === "audit") redirectTo = "/admin/audit";
+      else redirectTo = "/admin";
+    } else if (role === "analyst") {
+      redirectTo = "/analyst";
+    } else if (role === "investigator") {
+      redirectTo = "/investigator";
+    }
 
     // 10. Audit log
     await logAction({
@@ -180,23 +187,28 @@ export async function POST(req: NextRequest) {
         fullName: user.fullName,
         role:     user.role,
         avatarUrl: profile?.avatarUrl || null,
+        mfaEnabled: user.mfaEnabled || false,
+        landingPage: user.landingPage || "dashboard",
       },
     });
 
-    // Track active session
-    const rawToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30);
-    
-    if (!user.trustedDevices) user.trustedDevices = [];
-    user.trustedDevices.push({ deviceTokenHash: hashedToken, expiresAt });
-    if (user.trustedDevices.length > 5) {
-      user.trustedDevices = user.trustedDevices.slice(-5);
-    }
-    await user.save();
+    // Track active session (extend existing trusted device token if bypassed, do not generate new cookie/tokens)
+    if (user.mfaEnabled && bypassMfa && trustedDeviceCookie) {
+      const hashedToken = crypto.createHash("sha256").update(trustedDeviceCookie).digest("hex");
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
 
-    setTrustedDeviceCookie(res, rawToken);
+      const device = user.trustedDevices.find(
+        (d: any) => d.deviceTokenHash === hashedToken
+      );
+      if (device) {
+        device.expiresAt = expiresAt;
+        user.markModified("trustedDevices");
+        await user.save();
+      }
+      setTrustedDeviceCookie(res, trustedDeviceCookie);
+    }
+
     setRefreshCookie(res, refreshToken);
     return res;
   } catch (err) {

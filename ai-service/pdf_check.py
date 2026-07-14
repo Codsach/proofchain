@@ -60,7 +60,13 @@ def check_pdf_anomalies(file_bytes: bytes) -> Dict[str, Any]:
             results["details"].append(f"PDF contains {len(ocgs)} Optional Content Groups (hidden layers)")
 
         # 3. Check for Embedded JavaScript
-        js_list = doc.get_javascript()
+        js_list = []
+        if hasattr(doc, "get_javascript"):
+            try:
+                js_list = doc.get_javascript()
+            except Exception:
+                pass
+
         if js_list:
             results["has_javascript"] = True
             results["details"].append("Embedded PDF JavaScript elements detected in doc context")

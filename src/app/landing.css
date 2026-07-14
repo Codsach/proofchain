@@ -2,7 +2,7 @@
 
 /* ── Font stacks ── */
 .lp-root {
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-geist), sans-serif;
 }
 
 .lp-root .font-heading,
@@ -10,11 +10,11 @@
 .lp-root h2,
 .lp-root h3,
 .lp-root h4 {
-  font-family: var(--font-inter), 'Inter', sans-serif;
+  font-family: var(--font-manrope), sans-serif;
 }
 
 .lp-mono {
-  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  font-family: var(--font-geist), monospace;
 }
 
 /* Typography Scales */
@@ -38,6 +38,9 @@
 :root {
   --lp-bg: #FAFBFC;                              /* warm off-white */
   --lp-surface: rgba(255, 255, 255, 0.80);
+  --lp-card-bg: linear-gradient(180deg, rgba(255,255,255,0.94) 0%, rgba(247,250,249,0.98) 100%);
+  --lp-surface-emerald: linear-gradient(180deg, rgba(5,150,105,0.03) 0%, rgba(255,255,255,0.92) 100%);
+  --lp-page-gradient: linear-gradient(180deg, var(--lp-bg) 0%, rgba(255,255,255,0.98) 40%);
   --lp-border: rgba(15, 23, 42, 0.08);
   --lp-border-subtle: rgba(15, 23, 42, 0.05);
   --lp-white: #ffffff;
@@ -52,6 +55,12 @@
   --lp-secondary-neon: #047857;
   --lp-secondary-neon-dim: rgba(4, 120, 87, 0.08);
   --lp-accent-gradient: linear-gradient(135deg, #059669 0%, #047857 100%);
+
+  /* Dark section backgrounds */
+  --hero-dark-bg:   #080e1e;
+  --hiw-dark-bg:    #0d1117;
+  --cta-dark-bg:    #0b1623;
+  --footer-dark-bg: #080e1e;
 
   /* Spacing Scale — 8px grid */
   --lp-space-none: 0;
@@ -75,7 +84,8 @@
 
 /* Root background — warm off-white with soft mesh ── */
 .lp-root {
-  background-color: var(--lp-bg);
+  background: var(--lp-page-gradient);
+  background-attachment: fixed;
   overflow-x: hidden;
   position: relative;
 }
@@ -125,30 +135,45 @@
 /* ── Nav — Floating Pill Island ── */
 .lp-nav {
   position: fixed;
-  top: 16px;
+  top: 0px;
   left: 50%;
   transform: translateX(-50%);
-  width: calc(100% - var(--lp-space-xxl));
+  width: 100%;
   max-width: 1200px;
   z-index: 50;
-  border-radius: 16px;
+  border-radius: 0px;
   border: 1px solid transparent;
+  background: transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  box-shadow: none;
+  padding: 16px 20px;
   transition:
-    background 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-    box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1),
-    padding 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    top 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-radius 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    padding 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    backdrop-filter 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    -webkit-backdrop-filter 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .lp-nav.scrolled {
-  background: rgba(250, 251, 252, 0.90);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border-color: rgba(15, 23, 42, 0.08);
+  top: 16px;
+  width: 90%;
+  max-width: 1100px;
+  border-radius: 28px;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border-color: rgba(255, 255, 255, 0.08);
   box-shadow:
-    0 2px 8px rgba(15, 23, 42, 0.06),
-    0 8px 24px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.90);
+    0 12px 32px rgba(0, 0, 0, 0.30),
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  padding: 8px 24px;
 }
 
 /* ── Hero grid texture removed ── */
@@ -173,6 +198,8 @@
 /* ── Buttons ── */
 .lp-btn-primary {
   background: var(--lp-accent-gradient);
+  background-size: 200% 200%;
+  animation: gradient-flow 8s ease-in-out infinite alternate;
   color: #ffffff !important;
   font-weight: 600;
   border-radius: var(--lp-radius-full);
@@ -207,6 +234,11 @@
 }
 .lp-btn-primary:active { transform: scale(0.97); }
 
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
 .lp-btn-ghost {
   color: var(--lp-gray-1);
   border: 1px solid rgba(15, 23, 42, 0.14);
@@ -225,15 +257,34 @@
 }
 .lp-btn-ghost:active { transform: scale(0.97); }
 
+/* ── Ghost button — dark surface variant ── */
+.lp-btn-ghost-dark {
+  color: rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: var(--lp-radius-full);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+.lp-btn-ghost-dark:hover {
+  color: #ffffff;
+  border-color: rgba(5, 150, 105, 0.50);
+  background: rgba(255, 255, 255, 0.13);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.20);
+}
+.lp-btn-ghost-dark:active { transform: scale(0.97); }
+
 /* ── Glass Cards (Features & Roles) ── */
 .lp-feature-card, .lp-role-card {
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: var(--lp-card-bg);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.04),
-    0 4px 16px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    0 6px 18px rgba(15, 23, 42, 0.06),
+    0 2px 6px rgba(15, 23, 42, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.45s;
   position: relative;
   overflow: hidden;
 }
@@ -285,12 +336,12 @@
 
 /* ── Bento glass (Features section) ── */
 .bento-glass {
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: var(--lp-card-bg);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: var(--lp-radius-2xl);
   box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.03),
-    0 4px 12px rgba(15, 23, 42, 0.04),
+    0 6px 18px rgba(15, 23, 42, 0.05),
+    0 8px 26px rgba(15, 23, 42, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -298,11 +349,10 @@
 }
 .bento-glass:hover {
   border-color: rgba(5, 150, 105, 0.16);
-  background: #ffffff;
   transform: translateY(-5px);
   box-shadow:
-    0 2px 6px rgba(15, 23, 42, 0.04),
-    0 16px 40px rgba(15, 23, 42, 0.08),
+    0 8px 26px rgba(15, 23, 42, 0.06),
+    0 20px 48px rgba(15, 23, 42, 0.09),
     0 0 0 1px rgba(5, 150, 105, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
@@ -318,23 +368,26 @@
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+  background: linear-gradient(135deg, rgba(5,150,105,0.10) 0%, rgba(4,120,87,0.06) 100%);
+  border: 1px solid rgba(5,150,105,0.06);
+  box-shadow: 0 6px 18px rgba(5,150,105,0.04) inset, 0 6px 14px rgba(15,23,42,0.03);
 }
 .feature-icon-bg::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,0.30) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, transparent 60%);
   border-radius: inherit;
 }
 
 /* Large bento card — 2-col hero card */
 .bento-glass-lg {
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: var(--lp-card-bg);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 24px;
   box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.03),
     0 8px 24px rgba(15, 23, 42, 0.05),
+    0 20px 48px rgba(15, 23, 42, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 1);
   transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
@@ -344,8 +397,8 @@
   border-color: rgba(5, 150, 105, 0.18);
   transform: translateY(-6px);
   box-shadow:
-    0 4px 8px rgba(15, 23, 42, 0.04),
-    0 20px 48px rgba(15, 23, 42, 0.09),
+    0 10px 30px rgba(15, 23, 42, 0.06),
+    0 28px 64px rgba(15, 23, 42, 0.09),
     0 0 0 1px rgba(5, 150, 105, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 1);
 }
@@ -445,7 +498,7 @@
   letter-spacing: 0.20em;
   text-transform: uppercase;
   color: var(--lp-primary-neon);
-  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  font-family: var(--font-geist), sans-serif;
 }
 
 /* ── Number highlight ── */
@@ -475,21 +528,21 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--lp-primary-neon);
-  font-family: var(--font-geist-mono), 'Courier New', monospace;
+  font-family: var(--font-geist), sans-serif;
 }
 
 /* ── Glass card (Tech section, evidence cards) ── */
 .glass-card-emer {
-  background: rgba(255, 255, 255, 0.85);
-  border: 1px solid rgba(15, 23, 42, 0.07);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background: var(--lp-surface-emerald);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
 }
 .glass-card-emer:hover {
   transform: translateY(-4px);
   border-color: rgba(5, 150, 105, 0.20);
-  background: rgba(255, 255, 255, 0.98);
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(249,252,250,1) 100%);
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.09);
 }
 
 /* ── Glow sphere (widget ambient) ── */
@@ -546,17 +599,17 @@
 
 /* ── KPI Cards (StatsSection) ── */
 .kpi-card {
-  background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.07);
+  background: var(--lp-card-bg);
+  border: 1px solid rgba(15, 23, 42, 0.06);
   border-radius: 20px;
   position: relative;
   overflow: hidden;
   cursor: default;
   box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.03),
-    0 4px 16px rgba(15, 23, 42, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 1);
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    0 8px 20px rgba(15, 23, 42, 0.05),
+    0 6px 12px rgba(15, 23, 42, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
   transform: translateZ(0);
 }
 .kpi-card:hover::after {
@@ -640,6 +693,56 @@
 html { scroll-behavior: smooth; }
 #features, #how-it-works, #roles { scroll-margin-top: 88px; }
 
+/* ── Section structural positions ── */
+#features, #how-it-works, #roles {
+  position: relative;
+}
+
+/* ── Features: subtle warm-green tint ── */
+.lp-section-features-tint {
+  background: linear-gradient(180deg, #f7fbf9 0%, #f0f7f5 100%);
+}
+
+/* ── HowItWorks: deep dark zone ── */
+.lp-section-howitworks-dark {
+  background: linear-gradient(180deg, #0d1117 0%, #111827 100%);
+}
+
+/* Step cards inside dark HowItWorks — scoped override (no global !important) */
+.lp-section-howitworks-dark .feature-card-border-animated {
+  background: rgba(14, 22, 38, 0.92) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow:
+    0 4px 32px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+.lp-section-howitworks-dark .feature-card-border-animated:hover {
+  background: rgba(20, 30, 52, 0.94) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+/* ── Roles: explicit clean white ground ── */
+#roles {
+  background: #ffffff;
+}
+
+/* ── CTA: dark close ── */
+.lp-section-cta-dark {
+  background: linear-gradient(160deg, #0b1623 0%, #0f1e2e 60%, #091218 100%);
+}
+
+/* ── Footer: dark ground ── */
+.lp-footer-dark {
+  background: var(--footer-dark-bg);
+}
+
+/* Slightly darken text on tinted panels for contrast */
+.bento-glass *, .bento-glass-lg *, .lp-feature-card *, .lp-role-card *, .glass-card-emer * {
+  color: inherit;
+}
+
+/* Footer grounding — handled by .lp-footer-dark class */
+
 /* ── Footer responsive ── */
 @media (max-width: 900px) {
   .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 32px 40px !important; }
@@ -653,6 +756,21 @@ html { scroll-behavior: smooth; }
   .lp-nav { width: calc(100% - 24px); top: 10px; border-radius: 14px; }
 }
 
+/* ── Hero Aurora Canvas ── */
+/* Absolutely fills the hero section, rendered at 0.5× resolution for perf.
+   CSS scales it back up — imperceptible for a blurry aurora effect.       */
+.hero-aurora-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 1;
+  /* imageRendering: auto is browser default — lets the GPU bilinear-scale
+     the low-res canvas smoothly without pixelation. */
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .lp-glow-sphere,
@@ -660,11 +778,40 @@ html { scroll-behavior: smooth; }
   .lp-badge-dot,
   .scanline-glow,
   .lp-float,
-  .lp-float-delayed { animation: none !important; transition-duration: 0.01ms !important; }
+  .lp-float-delayed,
+  .node-pulse,
+  .border-sweep,
+  .gradient-flow { animation: none !important; transition-duration: 0.01ms !important; }
   .lp-feature-card,
   .lp-role-card,
   .bento-glass,
   .bento-glass-lg,
   .glass-card-emer { transition: none !important; }
   .kpi-card::after, .kpi-shimmer-sweep { animation: none !important; }
+  .hero-aurora-canvas { display: none !important; }
+}
+
+/* ── Disable scroll-driven parallax on mobile ── */
+@media (max-width: 768px) {
+  /* Framer Motion will-change transforms that drive parallax — suppress jank */
+  [style*="will-change: transform"] {
+    will-change: auto !important;
+  }
+}
+
+
+/* ── Card role top-band ── */
+.card-role-top-band {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 24px 24px 0 0;
+}
+
+/* ── Feature hero card top color band ── */
+.card-feature-top-band {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 24px 24px 0 0;
 }

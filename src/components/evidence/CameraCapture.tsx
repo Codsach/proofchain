@@ -297,7 +297,7 @@ export function CameraCapture({ mode = "photo", onCapture, onCancel }: CameraCap
         }
         .btn-icon:hover { background: rgba(255,255,255,0.15); }
         .btn-primary {
-          background: #3b82f6;
+          background: var(--dash-accent, #10b981);
           color: white;
           border: none;
           padding: 10px 20px;
@@ -305,16 +305,26 @@ export function CameraCapture({ mode = "photo", onCapture, onCancel }: CameraCap
           font-weight: 600;
           cursor: pointer;
           font-size: 14px;
+          transition: background 0.15s, opacity 0.15s;
+        }
+        .btn-primary:hover {
+          opacity: 0.95;
         }
         .btn-secondary {
           background: transparent;
-          color: white;
-          border: 1px solid rgba(255,255,255,0.3);
+          color: rgba(255, 255, 255, 0.85);
+          border: 1px solid rgba(255, 255, 255, 0.2);
           padding: 10px 20px;
           border-radius: 8px;
           font-weight: 500;
           cursor: pointer;
           font-size: 14px;
+          transition: all 0.15s;
+        }
+        .btn-secondary:hover {
+          background: rgba(255, 255, 255, 0.05);
+          color: white;
+          border-color: rgba(255, 255, 255, 0.35);
         }
         .spinner {
           width: 32px;

@@ -13,7 +13,7 @@ export function MfaSetupModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
   const [secret, setSecret] = useState<string | null>(null);
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { getToken } = useAuth();
+  const { getToken, reloadUser } = useAuth();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -68,6 +68,9 @@ export function MfaSetupModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
       if (!res.ok) throw new Error(data.error);
       
       toast({ title: "MFA Enabled", description: "Two-Factor Authentication is now active on your account." });
+      if (reloadUser) {
+        await reloadUser();
+      }
       onClose();
     } catch (err: unknown) {
       toast({ 

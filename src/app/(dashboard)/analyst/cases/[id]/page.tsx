@@ -101,20 +101,6 @@ const INCIDENT_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-const InspectionBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Teal */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#99f6e4_0%,transparent_40%)]" />
-      {/* Top Right: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Center: Teal */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#99f6e4_0%,transparent_40%)]" />
-      {/* Bottom Right: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#bfdbfe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 
 export default function AnalystCaseReviewPage() {
@@ -260,16 +246,10 @@ export default function AnalystCaseReviewPage() {
 
   if (isLoadingCase) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <InspectionBackground />
-        </div>
-        <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8 flex justify-center">
-          <div className="space-y-6 max-w-5xl w-full">
-            <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
-            <Skeleton className="h-96 w-full bg-dash-hover rounded-2xl" />
-          </div>
+      <div className="flex justify-center w-full">
+        <div className="space-y-6 max-w-5xl w-full">
+          <Skeleton className="h-10 w-64 bg-dash-hover rounded-lg" />
+          <Skeleton className="h-96 w-full bg-dash-hover rounded-2xl" />
         </div>
       </div>
     );
@@ -277,12 +257,8 @@ export default function AnalystCaseReviewPage() {
 
   if (!caseData) {
     return (
-      <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center items-center w-full">
-        {/* Background mesh gradients */}
-        <div className="absolute inset-0 pointer-events-none z-0">
-          <InspectionBackground />
-        </div>
-        <div className="relative z-10 rounded-3xl border border-dash-border bg-dash-card/50 p-24 text-center backdrop-blur-2xl">
+      <div className="flex justify-center items-center w-full py-20">
+        <div className="rounded-3xl border border-dash-border bg-dash-card p-24 text-center">
           <p className="text-dash-muted text-sm font-medium">Authentication required: Subject not accessible.</p>
           <Link href="/analyst" className="text-dash-accent text-[10px] font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
             ← Back to Queue
@@ -344,24 +320,17 @@ export default function AnalystCaseReviewPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <InspectionBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
-        <div className="space-y-10 pb-10">
+    <div className="w-full space-y-10 pb-10">
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/analyst" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2 mb-4">
             <span className="text-lg">←</span> Authentication Queue
           </Link>
           <div className="flex flex-wrap items-center gap-4">
-            <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">{caseData.title}</h1>
+            <h1 className="type-display-xl">{caseData.title}</h1>
             <CaseStatusBadge status={caseData.status} />
           </div>
-          <p className="text-[10px] text-dash-muted/60 font-mono mt-2 tracking-widest">
+          <p className="type-technical text-dash-muted/60 mt-2 tracking-widest uppercase">
             TARGET_ID::{caseData.caseId}
           </p>
         </div>
@@ -478,7 +447,7 @@ export default function AnalystCaseReviewPage() {
                   </div>
                   <div className="space-y-1.5">
                     <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">SHA-256 Fingerprint</p>
-                    <p className="text-[10px] font-mono text-dash-accent/80 dark:text-dash-accent/40 break-all bg-dash-input rounded-xl px-4 py-2 border border-dash-border">
+                    <p className="type-technical text-dash-accent/80 dark:text-dash-accent/40 break-all bg-dash-input rounded-xl px-4 py-2 border border-dash-border">
                       {file.sha256Hash}
                     </p>
                   </div>
@@ -576,7 +545,7 @@ export default function AnalystCaseReviewPage() {
         </div>
 
         {/* Right Column */}
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -648,8 +617,6 @@ export default function AnalystCaseReviewPage() {
         onSubmit={handleVerdict}
         isLoading={isSubmittingVerdict}
       />
-        </div>
-      </div>
     </div>
   );
 }

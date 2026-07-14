@@ -44,20 +44,6 @@ const ACTION_COLORS: Record<string, string> = {
   "verify.public_check": "text-purple-400 group-hover:text-purple-300",
 };
 
-const AuditBackground = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Amber */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#fde68a_0%,transparent_40%)]" />
-      {/* Top Right: Orange */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#fed7aa_0%,transparent_40%)]" />
-      {/* Bottom Center: Amber */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#fde68a_0%,transparent_40%)]" />
-      {/* Bottom Right: Orange */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#fed7aa_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function AdminAuditPage() {
   const { getToken } = useAuth();
@@ -100,31 +86,24 @@ export default function AdminAuditPage() {
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 overflow-hidden flex justify-center w-full">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <AuditBackground />
-      </div>
-
-      <div className="relative z-10 w-full p-4 sm:p-6 lg:p-8">
-        <div className="space-y-10">
+    <div className="w-full space-y-10">
       <div className="relative">
         <div className="flex items-center gap-3 mb-2">
           <div className="h-px w-8 bg-slate-400/50" />
-          <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Security Audit</p>
+          <p className="type-eyebrow">Security Audit</p>
         </div>
-        <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">System Events</h1>
+        <h1 className="type-display-xl">System Events</h1>
         <p className="text-dash-muted mt-2 font-medium">
           Real-time append-only ledger of all platform operations and cryptographic events.
         </p>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-center bg-dash-card border border-dash-border p-4 rounded-2xl backdrop-blur-xl shadow-2xl">
+      <div className="flex flex-wrap gap-4 items-center bg-dash-card border border-dash-border p-6 rounded-2xl shadow-sm">
         <div className="space-y-1.5 flex-1 min-w-[200px]">
           <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Event Category</p>
           <Select value={actionFilter} onValueChange={(v) => { setActionFilter(v); setPage(1); }}>
-            <SelectTrigger className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl">
+            <SelectTrigger className="bg-dash-input border-dash-border hover:border-dash-accent/55 transition-all text-dash-text h-11 rounded-xl focus:ring-0 focus:ring-offset-0 focus:outline-none">
               <SelectValue placeholder="All instances" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text">
@@ -142,7 +121,7 @@ export default function AdminAuditPage() {
             type="date"
             value={fromDate}
             onChange={(e) => { setFromDate(e.target.value); setPage(1); }}
-            className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl px-4"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/55 transition-all text-dash-text h-11 rounded-xl px-4 focus:ring-0 focus:ring-offset-0 focus:outline-none"
           />
         </div>
 
@@ -152,7 +131,7 @@ export default function AdminAuditPage() {
             type="date"
             value={toDate}
             onChange={(e) => { setToDate(e.target.value); setPage(1); }}
-            className="bg-dash-input border-dash-border hover:border-emerald-500/30 transition-all text-dash-muted h-10 rounded-xl px-4"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/55 transition-all text-dash-text h-11 rounded-xl px-4 focus:ring-0 focus:ring-offset-0 focus:outline-none"
           />
         </div>
 
@@ -183,23 +162,23 @@ export default function AdminAuditPage() {
           {[1,2,3,4,5,6].map((n) => <Skeleton key={n} className="h-14 w-full rounded-2xl bg-dash-hover" />)}
         </div>
       ) : logs.length === 0 ? (
-        <div className="rounded-3xl border border-dash-border bg-dash-card backdrop-blur-2xl p-20 text-center shadow-2xl">
+        <div className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center shadow-sm">
           <div className="w-12 h-12 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-4 border border-dash-border">
             <span className="text-dash-muted">?</span>
           </div>
           <p className="text-dash-muted text-sm font-medium">No system events detected mapping current filter criteria.</p>
         </div>
       ) : (
-        <div className="rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl overflow-hidden shadow-2xl">
+        <div className="rounded-2xl border border-dash-border bg-dash-card overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-dash-border bg-dash-card">
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Temporal Index</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px]">Action Protocol</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden sm:table-cell">Identity Actor</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden md:table-cell">Target Object</th>
-                  <th className="text-left px-6 py-5 font-bold text-dash-muted uppercase tracking-widest text-[10px] hidden lg:table-cell">Source IP</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted">Temporal Index</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted">Action Protocol</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted hidden sm:table-cell">Identity Actor</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted hidden md:table-cell">Target Object</th>
+                  <th className="text-left px-6 py-5 type-table-header text-dash-muted hidden lg:table-cell">Source IP</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-dash-border font-medium">
@@ -309,8 +288,6 @@ export default function AdminAuditPage() {
           </div>
         </div>
       )}
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { STATUS_COLORS } from "@/lib/statusConfig";
 
 type CaseStatus =
   | "pending_ai_review"
@@ -15,27 +16,27 @@ const config: Record<
 > = {
   pending_ai_review: {
     label: "AI Scanning",
-    className: "bg-blue-900/40 text-blue-300 border-blue-800",
+    className: STATUS_COLORS.pending.badgeClass,
   },
   pending_review: {
     label: "Pending Review",
-    className: "bg-amber-900/40 text-amber-300 border-amber-800",
+    className: STATUS_COLORS.pending.badgeClass,
   },
   ai_timeout: {
     label: "AI Timeout",
-    className: "bg-red-900/40 text-red-300 border-red-800",
+    className: STATUS_COLORS.pending.badgeClass,
   },
   under_review: {
     label: "Under Review",
-    className: "bg-cyan-900/40 text-cyan-300 border-cyan-800",
+    className: STATUS_COLORS.pending.badgeClass,
   },
   verified: {
     label: "Verified",
-    className: "bg-green-900/40 text-green-300 border-green-800",
+    className: STATUS_COLORS.verified.badgeClass,
   },
   rejected: {
     label: "Rejected",
-    className: "bg-red-900/40 text-red-300 border-red-800",
+    className: STATUS_COLORS.rejected.badgeClass,
   },
   archived: {
     label: "Archived",

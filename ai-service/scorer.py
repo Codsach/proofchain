@@ -41,6 +41,7 @@ def compute_score(
     av_timestamp_mismatch: bool = False,
     av_duration_mismatch: bool = False,
     ai_gen_detected: bool = False,
+    possible_ai_gen: bool = False,
     pdf_javascript_detected: bool = False,
     pdf_hidden_layers_detected: bool = False,
 ) -> ScoreResult:
@@ -249,25 +250,72 @@ def compute_score(
     else:
         risk_level = "high"
 
-    # ── Minimum risk override: AI generation confirmed ─────────────────────────
-    # If either the local ViT detector OR Gemini visual analysis detected AI
-    # generation (at medium or high confidence), always escalate to at least
-    # "medium" risk — even if the raw score sits in the "low" band.
-    ai_generation_confirmed = ai_gen_detected or (
-        gemini.ai_generation_likelihood in ("medium", "high")
-    )
-    if risk_level == "low" and ai_generation_confirmed:
+    # ── Minimum risk overrides ──────────────────────────────────────────────────
+    # 1. Manipulation overrides:
+    if gemini.manipulation_likelihood == "high" and risk_level in ("low", "medium"):
+        risk_level = "high"
+        breakdown["manipulation_override"] = {
+            "points": 0,
+            "detail": "Risk level escalated to HIGH — Digital manipulation confirmed by Gemini visual analysis",
+        }
+    elif gemini.manipulation_likelihood == "medium" and risk_level == "low":
         risk_level = "medium"
-        if "ai_generation_override" not in breakdown:
-            breakdown["ai_generation_override"] = {
-                "points": 0,
-                "detail": (
-                    "Risk level escalated to MEDIUM — AI generation confirmed by "
-                    + ("local ViT detector" if ai_gen_detected else "")
-                    + (" and " if ai_gen_detected and gemini.ai_generation_likelihood in ("medium", "high") else "")
-                    + (f"Gemini visual analysis ({gemini.ai_generation_likelihood} likelihood)" if gemini.ai_generation_likelihood in ("medium", "high") else "")
-                ),
-            }
+        breakdown["manipulation_override"] = {
+            "points": 0,
+            "detail": "Risk level escalated to MEDIUM — Suspected digital manipulation flagged by Gemini visual analysis",
+        }
+
+    # 2. AI Generation overrides:
+    ai_generation_high = gemini.ai_generation_likelihood == "high"
+    ai_generation_medium = (
+        ai_gen_detected
+        or possible_ai_gen
+        or gemini.ai_generation_likelihood == "medium"
+    )
+
+    if ai_generation_high and risk_level in ("low", "medium"):
+        risk_level = "high"
+        breakdown["ai_generation_override"] = {
+            "points": 0,
+            "detail": "Risk level escalated to HIGH — AI generation confirmed by Gemini visual analysis",
+        }
+    elif ai_generation_medium and risk_level == "low":
+        risk_level = "medium"
+        detail_msg = "Risk level escalated to MEDIUM — AI generation detected by "
+        detectors = []
+        if ai_gen_detected:
+            detectors.append("local ViT detector (high confidence)")
+        elif possible_ai_gen:
+            detectors.append("local ViT detector (soft signal — possible AI art/illustration)")
+        if gemini.ai_generation_likelihood == "medium":
+            detectors.append("Gemini visual analysis")
+        breakdown["ai_generation_override"] = {
+            "points": 0,
+            "detail": detail_msg + " and ".join(detectors),
+        }
+
+    # 3. Video tampering overrides:
+    # Gemini cannot analyse video, so visual analysis always returns "inconclusive".
+    # Confirmed video tampering signals (re-encoding tools / A/V stream mismatches)
+    # must override to HIGH — they are hard forensic evidence.
+    video_tamper_confirmed = video_reencoded or av_timestamp_mismatch or av_duration_mismatch
+    if video_tamper_confirmed:
+        escalation_points = 0
+        if score < 75:
+            escalation_points = 75 - score
+            score = 75
+        risk_level = "high"
+        signals = []
+        if video_reencoded:
+            signals.append("re-encoding tool footprint")
+        if av_timestamp_mismatch:
+            signals.append("A/V stream timestamp mismatch")
+        if av_duration_mismatch:
+            signals.append("A/V track duration mismatch")
+        breakdown["video_tamper_override"] = {
+            "points": escalation_points,
+            "detail": "Risk level escalated to HIGH — confirmed video tampering signals: " + ", ".join(signals),
+        }
 
     # ── Plain English summary ─────────────────────────────────────────────────
     plain_notes = _build_plain_notes(score, risk_level, breakdown, gemini, exif)

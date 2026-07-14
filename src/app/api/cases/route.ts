@@ -198,6 +198,8 @@ async function triggerAIAnalysis(
     mimeType: string;
     ipfsCid: string;
     sha256Hash: string;
+    gpsLat?: number | null;
+    gpsLng?: number | null;
   }>,
   files: File[]
 ) {
@@ -223,6 +225,7 @@ async function triggerAIAnalysis(
       const fileBuffer = Buffer.from(await originalFile.arrayBuffer());
 
       // Send to FastAPI for analysis
+      const hasGps = file.gpsLat !== null && file.gpsLng !== null;
       const aiFormData = new FormData();
       aiFormData.append(
         "file",
@@ -232,6 +235,7 @@ async function triggerAIAnalysis(
       aiFormData.append("case_id", caseId);
       aiFormData.append("file_id", file.fileId);
       aiFormData.append("mime_type", file.mimeType);
+      aiFormData.append("has_gps", hasGps ? "true" : "false");
 
       await fetch(`${fastApiUrl}/analyse`, {
         method: "POST",
@@ -255,7 +259,8 @@ async function listCases(
 
     const { searchParams } = new URL(req.url);
     const page = Math.max(1, parseInt(searchParams.get("page") ?? "1"));
-    const limit = 20;
+    const limitParam = searchParams.get("limit");
+    const limit = limitParam === "all" ? 10000 : Math.max(1, parseInt(limitParam ?? "20"));
     const skip = (page - 1) * limit;
 
     const statusFilter = searchParams.get("status");
@@ -298,5 +303,5 @@ async function listCases(
 }
 
 // Export routes with auth middleware
-export const POST = withAuth(createCase, ["investigator"]);
+export const POST = withAuth(createCase, ["investigator", "admin"]);
 export const GET = withAuth(listCases, ["investigator", "analyst", "admin"]);

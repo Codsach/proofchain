@@ -125,7 +125,14 @@ export async function POST(req: NextRequest) {
     });
 
     // Queue AI analysis
-    await queueAIAnalysis(evidence._id.toString(), ipfsCid, file.type);
+    await queueAIAnalysis(
+      evidence._id.toString(),
+      caseId,
+      buffer,
+      file.name,
+      file.type,
+      !!gpsMetadata
+    );
 
     // Audit log
     await logAction({

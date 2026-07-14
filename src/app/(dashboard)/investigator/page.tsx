@@ -1,7 +1,7 @@
 "use client";
-
+ 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Folder, Brain, Shield, FolderOpen, Copy, Clock, Cpu, Database } from "lucide-react";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
@@ -9,6 +9,7 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InvestigatorCharts } from "@/components/investigator/InvestigatorCharts";
+import { StatCard } from "@/components/ui/StatCard";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -27,16 +28,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+
 type InvestigatorCase = {
   _id: string;
   caseId: string;
   title: string;
+  description?: string;
   incidentType: string;
   status: string;
   tags: string[];
-  files: Array<{ fileId: string }>;
+  files: Array<{
+    fileId: string;
+    originalName: string;
+    mimeType: string;
+    sizeBytes: number;
+    gpsLat: number | null;
+    gpsLng: number | null;
+  }>;
   createdAt: string;
   incidentDate: string;
+  overallTamperScore: number | null;
+  overallRiskLevel: "low" | "medium" | "high" | null;
+  onChainTxHash: string | null;
 };
 
 type CasesResponse = {
@@ -226,26 +239,11 @@ const STAT_VARIANTS = {
   }
 } as const;
 
-// Variation 5: Multi-point gradient mesh (applied permanently)
-const Variation5 = () => {
-  return (
-    <div className="absolute inset-0 h-full w-full bg-transparent">
-      {/* Top Left: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_20%_30%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Top Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_80%_20%,#c7d2fe_0%,transparent_40%)]" />
-      {/* Bottom Center: Blue */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_50%_80%,#bfdbfe_0%,transparent_40%)]" />
-      {/* Bottom Right: Indigo */}
-      <div className="absolute inset-0 [background:radial-gradient(circle_at_90%_90%,#c7d2fe_0%,transparent_40%)]" />
-    </div>
-  );
-};
 
 export default function InvestigatorPage() {
   const { user, getToken } = useAuth();
   const { toast } = useToast();
-  const [cases, setCases] = useState<InvestigatorCase[]>([]);
+  const [allCases, setAllCases] = useState<InvestigatorCase[]>([]);
   const [isLoadingCases, setIsLoadingCases] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -253,15 +251,12 @@ export default function InvestigatorPage() {
   const [incidentTypeFilter, setIncidentTypeFilter] = useState("all");
   const [tagFilter, setTagFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedSearch(searchQuery);
-    }, 500);
-    return () => clearTimeout(handler);
-  }, [searchQuery]);
+  const [selectedCaseId, setSelectedCaseId] = useState<string | null>(null);
+  const [hoveredCaseId, setHoveredCaseId] = useState<string | null>(null);
+  const [aiFilter, setAiFilter] = useState<string | null>(null);
 
+  // Load all cases on mount once
   useEffect(() => {
     let isCancelled = false;
 
@@ -281,13 +276,8 @@ export default function InvestigatorPage() {
           throw new Error("Your session expired. Please log in again.");
         }
 
-        const params = new URLSearchParams();
-        if (statusFilter !== "all") params.set("status", statusFilter);
-        if (incidentTypeFilter !== "all") params.set("incidentType", incidentTypeFilter);
-        if (tagFilter !== "all") params.set("tag", tagFilter);
-        if (debouncedSearch) params.set("search", debouncedSearch);
-
-        const res = await fetch(`/api/cases?${params}`, {
+        // Fetch all cases without pagination for local sync and animations
+        const res = await fetch("/api/cases?limit=all", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -303,7 +293,7 @@ export default function InvestigatorPage() {
         }
 
         if (!isCancelled) {
-          setCases(data.cases ?? []);
+          setAllCases(data.cases ?? []);
         }
       } catch (loadError) {
         if (!isCancelled) {
@@ -325,7 +315,84 @@ export default function InvestigatorPage() {
     return () => {
       isCancelled = true;
     };
-  }, [user, getToken, statusFilter, incidentTypeFilter, tagFilter, debouncedSearch]);
+  }, [user, getToken]);
+
+  // Client-side filtering logic
+  const cases = useMemo(() => {
+    return allCases.filter((c) => {
+      // 1. Status Filter
+      if (statusFilter !== "all" && c.status !== statusFilter) return false;
+      
+      // 2. Incident Type (Taxonomy) Filter
+      if (incidentTypeFilter !== "all" && c.incidentType !== incidentTypeFilter) return false;
+      
+      // 3. Tag Filter
+      if (tagFilter !== "all" && tagFilter !== "") {
+        const matchesTag = c.tags?.some(tag => tag.toLowerCase().includes(tagFilter.toLowerCase()));
+        if (!matchesTag) return false;
+      }
+      
+      // 4. Search Query (title, description, caseId)
+      if (searchQuery.trim() !== "") {
+        const query = searchQuery.toLowerCase();
+        const matchesTitle = c.title?.toLowerCase().includes(query);
+        const matchesDesc = c.description?.toLowerCase().includes(query);
+        const matchesId = c.caseId?.toLowerCase().includes(query);
+        if (!matchesTitle && !matchesDesc && !matchesId) return false;
+      }
+      // AI Insights Filter
+      if (aiFilter === "missing_gps") {
+        const hasMissingGps = c.files?.some(f => f.gpsLat === null || f.gpsLng === null);
+        if (!hasMissingGps) return false;
+      }
+      if (aiFilter === "tampering") {
+        const hasTampering = c.overallRiskLevel === "high" || (c.overallTamperScore !== null && c.overallTamperScore > 60);
+        if (!hasTampering) return false;
+      }
+      if (aiFilter === "inconsistency") {
+        const hasInconsistency = c.overallRiskLevel === "medium" || (c.overallTamperScore !== null && c.overallTamperScore > 30 && c.overallTamperScore <= 60);
+        if (!hasInconsistency) return false;
+      }
+      if (aiFilter === "blockchain") {
+        if (!c.onChainTxHash) return false;
+      }
+      if (aiFilter === "pdf") {
+        const hasPdf = c.files?.some(f => f.mimeType === "application/pdf" || f.originalName.toLowerCase().endsWith(".pdf"));
+        if (!hasPdf) return false;
+      }
+      if (aiFilter === "validated") {
+        const hasValidated = c.overallRiskLevel === "low" || (c.overallTamperScore !== null && c.overallTamperScore <= 30);
+        if (!hasValidated) return false;
+      }
+      
+      return true;
+    });
+  }, [allCases, statusFilter, incidentTypeFilter, tagFilter, searchQuery, aiFilter]);
+
+  const isFilterActive = statusFilter !== "all" || incidentTypeFilter !== "all" || (tagFilter !== "all" && tagFilter !== "") || searchQuery !== "" || aiFilter !== null;
+
+  const resetFilters = () => {
+    setStatusFilter("all");
+    setIncidentTypeFilter("all");
+    setTagFilter("all");
+    setSearchQuery("");
+    setAiFilter(null);
+  };
+
+  const handleSelectCase = (caseId: string) => {
+    setSelectedCaseId(caseId === selectedCaseId ? null : caseId);
+    if (caseId !== selectedCaseId) {
+      setTimeout(() => {
+        const element = document.getElementById(`row-${caseId}`);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+          });
+        }
+      }, 100);
+    }
+  };
 
   const openCases = getOpenCaseCount(cases);
   const totalFiles = cases.reduce(
@@ -334,25 +401,19 @@ export default function InvestigatorPage() {
   );
 
   return (
-    <div className="relative min-h-[calc(100vh-8rem)] -m-4 sm:-m-6 lg:-m-8 flex flex-col overflow-hidden">
-      {/* Background mesh gradients */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <Variation5 />
-      </div>
-
-      {/* Main Content Pane */}
-      <div className="relative z-10 flex-1 flex flex-col gap-10 p-4 sm:p-6 lg:p-8">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+    <div className="flex flex-col gap-8 w-full">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
+          className="flex flex-col gap-1"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="h-px w-8 bg-slate-400/50" />
-            <p className="text-[10px] font-bold text-dash-accent uppercase tracking-[0.3em]">Operative Field Dashboard</p>
+          <div className="flex items-center gap-2 mb-0.5">
+            <div className="h-px w-6 bg-slate-400/40" />
+            <p className="type-eyebrow">Operative Field Dashboard</p>
           </div>
-          <h1 className="font-heading font-bold tracking-wider text-dash-text uppercase headline-lg">Case Modules</h1>
-          <p className="mt-2 text-dash-muted font-medium max-w-lg">
+          <h1 className="type-display-xl">Case Modules</h1>
+          <p className="text-sm text-dash-muted font-medium max-w-lg mt-0.5">
             Monitor evidence submission queues, cryptographic review status, and real-time chain of custody integrity.
           </p>
         </motion.div>
@@ -365,7 +426,7 @@ export default function InvestigatorPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               asChild
-              className="border border-[var(--dash-border)] bg-transparent hover:bg-dash-hover text-dash-text font-bold h-12 px-8 rounded-xl transition-all"
+              className="border border-dash-border hover:border-dash-muted/30 bg-dash-card hover:bg-dash-hover text-dash-text font-semibold h-11 px-6 rounded-xl transition-all shadow-3xs"
             >
               <Link href="/investigator/submit">Submit Evidence</Link>
             </Button>
@@ -373,7 +434,7 @@ export default function InvestigatorPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Button
               asChild
-              className="bg-[var(--dash-accent)] hover:bg-[var(--dash-accent)]/90 text-white font-bold h-12 px-8 rounded-xl shadow-sm"
+              className="bg-dash-accent hover:bg-dash-accent/90 text-white font-semibold h-11 px-6 rounded-xl shadow-sm transition-all"
             >
               <Link href="/investigator/cases/new">+ New Case</Link>
             </Button>
@@ -386,112 +447,63 @@ export default function InvestigatorPage() {
           {
             label: "Assigned Cases",
             value: cases.length,
-            desc: "Total subjects in registry",
-            variantKey: "blue" as const,
+            description: "Assigned to your profile",
+            variantKey: "cyan" as const,
+            metaText: "Active",
           },
           {
             label: "Pending Analysis",
             value: openCases,
-            desc: "Active review queue",
-            variantKey: "purple" as const,
+            description: "Awaiting consensus review",
+            variantKey: "green" as const,
+            metaText: "Awaiting Review",
           },
           {
             label: "Evidence Integrity",
             value: totalFiles,
-            desc: "Validated artifacts",
-            variantKey: "green" as const,
+            description: "On-chain evidence files",
+            variantKey: "blue" as const,
+            metaText: "Verified",
           },
         ].map((stat, idx) => {
           const variant = STAT_VARIANTS[stat.variantKey];
-          const Icon = variant.icon;
           return (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              whileHover="hover"
-              className="h-full flex justify-center"
+              className="h-full w-full"
             >
-              <div className="relative overflow-hidden w-full h-[180px] rounded-[20px] border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.06)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.12)] select-none group">
-                {/* Layer 1: Solid Card Base (z-0) */}
-                <div className="absolute inset-0 bg-white/25 rounded-[20px] z-0 pointer-events-none" />
-
-                {/* Layer 2: Blurred liquid background circles (z-10) */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none select-none rounded-[20px] z-10">
-                  <div 
-                    className="absolute -inset-16 flex flex-wrap opacity-85 transition-opacity duration-300 transform-gpu will-change-[filter]"
-                    style={{ filter: "blur(130px)" }}
-                  >
-                    {/* Circle 1 - Top Left */}
-                    <div className={`absolute top-[5%] left-[5%] w-[170px] h-[170px] rounded-full ${variant.circleColors[0]}`} />
-                    {/* Circle 2 - Top Right */}
-                    <div className={`absolute top-[2%] right-[10%] w-[150px] h-[150px] rounded-full ${variant.circleColors[1]}`} />
-                    {/* Circle 3 - Center */}
-                    <div className={`absolute top-[25%] left-[25%] w-[160px] h-[160px] rounded-full ${variant.circleColors[2]}`} />
-                    {/* Circle 4 - Bottom Right */}
-                    <div className={`absolute bottom-[5%] right-[5%] w-[180px] h-[180px] rounded-full ${variant.circleColors[3]}`} />
-                    {/* Circle 5 - Bottom Left */}
-                    <div className={`absolute bottom-[2%] left-[10%] w-[140px] h-[140px] rounded-full ${variant.circleColors[4]}`} />
-                    {/* Circle 6 - Mid Right */}
-                    <div className={`absolute top-[15%] right-[2%] w-[130px] h-[130px] rounded-full ${variant.circleColors[5]}`} />
-                  </div>
-                  {/* Subtle frosted backdrop filter cover */}
-                  <div className="absolute inset-0 bg-white/10 backdrop-blur-[1px]" />
-                  {/* Stripes pattern overlay for premium tech look */}
-                  <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:16px_16px] mix-blend-overlay" />
-                </div>
-                
-                {/* Layer 3: Card Content (z-20) */}
-                <div className="relative z-20 flex flex-col justify-between h-full w-full p-5">
-                  {/* Card Content Header */}
-                  <div className="flex items-center justify-between">
-                    <div className={`w-9 h-9 rounded-[10px] ${variant.iconBg} flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-sm`}>
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-
-                  {/* Card Content Value */}
-                  <div className="flex flex-col mt-2">
-                    <span className="text-[10px] text-slate-900 font-extrabold uppercase tracking-[0.15em]">
-                      {stat.label}
-                    </span>
-                    <span className="text-3xl font-extrabold text-slate-955 tracking-tight mt-0.5 font-sans">
-                      {stat.value}
-                    </span>
-                  </div>
-
-                  {/* Card Content Footer */}
-                  <div className="flex items-end justify-between mt-auto">
-                    <span className="text-[10px] text-slate-800 font-bold uppercase tracking-wider">
-                      {stat.desc}
-                    </span>
-                    <div className="opacity-90 group-hover:opacity-100 transition-opacity duration-300">
-                      {variant.sparkline}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <StatCard
+                label={stat.label}
+                value={stat.value}
+                description={stat.description}
+                variantKey={stat.variantKey}
+                icon={variant.icon}
+                metaText={stat.metaText}
+                isLoading={isLoadingCases}
+              />
             </motion.div>
           )
         })}
       </div>
 
-      <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-4 rounded-xl shadow-sm">
+      <div className="flex gap-4 flex-wrap bg-dash-card border border-dash-border p-6 rounded-2xl shadow-sm">
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Search Cases</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Search Cases</p>
           <Input
-            placeholder="Search by title or description..."
+            placeholder="Search by title, description, or ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-full px-5"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-xl px-4"
           />
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Taxonomy</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Taxonomy</p>
           <Select value={incidentTypeFilter} onValueChange={setIncidentTypeFilter}>
-            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-lg text-dash-muted">
+            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="All types" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -504,9 +516,9 @@ export default function InvestigatorPage() {
         </div>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Lifecycle State</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Lifecycle State</p>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-lg text-dash-muted">
+            <SelectTrigger className="w-48 h-11 bg-dash-input border-dash-border hover:border-dash-accent/30 transition-all rounded-xl text-dash-muted">
               <SelectValue placeholder="System status" />
             </SelectTrigger>
             <SelectContent className="bg-dash-bg border-dash-border text-dash-text font-medium">
@@ -523,17 +535,54 @@ export default function InvestigatorPage() {
         </div>
 
         <div className="flex-1 min-w-[200px] space-y-1.5">
-          <p className="text-[10px] font-bold text-dash-muted uppercase tracking-widest ml-1">Tag Filter</p>
+          <p className="text-[10px] font-bold text-dash-muted/80 uppercase tracking-widest ml-1">Tag Filter</p>
           <Input
             placeholder="Filter by exact tag..."
             value={tagFilter === "all" ? "" : tagFilter}
             onChange={(e) => setTagFilter(e.target.value || "all")}
-            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-lg px-4"
+            className="bg-dash-input border-dash-border hover:border-dash-accent/40 focus-visible:ring-dash-accent/20 transition-all text-dash-text h-11 rounded-xl px-4"
           />
         </div>
+
+        {aiFilter && (
+          <div className="flex items-end pb-0.5 animate-in fade-in duration-200">
+            <span className="bg-dash-accent/10 text-dash-accent border border-dash-accent/20 text-[10px] font-bold uppercase tracking-wider px-3 h-11 rounded-xl flex items-center gap-1.5 shadow-3xs shrink-0 select-none">
+              <span>AI Filter: {aiFilter.replace(/_/g, " ")}</span>
+              <button 
+                onClick={() => setAiFilter(null)}
+                className="hover:text-rose-500 font-bold ml-1 transition-colors outline-none"
+                title="Clear AI Filter"
+              >
+                ✕
+              </button>
+            </span>
+          </div>
+        )}
+
+        {isFilterActive && (
+          <div className="flex items-end pb-0.5 animate-in fade-in slide-in-from-right-2 duration-200">
+            <Button
+              onClick={resetFilters}
+              variant="outline"
+              className="border-dash-border hover:border-dash-muted/30 bg-dash-input hover:bg-dash-hover text-dash-muted hover:text-dash-text h-11 px-4 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider flex items-center gap-1.5 shrink-0 shadow-3xs"
+            >
+              Reset Filters
+            </Button>
+          </div>
+        )}
       </div>
 
-      {!isLoadingCases && !error && cases.length > 0 && <InvestigatorCharts cases={cases} />}
+      {!isLoadingCases && !error && allCases.length > 0 && (
+        <InvestigatorCharts
+          cases={cases}
+          aiFilter={aiFilter}
+          onApplyAiFilter={setAiFilter}
+          selectedCaseId={selectedCaseId}
+          hoveredCaseId={hoveredCaseId}
+          onSelectCase={handleSelectCase}
+          onHoverCase={setHoveredCaseId}
+        />
+      )}
 
       {isLoadingCases ? (
         <div className="space-y-4">
@@ -550,7 +599,7 @@ export default function InvestigatorPage() {
             Re-Initialize
           </Button>
         </div>
-      ) : cases.length === 0 ? (
+      ) : allCases.length === 0 ? (
         <div className="rounded-3xl border border-dash-border bg-dash-card p-20 text-center backdrop-blur-2xl shadow-2xl">
           <div className="w-16 h-16 bg-dash-border rounded-full flex items-center justify-center mx-auto mb-6 border border-dash-border">
             <FolderOpen className="w-8 h-8 text-dash-muted" />
@@ -569,12 +618,26 @@ export default function InvestigatorPage() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-xl border border-dash-border bg-dash-card overflow-hidden shadow-sm"
+          className="rounded-2xl border border-dash-border bg-dash-card overflow-hidden shadow-sm"
         >
           <div className="p-6 border-b border-dash-border bg-dash-card flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Operational Stream</h2>
-              <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1 italic">Sorted by temporal priority</p>
+            <div className="flex items-baseline gap-4">
+              <div>
+                <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Operational Stream</h2>
+                <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1 italic">Sorted by temporal priority</p>
+              </div>
+              {isFilterActive && (
+                <div className="flex items-center gap-2 text-xs font-semibold text-dash-muted">
+                  <span>Showing {cases.length} of {allCases.length} cases</span>
+                  <span className="text-dash-border font-light">|</span>
+                  <button
+                    onClick={resetFilters}
+                    className="text-[10px] font-bold uppercase tracking-wider text-dash-accent hover:text-dash-accent/80 transition-colors"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              )}
             </div>
             <div className="h-2 w-2 rounded-full bg-[var(--dash-accent)] animate-pulse" />
           </div>
@@ -591,88 +654,122 @@ export default function InvestigatorPage() {
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-dash-border">
-              <AnimatePresence>
-                {cases.map((caseItem, idx) => (
-                  <TableRow
-                    key={caseItem._id}
-                    className="border-b border-dash-border hover:bg-dash-hover/40 transition-colors group cursor-pointer"
-                    onClick={() => window.location.href = `/investigator/cases/${caseItem.caseId}`}
-                  >
-                    <TableCell className="px-6 py-5">
-                      <div className="flex flex-col">
-                        <p className="font-bold text-dash-text group-hover:text-dash-accent transition-colors">
-                          {caseItem.title}
-                        </p>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(caseItem.caseId);
-                            toast({ title: "Copied", description: "Case ID copied to clipboard." });
-                          }}
-                          className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-dash-input hover:bg-dash-hover px-1.5 py-0.5 rounded border border-dash-border transition-colors w-fit"
-                          title="Copy Case ID"
-                        >
-                          <span>ID: {caseItem.caseId.slice(0, 8)}...</span>
-                          <Copy size={8} />
-                        </button>
-                        {caseItem.tags && caseItem.tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-2">
-                            {caseItem.tags.map((tag) => (
-                              <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-input text-dash-muted px-1.5 py-0.5 rounded border border-dash-border">
-                                {tag}
-                              </span>
-                            ))}
-                          </div>
+              {cases.length > 0 ? (
+                <AnimatePresence>
+                  {cases.map((caseItem) => {
+                    const isSelected = caseItem.caseId === selectedCaseId;
+                    const isHovered = caseItem.caseId === hoveredCaseId;
+                    const isHighlighted = isSelected || isHovered;
+
+                    return (
+                      <TableRow
+                        key={caseItem._id}
+                        id={`row-${caseItem.caseId}`}
+                        onMouseEnter={() => setHoveredCaseId(caseItem.caseId)}
+                        onMouseLeave={() => setHoveredCaseId(null)}
+                        onClick={(e) => {
+                          if ((e.target as HTMLElement).closest('a') || (e.target as HTMLElement).closest('button')) {
+                            return;
+                          }
+                          handleSelectCase(caseItem.caseId);
+                        }}
+                        className={cn(
+                          "border-b border-dash-border hover:bg-dash-hover/40 transition-colors group cursor-pointer",
+                          isHighlighted && "bg-[var(--dash-active-bg)] hover:bg-[var(--dash-active-bg)]"
                         )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <span className="text-[10px] font-bold text-dash-muted uppercase tracking-tight">
-                        {INCIDENT_TYPE_LABELS[caseItem.incidentType] ?? "N/A"}
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <CaseStatusBadge status={caseItem.status} />
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <span className="text-[10px] font-bold text-dash-muted bg-dash-card border border-dash-border px-2 py-0.5 rounded italic">
-                        {caseItem.files.length} ITEMS
-                      </span>
-                    </TableCell>
-                    <TableCell className="px-6 py-5">
-                      <div className="flex flex-col">
-                        <p className="text-[10px] font-bold text-dash-muted tracking-tight">{formatDate(caseItem.createdAt)}</p>
-                        <p className="text-[9px] text-dash-muted/70 font-medium uppercase tracking-tighter">
-                          Incident: {formatDate(caseItem.incidentDate)}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          href={`/verify/${caseItem.caseId}`}
-                          target="_blank"
-                          className="text-[10px] font-bold uppercase tracking-widest text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors border border-[var(--dash-accent)]/20 bg-[var(--dash-accent)]/5 px-3 py-1.5 rounded-lg hover:bg-[var(--dash-accent)]/10"
-                        >
-                          Verify ↗
-                        </Link>
-                        <Link
-                          href={`/investigator/cases/${caseItem.caseId}`}
-                          className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text transition-colors border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg"
-                        >
-                          Inspect →
-                        </Link>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </AnimatePresence>
+                      >
+                        <TableCell className="px-6 py-5">
+                          <div className="flex flex-col">
+                            <p className="font-bold text-dash-text group-hover:text-dash-accent transition-colors">
+                              {caseItem.title}
+                            </p>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(caseItem.caseId);
+                                toast({ title: "Copied", description: "Case ID copied to clipboard." });
+                              }}
+                              className="text-[10px] text-dash-muted hover:text-dash-accent font-mono mt-0.5 tracking-tighter flex items-center gap-1 bg-dash-input hover:bg-dash-hover px-1.5 py-0.5 rounded border border-dash-border transition-colors w-fit"
+                              title="Copy Case ID"
+                            >
+                              <span>ID: {caseItem.caseId.slice(0, 8)}...</span>
+                              <Copy size={8} />
+                            </button>
+                            {caseItem.tags && caseItem.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-2">
+                                {caseItem.tags.map((tag) => (
+                                  <span key={tag} className="text-[9px] font-bold uppercase tracking-widest bg-dash-input text-dash-muted px-1.5 py-0.5 rounded border border-dash-border">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <span className="text-[10px] font-bold text-dash-muted uppercase tracking-tight">
+                            {INCIDENT_TYPE_LABELS[caseItem.incidentType] ?? "N/A"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <CaseStatusBadge status={caseItem.status} />
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <span className="text-[10px] font-bold text-dash-muted bg-dash-card border border-dash-border px-2 py-0.5 rounded italic">
+                            {caseItem.files.length} ITEMS
+                          </span>
+                        </TableCell>
+                        <TableCell className="px-6 py-5">
+                          <div className="flex flex-col">
+                            <p className="text-[10px] font-bold text-dash-muted tracking-tight">{formatDate(caseItem.createdAt)}</p>
+                            <p className="text-[9px] text-dash-muted/70 font-medium uppercase tracking-tighter">
+                              Incident: {formatDate(caseItem.incidentDate)}
+                            </p>
+                          </div>
+                        </TableCell>
+                        <TableCell className="px-6 py-5 text-right" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex justify-end gap-2">
+                            <Link
+                              href={`/verify/${caseItem.caseId}`}
+                              target="_blank"
+                              className="text-[10px] font-bold uppercase tracking-widest text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors border border-[var(--dash-accent)]/20 bg-[var(--dash-accent)]/5 px-3 py-1.5 rounded-lg hover:bg-[var(--dash-accent)]/10"
+                            >
+                              Verify ↗
+                            </Link>
+                            <Link
+                              href={`/investigator/cases/${caseItem.caseId}`}
+                              className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-text transition-colors border border-dash-border bg-dash-input px-4 py-1.5 rounded-lg"
+                            >
+                              Inspect →
+                            </Link>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </AnimatePresence>
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-48 text-center bg-dash-card">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <FolderOpen className="w-8 h-8 text-dash-muted/40" />
+                      <p className="font-bold text-sm text-dash-text">No cases matching filter criteria</p>
+                      <p className="text-xs text-dash-muted">Clear your active filters to view all cases.</p>
+                      <Button 
+                        onClick={resetFilters} 
+                        variant="outline" 
+                        className="mt-2 text-xs font-bold text-dash-accent hover:text-dash-accent/80 border border-dash-border hover:bg-dash-hover rounded-xl h-8 px-4"
+                      >
+                        Reset Filters
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </motion.div>
       )}
-      </div>
     </div>
   );
 }
-

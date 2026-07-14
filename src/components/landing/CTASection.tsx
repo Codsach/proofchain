@@ -25,10 +25,10 @@ function useMagnetic(strength = 0.35) {
 
     const onMove = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect();
-      const cx   = rect.left + rect.width  / 2;
-      const cy   = rect.top  + rect.height / 2;
-      const dx   = (e.clientX - cx) * strength;
-      const dy   = (e.clientY - cy) * strength;
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) * strength;
+      const dy = (e.clientY - cy) * strength;
       el.style.transform = `translate(${dx}px, ${dy}px)`;
     };
     const onLeave = () => {
@@ -53,23 +53,23 @@ function useMagnetic(strength = 0.35) {
 }
 
 export default function CTASection() {
-  const sectionRef   = useRef<HTMLElement>(null);
-  const magneticRef  = useMagnetic(0.30);
+  const sectionRef = useRef<HTMLElement>(null);
+  const magneticRef = useMagnetic(0.30);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start end", "end start"],
   });
 
-  const bgY      = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-8%", "8%"]);
   const headingY = useTransform(scrollYProgress, [0, 1], ["-4%", "4%"]);
   const contentY = useTransform(scrollYProgress, [0, 1], ["-2%", "2%"]);
 
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden text-center py-36 px-6 font-sans"
-      style={{ background: "transparent", borderTop: "1px solid rgba(15,23,42,0.07)" }}
+      className="relative py-20 px-4 font-sans flex justify-center lp-section-cta-dark"
+      style={{ borderTop: "1px solid rgba(5, 150, 105, 0.20)" }}
     >
       {/* ── Soft ambient glow — top center ── */}
       <motion.div
@@ -82,7 +82,7 @@ export default function CTASection() {
           width: "65%",
           maxWidth: 780,
           height: 460,
-          background: "radial-gradient(ellipse at 50% 0%, rgba(16,185,129,0.07) 0%, rgba(5,150,105,0.03) 45%, transparent 70%)",
+          background: "radial-gradient(ellipse at 50% 0%, rgba(5,150,105,0.15) 0%, rgba(5,150,105,0.05) 45%, transparent 70%)",
           filter: "blur(70px)",
           pointerEvents: "none",
           zIndex: 0,
@@ -107,10 +107,10 @@ export default function CTASection() {
         aria-hidden
         style={{
           position: "absolute", inset: 0,
-          opacity: 0.015,
+          opacity: 0.03,
           fontFamily: "var(--font-geist-mono, monospace)",
           fontSize: 10,
-          color: "var(--lp-gray-1)",
+          color: "rgba(255, 255, 255, 0.50)",
           pointerEvents: "none",
           zIndex: 0,
         }}
@@ -131,11 +131,11 @@ export default function CTASection() {
           top: "18%", left: "8%",
           width: 48, height: 48,
           borderRadius: 14,
-          border: "1px solid rgba(5,150,105,0.12)",
-          background: "rgba(255,255,255,0.60)",
+          border: "1px solid rgba(5,150,105,0.20)",
+          background: "rgba(255,255,255,0.06)",
           backdropFilter: "blur(8px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(15,23,42,0.05)",
+          display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.20)",
           pointerEvents: "none", zIndex: 1,
         }}
       >
@@ -150,18 +150,33 @@ export default function CTASection() {
           top: "25%", right: "9%",
           width: 40, height: 40,
           borderRadius: 12,
-          border: "1px solid rgba(139,92,246,0.14)",
-          background: "rgba(255,255,255,0.60)",
+          border: "1px solid rgba(139,92,246,0.25)",
+          background: "rgba(255,255,255,0.06)",
           backdropFilter: "blur(8px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 16px rgba(15,23,42,0.04)",
+          display: "flex", alignItems: "center", justifyItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 16px rgba(0, 0, 0, 0.20)",
           pointerEvents: "none", zIndex: 1,
         }}
       >
         <Zap size={16} style={{ color: "#8b5cf6", opacity: 0.65 }} />
       </div>
 
-      <div style={{ maxWidth: 600, margin: "0 auto", position: "relative", zIndex: 1 }}>
+      <div
+        style={{
+          maxWidth: "min(1400px, 95vw)",
+          margin: "0 auto",
+          position: "relative",
+          zIndex: 1,
+          padding: "64px 48px",
+          borderRadius: 24,
+          background: "rgba(255, 255, 255, 0.03)",
+          backdropFilter: "blur(40px)",
+          WebkitBackdropFilter: "blur(40px)",
+          boxShadow: "0 10px 40px rgba(0,0,0,0.30)",
+          border: "1px solid rgba(255, 255, 255, 0.08)",
+          textAlign: "center",
+        }}
+      >
 
         {/* Label + Heading */}
         <motion.div
@@ -183,9 +198,12 @@ export default function CTASection() {
             custom={1}
             className="font-heading font-bold mb-6 leading-tight"
             style={{
-              color: "var(--lp-gray-1)",
-              fontSize: "clamp(2.2rem, 5vw, 3.4rem)",
-              letterSpacing: "-0.03em",
+              color: "#ffffff",
+              fontSize: "clamp(1.9rem, 3.6vw, 2.8rem)",
+              letterSpacing: "-0.02em",
+              whiteSpace: "normal",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             Evidence that{" "}
@@ -213,8 +231,8 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={0}
-            className="font-sans leading-relaxed mb-12 max-w-md mx-auto"
-            style={{ color: "var(--lp-gray-2)", fontSize: "clamp(0.93rem, 1.3vw, 1.04rem)", lineHeight: 1.75 }}
+            className="font-sans leading-relaxed mb-8 mx-auto"
+            style={{ color: "rgba(255,255,255,0.70)", fontSize: "clamp(0.95rem, 1.2vw, 1.02rem)", lineHeight: 1.6, maxWidth: 760 }}
           >
             Built for cybersecurity and digital forensics teams who need
             cryptographically guaranteed chain of custody — not just a file store.
@@ -224,6 +242,7 @@ export default function CTASection() {
             variants={revealVariant}
             custom={1}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            style={{ marginTop: 6 }}
           >
             {/* Magnetic primary CTA */}
             <Link
@@ -231,14 +250,14 @@ export default function CTASection() {
               href="/login"
               id="cta-access"
               className="lp-btn-primary font-sans flex items-center gap-2.5 no-underline"
-              style={{ padding: "14px 36px", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}
+              style={{ padding: "12px 32px", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}
             >
               Request Access <ArrowRight size={16} />
             </Link>
             <a
               href="#features"
               id="cta-features"
-              className="lp-btn-ghost font-sans no-underline"
+              className="lp-btn-ghost-dark font-sans no-underline"
               style={{ padding: "14px 28px", fontSize: 15, fontWeight: 600, letterSpacing: "-0.01em" }}
             >
               View Features
@@ -248,10 +267,10 @@ export default function CTASection() {
           <motion.p
             variants={revealVariant}
             custom={2}
-            className="mt-10 text-xs tracking-wider font-mono uppercase"
-            style={{ color: "rgba(15,23,42,0.30)" }}
+            className="mt-8 text-xs tracking-wider font-mono uppercase"
+            style={{ color: "rgba(255, 255, 255, 0.45)" }}
           >
-            Designed for law enforcement · Forensic labs · Cyber incident response teams
+            Forensic labs · Cyber incident response teams
           </motion.p>
         </motion.div>
 

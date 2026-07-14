@@ -17,6 +17,8 @@ interface AuthUser {
   fullName: string;
   role: "investigator" | "analyst" | "admin";
   avatarUrl: string | null;
+  mfaEnabled: boolean;
+  landingPage?: string;
 }
 
 interface AuthContextValue {
@@ -26,6 +28,7 @@ interface AuthContextValue {
   verifyMfa: (code: string, mfaToken: string, rememberDevice: boolean) => Promise<void>;
   logout: () => Promise<void>;
   getToken: () => Promise<string | null>;
+  reloadUser: () => Promise<void>;
 }
 
 // ── Context ───────────────────────────────────────────────────────────────────
@@ -153,8 +156,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   }, [router]);
 
+  const reloadUser = useCallback(async (): Promise<void> => {
+    await refresh();
+  }, [refresh]);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, verifyMfa, logout, getToken }}>
+    <AuthContext.Provider value={{ user, isLoading, login, verifyMfa, logout, getToken, reloadUser }}>
       {children}
     </AuthContext.Provider>
   );

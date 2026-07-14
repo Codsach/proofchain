@@ -21,7 +21,7 @@ export function SidebarNav() {
       <div className="flex h-full flex-col px-4 py-5 sm:px-5">
         <div className="flex items-center gap-3">
           <div className="flex size-11 items-center justify-center rounded-2xl border border-emerald-400/30 bg-[#0A1A10] overflow-hidden shrink-0">
-            <Image src="/icon-v2.png" alt="ProofChain Icon" width={32} height={32} className="object-contain" />
+            <Image src="/logo.png" alt="ProofChain Icon" width={32} height={32} className="object-contain rounded-md" />
           </div>
           <div>
             <p className="text-[11px] uppercase tracking-[0.35em] text-zinc-500">

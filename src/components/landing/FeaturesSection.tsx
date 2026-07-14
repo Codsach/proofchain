@@ -101,8 +101,7 @@ export default function FeaturesSection() {
     <section
       ref={sectionRef}
       id="features"
-      className="py-[128px] px-6 relative overflow-hidden font-sans"
-      style={{ background: "transparent" }}
+      className="py-[128px] px-6 relative overflow-hidden font-sans lp-section-features-tint"
     >
       {/* Very soft section ambient — no heavy circles */}
       <motion.div
@@ -126,7 +125,7 @@ export default function FeaturesSection() {
 
       {/* Decorative node network graphic */}
       <svg
-        className="absolute top-12 left-10 w-96 h-96 opacity-[0.025] pointer-events-none"
+        className="absolute top-12 left-10 w-96 h-96 opacity-[0.05] pointer-events-none"
         viewBox="0 0 400 400"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -184,7 +183,7 @@ export default function FeaturesSection() {
             variants={revealVariant}
             custom={2}
             className="font-sans text-base mt-5 max-w-[460px] leading-relaxed"
-            style={{ color: "var(--lp-gray-3)" }}
+            style={{ color: "rgba(15,23,42,0.55)" }}
           >
             Six interlocking layers from capture to verdict — each one immutable, each one verifiable.
           </motion.p>
@@ -219,11 +218,11 @@ function HeroFeatureCard({ feature, index }: { feature: typeof heroFeatures[0]; 
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: "-60px" }}
-      className="bento-glass-lg group feature-card-border-animated"
+      className="bento-glass-lg group feature-card-border-animated relative"
       style={{
-        padding: "40px 40px 36px",
+        padding: "48px 48px 40px",
         background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${feature.color}03 60%, ${feature.color}09 100%)`,
-        borderColor: `${feature.color}14`,
+        borderColor: `${feature.color}40`,
         "--card-accent-grad": `linear-gradient(135deg, ${feature.color}00 0%, ${feature.color}35 50%, ${feature.color}00 100%)`
       } as React.CSSProperties}
       whileHover="hover"
@@ -240,20 +239,30 @@ function HeroFeatureCard({ feature, index }: { feature: typeof heroFeatures[0]; 
           boxShadow: `
             0 2px 6px rgba(15,23,42,0.04),
             0 20px 56px rgba(15,23,42,0.10),
-            0 0 0 1px ${feature.color}18,
+            0 0 0 1px ${feature.color}35,
             inset 0 1px 0 rgba(255,255,255,1)
           `,
-          borderColor: `${feature.color}28`,
+          borderColor: `${feature.color}72`,
           transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] }
         },
         rest: {
           y: 0,
           scale: 1,
           boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03), 0 8px 24px rgba(15, 23, 42, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1)",
+          borderColor: `${feature.color}40`,
           transition: { duration: 0.4 }
         }
       }}
     >
+      {/* 3px accent top band */}
+      <div
+        className="card-feature-top-band"
+        style={{
+          background: feature.color,
+          opacity: 0.60,
+        }}
+      />
+
       {/* Glow layer behind card content */}
       <div
         style={{
@@ -382,7 +391,7 @@ function SupportingCard({ feature, index }: { feature: typeof supportingFeatures
       style={{
         padding: "28px 24px",
         background: `linear-gradient(135deg, rgba(255, 255, 255, 0.94) 0%, ${feature.color}02 60%, ${feature.color}08 100%)`,
-        borderColor: `${feature.color}12`,
+        borderColor: "rgba(15, 23, 42, 0.06)",
         "--card-accent-grad": `linear-gradient(135deg, ${feature.color}00 0%, ${feature.color}35 50%, ${feature.color}00 100%)`
       } as React.CSSProperties}
       whileHover="hover"
@@ -395,20 +404,19 @@ function SupportingCard({ feature, index }: { feature: typeof supportingFeatures
         },
         hover: {
           y: -5,
-          scale: 1.02,
+          scale: 1.015,
           boxShadow: `
             0 2px 6px rgba(15,23,42,0.04),
-            0 14px 36px rgba(15,23,42,0.08),
-            0 0 0 1px ${feature.color}16,
-            inset 0 1px 0 rgba(255,255,255,1)
+            0 14px 36px rgba(15,23,42,0.08)
           `,
-          borderColor: `${feature.color}22`,
+          borderColor: `${feature.color}25`,
           transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
         },
         rest: {
           y: 0,
           scale: 1,
-          boxShadow: "0 1px 3px rgba(15, 23, 42, 0.03), 0 4px 12px rgba(15, 23, 42, 0.04), inset 0 1px 0 rgba(255, 255, 255, 1)",
+          boxShadow: "none",
+          borderColor: "rgba(15, 23, 42, 0.06)",
           transition: { duration: 0.35 }
         }
       }}

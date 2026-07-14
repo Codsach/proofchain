@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { getServerSessionUser } from "@/lib/server-session";
 import { connectDB } from "@/lib/db";
 import User from "@/lib/models/User";
@@ -27,6 +28,8 @@ export async function updateAccountDetails(data: { fullName: string; email: stri
       fullName: data.fullName,
       email: data.email
     });
+
+    revalidatePath("/settings");
 
     return { success: true };
   } catch (error: any) {
@@ -116,5 +119,52 @@ export async function deactivateAccount() {
   } catch (error: any) {
     console.error("Deactivate account error:", error);
     return { success: false, error: error.message || "Failed to deactivate account" };
+  }
+}
+
+export async function updateProfilePreferences(data: { landingPage: string; timezone: string }) {
+  try {
+    const session = await getServerSessionUser();
+    if (!session) {
+      throw new Error("Unauthorized");
+    }
+
+    await connectDB();
+    await User.findByIdAndUpdate(session.id, {
+      landingPage: data.landingPage,
+      timezone: data.timezone
+    });
+
+    revalidatePath("/settings");
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Update profile preferences error:", error);
+    return { success: false, error: error.message || "Failed to update profile preferences" };
+  }
+}
+
+export async function updateNotificationPreferences(data: { securityAlerts: boolean; caseReports: boolean; systemUpdates: boolean }) {
+  try {
+    const session = await getServerSessionUser();
+    if (!session) {
+      throw new Error("Unauthorized");
+    }
+
+    await connectDB();
+    await User.findByIdAndUpdate(session.id, {
+      notificationPreferences: {
+        securityAlerts: data.securityAlerts,
+        caseReports: data.caseReports,
+        systemUpdates: data.systemUpdates
+      }
+    });
+
+    revalidatePath("/settings");
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Update notification preferences error:", error);
+    return { success: false, error: error.message || "Failed to update notification preferences" };
   }
 }

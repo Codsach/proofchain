@@ -10,6 +10,7 @@ import {
   getIp,
   verifyMfaToken,
   setTrustedDeviceCookie,
+  clearTrustedDeviceCookie,
 } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
 import crypto from "crypto";
@@ -17,7 +18,7 @@ import crypto from "crypto";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { mfaToken, code } = body;
+    const { mfaToken, code, rememberDevice } = body;
 
     if (!mfaToken || !code) {
       return NextResponse.json(
@@ -37,7 +38,7 @@ export async function POST(req: NextRequest) {
     }
 
     await connectDB();
-    const user = await User.findById(payload.userId).select("+mfaSecret");
+    const user = await User.findById(payload.userId).select("+mfaSecret +trustedDevices");
 
     if (!user || !user.isActive || !user.isVerified) {
       return NextResponse.json(
@@ -72,12 +73,20 @@ export async function POST(req: NextRequest) {
     const accessToken = signAccessToken(tokenPayload);
     const refreshToken = signRefreshToken(tokenPayload);
 
-    const redirectMap: Record<string, string> = {
-      admin: "/admin",
-      analyst: "/analyst",
-      investigator: "/investigator",
-    };
-    const redirectTo = redirectMap[user.role] ?? "/";
+    // Determine redirect path by role & user landing page preference
+    let redirectTo = "/";
+    const role = user.role;
+    const landing = user.landingPage || "dashboard";
+
+    if (role === "admin") {
+      if (landing === "cases") redirectTo = "/admin/cases";
+      else if (landing === "audit") redirectTo = "/admin/audit";
+      else redirectTo = "/admin";
+    } else if (role === "analyst") {
+      redirectTo = "/analyst";
+    } else if (role === "investigator") {
+      redirectTo = "/investigator";
+    }
 
     await logAction({
       actorId: user._id.toString(),
@@ -99,32 +108,39 @@ export async function POST(req: NextRequest) {
         fullName: user.fullName,
         role: user.role,
         avatarUrl: profile?.avatarUrl || null,
+        mfaEnabled: user.mfaEnabled || false,
+        landingPage: user.landingPage || "dashboard",
       },
     });
 
-    const rawToken = crypto.randomBytes(32).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
-    
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + 30);
+    if (rememberDevice) {
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+      
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30);
 
-    // Initialize array if undefined
-    if (!user.trustedDevices) {
-      user.trustedDevices = [];
+      // Initialize array if undefined
+      if (!user.trustedDevices) {
+        user.trustedDevices = [];
+      }
+
+      user.trustedDevices.push({
+        deviceTokenHash: hashedToken,
+        expiresAt,
+      });
+
+      // Enforce max 5 devices
+      if (user.trustedDevices.length > 5) {
+        user.trustedDevices = user.trustedDevices.slice(-5);
+      }
+
+      user.markModified("trustedDevices");
+      await user.save();
+      setTrustedDeviceCookie(res, rawToken);
+    } else {
+      clearTrustedDeviceCookie(res);
     }
-
-    user.trustedDevices.push({
-      deviceTokenHash: hashedToken,
-      expiresAt,
-    });
-
-    // Enforce max 5 devices
-    if (user.trustedDevices.length > 5) {
-      user.trustedDevices = user.trustedDevices.slice(-5);
-    }
-
-    await user.save();
-    setTrustedDeviceCookie(res, rawToken);
 
     setRefreshCookie(res, refreshToken);
     return res;

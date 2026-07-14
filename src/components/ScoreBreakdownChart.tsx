@@ -37,6 +37,14 @@ const SIGNAL_LABELS: Record<string, string> = {
   instant_modification: "Instant Modification",
   device_make_contradiction: "Device Make Contradiction",
   uncalibrated_color_space: "Uncalibrated Color Space",
+  mime_mismatch: "MIME Type Spoofing Detected",
+  office_macros_detected: "Office Document Macro Detected",
+  video_reencoded: "Re-encoded Video Detection",
+  av_timestamp_mismatch: "A/V Stream Timestamp Mismatch",
+  av_duration_mismatch: "A/V Stream Duration Mismatch",
+  ai_generated_image: "AI-Generated Image Analysis",
+  pdf_javascript_detected: "PDF Embedded JavaScript Risk",
+  pdf_hidden_layers_detected: "PDF Hidden Layers Detected",
 };
 
 const CustomTooltip = ({ active, payload }: any) => {

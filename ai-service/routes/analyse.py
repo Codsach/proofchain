@@ -37,6 +37,7 @@ async def analyse_evidence(
     case_id: str = Form(...),
     file_id: str = Form(...),
     mime_type: str = Form(...),
+    has_gps: str = Form("false"),
 ):
     """
     Run the full AI analysis pipeline on an evidence file.
@@ -73,9 +74,10 @@ async def analyse_evidence(
         tmp_path = tmp.name
 
     try:
-        # is_field_incident — we treat all submissions as potential field incidents
-        # A future version can pass this from case metadata
-        exif_result = extract_exif(tmp_path, is_field_incident=True)
+        # If the user has already provided GPS metadata on upload (via map or browser GPS),
+        # we set is_field_incident=False to prevent false warnings about missing GPS.
+        has_gps_bool = has_gps.lower() == "true"
+        exif_result = extract_exif(tmp_path, is_field_incident=not has_gps_bool)
         
         # Check for Office files using detected MIME type
         office_mimes = [
@@ -140,6 +142,8 @@ async def analyse_evidence(
                 exif_result.flags.append("av_duration_mismatch_detected")
         if ai_gen_result and ai_gen_result.get("is_ai_generated"):
             exif_result.flags.append("ai_generated_image_detected")
+        elif ai_gen_result and ai_gen_result.get("possible_ai_generated"):
+            exif_result.flags.append("possible_ai_generated_detected")
         if pdf_javascript_detected:
             exif_result.flags.append("pdf_javascript_detected")
         if pdf_hidden_layers_detected:
@@ -165,8 +169,11 @@ async def analyse_evidence(
             av_duration_mismatch = True
 
     ai_gen_detected = False
+    possible_ai_gen = False
     if ai_gen_result and ai_gen_result.get("is_ai_generated"):
         ai_gen_detected = True
+    elif ai_gen_result and ai_gen_result.get("possible_ai_generated"):
+        possible_ai_gen = True
 
     score_result = compute_score(
         exif=exif_result,
@@ -179,6 +186,7 @@ async def analyse_evidence(
         av_timestamp_mismatch=av_timestamp_mismatch,
         av_duration_mismatch=av_duration_mismatch,
         ai_gen_detected=ai_gen_detected,
+        possible_ai_gen=possible_ai_gen,
         pdf_javascript_detected=pdf_javascript_detected,
         pdf_hidden_layers_detected=pdf_hidden_layers_detected,
     )

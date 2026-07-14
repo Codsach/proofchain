@@ -27,33 +27,32 @@ export function TamperGauge({ score }: Props) {
     ? "medRiskGrad"
     : "highRiskGrad";
 
-  // SVG parameters
-  const size = 160;
-  const radius = 55;
-  const strokeWidth = 8;
-  const center = size / 2;
-  const circumference = 2 * Math.PI * radius; // ~345.57
-  
-  // 240-degree arc parameters
+  // SVG parameters — compact size for sidebar column
+  const size = 120;          // square canvas
+  const radius = 40;         // arc radius
+  const strokeWidth = 7;     // track thickness
+  const center = size / 2;   // 60
+  const circumference = 2 * Math.PI * radius; // ≈ 251.33
+
+  // 240° arc
   const angleRange = 240;
-  const arcLength = (angleRange / 360) * circumference; // ~230.38
+  const arcLength = (angleRange / 360) * circumference; // ≈ 167.55
   const strokeDasharray = `${arcLength} ${circumference}`;
-  
-  // Compute dash offset for score
+
   const scorePercent = Math.min(Math.max(score, 0), 100);
   const strokeDashoffset = arcLength - (scorePercent / 100) * arcLength;
 
   return (
-    <div className="flex flex-col items-center justify-center p-2 relative select-none">
-      <div className="relative w-40 h-36">
+    <div className="flex flex-col items-center justify-center select-none">
+      {/* Square container — exactly matches viewBox ratio */}
+      <div className="relative w-[120px] h-[120px]">
         <svg
           width="100%"
           height="100%"
-          viewBox={`0 0 ${size} 140`}
+          viewBox={`0 0 ${size} ${size}`}
           className="overflow-visible"
         >
           <defs>
-            {/* Gradients */}
             <linearGradient id="lowRiskGrad" x1="0%" y1="100%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#059669" />
               <stop offset="100%" stopColor="#10B981" />
@@ -66,10 +65,8 @@ export function TamperGauge({ score }: Props) {
               <stop offset="0%" stopColor="#DC2626" />
               <stop offset="100%" stopColor="#EF4444" />
             </linearGradient>
-
-            {/* Glow Filters */}
-            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
+            <filter id="tamperGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="2.5" result="blur" />
               <feMerge>
                 <feMergeNode in="blur" />
                 <feMergeNode in="SourceGraphic" />
@@ -77,30 +74,25 @@ export function TamperGauge({ score }: Props) {
             </filter>
           </defs>
 
-          {/* Background Track */}
+          {/* Background track */}
           <circle
-            cx={center}
-            cy={center}
-            r={radius}
+            cx={center} cy={center} r={radius}
             fill="none"
-            stroke="rgba(255, 255, 255, 0.04)"
+            stroke="var(--dash-border)"
             strokeWidth={strokeWidth}
             strokeDasharray={strokeDasharray}
             strokeLinecap="round"
             transform={`rotate(150 ${center} ${center})`}
           />
-
-          {/* Animated Active Stroke */}
+          {/* Score arc */}
           <motion.circle
-            cx={center}
-            cy={center}
-            r={radius}
+            cx={center} cy={center} r={radius}
             fill="none"
             stroke={`url(#${gradientId})`}
             strokeWidth={strokeWidth}
             strokeDasharray={strokeDasharray}
             strokeLinecap="round"
-            filter="url(#glow)"
+            filter="url(#tamperGlow)"
             transform={`rotate(150 ${center} ${center})`}
             initial={{ strokeDashoffset: arcLength }}
             animate={{ strokeDashoffset }}
@@ -108,38 +100,19 @@ export function TamperGauge({ score }: Props) {
           />
         </svg>
 
-        {/* Center Text Panel */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center -mt-2">
-          {/* Score Number */}
-          <motion.span 
+        {/* Center text — nudged up so it sits in the arc opening gap */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center" style={{ marginTop: "-6px" }}>
+          <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-4xl font-black font-heading text-dash-text tracking-tighter"
+            className="text-3xl font-black font-heading text-dash-text tracking-tighter leading-none"
           >
             {score}
           </motion.span>
-          
-          {/* Scale Label */}
-          <span className="text-[9px] text-dash-muted uppercase tracking-[0.15em] font-bold mt-0.5">
-            integrity score
+          <span className="text-[7px] text-dash-muted uppercase tracking-[0.1em] font-bold mt-0.5">
+            / 100
           </span>
-          
-          {/* Risk Level Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 5 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className={`mt-1.5 px-2.5 py-0.5 rounded-full border text-[9px] font-bold uppercase tracking-widest bg-black/40 backdrop-blur-md ${
-              isLow
-                ? "text-emerald-400 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]"
-                : isMed
-                ? "text-amber-400 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]"
-                : "text-red-400 border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.1)]"
-            }`}
-          >
-            {riskLabel} Risk
-          </motion.div>
         </div>
       </div>
     </div>
