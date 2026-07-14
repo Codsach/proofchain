@@ -3,7 +3,8 @@ export async function queueAIAnalysis(
   caseId: string,
   fileBuffer: Buffer,
   fileName: string,
-  mimeType: string
+  mimeType: string,
+  hasGps: boolean = false
 ) {
   try {
     const fastApiUrl = process.env.FASTAPI_URL;
@@ -17,12 +18,13 @@ export async function queueAIAnalysis(
     const aiFormData = new FormData();
     aiFormData.append(
       "file",
-      new Blob([fileBuffer], { type: mimeType }),
+      new Blob([new Uint8Array(fileBuffer)], { type: mimeType }),
       fileName
     );
     aiFormData.append("case_id", caseId);
     aiFormData.append("file_id", evidenceId);
     aiFormData.append("mime_type", mimeType);
+    aiFormData.append("has_gps", hasGps ? "true" : "false");
 
     const res = await fetch(`${fastApiUrl}/analyse`, {
       method: "POST",

@@ -78,6 +78,7 @@ def detect_ai_image(image_bytes: bytes) -> Dict[str, Any]:
     global _classifier_pipeline
     results: Dict[str, Any] = {
         "is_ai_generated": False,
+        "possible_ai_generated": False,   # softer signal: 0.35 <= score < 0.50
         "confidence": 0.0,
         "detector_available": False,
         "error": None,
@@ -113,8 +114,15 @@ def detect_ai_image(image_bytes: bytes) -> Dict[str, Any]:
             if pred.get("label") == "artificial":
                 score = pred.get("score", 0.0)
                 results["confidence"] = round(score, 4)
-                if score >= 0.70:
+                # Threshold 0.50: AI images that look like illustrations/anime score
+                # lower than photorealistic AI images on this model, so we use a
+                # more sensitive threshold than the naive 0.70.
+                if score >= 0.50:
                     results["is_ai_generated"] = True
+                elif score >= 0.35:
+                    # Soft signal: model leans artificial but not confident enough.
+                    # Used by scorer to escalate to MEDIUM instead of HIGH.
+                    results["possible_ai_generated"] = True
                 break
 
         logger.info(

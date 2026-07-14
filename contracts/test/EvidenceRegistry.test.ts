@@ -28,11 +28,21 @@ describe("EvidenceRegistry", () => {
       expect(record.submittedAt).to.be.gt(0n);
     });
 
-    it("rejects duplicate case IDs", async () => {
+    it("allows multiple evidence submissions for the same case ID", async () => {
       await contract.submitEvidence(CASE_ID, FILE_HASH, IPFS_CID);
+      const fileHash2 = ethers.keccak256(ethers.toUtf8Bytes("test-file-content-2"));
+      const ipfsCid2 = "bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi2";
+      
       await expect(
-        contract.submitEvidence(CASE_ID, FILE_HASH, IPFS_CID)
-      ).to.be.revertedWith("Case already exists");
+        contract.submitEvidence(CASE_ID, fileHash2, ipfsCid2)
+      ).to.not.be.reverted;
+
+      const record = await contract.getRecord(CASE_ID);
+      // CaseRecord should still hold primary file details
+      expect(record.fileHash).to.equal(FILE_HASH);
+
+      const nextId = await contract.nextEvidenceId();
+      expect(nextId).to.equal(3n);
     });
 
     it("rejects zero file hash", async () => {
@@ -44,7 +54,7 @@ describe("EvidenceRegistry", () => {
     it("emits EvidenceSubmitted event", async () => {
       await expect(contract.submitEvidence(CASE_ID, FILE_HASH, IPFS_CID))
         .to.emit(contract, "EvidenceSubmitted")
-        .withArgs(CASE_ID, FILE_HASH, anyValue);
+        .withArgs(1n, CASE_ID, FILE_HASH, IPFS_CID);
     });
   });
 

@@ -14,9 +14,16 @@ export interface IAiReport extends Document {
   };
   geminiResult: {
     manipulation_likelihood: "low" | "medium" | "high" | "inconclusive";
+    ai_generation_likelihood?: "low" | "medium" | "high" | "inconclusive";
     findings: string[];
     confidence: "low" | "medium" | "high" | "inconclusive";
   };
+  aiDetection: {
+    is_ai_generated: boolean | null;
+    confidence: number | null;
+    detector_available: boolean;
+    error: string | null;
+  } | null;
   tamperScore: number;
   riskLevel: "low" | "medium" | "high";
   scoreBreakdown: Record<string, unknown>;
@@ -43,12 +50,23 @@ const AiReportSchema = new Schema<IAiReport>(
         enum: ["low", "medium", "high", "inconclusive"],
         default: "inconclusive",
       },
+      ai_generation_likelihood: {
+        type: String,
+        enum: ["low", "medium", "high", "inconclusive"],
+        default: "inconclusive",
+      },
       findings: [{ type: String }],
       confidence: {
         type: String,
         enum: ["low", "medium", "high", "inconclusive"],
         default: "inconclusive",
       },
+    },
+    aiDetection: {
+      is_ai_generated: { type: Boolean, default: null },
+      confidence: { type: Number, default: null },
+      detector_available: { type: Boolean, default: false },
+      error: { type: String, default: null },
     },
     tamperScore: { type: Number, min: 0, max: 100, required: true },
     riskLevel: {

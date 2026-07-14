@@ -84,19 +84,22 @@ class TestPhase2Forensics(unittest.TestCase):
         self.assertTrue(result["duration_mismatch"])
 
     def test_scorer_video_signals(self):
-        # 1. Video reencoded flag (+20)
+        # 1. Video reencoded flag (+20, escalated to 75 / high risk)
         score_res = compute_score(self.exif, self.gemini, video_reencoded=True)
-        self.assertEqual(score_res.score, 20)
+        self.assertEqual(score_res.score, 75)
+        self.assertEqual(score_res.risk_level, "high")
         self.assertIn("video_reencoded", score_res.score_breakdown)
         
-        # 2. A/V timestamp mismatch flag (+20)
+        # 2. A/V timestamp mismatch flag (+20, escalated to 75 / high risk)
         score_res = compute_score(self.exif, self.gemini, av_timestamp_mismatch=True)
-        self.assertEqual(score_res.score, 20)
+        self.assertEqual(score_res.score, 75)
+        self.assertEqual(score_res.risk_level, "high")
         self.assertIn("av_timestamp_mismatch", score_res.score_breakdown)
 
-        # 3. A/V duration mismatch flag (+20)
+        # 3. A/V duration mismatch flag (+20, escalated to 75 / high risk)
         score_res = compute_score(self.exif, self.gemini, av_duration_mismatch=True)
-        self.assertEqual(score_res.score, 20)
+        self.assertEqual(score_res.score, 75)
+        self.assertEqual(score_res.risk_level, "high")
         self.assertIn("av_duration_mismatch", score_res.score_breakdown)
 
         # 4. Multiple triggers capped at 100
@@ -110,6 +113,7 @@ class TestPhase2Forensics(unittest.TestCase):
             office_macros_detected=True
         )
         self.assertEqual(score_res.score, 100)
+        self.assertEqual(score_res.risk_level, "high")
 
 if __name__ == "__main__":
     unittest.main()

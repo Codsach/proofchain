@@ -198,6 +198,8 @@ async function triggerAIAnalysis(
     mimeType: string;
     ipfsCid: string;
     sha256Hash: string;
+    gpsLat?: number | null;
+    gpsLng?: number | null;
   }>,
   files: File[]
 ) {
@@ -223,6 +225,7 @@ async function triggerAIAnalysis(
       const fileBuffer = Buffer.from(await originalFile.arrayBuffer());
 
       // Send to FastAPI for analysis
+      const hasGps = file.gpsLat !== null && file.gpsLng !== null;
       const aiFormData = new FormData();
       aiFormData.append(
         "file",
@@ -232,6 +235,7 @@ async function triggerAIAnalysis(
       aiFormData.append("case_id", caseId);
       aiFormData.append("file_id", file.fileId);
       aiFormData.append("mime_type", file.mimeType);
+      aiFormData.append("has_gps", hasGps ? "true" : "false");
 
       await fetch(`${fastApiUrl}/analyse`, {
         method: "POST",

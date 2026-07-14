@@ -103,6 +103,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
     av_timestamp_mismatch_detected: "Audio/Video streams have timestamp mismatch",
     av_duration_mismatch_detected: "Audio/Video stream durations differ significantly",
     ai_generated_image_detected: "Image is likely AI-Generated (ViT Heuristics)",
+    possible_ai_generated_detected: "Possible AI-Generated Image (soft ViT signal — check manually)",
     pdf_javascript_detected: "Embedded PDF JavaScript elements detected",
     pdf_hidden_layers_detected: "PDF Optional Content Groups (hidden layers) detected",
   };

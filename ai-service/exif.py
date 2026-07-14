@@ -11,9 +11,12 @@ ExifTool binary must be installed on the system:
 import subprocess
 import json
 import os
+import logging
 from dataclasses import dataclass, field
 from typing import Optional
 from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 # Known editing software — any match raises a flag
 EDITING_SOFTWARE = [
@@ -33,6 +36,8 @@ EDITING_SOFTWARE = [
     "corel",
     "inkscape",
 ]
+
+MEDIA_EXTENSIONS = {".mp4", ".mov", ".avi", ".mkv", ".webm", ".flv", ".wmv", ".m4v", ".mp3", ".aac", ".wav", ".m4a", ".ogg"}
 
 
 @dataclass
@@ -75,7 +80,12 @@ def extract_exif(file_path: str, is_field_incident: bool = False) -> ExifResult:
         )
 
         if proc.returncode != 0 or not proc.stdout.strip():
-            # ExifTool not available — use Pillow as fallback for images
+            # ExifTool not available — route to the right fallback by file type
+            ext = os.path.splitext(file_path)[1].lower()
+            if ext == ".pdf":
+                return _extract_pdf_metadata(file_path, is_field_incident)
+            if ext in MEDIA_EXTENSIONS:
+                return _extract_media_metadata(file_path, is_field_incident)
             return _extract_with_pillow(file_path, is_field_incident)
 
         data_list = json.loads(proc.stdout)
@@ -127,11 +137,133 @@ def extract_exif(file_path: str, is_field_incident: bool = False) -> ExifResult:
     except json.JSONDecodeError:
         result.error = "Failed to parse ExifTool output"
     except FileNotFoundError:
-        # ExifTool binary not found — use Pillow fallback
+        # ExifTool binary not found — route to the right fallback by file type
+        ext = os.path.splitext(file_path)[1].lower()
+        if ext == ".pdf":
+            return _extract_pdf_metadata(file_path, is_field_incident)
+        if ext in MEDIA_EXTENSIONS:
+            return _extract_media_metadata(file_path, is_field_incident)
         return _extract_with_pillow(file_path, is_field_incident)
     except Exception as e:
         result.error = str(e)
 
+    return result
+
+
+def _extract_pdf_metadata(file_path: str, is_field_incident: bool) -> ExifResult:
+    """Extract metadata from PDF files using PyMuPDF (fitz) as a fallback."""
+    result = ExifResult()
+    result.raw = {"_source": "pymupdf_fallback"}
+
+    try:
+        import fitz  # PyMuPDF
+
+        doc = fitz.open(file_path)
+        meta = doc.metadata or {}
+        doc.close()
+
+        # PDF metadata keys: title, author, subject, keywords, creator, producer, creationDate, modDate, format, encryption
+        creator = meta.get("creator") or meta.get("producer")
+        result.software = creator or None
+
+        creation_raw = meta.get("creationDate") or ""
+        modification_raw = meta.get("modDate") or ""
+
+        # PDF dates look like "D:20230601120000+05'30'" — strip the prefix and timezone
+        def _parse_pdf_date(d: str) -> Optional[str]:
+            if not d:
+                return None
+            d = d.strip()
+            if d.startswith("D:"):
+                d = d[2:]
+            # Take first 14 chars: YYYYMMDDHHmmss
+            d = d[:14]
+            if len(d) >= 8:
+                try:
+                    from datetime import datetime as _dt
+                    if len(d) >= 14:
+                        return _dt.strptime(d, "%Y%m%d%H%M%S").strftime("%Y:%m:%d %H:%M:%S")
+                    return _dt.strptime(d[:8], "%Y%m%d").strftime("%Y:%m:%d %H:%M:%S")
+                except ValueError:
+                    return None
+            return None
+
+        result.creation_timestamp = _parse_pdf_date(creation_raw)
+        result.modification_timestamp = _parse_pdf_date(modification_raw)
+
+        # Populate raw dict for flag computation
+        result.raw["EXIF:Software"] = creator
+        result.raw["EXIF:DateTimeOriginal"] = result.creation_timestamp
+        result.raw["EXIF:ModifyDate"] = result.modification_timestamp
+
+    except ImportError:
+        result.error = "PDF metadata fallback unavailable: PyMuPDF not installed"
+    except Exception as e:
+        result.error = f"PDF metadata extraction failed: {e}"
+
+    result.flags = _compute_flags(result, is_field_incident)
+    return result
+
+
+def _extract_media_metadata(file_path: str, is_field_incident: bool) -> ExifResult:
+    """Extract metadata from video/audio files using pymediainfo as a fallback."""
+    result = ExifResult()
+    result.raw = {"_source": "pymediainfo_fallback"}
+
+    try:
+        from pymediainfo import MediaInfo
+
+        media_info = MediaInfo.parse(file_path)
+        general_tracks = [t for t in media_info.tracks if t.track_type == "General"]
+
+        if general_tracks:
+            g = general_tracks[0]
+
+            # Software / encoder
+            software = (
+                getattr(g, "encoded_application", None)
+                or getattr(g, "writing_application", None)
+                or getattr(g, "writing_library", None)
+                or getattr(g, "encoded_library", None)
+            )
+            result.software = str(software).strip() if software else None
+
+            # Timestamps — MediaInfo uses UTC strings like "UTC 2023-06-01 12:00:00"
+            def _norm_media_date(d) -> Optional[str]:
+                if not d:
+                    return None
+                d = str(d).replace("UTC", "").strip()
+                for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d"):
+                    try:
+                        from datetime import datetime as _dt
+                        return _dt.strptime(d, fmt).strftime("%Y:%m:%d %H:%M:%S")
+                    except ValueError:
+                        continue
+                return None
+
+            result.creation_timestamp = _norm_media_date(
+                getattr(g, "recorded_date", None)
+                or getattr(g, "tagged_date", None)
+                or getattr(g, "encoded_date", None)
+            )
+            result.modification_timestamp = _norm_media_date(
+                getattr(g, "file_last_modification_date", None)
+            )
+
+            # Populate raw dict for flag computation
+            if result.software:
+                result.raw["EXIF:Software"] = result.software
+            if result.creation_timestamp:
+                result.raw["EXIF:DateTimeOriginal"] = result.creation_timestamp
+            if result.modification_timestamp:
+                result.raw["EXIF:ModifyDate"] = result.modification_timestamp
+
+    except ImportError:
+        result.error = "Media metadata fallback unavailable: pymediainfo not installed"
+    except Exception as e:
+        result.error = f"Media metadata extraction failed: {e}"
+
+    result.flags = _compute_flags(result, is_field_incident)
     return result
 
 
