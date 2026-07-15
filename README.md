@@ -37,7 +37,7 @@ Below is an interactive look at the platform. We have captured each key part of 
 | **Forensic Analyst Queue** | ![Analyst Queue](public/screenshots/10_analyst_dashboard.png) | **Deep Inspection (Dark Theme)**: Shows the queue of files requiring professional review. Analysts can flag suspicious metadata adjustments or anomalies in the uploaded files. |
 | **Immutable System Audit** | ![Admin Audit Log](public/screenshots/11_admin_audit.png) | **Administrative Log**: A list of all historical actions taken in the platform (e.g., login attempts, file downloads). Since it is linked to database actions, this audit trail cannot be manipulated or erased. |
 | **Administrative Control** | ![Administrative Dashboard](public/screenshots/12_admin_dashboard.png) | **Admin Console**: Provides administrators with system statistics, user control panels, contract configuration details, and active server nodes telemetry. |
-| **AI Forensic Dossier** | ![AI Forensic Dossier](public/screenshots/13_Dossier.png) | **AI Incident Summary**: Generates structured, AI-assisted summaries of case metadata, timelines, integrity status, and risk assessments to present clear, executive-ready documentation. |
+| **User Profile Page** | ![User Profile Page](public/screenshots/13_Dossier.png) | **Classified Personnel Dossier**: Consists of investigator credentials, bio, department, location, assigned hardware, and role-specific stats. Its purpose is to serve as a secure profile and activity hub showing user details and role performance metrics (like cases submitted, verdicts issued, or actions audited). |
 
 ---
 
@@ -121,9 +121,3 @@ npm run dev
 Open your browser and navigate to **[http://localhost:3000](http://localhost:3000)**.
 
 ---
-
-## ⚖️ Legal & Compliance
-
-This platform is designed to serve as an immutable evidentiary verification ledger. All cryptographic seals, blockchain transaction mappings, and custody trails are formatted in alignment with standard chain of custody validation procedures.
-
-ProofChain is distributed under the MIT License. Copyright © 2026. All rights reserved.
