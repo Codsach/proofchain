@@ -10,6 +10,8 @@ import ForensicCertificate from "@/lib/pdf/ForensicCertificate";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import QRCode from "qrcode";
+import fs from "fs";
+import path from "path";
 
 export async function GET(
   req: NextRequest,
@@ -110,6 +112,18 @@ export async function GET(
       console.error("[certificate/get] Failed to generate QR Code:", qrErr);
     }
 
+    // Read logo file and convert to base64 Data URL
+    const logoPath = path.join(process.cwd(), "public", "logo.png");
+    let logoDataUrl: string | null = null;
+    try {
+      if (fs.existsSync(logoPath)) {
+        const logoBuffer = fs.readFileSync(logoPath);
+        logoDataUrl = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+      }
+    } catch (logoErr) {
+      console.error("[certificate/get] Failed to read logo.png:", logoErr);
+    }
+
     // 9. Render PDF Document to Buffer
     const pdfBuffer = await renderToBuffer(
       React.createElement(ForensicCertificate, {
@@ -118,6 +132,7 @@ export async function GET(
         aiReports: aiReports as any,
         qrCodeDataUrl,
         verifyUrl,
+        logoDataUrl,
       }) as any
     );
 

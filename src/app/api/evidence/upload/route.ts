@@ -134,6 +134,28 @@ export async function POST(req: NextRequest) {
       submittedAt: new Date(),
     });
 
+    // Push the file metadata into the associated Case document's files list and reset its status
+    await Case.updateOne(
+      { caseId },
+      {
+        $set: { status: "pending_ai_review" },
+        $push: {
+          files: {
+            fileId: evidence._id.toString(),
+            originalName: file.name,
+            mimeType: file.type,
+            sizeBytes: file.size,
+            sha256Hash: fileHash,
+            ipfsCid: ipfsCid,
+            gpsLat: gpsMetadata ? gpsMetadata.latitude : null,
+            gpsLng: gpsMetadata ? gpsMetadata.longitude : null,
+            gpsAccuracy: gpsMetadata ? gpsMetadata.accuracy : null,
+            uploadedAt: new Date(),
+          },
+        },
+      }
+    );
+
     // Queue AI analysis
     await queueAIAnalysis(
       evidence._id.toString(),

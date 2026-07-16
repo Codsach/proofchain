@@ -150,3 +150,127 @@ def analyse_image(image_bytes: bytes, mime_type: str) -> GeminiResult:
             confidence="inconclusive",
             error=str(e),
         )
+
+
+def analyse_video(file_path: str, mime_type: str) -> GeminiResult:
+    """
+    Upload a video using the File API, wait for processing,
+    and then send to Gemini Vision API for tamper detection.
+
+    Args:
+        file_path: Path to the video file on disk
+        mime_type: MIME type e.g. "video/mp4"
+
+    Returns:
+        GeminiResult with manipulation likelihood, findings, confidence
+    """
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        logger.error("GEMINI_API_KEY not configured")
+        return GeminiResult(error="GEMINI_API_KEY not configured")
+
+    if not mime_type.startswith("video/"):
+        return GeminiResult(
+            manipulation_likelihood="inconclusive",
+            findings=["Not a video file — video visual analysis not applicable"],
+            confidence="inconclusive",
+        )
+
+    client = None
+    video_file = None
+    try:
+        from google import genai
+        from google.genai import types
+        import time
+
+        client = genai.Client(api_key=api_key)
+
+        # 1. Upload the video file using File API
+        logger.info(f"Uploading video {file_path} to Gemini File API...")
+        video_file = client.files.upload(file=file_path)
+
+        # 2. Wait for processing
+        logger.info(f"Waiting for video {video_file.name} to process...")
+        while video_file.state.name == "PROCESSING":
+            time.sleep(2)
+            video_file = client.files.get(name=video_file.name)
+
+        if video_file.state.name == "FAILED":
+            error_msg = getattr(getattr(video_file, "error", None), "message", "Unknown error")
+            logger.error(f"Video processing failed: {error_msg}")
+            return GeminiResult(
+                manipulation_likelihood="inconclusive",
+                findings=[f"Video analysis failed: processing error — {error_msg}"],
+                confidence="inconclusive",
+                error=f"Video processing failed: {error_msg}",
+            )
+
+        # 3. Generate content using gemini-2.5-flash
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=[CANONICAL_PROMPT, video_file],
+            config=types.GenerateContentConfig(
+                temperature=0.1,
+                max_output_tokens=8192,
+                response_mime_type="application/json",
+            ),
+        )
+
+        raw_text = response.text.strip()
+
+        # Clean JSON fences if present
+        if raw_text.startswith("```"):
+            raw_text = raw_text.split("\n", 1)[-1]
+            if raw_text.endswith("```"):
+                raw_text = raw_text.rsplit("```", 1)[0]
+            raw_text = raw_text.strip()
+
+        parsed = json.loads(raw_text)
+
+        likelihood = parsed.get("manipulation_likelihood", "inconclusive")
+        if likelihood not in ("low", "medium", "high"):
+            likelihood = "inconclusive"
+
+        ai_gen_likelihood = parsed.get("ai_generation_likelihood", "inconclusive")
+        if ai_gen_likelihood not in ("low", "medium", "high"):
+            ai_gen_likelihood = "inconclusive"
+
+        confidence = parsed.get("confidence", "inconclusive")
+        if confidence not in ("low", "medium", "high"):
+            confidence = "inconclusive"
+
+        findings = parsed.get("findings", [])
+        if not isinstance(findings, list):
+            findings = []
+
+        return GeminiResult(
+            manipulation_likelihood=likelihood,
+            ai_generation_likelihood=ai_gen_likelihood,
+            findings=findings[:10],
+            confidence=confidence,
+        )
+
+    except json.JSONDecodeError as e:
+        logger.warning(f"Gemini returned non-JSON response for video: {e}")
+        return GeminiResult(
+            manipulation_likelihood="inconclusive",
+            findings=["AI response could not be parsed — manual review required"],
+            confidence="inconclusive",
+            error=f"JSON parse error: {e}",
+        )
+    except Exception as e:
+        logger.error(f"Gemini API video error: {e}")
+        return GeminiResult(
+            manipulation_likelihood="inconclusive",
+            findings=[],
+            confidence="inconclusive",
+            error=str(e),
+        )
+    finally:
+        # 4. Clean up file from Gemini File API
+        if client and video_file:
+            try:
+                logger.info(f"Deleting video {video_file.name} from Gemini File API...")
+                client.files.delete(name=video_file.name)
+            except Exception as delete_error:
+                logger.warning(f"Failed to delete video file {video_file.name} from Gemini: {delete_error}")

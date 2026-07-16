@@ -16,7 +16,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from exif import extract_exif
-from gemini import analyse_image
+from gemini import analyse_image, analyse_video
 from scorer import compute_score
 from pdf_check import check_pdf_anomalies
 from magic_check import verify_mime
@@ -102,12 +102,14 @@ async def analyse_evidence(
         except OSError:
             pass
 
-    # ── 2. Gemini Vision & Local AI-Generated check (images only, based on detected MIME) ──
+    # ── 2. Gemini Vision & Local AI-Generated check (images and videos, based on detected MIME) ──
     gemini_result = None
     ai_gen_result = None
     if analysis_mime.startswith("image/"):
         gemini_result = analyse_image(file_bytes, analysis_mime)
         ai_gen_result = detect_ai_image(file_bytes)
+    elif analysis_mime.startswith("video/"):
+        gemini_result = analyse_video(tmp_path, analysis_mime)
     else:
         from gemini import GeminiResult
         gemini_result = GeminiResult(

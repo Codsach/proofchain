@@ -109,6 +109,39 @@ export default function InvestigatorCaseDetailPage() {
     load();
   }, [caseId, getToken, toast]);
 
+  // Poll for AI scan completion when the status is "pending_ai_review"
+  useEffect(() => {
+    if (!caseData || caseData.status !== "pending_ai_review") return;
+
+    let active = true;
+    const interval = setInterval(async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`/api/cases/${caseId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok && active) {
+          const data = await res.json();
+          if (data.status !== "pending_ai_review") {
+            setCaseData(data);
+            toast({
+              title: "AI Scan Completed",
+              description: "AI scan completed for this case",
+            });
+            clearInterval(interval);
+          }
+        }
+      } catch (err) {
+        console.error("[polling] Failed to check case status:", err);
+      }
+    }, 5000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [caseId, caseData?.status, getToken, toast]);
+
   // Load Verdict
   useEffect(() => {
     const load = async () => {
