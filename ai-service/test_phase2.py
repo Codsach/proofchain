@@ -115,5 +115,86 @@ class TestPhase2Forensics(unittest.TestCase):
         self.assertEqual(score_res.score, 100)
         self.assertEqual(score_res.risk_level, "high")
 
+    @patch("google.genai.Client")
+    def test_analyse_video_success(self, mock_client_cls):
+        mock_client = MagicMock()
+        mock_client_cls.return_value = mock_client
+        
+        mock_file = MagicMock()
+        mock_file.name = "files/mock-video-file-id"
+        mock_file.state.name = "ACTIVE"
+        mock_client.files.upload.return_value = mock_file
+        
+        mock_response = MagicMock()
+        mock_response.text = '{"manipulation_likelihood": "high", "ai_generation_likelihood": "low", "findings": ["Shadow inconsistencies detected", "Frame drops"], "confidence": "high"}'
+        mock_client.models.generate_content.return_value = mock_response
+        
+        from gemini import analyse_video
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "fake_key"}):
+            res = analyse_video("dummy_path.mp4", "video/mp4")
+            
+        self.assertEqual(res.manipulation_likelihood, "high")
+        self.assertEqual(res.ai_generation_likelihood, "low")
+        self.assertEqual(res.confidence, "high")
+        self.assertEqual(res.findings, ["Shadow inconsistencies detected", "Frame drops"])
+        self.assertIsNone(res.error)
+        
+        mock_client.files.upload.assert_called_once_with(file="dummy_path.mp4")
+        mock_client.files.delete.assert_called_once_with(name="files/mock-video-file-id")
+
+    @patch("google.genai.Client")
+    def test_analyse_video_processing_transition(self, mock_client_cls):
+        mock_client = MagicMock()
+        mock_client_cls.return_value = mock_client
+        
+        mock_file_proc = MagicMock()
+        mock_file_proc.name = "files/mock-video"
+        mock_file_proc.state.name = "PROCESSING"
+        
+        mock_file_active = MagicMock()
+        mock_file_active.name = "files/mock-video"
+        mock_file_active.state.name = "ACTIVE"
+        
+        mock_client.files.upload.return_value = mock_file_proc
+        mock_client.files.get.side_effect = [mock_file_active]
+        
+        mock_response = MagicMock()
+        mock_response.text = '{"manipulation_likelihood": "low", "ai_generation_likelihood": "low", "findings": [], "confidence": "medium"}'
+        mock_client.models.generate_content.return_value = mock_response
+        
+        from gemini import analyse_video
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "fake_key"}), patch("time.sleep") as mock_sleep:
+            res = analyse_video("dummy_path.mp4", "video/mp4")
+            
+        self.assertEqual(res.manipulation_likelihood, "low")
+        self.assertEqual(res.confidence, "medium")
+        mock_sleep.assert_called_once_with(2)
+        mock_client.files.delete.assert_called_once_with(name="files/mock-video")
+
+    @patch("google.genai.Client")
+    def test_analyse_video_failed_processing(self, mock_client_cls):
+        mock_client = MagicMock()
+        mock_client_cls.return_value = mock_client
+        
+        mock_file = MagicMock()
+        mock_file.name = "files/mock-video"
+        mock_file.state.name = "FAILED"
+        mock_file.error.message = "Codec not supported"
+        mock_client.files.upload.return_value = mock_file
+        
+        from gemini import analyse_video
+        with patch.dict(os.environ, {"GEMINI_API_KEY": "fake_key"}):
+            res = analyse_video("dummy_path.mp4", "video/mp4")
+            
+        self.assertEqual(res.manipulation_likelihood, "inconclusive")
+        self.assertIn("Video analysis failed: processing error", res.findings[0])
+        self.assertIsNotNone(res.error)
+
+    def test_analyse_video_no_api_key(self):
+        from gemini import analyse_video
+        with patch.dict(os.environ, {}, clear=True):
+            res = analyse_video("dummy_path.mp4", "video/mp4")
+        self.assertIn("GEMINI_API_KEY not configured", res.error)
+
 if __name__ == "__main__":
     unittest.main()
