@@ -121,6 +121,7 @@ export default function AnalystCaseReviewPage() {
   const [verdictOpen, setVerdictOpen] = useState(false);
   const [isSubmittingVerdict, setIsSubmittingVerdict] = useState(false);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
+  const [previewFileId, setPreviewFileId] = useState<string | null>(null);
 
   useEffect(() => {
     getToken().then(setToken);
@@ -434,16 +435,27 @@ export default function AnalystCaseReviewPage() {
                         {file.mimeType} · {formatFileSize(file.sizeBytes)}
                       </p>
                     </div>
-                    <motion.a
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      href={getIpfsGatewayUrl(file.ipfsCid)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/80 bg-emerald-500/5 border border-dash-accent/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-dash-accent/10"
-                    >
-                      Gateway
-                    </motion.a>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setPreviewFileId(previewFileId === file.fileId ? null : file.fileId)}
+                        className="text-[10px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-3.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                      >
+                        <span>Preview</span>
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${previewFileId === file.fileId ? "rotate-180" : ""}`} />
+                      </button>
+
+                      <motion.a
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        href={getIpfsGatewayUrl(file.ipfsCid)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[10px] font-bold uppercase tracking-widest text-dash-accent/80 bg-emerald-500/5 border border-dash-accent/20 px-4 py-1.5 rounded-lg transition-colors hover:bg-dash-accent/10"
+                      >
+                        Gateway
+                      </motion.a>
+                    </div>
                   </div>
                   <div className="space-y-1.5">
                     <p className="text-[9px] font-bold text-dash-muted uppercase tracking-widest">SHA-256 Fingerprint</p>
@@ -457,6 +469,48 @@ export default function AnalystCaseReviewPage() {
                       Spatial: {file.gpsLat.toFixed(5)}, {file.gpsLng.toFixed(5)}
                     </p>
                   )}
+
+                  {/* Collapsible Dropdown Preview Container */}
+                  <AnimatePresence>
+                    {previewFileId === file.fileId && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden pt-2"
+                      >
+                        {file.mimeType.startsWith("image/") && (
+                          <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1.5 max-w-xl animate-in fade-in duration-300">
+                            <img
+                              src={getIpfsGatewayUrl(file.ipfsCid)}
+                              alt={file.originalName}
+                              className="w-full h-auto max-h-[350px] object-contain rounded-lg"
+                              loading="lazy"
+                            />
+                          </div>
+                        )}
+                        {file.mimeType.startsWith("video/") && (
+                          <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1.5 max-w-xl animate-in fade-in duration-300">
+                            <video
+                              src={getIpfsGatewayUrl(file.ipfsCid)}
+                              controls
+                              className="w-full h-auto max-h-[350px] rounded-lg"
+                            />
+                          </div>
+                        )}
+                        {file.mimeType === "application/pdf" && (
+                          <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1.5 max-w-xl h-[450px] animate-in fade-in duration-300">
+                            <iframe
+                              src={getIpfsGatewayUrl(file.ipfsCid)}
+                              className="w-full h-full rounded-lg"
+                              title={file.originalName}
+                            />
+                          </div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               ))}
             </div>

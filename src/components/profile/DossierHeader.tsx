@@ -131,7 +131,7 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
             {/* Identity Section */}
             <CardContainer className="flex-1 space-y-[8px] w-full">
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="headline-sm font-bold tracking-wide uppercase font-heading text-dash-text">
+                <h1 className="headline-sm !font-bold tracking-wide uppercase font-heading text-dash-text">
                   {user.fullName}
                 </h1>
                 <Badge variant="outline" className={`rounded-md type-badge uppercase tracking-wider px-2 py-0.5 text-xs ${roleColor}`}>
@@ -219,7 +219,7 @@ export function DossierHeader({ user, profile }: DossierHeaderProps) {
             {(profile?.emergencyContactName || profile?.emergencyContactPhone) && (
               <CardContainer className="bg-dash-input/20 border border-dash-border p-[20px] rounded-xl">
                 <CardTitle className="label-lg font-sans uppercase text-dash-muted mb-[8px] tracking-wider font-semibold">Emergency Contact</CardTitle>
-                <p className="body-md font-sans text-dash-text font-bold">{profile.emergencyContactName || "Unknown"}</p>
+                <p className="body-md font-sans text-dash-text !font-bold">{profile.emergencyContactName || "Unknown"}</p>
                 <p className="body-sm text-dash-muted font-sans mt-[8px]">{profile.emergencyContactPhone || "No number listed"}</p>
               </CardContainer>
             )}
