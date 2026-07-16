@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
@@ -160,6 +160,7 @@ export default function AdminCaseDetailPage() {
   }, [caseId, getToken, toast]);
 
   useEffect(() => {
+    let wasScanning = false;
     const load = async () => {
       try {
         const token = await getToken();
@@ -167,17 +168,33 @@ export default function AdminCaseDetailPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.status === 202) {
+          wasScanning = true;
           setTimeout(load, 5000);
           return;
         }
-        if (res.ok) setAiReports(await res.json());
+        if (res.ok) {
+          setAiReports(await res.json());
+          if (wasScanning) {
+            // Refresh case details to update status badges
+            const caseRes = await fetch(`/api/cases/${caseId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (caseRes.ok) {
+              setCaseData(await caseRes.json());
+            }
+            toast({
+              title: "AI Scan Completed",
+              description: "AI scan completed for this case",
+            });
+          }
+        }
       } catch {
       } finally {
         setIsLoadingAi(false);
       }
     };
     load();
-  }, [caseId, getToken]);
+  }, [caseId, getToken, toast]);
 
   useEffect(() => {
     const load = async () => {
