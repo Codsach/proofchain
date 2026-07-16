@@ -248,7 +248,9 @@ export default function SubmitEvidencePage() {
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || `Upload failed for ${item.file.name}`);
+        const error = new Error(data.error || `Upload failed for ${item.file.name}`);
+        (error as any).status = res.status;
+        throw error;
       }
     };
 
@@ -277,7 +279,13 @@ export default function SubmitEvidencePage() {
       resetForm();
     } catch (err: any) {
       console.error(err);
-      // Queue all of them on failure
+      // For validation/client errors (400, 404, 409 etc.), do not queue offline, show error directly.
+      if (err.status && err.status < 500) {
+        setSubmitError(err.message);
+        setIsSubmitting(false);
+        return;
+      }
+      // Queue all of them on server/network failure
       try {
         for (let i = 0; i < selectedFiles.length; i++) {
           await queueFile(selectedFiles[i], i);

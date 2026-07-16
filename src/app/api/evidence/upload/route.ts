@@ -3,6 +3,7 @@ import { logAction } from "@/lib/audit";
 import { getIp, verifyAuth } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { EvidenceModel } from "@/lib/models/Evidence";
+import Case from "@/lib/models/Case";
 import { uploadToIPFS } from "@/lib/ipfs";
 import { sha256 as computeSHA256 } from "@/lib/hash";
 import { queueAIAnalysis } from "@/lib/ai";
@@ -37,6 +38,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "Missing required fields: file, caseId, title" },
         { status: 400 }
+      );
+    }
+
+    // Verify that the case actually exists in the database
+    const caseExists = await Case.exists({ caseId });
+    if (!caseExists) {
+      return NextResponse.json(
+        { error: "Case not found with the provided Case ID" },
+        { status: 404 }
       );
     }
 
