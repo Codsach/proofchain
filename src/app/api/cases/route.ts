@@ -13,6 +13,7 @@ import {
 import type { JWTPayload } from "@/lib/auth";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 // Install uuid: npm install uuid @types/uuid
 
