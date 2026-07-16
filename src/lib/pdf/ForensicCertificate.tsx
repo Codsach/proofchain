@@ -241,6 +241,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 10,
   },
+  logo: {
+    width: 24,
+    height: 24,
+    marginRight: 8,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "#00C9A7",
+  },
 });
 
 interface FileRecord {
@@ -304,6 +312,7 @@ interface ForensicCertificateProps {
   aiReports: AiReport[];
   qrCodeDataUrl: string | null;
   verifyUrl: string;
+  logoDataUrl: string | null;
 }
 
 const INCIDENT_LABELS: Record<string, string> = {
@@ -320,6 +329,7 @@ export default function ForensicCertificate({
   aiReports,
   qrCodeDataUrl,
   verifyUrl,
+  logoDataUrl,
 }: ForensicCertificateProps) {
   const formatBytes = (bytes: number) => {
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -338,9 +348,12 @@ export default function ForensicCertificate({
       <Page size="A4" style={styles.page}>
         {/* Header */}
         <View style={styles.headerContainer}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.brandText}>ProofChain Secure Anchor</Text>
-            <Text style={styles.certificateTitle}>Forensic Certificate</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {logoDataUrl && <Image src={logoDataUrl} style={styles.logo} />}
+            <View style={styles.headerLeft}>
+              <Text style={styles.brandText}>ProofChain Secure Anchor</Text>
+              <Text style={styles.certificateTitle}>Forensic Certificate</Text>
+            </View>
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.headerLabel}>Certificate UID</Text>
@@ -410,9 +423,11 @@ export default function ForensicCertificate({
                 </Text>
               </View>
               <Text style={styles.label}>Verification Explanation</Text>
-              <Text style={{ fontSize: 9, color: "#FFFFFF", fontStyle: "italic", lineHeight: 1.4 }}>
+              <Text style={{ fontSize: 9, color: "#FFFFFF", fontStyle: "italic", lineHeight: 1.4, marginBottom: 8 }}>
                 "{verdict.reason}"
               </Text>
+              <Text style={styles.label}>Verified By</Text>
+              <Text style={styles.value}>Authorized Forensic Analyst</Text>
             </View>
           ) : (
             <Text style={{ color: "#8E9AAF", fontStyle: "italic" }}>
@@ -448,9 +463,12 @@ export default function ForensicCertificate({
       {/* ── Page 2: Evidence Modules and AI Threat Scan ── */}
       <Page size="A4" style={styles.page}>
         <View style={styles.headerContainer}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.brandText}>ProofChain Secure Anchor</Text>
-            <Text style={styles.certificateTitle}>Technical Appendix</Text>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            {logoDataUrl && <Image src={logoDataUrl} style={styles.logo} />}
+            <View style={styles.headerLeft}>
+              <Text style={styles.brandText}>ProofChain Secure Anchor</Text>
+              <Text style={styles.certificateTitle}>Technical Appendix</Text>
+            </View>
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.headerLabel}>Subject UID</Text>
