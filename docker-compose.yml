@@ -1,0 +1,56 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Python FastAPI AI Analysis Microservice
+  # ---------------------------------------------------------------------------
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: proofchain-ai-service
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - INTERNAL_AI_KEY=${INTERNAL_AI_KEY:-proofchain_internal_secret_key_2026}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+  # ---------------------------------------------------------------------------
+  # Next.js Full Stack Web App (Frontend + API Gateway)
+  # ---------------------------------------------------------------------------
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: proofchain-web
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - FASTAPI_URL=http://ai-service:8000
+      - INTERNAL_AI_KEY=${INTERNAL_AI_KEY:-proofchain_internal_secret_key_2026}
+      - MONGODB_URI=${MONGODB_URI}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+    depends_on:
+      ai-service:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  hf_cache:
+    name: proofchain_hf_cache

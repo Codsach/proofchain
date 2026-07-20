@@ -1,0 +1,39 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+build/
+dist/
+tsconfig.tsbuildinfo
+
+# Sub-services with their own docker context
+ai-service/
+
+# Hardhat / Smart Contracts artifacts and cache
+contracts/cache/
+contracts/artifacts/
+
+# Environment files
+.env
+.env.local
+.env.*
+!.env.example
+
+# Git, IDE, and Agent system files
+.git/
+.gitignore
+.agents/
+.vscode/
+.idea/
+
+# Debug and scratch scripts
+*.log
+npm-debug.log*
+yarn-debug.log*
+clear_cases.js
+scratch_fix.js
+
+# Docker specific
+Dockerfile
+.dockerignore
+docker-compose.yml
