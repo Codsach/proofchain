@@ -70,7 +70,7 @@ const roleLabel: Record<string, string> = {
 export function AppSidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  const { state, isMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
 
 
   if (!user) return null;
@@ -131,7 +131,15 @@ export function AppSidebar() {
                     isActive={isActive}
                     className={`transition-all duration-300 text-dash-muted hover:bg-dash-hover/60! hover:text-dash-text! data-[active=true]:bg-[var(--dash-active-bg)]! data-[active=true]:text-[var(--dash-active-text)]! rounded-xl border border-transparent data-[active=true]:border-[var(--dash-border)] data-[active=true]:shadow-sm ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-3"}`}
                   >
-                    <Link href={item.href} className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
                       <Icon size={20} className={isActive ? "text-[var(--dash-active-text)]" : "opacity-70"} />
                       {!isCollapsed && <span className="font-medium">{item.label}</span>}
                     </Link>
