@@ -319,7 +319,7 @@ export default function AdminCaseDetailPage() {
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
-            <span className="text-lg">â†</span> Forensic Archives
+            <span className="text-lg">←</span> Forensic Archives
           </Link>
           <div className="flex flex-wrap items-center gap-4 mt-4">
             <h1 className="type-display-xl">{caseData.title}</h1>
