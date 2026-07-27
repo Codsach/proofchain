@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
+import { Types } from "mongoose";
 import Case from "@/lib/models/Case";
 import Verdict from "@/lib/models/Verdict";
 import AiReport from "@/lib/models/AiReport";
@@ -41,7 +42,7 @@ async function getAnalystMetrics(
 
     // 2. Completed Cases by this analyst matching the filter
     const completedFilter: Record<string, any> = {
-      analystId: user.userId,
+      analystId: new Types.ObjectId(user.userId),
       issuedAt: { $gte: sevenDaysAgo },
     };
     if (statusFilter && ["verified", "rejected"].includes(statusFilter)) {
@@ -50,7 +51,7 @@ async function getAnalystMetrics(
     const completedThisWeek = await Verdict.countDocuments(completedFilter);
 
     // Fetch verdicts issued by this analyst for time calculations
-    const analystVerdicts = await Verdict.find({ analystId: user.userId }).lean();
+    const analystVerdicts = await Verdict.find({ analystId: new Types.ObjectId(user.userId) }).lean();
     
     let verdictAccuracyRate = 100;
     let averageReviewTimeHours = 0;
@@ -118,6 +119,7 @@ async function getAnalystMetrics(
       verdictAccuracyRate,
       averageReviewTimeHours,
       highRiskAlerts,
+      totalVerdicts: analystVerdicts.length,
     });
   } catch (err) {
     console.error("[analyst metrics]", err);

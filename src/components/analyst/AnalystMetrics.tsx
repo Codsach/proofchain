@@ -12,6 +12,7 @@ interface Metrics {
   verdictAccuracyRate: number;
   averageReviewTimeHours: number;
   highRiskAlerts: number;
+  totalVerdicts: number;
 }
 
 interface AnalystMetricsProps {
@@ -87,7 +88,7 @@ export function AnalystMetrics({
     },
   };
 
-  const hasNoCompletedVerdicts = !metrics || metrics.completedThisWeek === 0;
+  const hasNoCompletedVerdicts = !metrics || metrics.totalVerdicts === 0;
 
   const statCards = [
     {

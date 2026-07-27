@@ -28,6 +28,7 @@ export default function DashboardLayout({
   const isProfilePage = pathname === "/profile";
   const isSettings = pathname === "/settings";
   const isAdmin = pathname?.startsWith("/admin");
+  const isHistory = pathname?.startsWith("/history");
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -72,7 +73,7 @@ export default function DashboardLayout({
 
   if (!user) return null;
 
-  const isDashboardPage = isInvestigator || isAnalyst || isProfile || isSettings || isAdmin;
+  const isDashboardPage = isInvestigator || isAnalyst || isProfile || isSettings || isAdmin || isHistory;
 
   return (
     <SidebarProvider>
@@ -138,4 +139,4 @@ export default function DashboardLayout({
       </div>
     </SidebarProvider>
   );
-}
+}

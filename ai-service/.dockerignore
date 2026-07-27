@@ -1,0 +1,32 @@
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git and IDE
+.git/
+.gitignore
+.vscode/
+.idea/
+
+# Testing and scratch files
+test_*.py
+scratch_*.js
+*.log
+*.tmp
+
+# Docker specific
+Dockerfile
+.dockerignore

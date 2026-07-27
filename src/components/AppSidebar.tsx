@@ -30,6 +30,7 @@ import {
   Settings,
   Fingerprint,
   FolderPlus,
+  History,
 } from "lucide-react";
 
 
@@ -38,11 +39,13 @@ const navItems = {
     { label: "My Cases", href: "/investigator", icon: Search },
     { label: "New Case", href: "/investigator/cases/new", icon: FolderPlus },
     { label: "Submit Evidence", href: "/investigator/submit", icon: ShieldCheck },
+    { label: "Case History", href: "/history", icon: History },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ],
   analyst: [
     { label: "Case Queue", href: "/analyst", icon: Activity },
+    { label: "Case History", href: "/history", icon: History },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ],
@@ -50,6 +53,7 @@ const navItems = {
     { label: "Dashboard", href: "/admin", icon: Hexagon },
     { label: "New Case", href: "/admin/cases/new", icon: FolderPlus },
     { label: "Cases", href: "/admin/cases", icon: Briefcase },
+    { label: "Case History", href: "/history", icon: History },
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
     { label: "Profile", href: "/profile", icon: User },
@@ -66,7 +70,7 @@ const roleLabel: Record<string, string> = {
 export function AppSidebar() {
   const { user, logout } = useAuth();
   const pathname = usePathname();
-  const { state, isMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
 
 
   if (!user) return null;
@@ -127,7 +131,15 @@ export function AppSidebar() {
                     isActive={isActive}
                     className={`transition-all duration-300 text-dash-muted hover:bg-dash-hover/60! hover:text-dash-text! data-[active=true]:bg-[var(--dash-active-bg)]! data-[active=true]:text-[var(--dash-active-text)]! rounded-xl border border-transparent data-[active=true]:border-[var(--dash-border)] data-[active=true]:shadow-sm ${isCollapsed ? "size-10 justify-center p-0" : "h-11 px-3"}`}
                   >
-                    <Link href={item.href} className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center ${isCollapsed ? "justify-center" : "gap-3"}`}
+                      onClick={() => {
+                        if (isMobile) {
+                          setOpenMobile(false);
+                        }
+                      }}
+                    >
                       <Icon size={20} className={isActive ? "text-[var(--dash-active-text)]" : "opacity-70"} />
                       {!isCollapsed && <span className="font-medium">{item.label}</span>}
                     </Link>

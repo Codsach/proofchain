@@ -234,8 +234,10 @@ export default function LandingNav() {
                   <Menu className="w-5 h-5" />
                 </button>
               </SheetTrigger>
-              <SheetContent side="right" className="bg-white border-slate-100">
-                <SheetTitle className="text-slate-900 mb-8 font-heading text-lg">Menu</SheetTitle>
+              <SheetContent side="right" className="bg-white border-slate-100 px-6 py-6">
+                <SheetTitle className="mb-3 px-3.5 pr-10 text-left font-heading text-lg text-slate-900">
+                  Menu
+                </SheetTitle>
                 <nav className="flex flex-col gap-1">
                   {NAV_LINKS.map((link) => (
                     <a
