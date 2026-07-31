@@ -6,6 +6,7 @@ import Verdict from "@/lib/models/Verdict";
 import User from "@/lib/models/User";
 import { verifyAccessToken, getIp } from "@/lib/auth";
 import { logAction } from "@/lib/audit";
+import { getAppBaseUrl } from "@/lib/email";
 import ForensicCertificate from "@/lib/pdf/ForensicCertificate";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
@@ -96,8 +97,7 @@ export async function GET(
     const verdictDoc = await Verdict.findOne({ caseId }).lean();
 
     // 8. Generate QR Code containing public verify URL
-    const url = new URL(req.url);
-    const verifyUrl = `${url.origin}/verify/${caseId}`;
+    const verifyUrl = `${getAppBaseUrl(req)}/verify/${caseId}`;
     let qrCodeDataUrl = null;
     try {
       qrCodeDataUrl = await QRCode.toDataURL(verifyUrl, {

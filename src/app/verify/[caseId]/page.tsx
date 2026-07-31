@@ -209,15 +209,15 @@ export default function PublicVerifyPage() {
       type: "upload",
       title: "Evidence Uploaded & Sealed",
       subtitle: `Action taken by ${data.uploaderRole || "investigator"}`,
-      description: `Cryptographic fingerprint registered on-chain: ${data.onChainHash.slice(0, 16)}...`,
+      description: `Cryptographic fingerprint registered on-chain: ${data.onChainHash?.slice(0, 16) || "Pending sync"}...`,
       timestamp: data.onChainTimestamp,
       txHash: data.onChainTxHash,
-      isActive: data.transferLog.length === 0 && !data.verdictIssued,
+      isActive: (data.transferLog?.length ?? 0) === 0 && !data.verdictIssued,
     });
 
     // 2. Transfer events
-    data.transferLog.forEach((t, index) => {
-      const isLastTransfer = index === data.transferLog.length - 1;
+    (data.transferLog ?? []).forEach((t, index, transferLog) => {
+      const isLastTransfer = index === transferLog.length - 1;
       timelineNodes.push({
         id: t.transferHash,
         type: "transfer",
