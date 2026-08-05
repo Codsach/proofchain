@@ -336,7 +336,7 @@ def sanitize_error_message(msg: str) -> str:
     # Regex to match Windows absolute paths (e.g. C:\Users\...\file.mp4)
     # and Unix absolute/relative paths with folders (e.g. /tmp/file.mp4)
     win_path_rx = r'[a-zA-Z]:\\[^\s:|]+(?:\\[^\s:|]+)*'
-    unix_path_rx = r'/[^\s:|]+(?:/[^\s:|]+)*'
+    unix_path_rx = r'/[^\s:|]+(?:/[^\s:|]+)+'
     
     def replace_path(match):
         path_str = match.group(0)

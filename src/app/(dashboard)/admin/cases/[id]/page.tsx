@@ -8,13 +8,14 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { AiReportPanel } from "@/components/AiReportPanel";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { VerifyHashButton } from "@/components/VerifyHashButton";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 import { CommentsPanel } from "@/components/CommentsPanel";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
-import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
 const EvidenceMap = dynamic(() => import("@/components/evidence/EvidenceMap"), {
   ssr: false,
@@ -133,6 +134,44 @@ export default function AdminCaseDetailPage() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoadingCase, setIsLoadingCase] = useState(true);
   const [isLoadingAi, setIsLoadingAi] = useState(true);
+  const [isScanningAll, setIsScanningAll] = useState(false);
+  const [aiTrigger, setAiTrigger] = useState(0);
+
+  const handleRescanAll = async () => {
+    try {
+      setIsScanningAll(true);
+      const token = await getToken();
+      const res = await fetch(`/api/cases/${caseId}/rescan`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to trigger rescan");
+      }
+
+      toast({
+        title: "AI Scan Queued",
+        description: "AI analysis has been triggered for all files. Please wait.",
+      });
+
+      setIsLoadingAi(true);
+      setAiTrigger((prev) => prev + 1);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Could not trigger AI scan";
+      toast({
+        title: "Scan Failed",
+        description: errMsg,
+        variant: "destructive",
+      });
+    } finally {
+      setIsScanningAll(false);
+    }
+  };
   const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
   const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
@@ -195,7 +234,7 @@ export default function AdminCaseDetailPage() {
       }
     };
     load();
-  }, [caseId, getToken, toast]);
+  }, [caseId, getToken, toast, aiTrigger]);
 
   useEffect(() => {
     const load = async () => {
@@ -612,10 +651,32 @@ export default function AdminCaseDetailPage() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-2 rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-5 shadow-2xl relative overflow-hidden group"
         >
-          <div className="flex items-center gap-4">
-            <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
-            <div className="h-px flex-1 bg-dash-border" />
-            <span className="text-[10px] font-bold text-dash-muted/50 uppercase tracking-widest">{caseData.files.length} File{caseData.files.length !== 1 ? "s" : ""}</span>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 flex-1">
+              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
+              <div className="h-px flex-1 bg-dash-border" />
+            </div>
+            <div className="flex items-center gap-3 shrink-0">
+              <span className="text-[10px] font-bold text-dash-muted/50 uppercase tracking-widest">
+                {caseData.files.length} File{caseData.files.length !== 1 ? "s" : ""}
+              </span>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleRescanAll}
+                disabled={isScanningAll || isLoadingAi}
+                className="gap-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer py-1 h-7"
+              >
+                {isScanningAll ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Scanning Case...
+                  </>
+                ) : (
+                  "Rescan All Files"
+                )}
+              </Button>
+            </div>
           </div>
 
           {/* Accordion of reports per file */}
@@ -697,11 +758,22 @@ export default function AdminCaseDetailPage() {
                               </div>
                             </div>
                           )}
-                          {report ? (
-                            <AiReportPanel report={report} isLoading={false} />
-                          ) : (
-                            <AiReportPanel report={null} isLoading={true} />
-                          )}
+                          <div>
+                            {report ? (
+                              <AiReportPanel report={report} isLoading={false} />
+                            ) : isLoadingAi ? (
+                              <AiReportPanel report={null} isLoading={true} />
+                            ) : (
+                              <div className="py-6 text-center space-y-2">
+                                <p className="text-xs text-dash-muted uppercase tracking-wider font-bold">
+                                  No scan report available
+                                </p>
+                                <p className="text-xs text-dash-muted/70 leading-relaxed max-w-md mx-auto">
+                                  The AI analysis was not triggered or encountered an error. Click &quot;Rescan All Files&quot; above to scan.
+                                </p>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </motion.div>
                     )}
