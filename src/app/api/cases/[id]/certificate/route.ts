@@ -96,14 +96,14 @@ export async function GET(
     const aiReports = await AiReport.find({ caseId }).lean();
     const verdictDoc = await Verdict.findOne({ caseId }).lean();
 
-    // 8. Generate QR Code containing public verify URL
+    // 8. Generate QR Code containing public verify URL (using white theme friendly colors)
     const verifyUrl = `${getAppBaseUrl(req)}/verify/${caseId}`;
     let qrCodeDataUrl = null;
     try {
       qrCodeDataUrl = await QRCode.toDataURL(verifyUrl, {
         color: {
-          dark: "#00C9A7",
-          light: "#0D1B2A",
+          dark: "#0F172A",
+          light: "#FFFFFF",
         },
         margin: 1,
         width: 150,

@@ -80,7 +80,25 @@ export function getAppBaseUrl(request?: Request) {
   }
 
   if (request) {
-    return new URL(request.url).origin;
+    const urlObj = new URL(request.url);
+    const proto = request.headers.get("x-forwarded-proto") || urlObj.protocol.replace(":", "") || "https";
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+    
+    if (host) {
+      if (host.includes("vercel.app")) {
+        return "https://proofchain-web.vercel.app";
+      }
+      return `${proto}://${host}`;
+    }
+    
+    if (urlObj.host.includes("vercel.app")) {
+      return "https://proofchain-web.vercel.app";
+    }
+    return urlObj.origin;
+  }
+
+  if (process.env.VERCEL_URL) {
+    return "https://proofchain-web.vercel.app";
   }
 
   return "http://localhost:3000";

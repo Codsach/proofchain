@@ -8,23 +8,23 @@ import {
   Image,
 } from "@react-pdf/renderer";
 
-// Define the styles matching the app colors
+// Professional white theme styles for clean print output
 const styles = StyleSheet.create({
   page: {
-    backgroundColor: "#0D1B2A", // Dark theme background
-    color: "#FFFFFF",
+    backgroundColor: "#FFFFFF",
+    color: "#0F172A",
     fontFamily: "Helvetica",
-    paddingTop: 40,
-    paddingBottom: 60,
-    paddingHorizontal: 40,
-    fontSize: 9,
-    lineHeight: 1.5,
+    paddingTop: 30,
+    paddingBottom: 35,
+    paddingHorizontal: 30,
+    fontSize: 8.5,
+    lineHeight: 1.4,
   },
   headerContainer: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#1B2A4A",
-    paddingBottom: 15,
-    marginBottom: 20,
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#0F766E", // Professional teal accent
+    paddingBottom: 10,
+    marginBottom: 15,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -35,15 +35,15 @@ const styles = StyleSheet.create({
   brandText: {
     fontSize: 8,
     fontWeight: "bold",
-    color: "#00C9A7", // Accent color
+    color: "#0F766E",
     letterSpacing: 2,
     textTransform: "uppercase",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   certificateTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "#0F172A",
     letterSpacing: 0.5,
   },
   headerRight: {
@@ -51,33 +51,45 @@ const styles = StyleSheet.create({
   },
   headerLabel: {
     fontSize: 7,
-    color: "#8E9AAF",
+    color: "#64748B",
     textTransform: "uppercase",
     letterSpacing: 1,
   },
   headerVal: {
     fontSize: 8,
-    color: "#FFFFFF",
+    color: "#0F172A",
     fontFamily: "Courier",
   },
+  // Two column container for upper section layout
+  twoColContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 12,
+  },
+  leftCol: {
+    width: "49%",
+  },
+  rightCol: {
+    width: "49%",
+  },
   section: {
-    marginBottom: 20,
-    backgroundColor: "#152A42", // Card background
-    borderRadius: 8,
-    padding: 15,
+    marginBottom: 12,
+    backgroundColor: "#F8FAFC", // Light card background
+    borderRadius: 6,
+    padding: 10,
     borderWidth: 1,
-    borderColor: "#1B2A4A",
+    borderColor: "#E2E8F0",
   },
   sectionTitle: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "bold",
-    color: "#00C9A7",
+    color: "#0F766E",
     textTransform: "uppercase",
-    letterSpacing: 1.5,
-    marginBottom: 10,
+    letterSpacing: 1.2,
+    marginBottom: 6,
     borderBottomWidth: 1,
-    borderBottomColor: "#1B2A4A",
-    paddingBottom: 4,
+    borderBottomColor: "#E2E8F0",
+    paddingBottom: 3,
   },
   gridContainer: {
     flexDirection: "row",
@@ -86,168 +98,153 @@ const styles = StyleSheet.create({
   },
   gridCol: {
     width: "48%",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   label: {
-    fontSize: 7,
-    color: "#8E9AAF",
+    fontSize: 6.5,
+    color: "#64748B",
     textTransform: "uppercase",
     letterSpacing: 0.8,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   value: {
-    fontSize: 9,
-    color: "#FFFFFF",
+    fontSize: 8,
+    color: "#0F172A",
   },
   valueMono: {
-    fontSize: 8,
-    color: "#00C9A7",
+    fontSize: 7.5,
+    color: "#0F766E",
     fontFamily: "Courier",
   },
   badgeVerified: {
-    backgroundColor: "rgba(0, 201, 167, 0.1)",
+    backgroundColor: "rgba(15, 118, 110, 0.1)",
     borderWidth: 1,
-    borderColor: "#00C9A7",
+    borderColor: "#0F766E",
     borderRadius: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
     alignSelf: "flex-start",
   },
   badgeTextVerified: {
-    color: "#00C9A7",
-    fontSize: 8,
+    color: "#0F766E",
+    fontSize: 7.5,
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+  badgeRejected: {
+    backgroundColor: "rgba(225, 29, 72, 0.1)",
+    borderWidth: 1,
+    borderColor: "#E11D48",
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 1.5,
+    alignSelf: "flex-start",
+  },
+  badgeTextRejected: {
+    color: "#E11D48",
+    fontSize: 7.5,
     fontWeight: "bold",
     textTransform: "uppercase",
   },
   descriptionBlock: {
-    marginTop: 10,
-    paddingTop: 8,
+    marginTop: 6,
+    paddingTop: 4,
     borderTopWidth: 1,
-    borderTopColor: "#1B2A4A",
+    borderTopColor: "#E2E8F0",
   },
   descriptionText: {
-    color: "#8E9AAF",
-    fontSize: 8.5,
-    lineHeight: 1.4,
+    color: "#334155",
+    fontSize: 7.5,
+    lineHeight: 1.3,
   },
   // Evidence tables
   tableRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: "#1B2A4A",
-    paddingVertical: 6,
+    borderBottomColor: "#E2E8F0",
+    paddingVertical: 4,
     alignItems: "center",
   },
   tableHeader: {
-    backgroundColor: "#0D1B2A",
-    borderBottomWidth: 2,
-    borderBottomColor: "#00C9A7",
+    backgroundColor: "#F1F5F9",
+    borderBottomWidth: 1.5,
+    borderBottomColor: "#0F766E",
   },
   tableColName: {
-    width: "25%",
-    fontSize: 8,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+    width: "35%",
+    fontSize: 7.5,
+    color: "#0F172A",
   },
   tableColSize: {
     width: "15%",
-    fontSize: 8,
-    color: "#8E9AAF",
+    fontSize: 7.5,
+    color: "#64748B",
   },
   tableColHash: {
-    width: "60%",
-    fontSize: 7.5,
+    width: "50%",
+    fontSize: 7,
     fontFamily: "Courier",
-    color: "#FFFFFF",
+    color: "#0F172A",
   },
   tableTextHeader: {
-    fontSize: 7.5,
+    fontSize: 7,
     fontWeight: "bold",
-    color: "#8E9AAF",
+    color: "#475569",
     textTransform: "uppercase",
     letterSpacing: 0.5,
-  },
-  // AI Diagnostics styles
-  aiBreakdownRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 6,
-    paddingBottom: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#1B2A4A",
-  },
-  aiFileTitle: {
-    fontSize: 8.5,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-  aiScoreVal: {
-    fontSize: 8.5,
-    color: "#00C9A7",
-    fontFamily: "Courier",
-    fontWeight: "bold",
-  },
-  aiFindingsList: {
-    paddingLeft: 10,
-    marginTop: 4,
-  },
-  aiFindingItem: {
-    fontSize: 7.5,
-    color: "#8E9AAF",
-    marginBottom: 2,
   },
   // Footer QR block
   footerBlock: {
     position: "absolute",
-    bottom: 30,
-    left: 40,
-    right: 40,
+    bottom: 25,
+    left: 30,
+    right: 30,
     borderTopWidth: 1,
-    borderTopColor: "#1B2A4A",
-    paddingTop: 15,
+    borderTopColor: "#E2E8F0",
+    paddingTop: 10,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   footerLeft: {
-    width: "70%",
+    width: "75%",
   },
   disclaimer: {
-    fontSize: 6.5,
-    color: "#8E9AAF",
+    fontSize: 6,
+    color: "#64748B",
     fontStyle: "italic",
     marginBottom: 4,
+    lineHeight: 1.2,
   },
   verifyText: {
-    fontSize: 7,
-    color: "#00C9A7",
+    fontSize: 7.5,
+    color: "#0F766E",
     fontFamily: "Courier",
   },
   footerRight: {
-    width: "25%",
+    width: "20%",
     alignItems: "flex-end",
   },
   qrCode: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
     borderWidth: 1,
-    borderColor: "#1B2A4A",
+    borderColor: "#E2E8F0",
     borderRadius: 4,
   },
   pageNumber: {
-    fontSize: 7,
-    color: "#8E9AAF",
+    fontSize: 6.5,
+    color: "#64748B",
     textAlign: "center",
-    marginTop: 10,
+    marginTop: 6,
   },
   logo: {
-    width: 24,
-    height: 24,
-    marginRight: 8,
-    borderRadius: 6,
+    width: 22,
+    height: 22,
+    marginRight: 6,
+    borderRadius: 5,
     borderWidth: 1,
-    borderColor: "#00C9A7",
+    borderColor: "#0F766E",
   },
 });
 
@@ -342,11 +339,14 @@ export default function ForensicCertificate({
     return isNaN(d.getTime()) ? "N/A" : d.toLocaleDateString();
   };
 
+  // Limit artifacts shown to fit perfectly on a single page
+  const visibleFiles = caseData.files.slice(0, 3);
+  const extraFilesCount = caseData.files.length - visibleFiles.length;
+
   return (
     <Document>
-      {/* ── Page 1: Official Seal, Metadata, Verdict, Anchor ── */}
       <Page size="A4" style={styles.page}>
-        {/* Header */}
+        {/* Header Section */}
         <View style={styles.headerContainer}>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             {logoDataUrl && <Image src={logoDataUrl} style={styles.logo} />}
@@ -361,207 +361,153 @@ export default function ForensicCertificate({
           </View>
         </View>
 
-        {/* Section 1: Case Info */}
-        <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>I. Forensic Subject Info</Text>
-          <View style={styles.gridContainer}>
-            <View style={styles.gridCol}>
-              <Text style={styles.label}>Case ID</Text>
-              <Text style={styles.valueMono}>{caseData.caseId}</Text>
-            </View>
-            <View style={styles.gridCol}>
-              <Text style={styles.label}>Incident Type</Text>
-              <Text style={styles.value}>
-                {INCIDENT_LABELS[caseData.incidentType] || caseData.incidentType || "Other"}
-              </Text>
-            </View>
-            <View style={styles.gridCol}>
-              <Text style={styles.label}>Temporal Log (Origin)</Text>
-              <Text style={styles.value}>{formatDate(caseData.incidentDate)}</Text>
-            </View>
-            <View style={styles.gridCol}>
-              <Text style={styles.label}>Sealed Timestamp</Text>
-              <Text style={styles.value}>{formatDate(caseData.createdAt)}</Text>
-            </View>
-          </View>
-          <View style={styles.descriptionBlock}>
-            <Text style={styles.label}>Subject Profile & Description</Text>
-            <Text style={styles.descriptionText}>{caseData.description || "No description provided."}</Text>
-          </View>
-        </View>
-
-        {/* Section 2: Blockchain Security Anchor */}
-        <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>II. Cryptographic Security Anchor</Text>
-          <View style={styles.gridContainer}>
-            <View style={{ width: "100%", marginBottom: 8 }}>
-              <Text style={styles.label}>Blockchain Ledger Anchor (Polygon Network)</Text>
-              <Text style={styles.valueMono}>
-                {caseData.onChainTxHash || "Awaiting Cryptographic Anchor..."}
-              </Text>
-            </View>
-            {verdict && (
-              <View style={{ width: "100%" }}>
-                <Text style={styles.label}>Cryptographic Verdict Hash</Text>
-                <Text style={styles.valueMono}>{verdict.verdictHash}</Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Section 3: Final Official Verdict */}
-        <View style={styles.section} wrap={false}>
-          <Text style={styles.sectionTitle}>III. Validation Verdict</Text>
-          {verdict ? (
-            <View>
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 10 }}>
-                <View style={styles.badgeVerified}>
-                  <Text style={styles.badgeTextVerified}>{verdict.verdict}</Text>
+        {/* Section 1 & 2 in Two Columns */}
+        <View style={styles.twoColContainer}>
+          {/* Column 1: Case identification */}
+          <View style={styles.leftCol}>
+            <View style={styles.section} wrap={false}>
+              <Text style={styles.sectionTitle}>I. Subject Identification</Text>
+              <View style={styles.gridContainer}>
+                <View style={{ width: "100%", marginBottom: 6 }}>
+                  <Text style={styles.label}>Case ID</Text>
+                  <Text style={styles.valueMono}>{caseData.caseId}</Text>
                 </View>
-                <Text style={{ fontSize: 8, color: "#8E9AAF", marginLeft: 10 }}>
-                  Issued on {new Date(verdict.issuedAt).toLocaleString()}
+                <View style={styles.gridCol}>
+                  <Text style={styles.label}>Incident Type</Text>
+                  <Text style={styles.value}>
+                    {INCIDENT_LABELS[caseData.incidentType] || caseData.incidentType || "Other"}
+                  </Text>
+                </View>
+                <View style={styles.gridCol}>
+                  <Text style={styles.label}>Temporal Log</Text>
+                  <Text style={styles.value}>{formatDate(caseData.incidentDate)}</Text>
+                </View>
+              </View>
+              <View style={styles.descriptionBlock}>
+                <Text style={styles.label}>Subject Profile Description</Text>
+                <Text style={styles.descriptionText}>
+                  {caseData.description
+                    ? caseData.description.length > 120
+                      ? `${caseData.description.substring(0, 120)}...`
+                      : caseData.description
+                    : "No description provided."}
                 </Text>
               </View>
-              <Text style={styles.label}>Verification Explanation</Text>
-              <Text style={{ fontSize: 9, color: "#FFFFFF", fontStyle: "italic", lineHeight: 1.4, marginBottom: 8 }}>
-                "{verdict.reason}"
-              </Text>
-              <Text style={styles.label}>Verified By</Text>
-              <Text style={styles.value}>Authorized Forensic Analyst</Text>
-            </View>
-          ) : (
-            <Text style={{ color: "#8E9AAF", fontStyle: "italic" }}>
-              Official verification review is currently pending.
-            </Text>
-          )}
-        </View>
-
-        {/* Footer */}
-        <View style={styles.footerBlock}>
-          <View style={styles.footerLeft}>
-            <Text style={styles.disclaimer}>
-              DISCLAIMER: NOT A COURT-ADMISSIBLE FORENSIC REPORT. This certificate verifies cryptographic custody proof of registered digital assets anchored on the Polygon blockchain ledger.
-            </Text>
-            <Text style={styles.label}>Public Verification URL</Text>
-            <Text style={styles.verifyText}>{verifyUrl}</Text>
-          </View>
-          <View style={styles.footerRight}>
-            {qrCodeDataUrl ? (
-              <Image src={qrCodeDataUrl} style={styles.qrCode} />
-            ) : (
-              <Text style={{ fontSize: 6, color: "#8E9AAF" }}>QR Code Pending</Text>
-            )}
-          </View>
-        </View>
-        <Text
-          style={styles.pageNumber}
-          render={({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}`}
-          fixed
-        />
-      </Page>
-
-      {/* ── Page 2: Evidence Modules and AI Threat Scan ── */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.headerContainer}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            {logoDataUrl && <Image src={logoDataUrl} style={styles.logo} />}
-            <View style={styles.headerLeft}>
-              <Text style={styles.brandText}>ProofChain Secure Anchor</Text>
-              <Text style={styles.certificateTitle}>Technical Appendix</Text>
             </View>
           </View>
-          <View style={styles.headerRight}>
-            <Text style={styles.headerLabel}>Subject UID</Text>
-            <Text style={styles.headerVal}>{caseData.caseId.substring(0, 18).toUpperCase()}</Text>
+
+          {/* Column 2: Cryptographic Custody Anchor */}
+          <View style={styles.rightCol}>
+            <View style={styles.section} wrap={false}>
+              <Text style={styles.sectionTitle}>II. Blockchain Anchor & Diagnostics</Text>
+              <View style={{ marginBottom: 6 }}>
+                <Text style={styles.label}>Ledger Anchor (Polygon)</Text>
+                <Text style={styles.valueMono}>
+                  {caseData.onChainTxHash
+                    ? `${caseData.onChainTxHash.substring(0, 20)}...${caseData.onChainTxHash.substring(caseData.onChainTxHash.length - 10)}`
+                    : "Awaiting Cryptographic Anchor..."}
+                </Text>
+              </View>
+              {verdict && (
+                <View style={{ marginBottom: 6 }}>
+                  <Text style={styles.label}>Verdict Hash</Text>
+                  <Text style={styles.valueMono}>
+                    {verdict.verdictHash
+                      ? `${verdict.verdictHash.substring(0, 20)}...${verdict.verdictHash.substring(verdict.verdictHash.length - 10)}`
+                      : "N/A"}
+                  </Text>
+                </View>
+              )}
+              <View style={styles.gridContainer}>
+                <View style={styles.gridCol}>
+                  <Text style={styles.label}>AI Threat Score</Text>
+                  <Text style={[styles.value, { fontWeight: "bold", color: caseData.overallTamperScore !== null && caseData.overallTamperScore > 50 ? "#E11D48" : "#0F766E" }]}>
+                    {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "N/A"}
+                  </Text>
+                </View>
+                <View style={styles.gridCol}>
+                  <Text style={styles.label}>AI Risk Level</Text>
+                  <Text style={[styles.value, { fontWeight: "bold", textTransform: "uppercase", color: caseData.overallRiskLevel === "high" ? "#E11D48" : caseData.overallRiskLevel === "medium" ? "#D97706" : "#0F766E" }]}>
+                    {caseData.overallRiskLevel || "N/A"}
+                  </Text>
+                </View>
+              </View>
+            </View>
           </View>
         </View>
 
-        {/* Section 4: Evidence Integrity Log */}
+        {/* Section III: Evidence Integrity Log */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>IV. Evidence Integrity & Chain log</Text>
+          <Text style={styles.sectionTitle}>III. Evidence Artifacts Integrity</Text>
           
           {/* Table Header */}
           <View style={[styles.tableRow, styles.tableHeader]}>
-            <Text style={[styles.tableColName, styles.tableTextHeader]}>File Artifact</Text>
+            <Text style={[styles.tableColName, styles.tableTextHeader]}>File Name</Text>
             <Text style={[styles.tableColSize, styles.tableTextHeader]}>Size</Text>
-            <Text style={[styles.tableColHash, styles.tableTextHeader]}>SHA-256 Digital Fingerprint / IPFS CID</Text>
+            <Text style={[styles.tableColHash, styles.tableTextHeader]}>SHA-256 Digital Fingerprint</Text>
           </View>
 
           {/* Table Rows */}
-          {caseData.files.map((file, idx) => (
+          {visibleFiles.map((file, idx) => (
             <View key={file.fileId || idx} style={styles.tableRow} wrap={false}>
-              <Text style={styles.tableColName}>{file.originalName}</Text>
+              <Text style={styles.tableColName}>
+                {file.originalName.length > 25 ? `${file.originalName.substring(0, 22)}...` : file.originalName}
+              </Text>
               <Text style={styles.tableColSize}>{formatBytes(file.sizeBytes)}</Text>
-              <View style={styles.tableColHash}>
-                <Text style={{ fontSize: 6.5, fontFamily: "Courier", color: "#00C9A7" }}>
-                  SHA256: {file.sha256Hash}
-                </Text>
-                <Text style={{ fontSize: 6.5, fontFamily: "Courier", color: "#8E9AAF", marginTop: 2 }}>
-                  IPFS: {file.ipfsCid}
-                </Text>
-              </View>
+              <Text style={styles.tableColHash}>
+                {file.sha256Hash}
+              </Text>
             </View>
           ))}
+          
+          {extraFilesCount > 0 && (
+            <View style={styles.tableRow} wrap={false}>
+              <Text style={{ fontSize: 7, color: "#64748B", fontStyle: "italic", width: "100%" }}>
+                + {extraFilesCount} additional file(s) registered under this cryptographic record (scan QR for full list).
+              </Text>
+            </View>
+          )}
+          
+          {caseData.files.length === 0 && (
+            <View style={styles.tableRow} wrap={false}>
+              <Text style={{ fontSize: 7.5, color: "#64748B", fontStyle: "italic" }}>
+                No file evidence registered in this case.
+              </Text>
+            </View>
+          )}
         </View>
 
-        {/* Section 5: AI Analysis Breakdown */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>V. Neural Threat Scan Summary</Text>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 15 }}>
+        {/* Section IV: Official Verification Verdict */}
+        <View style={styles.section} wrap={false}>
+          <Text style={styles.sectionTitle}>IV. Official Validation Verdict</Text>
+          {verdict ? (
             <View>
-              <Text style={styles.label}>Overall Tamper Score</Text>
-              <Text style={{ fontSize: 16, fontWeight: "bold", color: "#E63946" }}>
-                {caseData.overallTamperScore !== null ? `${caseData.overallTamperScore}/100` : "N/A"}
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 6 }}>
+                <View style={verdict.verdict === "verified" ? styles.badgeVerified : styles.badgeRejected}>
+                  <Text style={verdict.verdict === "verified" ? styles.badgeTextVerified : styles.badgeTextRejected}>
+                    {verdict.verdict === "verified" ? "VERIFIED PROTOCOL" : "REJECTED"}
+                  </Text>
+                </View>
+                <Text style={{ fontSize: 7.5, color: "#64748B", marginLeft: 8 }}>
+                  Issued: {new Date(verdict.issuedAt).toLocaleString()}
+                </Text>
+              </View>
+              <Text style={styles.label}>Verdict Statement</Text>
+              <Text style={{ fontSize: 7.5, color: "#334155", fontStyle: "italic", lineHeight: 1.3, marginBottom: 4 }}>
+                "{verdict.reason.length > 200 ? `${verdict.reason.substring(0, 200)}...` : verdict.reason}"
               </Text>
-            </View>
-            <View>
-              <Text style={styles.label}>Overall Risk Classification</Text>
-              <Text style={{ fontSize: 14, fontWeight: "bold", color: "#00C9A7", textTransform: "uppercase" }}>
-                {caseData.overallRiskLevel || "N/A"}
+              <Text style={{ fontSize: 7, color: "#64748B" }}>
+                Verified By: <Text style={{ color: "#0F172A", fontWeight: "bold" }}>Authorized Forensic Analyst</Text>
               </Text>
-            </View>
-          </View>
-
-          {/* AI Reports details */}
-          {aiReports && aiReports.length > 0 ? (
-            <View>
-              <Text style={[styles.label, { marginBottom: 6 }]}>Scan Details Per File Artifact:</Text>
-              {aiReports.map((report, idx) => {
-                const associatedFile = caseData.files.find((f) => f.fileId === report.fileId);
-                return (
-                  <View key={report.fileId || idx} style={{ marginBottom: 10 }} wrap={false}>
-                    <View style={styles.aiBreakdownRow}>
-                      <Text style={styles.aiFileTitle}>
-                        {associatedFile ? associatedFile.originalName : `File ID: ${report.fileId.substring(0, 8)}...`}
-                      </Text>
-                      <Text style={styles.aiScoreVal}>Tamper Score: {report.tamperScore}/100 ({report.riskLevel.toUpperCase()})</Text>
-                    </View>
-                    
-                    {report.geminiResult && report.geminiResult.findings && report.geminiResult.findings.length > 0 ? (
-                      <View style={styles.aiFindingsList}>
-                        {report.geminiResult.findings.slice(0, 3).map((finding, fIdx) => (
-                          <Text key={fIdx} style={styles.aiFindingItem}>
-                            • {finding}
-                          </Text>
-                        ))}
-                      </View>
-                    ) : (
-                      <Text style={{ fontSize: 7.5, color: "#8E9AAF", fontStyle: "italic", marginLeft: 10 }}>
-                        No anomalies flagged in metadata scanner.
-                      </Text>
-                    )}
-                  </View>
-                );
-              })}
             </View>
           ) : (
-            <Text style={{ color: "#8E9AAF", fontStyle: "italic" }}>
-              No automated threat scan details available.
+            <Text style={{ color: "#64748B", fontStyle: "italic", fontSize: 7.5 }}>
+              Forensic validation review is currently pending.
             </Text>
           )}
         </View>
 
-        {/* Footer */}
+        {/* Footer Area */}
         <View style={styles.footerBlock}>
           <View style={styles.footerLeft}>
             <Text style={styles.disclaimer}>
@@ -574,7 +520,7 @@ export default function ForensicCertificate({
             {qrCodeDataUrl ? (
               <Image src={qrCodeDataUrl} style={styles.qrCode} />
             ) : (
-              <Text style={{ fontSize: 6, color: "#8E9AAF" }}>QR Code Pending</Text>
+              <Text style={{ fontSize: 6, color: "#64748B" }}>QR Code Pending</Text>
             )}
           </View>
         </View>
