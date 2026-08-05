@@ -602,156 +602,156 @@ export default function AdminCaseDetailPage() {
         )}
       </motion.div>
 
-      {/* ── Row 3: Neural Review (2/3) + Timeline & Comments (1/3) ───────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
-        {/* Neural Review — 2/3 */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="lg:col-span-2 rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-5 shadow-2xl relative overflow-hidden group"
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 flex-1">
-              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
-              <div className="h-px flex-1 bg-dash-border" />
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <span className="text-[10px] font-bold text-dash-muted/50 uppercase tracking-widest">
-                {caseData.files.length} File{caseData.files.length !== 1 ? "s" : ""}
-              </span>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={handleRescanAll}
-                disabled={isScanningAll || isLoadingAi}
-                className="gap-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer py-1 h-7"
-              >
-                {isScanningAll ? (
-                  <>
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Scanning Case...
-                  </>
-                ) : (
-                  "Rescan All Files"
-                )}
-              </Button>
-            </div>
+      {/* ── Row 3: Neural Review (Full Width) ────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="w-full rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-5 shadow-2xl relative overflow-hidden group"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
+            <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
+            <div className="h-px flex-1 bg-dash-border" />
           </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-[10px] font-bold text-dash-muted/50 uppercase tracking-widest">
+              {caseData.files.length} File{caseData.files.length !== 1 ? "s" : ""}
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRescanAll}
+              disabled={isScanningAll || isLoadingAi}
+              className="gap-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer py-1 h-7"
+            >
+              {isScanningAll ? (
+                <>
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Scanning Case...
+                </>
+              ) : (
+                "Rescan All Files"
+              )}
+            </Button>
+          </div>
+        </div>
 
-          {/* Accordion of reports per file */}
-          <div className="space-y-3">
-            {caseData.files.map((file) => {
-              const report = aiReports.find((r) => r.fileId === file.fileId);
-              const isOpen = expandedFileId === file.fileId;
-              return (
-                <div
-                  key={file.fileId}
-                  className="rounded-xl border border-dash-border bg-dash-card/50 overflow-hidden transition-all duration-300"
+        {/* Accordion of reports per file */}
+        <div className="space-y-3">
+          {caseData.files.map((file) => {
+            const report = aiReports.find((r) => r.fileId === file.fileId);
+            const isOpen = expandedFileId === file.fileId;
+            return (
+              <div
+                key={file.fileId}
+                className="rounded-xl border border-dash-border bg-dash-card/50 overflow-hidden transition-all duration-300"
+              >
+                {/* Header */}
+                <button
+                  type="button"
+                  onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
+                  className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover transition-colors cursor-pointer focus:outline-none"
                 >
-                  {/* Header */}
-                  <button
-                    type="button"
-                    onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
-                    className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover transition-colors cursor-pointer focus:outline-none"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
-                        {file.originalName}
-                      </p>
-                      <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
-                        {file.mimeType}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      {report ? (
-                        <TamperScoreBadge score={report.tamperScore} />
-                      ) : isLoadingAi ? (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                          Scanning
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted/70 uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-dash-muted/30" />
-                          Pending
-                        </span>
-                      )}
-                      {isOpen ? (
-                        <ChevronUp className="w-4 h-4 text-dash-muted" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-dash-muted" />
-                      )}
-                    </div>
-                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
+                      {file.originalName}
+                    </p>
+                    <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
+                      {file.mimeType}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {report ? (
+                      <TamperScoreBadge score={report.tamperScore} />
+                    ) : isLoadingAi ? (
+                      <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                        Scanning
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted/70 uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-dash-muted/30" />
+                        Pending
+                      </span>
+                    )}
+                    {isOpen ? (
+                      <ChevronUp className="w-4 h-4 text-dash-muted" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-dash-muted" />
+                    )}
+                  </div>
+                </button>
 
-                  {/* Body */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="border-t border-dash-border p-5 bg-dash-bg/40 space-y-4">
-                          {/* GPS Capture Record */}
-                          {file.gpsLat !== null && file.gpsLng !== null && (
-                            <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 space-y-2">
-                              <p className="text-[9px] font-bold text-emerald-400/60 uppercase tracking-widest">GPS Capture Record</p>
-                              <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px]">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Latitude</span>
-                                  <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}°</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Longitude</span>
-                                  <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}°</span>
-                                </div>
-                                {file.gpsAccuracy != null && (
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Accuracy</span>
-                                    <span className="font-mono text-emerald-300/90">±{Math.round(file.gpsAccuracy)}m</span>
-                                  </div>
-                                )}
+                {/* Body */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-dash-border p-5 bg-dash-bg/40 space-y-4">
+                        {/* GPS Capture Record */}
+                        {file.gpsLat !== null && file.gpsLng !== null && (
+                          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 space-y-2">
+                            <p className="text-[9px] font-bold text-emerald-400/60 uppercase tracking-widest">GPS Capture Record</p>
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px]">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Latitude</span>
+                                <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}°</span>
                               </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Longitude</span>
+                                <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}°</span>
+                              </div>
+                              {file.gpsAccuracy != null && (
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Accuracy</span>
+                                  <span className="font-mono text-emerald-300/90">±{Math.round(file.gpsAccuracy)}m</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        <div>
+                          {report ? (
+                            <AiReportPanel report={report} isLoading={false} />
+                          ) : isLoadingAi ? (
+                            <AiReportPanel report={null} isLoading={true} />
+                          ) : (
+                            <div className="py-6 text-center space-y-2">
+                              <p className="text-xs text-dash-muted uppercase tracking-wider font-bold">
+                                No scan report available
+                              </p>
+                              <p className="text-xs text-dash-muted/70 leading-relaxed max-w-md mx-auto">
+                                The AI analysis was not triggered or encountered an error. Click &quot;Rescan All Files&quot; above to scan.
+                              </p>
                             </div>
                           )}
-                          <div>
-                            {report ? (
-                              <AiReportPanel report={report} isLoading={false} />
-                            ) : isLoadingAi ? (
-                              <AiReportPanel report={null} isLoading={true} />
-                            ) : (
-                              <div className="py-6 text-center space-y-2">
-                                <p className="text-xs text-dash-muted uppercase tracking-wider font-bold">
-                                  No scan report available
-                                </p>
-                                <p className="text-xs text-dash-muted/70 leading-relaxed max-w-md mx-auto">
-                                  The AI analysis was not triggered or encountered an error. Click &quot;Rescan All Files&quot; above to scan.
-                                </p>
-                              </div>
-                            )}
-                          </div>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Right column: Timeline — 1/3 */}
-        <div className="flex flex-col gap-6">
-          {!isLoadingTransfers && !isLoadingCase && (
-            <CustodyTimeline nodes={timelineNodes} className="flex-1" />
-          )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      </motion.div>
+
+      {/* ── Row 4: Chain of Custody (Full Width) ─────────────────────────── */}
+      {!isLoadingTransfers && !isLoadingCase && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <CustodyTimeline nodes={timelineNodes} className="w-full" />
+        </motion.div>
+      )}
 
       {/* ── Row 4: Terminal Verdict (full-width, conditional) ─────────────── */}
       <AnimatePresence>

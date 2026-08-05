@@ -31,6 +31,7 @@ import {
   Fingerprint,
   FolderPlus,
   History,
+  Link2,
 } from "lucide-react";
 
 
@@ -39,12 +40,14 @@ const navItems = {
     { label: "My Cases", href: "/investigator", icon: Search },
     { label: "New Case", href: "/investigator/cases/new", icon: FolderPlus },
     { label: "Submit Evidence", href: "/investigator/submit", icon: ShieldCheck },
+    { label: "Custody Chain", href: "/investigator/custody", icon: Link2 },
     { label: "Case History", href: "/history", icon: History },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
   ],
   analyst: [
     { label: "Case Queue", href: "/analyst", icon: Activity },
+    { label: "Custody Chain", href: "/analyst/custody", icon: Link2 },
     { label: "Case History", href: "/history", icon: History },
     { label: "Profile", href: "/profile", icon: User },
     { label: "Settings", href: "/settings", icon: Settings },
@@ -53,6 +56,7 @@ const navItems = {
     { label: "Dashboard", href: "/admin", icon: Hexagon },
     { label: "New Case", href: "/admin/cases/new", icon: FolderPlus },
     { label: "Cases", href: "/admin/cases", icon: Briefcase },
+    { label: "Custody Chain", href: "/admin/custody", icon: Link2 },
     { label: "Case History", href: "/history", icon: History },
     { label: "Users", href: "/admin/users", icon: Users },
     { label: "Audit Log", href: "/admin/audit", icon: FileText },
