@@ -7,6 +7,7 @@ import Image from "next/image";
 import QRCode from "qrcode";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 import { motion, AnimatePresence } from "framer-motion";
+import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { 
   ShieldCheck, 
   ArrowLeft, 
@@ -399,7 +400,7 @@ export default function PublicVerifyPage() {
                   <td className="py-3.5 font-mono break-all text-[var(--dash-text)] flex items-center gap-2">
                     <span className="text-[var(--dash-text)]">{data.ipfsCid}</span>
                     <a
-                      href={`https://${data.ipfsCid}.ipfs.w3s.link/`}
+                      href={getIpfsGatewayUrl(data.ipfsCid)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors"

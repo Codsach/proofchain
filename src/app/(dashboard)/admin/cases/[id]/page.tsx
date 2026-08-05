@@ -15,6 +15,8 @@ import dynamic from "next/dynamic";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
 import { CaseChatWidget } from "@/components/CaseChatWidget";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
+import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
+import { EvidencePreviewDialog } from "@/components/evidence/EvidencePreviewDialog";
 import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
 const EvidenceMap = dynamic(() => import("@/components/evidence/EvidenceMap"), {
@@ -175,7 +177,7 @@ export default function AdminCaseDetailPage() {
   const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
   const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
-  const [previewFileId, setPreviewFileId] = useState<string | null>(null);
+  const [previewFile, setPreviewFile] = useState<FileRecord | null>(null);
 
   useEffect(() => {
     getToken().then(setToken);
@@ -524,14 +526,13 @@ export default function AdminCaseDetailPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
-                    onClick={() => setPreviewFileId(previewFileId === file.fileId ? null : file.fileId)}
-                    className="text-[9px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-2.5 py-1 rounded transition-colors flex items-center gap-1"
+                    onClick={() => setPreviewFile(file)}
+                    className="text-[9px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-2.5 py-1 rounded transition-colors flex items-center gap-1 cursor-pointer"
                   >
                     <span>Preview</span>
-                    <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${previewFileId === file.fileId ? "rotate-180" : ""}`} />
                   </button>
                   <a
-                    href={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
+                    href={getIpfsGatewayUrl(file.ipfsCid)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-dash-accent/60 hover:text-dash-accent transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded"
@@ -579,47 +580,7 @@ export default function AdminCaseDetailPage() {
                 </div>
               </div>
 
-              {/* Collapsible Dropdown Preview Container */}
-              <AnimatePresence>
-                {previewFileId === file.fileId && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden pt-2"
-                  >
-                    {file.mimeType.startsWith("image/") && (
-                      <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1 animate-in fade-in duration-300">
-                        <img
-                          src={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
-                          alt={file.originalName}
-                          className="w-full h-auto max-h-[300px] object-contain rounded-lg"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                    {file.mimeType.startsWith("video/") && (
-                      <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1 animate-in fade-in duration-300">
-                        <video
-                          src={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
-                          controls
-                          className="w-full h-auto max-h-[300px] rounded-lg"
-                        />
-                      </div>
-                    )}
-                    {file.mimeType === "application/pdf" && (
-                      <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1 h-[400px] animate-in fade-in duration-300">
-                        <iframe
-                          src={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
-                          className="w-full h-full rounded-lg"
-                          title={file.originalName}
-                        />
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+
             </motion.div>
           ))}
         </div>
@@ -834,6 +795,11 @@ export default function AdminCaseDetailPage() {
       </AnimatePresence>
 
       <CaseChatWidget caseId={caseId} />
+      <EvidencePreviewDialog
+        open={previewFile !== null}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+      />
     </div>
   );
 }
