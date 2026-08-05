@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
-import { CommentsPanel } from "@/components/CommentsPanel";
+import { CaseChatWidget } from "@/components/CaseChatWidget";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
 import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
@@ -725,8 +725,6 @@ export default function AnalystCaseReviewPage() {
               </div>
             </div>
           </motion.div>
-
-          <CommentsPanel caseId={caseId} />
         </div>
       </div>
 
@@ -736,6 +734,8 @@ export default function AnalystCaseReviewPage() {
         onSubmit={handleVerdict}
         isLoading={isSubmittingVerdict}
       />
+
+      <CaseChatWidget caseId={caseId} />
     </div>
   );
 }

@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
-import { CommentsPanel } from "@/components/CommentsPanel";
+import { CaseChatWidget } from "@/components/CaseChatWidget";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
 import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
@@ -293,7 +293,7 @@ export default function AdminCaseDetailPage() {
         <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center">
           <p className="text-dash-muted text-sm font-medium">Case subject not found in secure storage.</p>
           <Link href="/admin/cases" className="text-dash-accent text-xs font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
-            â† Return to Archives
+            ← Return to Archives
           </Link>
         </div>
       </div>
@@ -323,7 +323,7 @@ export default function AdminCaseDetailPage() {
         id: t._id,
         type: "transfer",
         title: "Custody Hand-off",
-        subtitle: `${t.fromUserId?.fullName || "Custodian"} âž” ${t.toUserId?.fullName || "Custodian"}`,
+        subtitle: `${t.fromUserId?.fullName || "Custodian"} ➔ ${t.toUserId?.fullName || "Custodian"}`,
         description: t.reason,
         timestamp: t.transferredAt,
         txHash: t.onChainTxHash,
@@ -354,7 +354,7 @@ export default function AdminCaseDetailPage() {
   return (
     <div className="w-full space-y-6 pb-10 overflow-x-hidden">
 
-      {/* â”€â”€ Page Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Page Header ──────────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
@@ -385,15 +385,15 @@ export default function AdminCaseDetailPage() {
               download
               className="flex items-center gap-2 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg hover:bg-emerald-500/10 transition-colors text-xs font-bold uppercase tracking-wider h-11"
             >
-              â†“ Download Forensic Certificate
+              ↓ Download Forensic Certificate
             </motion.a>
           )}
         </div>
       </motion.div>
 
-      {/* â”€â”€ Row 1: Case Info + Overall Risk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 1: Case Info + Overall Risk ──────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Case Details â€” 2/3 */}
+        {/* Case Details — 2/3 */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -418,7 +418,7 @@ export default function AdminCaseDetailPage() {
           </div>
         </motion.div>
 
-        {/* Overall Risk Score â€” 1/3 */}
+        {/* Overall Risk Score — 1/3 */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -493,7 +493,7 @@ export default function AdminCaseDetailPage() {
         </motion.div>
       </div>
 
-      {/* â”€â”€ Row 2: Evidence Files (full-width) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 2: Evidence Files (full-width) ───────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -519,7 +519,7 @@ export default function AdminCaseDetailPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-dash-text truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
-                  <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1">{file.mimeType} Â· {formatFileSize(file.sizeBytes)}</p>
+                  <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
@@ -641,10 +641,10 @@ export default function AdminCaseDetailPage() {
         )}
       </motion.div>
 
-      {/* â”€â”€ Row 3: Neural Review (2/3) + Timeline & Comments (1/3) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 3: Neural Review (2/3) + Timeline & Comments (1/3) ───────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-        {/* Neural Review â€” 2/3 */}
+        {/* Neural Review — 2/3 */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -743,16 +743,16 @@ export default function AdminCaseDetailPage() {
                               <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px]">
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Latitude</span>
-                                  <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}Â°</span>
+                                  <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}°</span>
                                 </div>
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Longitude</span>
-                                  <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}Â°</span>
+                                  <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}°</span>
                                 </div>
                                 {file.gpsAccuracy != null && (
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Accuracy</span>
-                                    <span className="font-mono text-emerald-300/90">Â±{Math.round(file.gpsAccuracy)}m</span>
+                                    <span className="font-mono text-emerald-300/90">±{Math.round(file.gpsAccuracy)}m</span>
                                   </div>
                                 )}
                               </div>
@@ -784,16 +784,15 @@ export default function AdminCaseDetailPage() {
           </div>
         </motion.div>
 
-        {/* Right column: Timeline + Comments â€” 1/3 */}
+        {/* Right column: Timeline — 1/3 */}
         <div className="flex flex-col gap-6">
           {!isLoadingTransfers && !isLoadingCase && (
             <CustodyTimeline nodes={timelineNodes} className="flex-1" />
           )}
-          <CommentsPanel caseId={caseId} className="flex-1" />
         </div>
       </div>
 
-      {/* â”€â”€ Row 4: Terminal Verdict (full-width, conditional) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 4: Terminal Verdict (full-width, conditional) ─────────────── */}
       <AnimatePresence>
         {!isLoadingVerdict && verdict && (
           <motion.div
@@ -834,6 +833,7 @@ export default function AdminCaseDetailPage() {
         )}
       </AnimatePresence>
 
+      <CaseChatWidget caseId={caseId} />
     </div>
   );
 }
