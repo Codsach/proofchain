@@ -67,6 +67,7 @@ async def analyse_evidence(
     office_result = None
     media_result = None
     ai_gen_result = None
+    gemini_result = None
     with tempfile.NamedTemporaryFile(
         delete=False, suffix=_ext_from_mime(analysis_mime)
     ) as tmp:
@@ -96,27 +97,25 @@ async def analyse_evidence(
         is_media = analysis_mime.startswith("video/") or analysis_mime.startswith("audio/")
         if is_media:
             media_result = analyse_media(tmp_path)
+
+        # ── 2. Gemini Vision & Local AI-Generated check (images and videos, based on detected MIME) ──
+        if analysis_mime.startswith("image/"):
+            gemini_result = analyse_image(file_bytes, analysis_mime)
+            ai_gen_result = detect_ai_image(file_bytes)
+        elif analysis_mime.startswith("video/"):
+            gemini_result = analyse_video(tmp_path, analysis_mime)
+        else:
+            from gemini import GeminiResult
+            gemini_result = GeminiResult(
+                manipulation_likelihood="inconclusive",
+                findings=["Non-image file — visual analysis not applicable"],
+                confidence="inconclusive",
+            )
     finally:
         try:
             os.unlink(tmp_path)
         except OSError:
             pass
-
-    # ── 2. Gemini Vision & Local AI-Generated check (images and videos, based on detected MIME) ──
-    gemini_result = None
-    ai_gen_result = None
-    if analysis_mime.startswith("image/"):
-        gemini_result = analyse_image(file_bytes, analysis_mime)
-        ai_gen_result = detect_ai_image(file_bytes)
-    elif analysis_mime.startswith("video/"):
-        gemini_result = analyse_video(tmp_path, analysis_mime)
-    else:
-        from gemini import GeminiResult
-        gemini_result = GeminiResult(
-            manipulation_likelihood="inconclusive",
-            findings=["Non-image file — visual analysis not applicable"],
-            confidence="inconclusive",
-        )
 
     # ── 3. PDF anomalies check (PDFs only, based on detected MIME) ────────────
     is_pdf_no_text_layer = False
@@ -265,7 +264,11 @@ async def analyse_evidence(
     )
 
     return JSONResponse(
-        {"message": "Analysis complete", "tamperScore": score_result.score}
+        {
+            "message": "Analysis complete",
+            "tamperScore": score_result.score,
+            "report": ai_report
+        }
     )
 
 

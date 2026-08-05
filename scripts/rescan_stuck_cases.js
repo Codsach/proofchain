@@ -129,6 +129,7 @@ async function main() {
       formData.append("mime_type", f.mimeType);
       formData.append("has_gps", hasGps ? "true" : "false");
 
+      let lastAnalysedReport = null;
       try {
         const analyseRes = await fetch(`${FASTAPI_URL}/analyse`, {
           method: "POST",
@@ -145,6 +146,9 @@ async function main() {
           if (resData.tamperScore !== undefined) {
             tamperScores.push(resData.tamperScore);
           }
+          if (resData.report) {
+            lastAnalysedReport = resData.report;
+          }
         }
       } catch (err) {
         console.error(`  Error calling FastAPI analysis endpoint: ${err.message}`);
@@ -153,26 +157,43 @@ async function main() {
       // Query if report was created by callback or create if needed
       report = await AiReport.findOne({ caseId: c.caseId, fileId: f.fileId });
       if (!report) {
-        // Create fallback report directly if Next.js callback was offline
-        console.log(`  Creating AiReport directly in MongoDB...`);
-        report = await AiReport.create({
-          caseId: c.caseId,
-          fileId: f.fileId,
-          analysedAt: new Date(),
-          exifData: {},
-          geminiResult: {
-            manipulation_likelihood: "low",
-            ai_generation_likelihood: "low",
-            findings: ["Automated recovery scan complete"],
-            confidence: "medium"
-          },
-          aiDetection: null,
-          tamperScore: tamperScores[tamperScores.length - 1] ?? 10,
-          riskLevel: (tamperScores[tamperScores.length - 1] ?? 10) > 60 ? "high" : (tamperScores[tamperScores.length - 1] ?? 10) > 30 ? "medium" : "low",
-          scoreBreakdown: {},
-          plainNotesSummary: "Analysis completed via recovery scan",
-          status: "complete",
-        });
+        if (lastAnalysedReport) {
+          console.log(`  Creating actual AiReport directly in MongoDB from FastAPI response...`);
+          report = await AiReport.create({
+            caseId: lastAnalysedReport.caseId,
+            fileId: lastAnalysedReport.fileId,
+            analysedAt: lastAnalysedReport.analysedAt ? new Date(lastAnalysedReport.analysedAt) : new Date(),
+            exifData: lastAnalysedReport.exif || {},
+            geminiResult: lastAnalysedReport.gemini || {},
+            aiDetection: lastAnalysedReport.aiDetection || null,
+            tamperScore: lastAnalysedReport.tamperScore,
+            riskLevel: lastAnalysedReport.riskLevel || "low",
+            scoreBreakdown: lastAnalysedReport.scoreBreakdown || {},
+            plainNotesSummary: lastAnalysedReport.plainNotesSummary || "",
+            status: lastAnalysedReport.status || "complete",
+          });
+        } else {
+          // Create fallback report directly if Next.js callback was offline
+          console.log(`  Creating fallback AiReport directly in MongoDB...`);
+          report = await AiReport.create({
+            caseId: c.caseId,
+            fileId: f.fileId,
+            analysedAt: new Date(),
+            exifData: {},
+            geminiResult: {
+              manipulation_likelihood: "low",
+              ai_generation_likelihood: "low",
+              findings: ["Automated recovery scan complete"],
+              confidence: "medium"
+            },
+            aiDetection: null,
+            tamperScore: tamperScores[tamperScores.length - 1] ?? 10,
+            riskLevel: (tamperScores[tamperScores.length - 1] ?? 10) > 60 ? "high" : (tamperScores[tamperScores.length - 1] ?? 10) > 30 ? "medium" : "low",
+            scoreBreakdown: {},
+            plainNotesSummary: "Analysis completed via recovery scan",
+            status: "complete",
+          });
+        }
       }
 
       if (report) {

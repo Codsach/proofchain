@@ -130,5 +130,24 @@ class TestExifForensics(unittest.TestCase):
         self.assertEqual(score_res.score, 10)
         self.assertIn("uncalibrated_color_space", score_res.score_breakdown)
 
+    def test_error_path_sanitization(self):
+        from scorer import sanitize_error_message
+        err1 = "C:\\Users\\rsach\\AppData\\Local\\Temp\\tmpymhpnuh8.mp4 is not a valid file path."
+        sanitized1 = sanitize_error_message(err1)
+        self.assertEqual(sanitized1, "tmpymhpnuh8.mp4 is not a valid file path.")
+
+        err2 = "/tmp/some_dir/file.png is not a valid file path."
+        sanitized2 = sanitize_error_message(err2)
+        self.assertEqual(sanitized2, "file.png is not a valid file path.")
+
+        # Test within plain notes
+        self.gemini.error = err1
+        self.result.error = err2
+        score_res = compute_score(self.result, self.gemini)
+        self.assertNotIn("C:\\Users\\rsach\\AppData\\Local\\Temp", score_res.plain_notes)
+        self.assertNotIn("/tmp/some_dir", score_res.plain_notes)
+        self.assertIn("tmpymhpnuh8.mp4", score_res.plain_notes)
+        self.assertIn("file.png", score_res.plain_notes)
+
 if __name__ == "__main__":
     unittest.main()

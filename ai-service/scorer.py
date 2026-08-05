@@ -328,6 +328,25 @@ def compute_score(
     )
 
 
+def sanitize_error_message(msg: str) -> str:
+    if not msg:
+        return msg
+    import re
+    import os
+    # Regex to match Windows absolute paths (e.g. C:\Users\...\file.mp4)
+    # and Unix absolute/relative paths with folders (e.g. /tmp/file.mp4)
+    win_path_rx = r'[a-zA-Z]:\\[^\s:|]+(?:\\[^\s:|]+)*'
+    unix_path_rx = r'/[^\s:|]+(?:/[^\s:|]+)*'
+    
+    def replace_path(match):
+        path_str = match.group(0)
+        return os.path.basename(path_str)
+        
+    sanitized = re.sub(win_path_rx, replace_path, msg)
+    sanitized = re.sub(unix_path_rx, replace_path, sanitized)
+    return sanitized
+
+
 def _build_plain_notes(
     score: int,
     risk_level: str,
@@ -356,9 +375,11 @@ def _build_plain_notes(
         )
 
     if gemini.error:
-        parts.append(f" Note: AI analysis was inconclusive ({gemini.error}).")
+        sanitized_err = sanitize_error_message(gemini.error)
+        parts.append(f" Note: AI analysis was inconclusive ({sanitized_err}).")
 
     if exif.error:
-        parts.append(f" Note: Metadata extraction encountered an issue ({exif.error}).")
+        sanitized_err = sanitize_error_message(exif.error)
+        parts.append(f" Note: Metadata extraction encountered an issue ({sanitized_err}).")
 
     return " ".join(parts).strip()
