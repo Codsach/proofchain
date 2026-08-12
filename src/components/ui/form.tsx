@@ -14,11 +14,17 @@ import { cn } from "@/lib/utils"
 
 export const Form = FormProvider
 
+const FormFieldContext = React.createContext<{ name: string } | null>(null)
+
 export function FormField<
   TFieldValues extends FieldValues,
   TName extends FieldPath<TFieldValues>
 >(props: ControllerProps<TFieldValues, TName>) {
-  return <Controller {...props} />
+  return (
+    <FormFieldContext.Provider value={{ name: props.name }}>
+      <Controller {...props} />
+    </FormFieldContext.Provider>
+  )
 }
 
 export const FormItem = React.forwardRef<
@@ -53,9 +59,14 @@ export const FormMessage = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
-  const { formState } = useFormContext()
-  const error = Object.values(formState.errors)[0] as any
+  const { getFieldState, formState } = useFormContext()
+  const fieldContext = React.useContext(FormFieldContext)
 
+  if (!fieldContext) {
+    return null
+  }
+
+  const { error } = getFieldState(fieldContext.name, formState)
   const body = error ? String(error.message) : children
 
   if (!body) {

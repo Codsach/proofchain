@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
-import Case from "@/lib/models/Case";
+import Case, { CaseStatus } from "@/lib/models/Case";
 import AiReport from "@/lib/models/AiReport";
 import { EvidenceModel } from "@/lib/models/Evidence";
 import { logAction } from "@/lib/audit";
@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Case not found" }, { status: 404 });
     }
 
-    // 2. Add report ID to caseDoc.aiReportIds if provided
-    if (aiReportMongoId) {
+    // 2. Add report ID to caseDoc.aiReportIds if provided and valid
+    if (aiReportMongoId && Types.ObjectId.isValid(aiReportMongoId)) {
       const reportObjId = new Types.ObjectId(aiReportMongoId);
       if (!caseDoc.aiReportIds.some((id) => id.toString() === reportObjId.toString())) {
         caseDoc.aiReportIds.push(reportObjId);
@@ -46,13 +46,13 @@ export async function POST(req: NextRequest) {
     // 3. Retrieve all reports for this case to compute overall values
     const reports = await AiReport.find({ caseId }).lean();
 
-    let overallScore = null;
+    let overallScore: number | null = null;
     let overallRisk: "low" | "medium" | "high" | null = null;
 
     if (reports.length > 0) {
       const scores = reports
         .map((r) => r.tamperScore)
-        .filter((s) => s !== null && s !== undefined);
+        .filter((s): s is number => s !== null && s !== undefined);
       if (scores.length > 0) {
         overallScore = Math.max(...scores);
         if (overallScore <= 30) overallRisk = "low";
@@ -62,17 +62,20 @@ export async function POST(req: NextRequest) {
     }
 
     // 4. Determine status
-    // If reports count matches caseDoc.files.length, all files are done.
+    // If unique analyzed file count matches caseDoc.files.length, all files are done.
     // If not all done, keep pending_ai_review.
-    let newStatus = caseDoc.status;
-    if (reports.length >= caseDoc.files.length) {
+    const uniqueAnalyzedFileIds = new Set(reports.map((r) => r.fileId));
+    const totalCaseFiles = caseDoc.files?.length ?? 0;
+
+    let newStatus: CaseStatus = caseDoc.status;
+    if (totalCaseFiles === 0 || uniqueAnalyzedFileIds.size >= totalCaseFiles) {
       const hasTimeout = reports.some((r) => r.status === "timeout") || status === "timeout";
       newStatus = hasTimeout ? "ai_timeout" : "pending_review";
     } else {
       newStatus = "pending_ai_review";
     }
 
-    caseDoc.status = newStatus as any;
+    caseDoc.status = newStatus;
     caseDoc.overallTamperScore = overallScore;
     caseDoc.overallRiskLevel = overallRisk;
     await caseDoc.save();
@@ -80,7 +83,9 @@ export async function POST(req: NextRequest) {
     // 5. Update the individual Evidence document status so UI evidence lists
     //    no longer show stale "pending_ai_review" after analysis finishes.
     const evidenceStatus = status === "timeout" ? "ai_timeout" : "pending_review";
-    await EvidenceModel.findByIdAndUpdate(fileId, { $set: { status: evidenceStatus } });
+    if (Types.ObjectId.isValid(fileId)) {
+      await EvidenceModel.findByIdAndUpdate(fileId, { $set: { status: evidenceStatus } });
+    }
 
     await logAction({
       actorId: null,

@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import QRCode from "qrcode";
-import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { 
   ShieldCheck, 
   ArrowLeft, 
@@ -61,12 +61,18 @@ export default function PublicVerifyPage() {
   const [searchId, setSearchId] = useState("");
 
   useEffect(() => {
-    const load = async () => {
-      setIsLoading(true);
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+    let isMounted = true;
+
+    const load = async (showLoadingState = true) => {
+      if (showLoadingState) {
+        setIsLoading(true);
+      }
       setError(null);
       try {
         const res = await fetch(`/api/verify/${caseId}`);
         const json = await res.json();
+        if (!isMounted) return;
         if (!res.ok) throw new Error(json.error || "Verification failed");
         setData(json);
 
@@ -78,13 +84,35 @@ export default function PublicVerifyPage() {
           color: { dark: "#1E293B", light: "#FFFFFF" },
         });
         setQrUrl(qr);
+
+        // If successfully synced, clear interval
+        if (!json.message && intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
       } catch (err: unknown) {
+        if (!isMounted) return;
         setError(err instanceof Error ? err.message : "Verification failed");
       } finally {
-        setIsLoading(false);
+        if (isMounted && showLoadingState) {
+          setIsLoading(false);
+        }
       }
     };
-    load();
+
+    load(true);
+
+    // Poll every 5 seconds to automatically resolve verification once synced
+    intervalId = setInterval(() => {
+      load(false);
+    }, 5000);
+
+    return () => {
+      isMounted = false;
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
   }, [caseId]);
 
   const handleShare = () => {
@@ -201,50 +229,7 @@ export default function PublicVerifyPage() {
     );
   }
 
-  const timelineNodes: TimelineNode[] = [];
-  if (data) {
-    // 1. Initial Upload event
-    timelineNodes.push({
-      id: "upload-" + data.caseId,
-      type: "upload",
-      title: "Evidence Uploaded & Sealed",
-      subtitle: `Action taken by ${data.uploaderRole || "investigator"}`,
-      description: `Cryptographic fingerprint registered on-chain: ${data.onChainHash?.slice(0, 16) || "Pending sync"}...`,
-      timestamp: data.onChainTimestamp,
-      txHash: data.onChainTxHash,
-      isActive: (data.transferLog?.length ?? 0) === 0 && !data.verdictIssued,
-    });
 
-    // 2. Transfer events
-    (data.transferLog ?? []).forEach((t, index, transferLog) => {
-      const isLastTransfer = index === transferLog.length - 1;
-      timelineNodes.push({
-        id: t.transferHash,
-        type: "transfer",
-        title: "Custody Hand-off",
-        subtitle: `${t.fromRole || "analyst"} ➔ ${t.toRole || "analyst"}`,
-        description: `Cryptographic transfer registered on the ledger under transfer hash: ${t.transferHash.slice(0, 16)}...`,
-        timestamp: t.transferredAt,
-        txHash: t.txHash || t.transferHash,
-        isActive: isLastTransfer && !data.verdictIssued,
-      });
-    });
-
-    // 3. Verdict event
-    if (data.verdictIssued) {
-      timelineNodes.push({
-        id: "verdict-" + data.caseId,
-        type: "verdict",
-        title: `Forensic Verdict Issued`,
-        subtitle: `Action taken by forensic analyst`,
-        description: `Cryptographic verification status locked on-chain. Verdict: Verified`,
-        timestamp: data.verdictAt!,
-        txHash: data.verdictTxHash || data.verdictHash,
-        verdictType: "verified",
-        isActive: true,
-      });
-    }
-  }
 
   return (
     <div className="min-h-screen bg-[var(--dash-bg)] text-[var(--dash-text)] sentinel-theme-v2 flex flex-col justify-between relative overflow-hidden">
@@ -285,197 +270,210 @@ export default function PublicVerifyPage() {
           <div className="flex items-center gap-4">
             {qrUrl && (
               <div className="bg-white p-1.5 rounded-xl border border-[var(--dash-border)] shadow-lg">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={qrUrl} alt="Verification QR Code" className="w-16 h-16 rounded-lg" />
               </div>
             )}
           </div>
         </div>
 
-        {/* Big Alert Banner */}
+        {/* Big Alert Banner / Sync Pending Status OR Verified Status & Metadata */}
         {data.message ? (
-          <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 flex items-start gap-4 animate-fade-in">
-            <AlertTriangle className="text-amber-500 size-5 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-bold text-amber-700">Blockchain Sync Pending</p>
-              <p className="text-xs text-[var(--dash-muted)] leading-relaxed">{data.message}</p>
+          <div className="bg-[var(--dash-card)] border border-amber-500/20 bg-amber-500/[0.02] rounded-3xl p-8 shadow-2xl space-y-6 text-center animate-fade-in relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
+            
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="relative flex items-center justify-center size-14 rounded-full border border-amber-500/20 bg-amber-500/5">
+                <Loader2 className="animate-spin text-amber-500 size-6 absolute" />
+                <ShieldCheck className="text-amber-500/40 size-5" />
+              </div>
+              
+              <div className="space-y-2 max-w-md mx-auto">
+                <h2 className="text-lg font-bold text-[var(--dash-text)]">Ledger Anchoring in Progress</h2>
+                <p className="text-xs text-[var(--dash-muted)] leading-relaxed">
+                  This case has been registered on ProofChain and is currently queueing to anchor its cryptographic custody seal to the Polygon Amoy blockchain.
+                </p>
+                <div className="bg-[var(--dash-bg)] rounded-xl p-3 border border-[var(--dash-border)] font-mono text-[10px] text-[var(--dash-muted)] select-all w-fit mx-auto mt-2">
+                  Status: Pending Block Confirmation
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t border-[var(--dash-border)] pt-5 max-w-sm mx-auto">
+              <p className="text-[10px] text-[var(--dash-muted)] leading-relaxed">
+                Verification checks, custody seals, and official certificates will become active automatically once the blockchain transaction is finalized on-chain.
+              </p>
             </div>
           </div>
         ) : (
-          <div
-            className={`rounded-2xl border p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl animate-fade-in ${
-              data.hashMatch
-                ? "border-[var(--dash-accent)]/20 bg-[var(--dash-accent)]/[0.03]"
-                : "border-rose-500/20 bg-rose-500/[0.03]"
-            }`}
-          >
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                <div className={`size-2 rounded-full animate-pulse ${data.hashMatch ? "bg-[var(--dash-accent)]" : "bg-rose-500"}`} />
-                <p className={`text-base font-bold uppercase tracking-wide text-sm ${data.hashMatch ? "text-[var(--dash-accent)]" : "text-rose-500"}`}>
-                  {data.hashMatch ? "Integrity Verified" : "Verification Mismatch"}
+          <>
+            <div
+              className={`rounded-2xl border p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xl animate-fade-in ${
+                data.hashMatch
+                  ? "border-[var(--dash-accent)]/20 bg-[var(--dash-accent)]/[0.03]"
+                  : "border-rose-500/20 bg-rose-500/[0.03]"
+              }`}
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className={`size-2 rounded-full animate-pulse ${data.hashMatch ? "bg-[var(--dash-accent)]" : "bg-rose-500"}`} />
+                  <p className={`text-base font-bold uppercase tracking-wide text-sm ${data.hashMatch ? "text-[var(--dash-accent)]" : "text-rose-500"}`}>
+                    {data.hashMatch ? "Integrity Verified" : "Verification Mismatch"}
+                  </p>
+                </div>
+                <p className="text-xs text-[var(--dash-muted)] leading-relaxed max-w-xl">
+                  {data.hashMatch
+                    ? "The cryptographic fingerprint matches the blockchain record perfectly. The evidence remains unchanged since it was sealed."
+                    : "The current hash of the file stored on IPFS does not match the blockchain records. The evidence may have been modified."}
                 </p>
+                {!data.fileAvailable && (
+                  <p className="text-[10px] text-[var(--dash-muted)]/80 italic mt-1">
+                    Note: The file could not be fetched from the public IPFS gateway to compute the live hash check. However, the anchored immutable record remains.
+                  </p>
+                )}
               </div>
-              <p className="text-xs text-[var(--dash-muted)] leading-relaxed max-w-xl">
-                {data.hashMatch
-                  ? "The cryptographic fingerprint matches the blockchain record perfectly. The evidence remains unchanged since it was sealed."
-                  : "The current hash of the file stored on IPFS does not match the blockchain records. The evidence may have been modified."}
-              </p>
-              {!data.fileAvailable && (
-                <p className="text-[10px] text-[var(--dash-muted)]/80 italic mt-1">
-                  Note: The file could not be fetched from the public IPFS gateway to compute the live hash check. However, the anchored immutable record remains.
-                </p>
-              )}
-            </div>
 
-            {/* Quick Actions */}
-            <div className="flex gap-2 shrink-0">
-              <button
-                onClick={handleShare}
-                className={`h-9 px-4 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all flex items-center gap-2 cursor-pointer ${
-                  isCopied
-                    ? "bg-[var(--dash-accent)]/10 border-[var(--dash-accent)]/30 text-[var(--dash-accent)]"
-                    : "bg-[var(--dash-bg)] border-[var(--dash-border)] hover:bg-[var(--dash-hover)] text-[var(--dash-text)]"
-                }`}
-              >
-                {isCopied ? <Check size={14} /> : <Share2 size={14} />}
-                <span>{isCopied ? "Copied" : "Share"}</span>
-              </button>
-
-              {data.verdictIssued && data.hashMatch && (
-                <a
-                  href={`/api/cases/${data.caseId}/certificate`}
-                  download
-                  className="h-9 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--dash-accent)] hover:bg-[var(--dash-accent)]/90 text-white transition-all flex items-center gap-2 cursor-pointer"
+              {/* Quick Actions */}
+              <div className="flex gap-2 shrink-0">
+                <button
+                  onClick={handleShare}
+                  className={`h-9 px-4 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all flex items-center gap-2 cursor-pointer ${
+                    isCopied
+                      ? "bg-[var(--dash-accent)]/10 border-[var(--dash-accent)]/30 text-[var(--dash-accent)]"
+                      : "bg-[var(--dash-bg)] border-[var(--dash-border)] hover:bg-[var(--dash-hover)] text-[var(--dash-text)]"
+                  }`}
                 >
-                  <FileDown size={14} />
-                  <span>Certificate</span>
-                </a>
-              )}
+                  {isCopied ? <Check size={14} /> : <Share2 size={14} />}
+                  <span>{isCopied ? "Copied" : "Share"}</span>
+                </button>
+
+                {data.verdictIssued && data.hashMatch && (
+                  <a
+                    href={`/api/cases/${data.caseId}/certificate`}
+                    download
+                    className="h-9 px-4 rounded-xl text-xs font-bold uppercase tracking-wider bg-[var(--dash-accent)] hover:bg-[var(--dash-accent)]/90 text-white transition-all flex items-center gap-2 cursor-pointer"
+                  >
+                    <FileDown size={14} />
+                    <span>Certificate</span>
+                  </a>
+                )}
+              </div>
             </div>
-          </div>
-        )}
 
-        {/* Ledger Details Card */}
-        <div className="rounded-3xl border border-[var(--dash-border)] bg-[var(--dash-card)] p-6 shadow-xl space-y-4">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="text-[var(--dash-accent)] size-4" />
-            <h2 className="text-xs font-bold text-[var(--dash-text)] uppercase tracking-[0.25em]">On-Chain Metadata</h2>
-          </div>
+            {/* Ledger Details Card */}
+            <div className="rounded-3xl border border-[var(--dash-border)] bg-[var(--dash-card)] p-6 shadow-xl space-y-4">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="text-[var(--dash-accent)] size-4" />
+                <h2 className="text-xs font-bold text-[var(--dash-text)] uppercase tracking-[0.25em]">On-Chain Metadata</h2>
+              </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <tbody className="divide-y divide-[var(--dash-border)] font-medium">
-                
-                {/* Submitted At */}
-                <tr>
-                  <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Submitted At</td>
-                  <td className="py-3.5 text-[var(--dash-text)]">
-                    {data.onChainTimestamp ? new Date(data.onChainTimestamp).toLocaleString() : "Pending sync"}
-                  </td>
-                </tr>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <tbody className="divide-y divide-[var(--dash-border)] font-medium">
+                    
+                    {/* Submitted At */}
+                    <tr>
+                      <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Submitted At</td>
+                      <td className="py-3.5 text-[var(--dash-text)]">
+                        {data.onChainTimestamp ? new Date(data.onChainTimestamp).toLocaleString() : "Pending sync"}
+                      </td>
+                    </tr>
 
-                {/* On Chain Hash */}
-                <tr>
-                  <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">On-Chain Hash</td>
-                  <td className="py-3.5 font-mono text-[var(--dash-text)] break-all select-all flex items-center gap-2">
-                    <span className="text-[var(--dash-text)]">{data.onChainHash}</span>
-                    {data.onChainTxHash && (
-                      <a
-                        href={`https://amoy.polygonscan.com/tx/${data.onChainTxHash}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors"
-                        title="View anchoring transaction on Polygonscan"
-                      >
-                        <ExternalLink size={12} />
-                      </a>
-                    )}
-                  </td>
-                </tr>
+                    {/* On Chain Hash */}
+                    <tr>
+                      <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">On-Chain Hash</td>
+                      <td className="py-3.5 font-mono text-[var(--dash-text)] break-all select-all flex items-center gap-2">
+                        <span className="text-[var(--dash-text)]">{data.onChainHash}</span>
+                        {data.onChainTxHash && (
+                          <a
+                            href={`https://amoy.polygonscan.com/tx/${data.onChainTxHash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors"
+                            title="View anchoring transaction on Polygonscan"
+                          >
+                            <ExternalLink size={12} />
+                          </a>
+                        )}
+                      </td>
+                    </tr>
 
-                {/* IPFS CID */}
-                <tr>
-                  <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Decentralized IPFS CID</td>
-                  <td className="py-3.5 font-mono break-all text-[var(--dash-text)] flex items-center gap-2">
-                    <span className="text-[var(--dash-text)]">{data.ipfsCid}</span>
-                    <a
-                      href={`https://${data.ipfsCid}.ipfs.w3s.link/`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors"
-                      title="Open file from IPFS Gateway"
-                    >
-                      <ExternalLink size={12} />
-                    </a>
-                  </td>
-                </tr>
-
-                {/* Current File Hash */}
-                <tr>
-                  <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Live Computed Hash</td>
-                  <td className="py-3.5 font-mono break-all text-[var(--dash-muted)]">
-                    {data.currentFileHash ?? "Fetch failed — unavailable"}
-                  </td>
-                </tr>
-
-                {/* Transferred Count */}
-                <tr>
-                  <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Hand-off Count</td>
-                  <td className="py-3.5 text-[var(--dash-text)]">{data.transferCount} custody transfers recorded</td>
-                </tr>
-
-                {/* Verdict Info */}
-                {data.verdictIssued && (
-                  <tr>
-                    <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">On-Chain Verdict</td>
-                    <td className="py-3.5 font-mono break-all text-[var(--dash-text)] flex items-center gap-2">
-                      <span className="text-[var(--dash-text)]">VERIFIED — Sealed {data.verdictAt ? new Date(data.verdictAt).toLocaleString() : ""}</span>
-                      {data.verdictTxHash && (
+                    {/* IPFS CID */}
+                    <tr>
+                      <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Decentralized IPFS CID</td>
+                      <td className="py-3.5 font-mono break-all text-[var(--dash-text)] flex items-center gap-2">
+                        <span className="text-[var(--dash-text)]">{data.ipfsCid}</span>
                         <a
-                          href={`https://amoy.polygonscan.com/tx/${data.verdictTxHash}`}
+                          href={getIpfsGatewayUrl(data.ipfsCid)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors"
-                          title="View verdict transaction on Polygonscan"
+                          title="Open file from IPFS Gateway"
                         >
                           <ExternalLink size={12} />
                         </a>
-                      )}
-                    </td>
-                  </tr>
-                )}
+                      </td>
+                    </tr>
 
-              </tbody>
-            </table>
-          </div>
-        </div>
+                    {/* Current File Hash */}
+                    <tr>
+                      <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">Live Computed Hash</td>
+                      <td className="py-3.5 font-mono break-all text-[var(--dash-muted)]">
+                        {data.currentFileHash ?? "Fetch failed — unavailable"}
+                      </td>
+                    </tr>
 
-        {/* Timeline */}
-        <CustodyTimeline nodes={timelineNodes} isPublic={true} />
+                    {/* Verdict Info */}
+                    {data.verdictIssued && (
+                      <tr>
+                        <td className="py-3.5 text-[var(--dash-muted)]/80 uppercase tracking-widest text-[9px] w-40 shrink-0">On-Chain Verdict</td>
+                        <td className="py-3.5 font-mono break-all text-[var(--dash-text)] flex items-center gap-2">
+                          <span className="text-[var(--dash-text)]">VERIFIED — Sealed {data.verdictAt ? new Date(data.verdictAt).toLocaleString() : ""}</span>
+                          {data.verdictTxHash && (
+                            <a
+                              href={`https://amoy.polygonscan.com/tx/${data.verdictTxHash}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-[var(--dash-accent)] hover:text-[var(--dash-accent)]/80 transition-colors"
+                              title="View verdict transaction on Polygonscan"
+                            >
+                              <ExternalLink size={12} />
+                            </a>
+                          )}
+                        </td>
+                      </tr>
+                    )}
 
-        {/* How it Works explainer card */}
-        <div className="border border-[var(--dash-border)] bg-[var(--dash-card)] rounded-2xl overflow-hidden shadow-lg">
-          <button 
-            onClick={() => setExplainerOpen(!explainerOpen)}
-            className="w-full flex items-center justify-between p-5 text-xs font-bold uppercase tracking-wider text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-hover)] transition-all"
-          >
-            <span className="flex items-center gap-2"><HelpCircle size={14} className="text-[var(--dash-accent)]" /> How Verification Works</span>
-            <span>{explainerOpen ? "Hide Details" : "Show Details"}</span>
-          </button>
-          {explainerOpen && (
-            <div className="p-5 border-t border-[var(--dash-border)] text-xs text-[var(--dash-muted)] space-y-3 leading-relaxed">
-              <p>
-                <strong>1. Cryptographic Sealing:</strong> When evidence is uploaded, it is cryptographically hashed (SHA-256) and anchored to the Polygon Blockchain. This creates a permanent, immutable seal of the evidence's exact original state.
-              </p>
-              <p>
-                <strong>2. Decentralized Storage:</strong> The evidence is stored securely on IPFS (InterPlanetary File System), a decentralized content-addressed network. It can never be silently altered because changing even a single pixel in an image changes its IPFS address (CID) and SHA-256 hash completely.
-              </p>
-              <p>
-                <strong>3. On-Demand Audit:</strong> This verification page downloads the file from IPFS in real-time, recomputes its SHA-256 fingerprint, and compares it to the original hash stored immutably on the Polygon blockchain. If they match, it verifies that the file is 100% genuine and unmodified.
-              </p>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          )}
-        </div>
+
+            {/* How it Works explainer card */}
+            <div className="border border-[var(--dash-border)] bg-[var(--dash-card)] rounded-2xl overflow-hidden shadow-lg">
+              <button 
+                onClick={() => setExplainerOpen(!explainerOpen)}
+                className="w-full flex items-center justify-between p-5 text-xs font-bold uppercase tracking-wider text-[var(--dash-muted)] hover:text-[var(--dash-text)] hover:bg-[var(--dash-hover)] transition-all"
+              >
+                <span className="flex items-center gap-2"><HelpCircle size={14} className="text-[var(--dash-accent)]" /> How Verification Works</span>
+                <span>{explainerOpen ? "Hide Details" : "Show Details"}</span>
+              </button>
+              {explainerOpen && (
+                <div className="p-5 border-t border-[var(--dash-border)] text-xs text-[var(--dash-muted)] space-y-3 leading-relaxed">
+                  <p>
+                    <strong>1. Cryptographic Sealing:</strong> When evidence is uploaded, it is cryptographically hashed (SHA-256) and anchored to the Polygon Blockchain. This creates a permanent, immutable seal of the evidence&apos;s exact original state.
+                  </p>
+                  <p>
+                    <strong>2. Decentralized Storage:</strong> The evidence is stored securely on IPFS (InterPlanetary File System), a decentralized content-addressed network. It can never be silently altered because changing even a single pixel in an image changes its IPFS address (CID) and SHA-256 hash completely.
+                  </p>
+                  <p>
+                    <strong>3. On-Demand Audit:</strong> This verification page downloads the file from IPFS in real-time, recomputes its SHA-256 fingerprint, and compares it to the original hash stored immutably on the Polygon blockchain. If they match, it verifies that the file is 100% genuine and unmodified.
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
 
       </main>
 

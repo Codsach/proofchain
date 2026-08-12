@@ -3,29 +3,29 @@ import { TamperGauge } from "./TamperGauge";
 import { ScoreBreakdownChart } from "./ScoreBreakdownChart";
 
 interface ExifData {
-  software: string | null;
-  gps_present: boolean;
-  creation_timestamp: string | null;
-  modification_timestamp: string | null;
-  device: string | null;
-  flags: string[];
+  software?: string | null;
+  gps_present?: boolean;
+  creation_timestamp?: string | null;
+  modification_timestamp?: string | null;
+  device?: string | null;
+  flags?: string[];
 }
 
 interface GeminiResult {
-  manipulation_likelihood: string;
-  findings: string[];
-  confidence: string;
+  manipulation_likelihood?: string;
+  findings?: string[];
+  confidence?: string;
 }
 
 interface AiReport {
   tamperScore: number;
   riskLevel: string;
-  plainNotesSummary: string;
-  exifData: ExifData;
-  geminiResult: GeminiResult;
-  scoreBreakdown: Record<string, { points: number; detail: string }>;
-  analysedAt: string;
-  status: string;
+  plainNotesSummary?: string;
+  exifData?: ExifData | null;
+  geminiResult?: GeminiResult | null;
+  scoreBreakdown?: Record<string, { points: number; detail: string }>;
+  analysedAt?: string;
+  status?: string;
 }
 
 export const SIGNAL_LABELS: Record<string, string> = {
@@ -159,10 +159,10 @@ export function AiReportPanel({ report, isLoading }: Props) {
               Analysed
             </p>
             <p className="text-[10px] font-mono text-emerald-500/60 font-medium">
-              {new Date(report.analysedAt).toLocaleString(undefined, {
+              {report.analysedAt ? new Date(report.analysedAt).toLocaleString(undefined, {
                 hour: '2-digit', minute: '2-digit', second: '2-digit',
                 day: '2-digit', month: 'short'
-              })}
+              }) : "N/A"}
             </p>
           </div>
         </div>
@@ -192,7 +192,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
       )}
 
       {/* EXIF flags */}
-      {report.exifData.flags && report.exifData.flags.length > 0 && (
+      {report.exifData?.flags && report.exifData.flags.length > 0 && (
         <div className="space-y-3">
           <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest ml-1">
             Anomalous Metadata
@@ -225,7 +225,7 @@ export function AiReportPanel({ report, isLoading }: Props) {
       )}
 
       {/* Gemini visual findings */}
-      {report.geminiResult.findings && report.geminiResult.findings.length > 0 && (
+      {report.geminiResult?.findings && report.geminiResult.findings.length > 0 && (
         <div className="space-y-3 pt-2">
           <p className="text-[10px] font-bold text-dash-muted/40 uppercase tracking-widest ml-1 flex justify-between">
             <span>Visual Neural Findings</span>
@@ -251,11 +251,11 @@ export function AiReportPanel({ report, isLoading }: Props) {
           <table className="w-full text-[10px] font-bold uppercase tracking-tight">
             <tbody className="divide-y divide-dash-border">
               {[
-                ["Software", report.exifData.software],
-                ["Device", report.exifData.device],
-                ["Created", report.exifData.creation_timestamp],
-                ["Modified", report.exifData.modification_timestamp],
-                ["EXIF GPS", report.exifData.gps_present ? "Present" : "Not in EXIF"],
+                ["Software", report.exifData?.software],
+                ["Device", report.exifData?.device],
+                ["Created", report.exifData?.creation_timestamp],
+                ["Modified", report.exifData?.modification_timestamp],
+                ["EXIF GPS", report.exifData?.gps_present ? "Present" : "Not in EXIF"],
               ].map(([label, value]) => (
                 <tr key={label as string} className="hover:bg-dash-hover/20 transition-colors">
                   <td className="py-3 px-4 text-dash-muted/60 w-36 shrink-0">{label}</td>

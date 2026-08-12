@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { Share2, FileText } from "lucide-react";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
-import { CommentsPanel } from "@/components/CommentsPanel";
+import { CaseChatWidget } from "@/components/CaseChatWidget";
 
 interface FileRecord {
   fileId: string;
@@ -557,10 +557,9 @@ export default function InvestigatorCaseDetailPage() {
                 </div>
               </motion.div>
 
-              {/* Comments Panel */}
-              <CommentsPanel caseId={caseId} />
             </div>
           </div>
+      <CaseChatWidget caseId={caseId} />
     </div>
   );
 }

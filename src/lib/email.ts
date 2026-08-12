@@ -75,15 +75,23 @@ export function getAppBaseUrl(request?: Request) {
   const configuredBaseUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
 
-  if (configuredBaseUrl) {
+  // If a production base URL is configured (and is not localhost), use it
+  if (configuredBaseUrl && !configuredBaseUrl.includes("localhost")) {
     return configuredBaseUrl.replace(/\/$/, "");
   }
 
+  // Check the incoming request host to determine if it is vercel
   if (request) {
-    return new URL(request.url).origin;
+    const urlObj = new URL(request.url);
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || urlObj.host;
+    
+    if (host && (host.includes("vercel.app") || host.includes("proofchain-web"))) {
+      return "https://proofchain-web.vercel.app";
+    }
   }
 
-  return "http://localhost:3000";
+  // Default to the deployed production domain to ensure all verification scans and email links function correctly on all devices
+  return "https://proofchain-web.vercel.app";
 }
 
 export function buildAppUrl(

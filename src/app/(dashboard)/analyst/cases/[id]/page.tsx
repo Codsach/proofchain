@@ -14,9 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
-import { CommentsPanel } from "@/components/CommentsPanel";
+import { CaseChatWidget } from "@/components/CaseChatWidget";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
-import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { EvidencePreviewDialog } from "@/components/evidence/EvidencePreviewDialog";
+import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
 interface FileRecord {
   fileId: string;
@@ -116,12 +117,50 @@ export default function AnalystCaseReviewPage() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoadingCase, setIsLoadingCase] = useState(true);
   const [isLoadingAi, setIsLoadingAi] = useState(true);
+  const [isScanningAll, setIsScanningAll] = useState(false);
+  const [aiTrigger, setAiTrigger] = useState(0);
+
+  const handleRescanAll = async () => {
+    try {
+      setIsScanningAll(true);
+      const token = await getToken();
+      const res = await fetch(`/api/cases/${caseId}/rescan`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to trigger rescan");
+      }
+
+      toast({
+        title: "AI Scan Queued",
+        description: "AI analysis has been triggered for all files. Please wait.",
+      });
+
+      setIsLoadingAi(true);
+      setAiTrigger((prev) => prev + 1);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Could not trigger AI scan";
+      toast({
+        title: "Scan Failed",
+        description: errMsg,
+        variant: "destructive",
+      });
+    } finally {
+      setIsScanningAll(false);
+    }
+  };
   const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
   const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
   const [verdictOpen, setVerdictOpen] = useState(false);
   const [isSubmittingVerdict, setIsSubmittingVerdict] = useState(false);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
-  const [previewFileId, setPreviewFileId] = useState<string | null>(null);
+  const [previewFile, setPreviewFile] = useState<FileRecord | null>(null);
 
   useEffect(() => {
     getToken().then(setToken);
@@ -171,7 +210,7 @@ export default function AnalystCaseReviewPage() {
       }
     };
     load();
-  }, [caseId, getToken]);
+  }, [caseId, getToken, aiTrigger]);
 
   // Load Verdict
   useEffect(() => {
@@ -438,11 +477,10 @@ export default function AnalystCaseReviewPage() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         type="button"
-                        onClick={() => setPreviewFileId(previewFileId === file.fileId ? null : file.fileId)}
-                        className="text-[10px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-3.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                        onClick={() => setPreviewFile(file)}
+                        className="text-[10px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-3.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
                       >
                         <span>Preview</span>
-                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${previewFileId === file.fileId ? "rotate-180" : ""}`} />
                       </button>
 
                       <motion.a
@@ -470,47 +508,7 @@ export default function AnalystCaseReviewPage() {
                     </p>
                   )}
 
-                  {/* Collapsible Dropdown Preview Container */}
-                  <AnimatePresence>
-                    {previewFileId === file.fileId && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden pt-2"
-                      >
-                        {file.mimeType.startsWith("image/") && (
-                          <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1.5 max-w-xl animate-in fade-in duration-300">
-                            <img
-                              src={getIpfsGatewayUrl(file.ipfsCid)}
-                              alt={file.originalName}
-                              className="w-full h-auto max-h-[350px] object-contain rounded-lg"
-                              loading="lazy"
-                            />
-                          </div>
-                        )}
-                        {file.mimeType.startsWith("video/") && (
-                          <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1.5 max-w-xl animate-in fade-in duration-300">
-                            <video
-                              src={getIpfsGatewayUrl(file.ipfsCid)}
-                              controls
-                              className="w-full h-auto max-h-[350px] rounded-lg"
-                            />
-                          </div>
-                        )}
-                        {file.mimeType === "application/pdf" && (
-                          <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1.5 max-w-xl h-[450px] animate-in fade-in duration-300">
-                            <iframe
-                              src={getIpfsGatewayUrl(file.ipfsCid)}
-                              className="w-full h-full rounded-lg"
-                              title={file.originalName}
-                            />
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+
                 </motion.div>
               ))}
             </div>
@@ -518,9 +516,27 @@ export default function AnalystCaseReviewPage() {
 
           {/* Forensic Scan Reports Accordion */}
           <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Forensic Scan Reports</h2>
-              <div className="h-px flex-1 bg-dash-border" />
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 flex-1">
+                <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Forensic Scan Reports</h2>
+                <div className="h-px flex-1 bg-dash-border" />
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={handleRescanAll}
+                disabled={isScanningAll || isLoadingAi}
+                className="gap-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer py-1 h-7 shrink-0"
+              >
+                {isScanningAll ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Scanning Case...
+                  </>
+                ) : (
+                  "Rescan All Files"
+                )}
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -580,8 +596,17 @@ export default function AnalystCaseReviewPage() {
                           <div className="border-t border-dash-border p-4 bg-dash-input/50">
                             {report ? (
                               <AiReportPanel report={report} isLoading={false} />
-                            ) : (
+                            ) : isLoadingAi ? (
                               <AiReportPanel report={null} isLoading={true} />
+                            ) : (
+                              <div className="py-6 text-center space-y-2">
+                                <p className="text-xs text-dash-muted uppercase tracking-wider font-bold">
+                                  No scan report available
+                                </p>
+                                 <p className="text-xs text-dash-muted/70 leading-relaxed max-w-md mx-auto">
+                                   The AI analysis was not triggered or encountered an error. Click &quot;Rescan All Files&quot; above to scan.
+                                 </p>
+                              </div>
                             )}
                           </div>
                         </motion.div>
@@ -660,8 +685,6 @@ export default function AnalystCaseReviewPage() {
               </div>
             </div>
           </motion.div>
-
-          <CommentsPanel caseId={caseId} />
         </div>
       </div>
 
@@ -670,6 +693,13 @@ export default function AnalystCaseReviewPage() {
         onClose={() => setVerdictOpen(false)}
         onSubmit={handleVerdict}
         isLoading={isSubmittingVerdict}
+      />
+
+      <CaseChatWidget caseId={caseId} />
+      <EvidencePreviewDialog
+        open={previewFile !== null}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
       />
     </div>
   );

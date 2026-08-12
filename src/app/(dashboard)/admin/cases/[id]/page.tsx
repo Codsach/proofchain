@@ -8,13 +8,16 @@ import { useAuth } from "@/components/providers/AuthContext";
 import { AiReportPanel } from "@/components/AiReportPanel";
 import { CaseStatusBadge } from "@/components/CaseStatusBadge";
 import { VerifyHashButton } from "@/components/VerifyHashButton";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import dynamic from "next/dynamic";
 import { CustodyTimeline, TimelineNode } from "@/components/CustodyTimeline";
-import { CommentsPanel } from "@/components/CommentsPanel";
+import { CaseChatWidget } from "@/components/CaseChatWidget";
 import { TamperScoreBadge } from "@/components/TamperScoreBadge";
-import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { getIpfsGatewayUrl } from "@/lib/ipfs-gateway";
+import { EvidencePreviewDialog } from "@/components/evidence/EvidencePreviewDialog";
+import { ShieldAlert, ShieldCheck, HelpCircle, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 
 const EvidenceMap = dynamic(() => import("@/components/evidence/EvidenceMap"), {
   ssr: false,
@@ -133,10 +136,48 @@ export default function AdminCaseDetailPage() {
   const [token, setToken] = useState<string | null>(null);
   const [isLoadingCase, setIsLoadingCase] = useState(true);
   const [isLoadingAi, setIsLoadingAi] = useState(true);
+  const [isScanningAll, setIsScanningAll] = useState(false);
+  const [aiTrigger, setAiTrigger] = useState(0);
+
+  const handleRescanAll = async () => {
+    try {
+      setIsScanningAll(true);
+      const token = await getToken();
+      const res = await fetch(`/api/cases/${caseId}/rescan`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to trigger rescan");
+      }
+
+      toast({
+        title: "AI Scan Queued",
+        description: "AI analysis has been triggered for all files. Please wait.",
+      });
+
+      setIsLoadingAi(true);
+      setAiTrigger((prev) => prev + 1);
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Could not trigger AI scan";
+      toast({
+        title: "Scan Failed",
+        description: errMsg,
+        variant: "destructive",
+      });
+    } finally {
+      setIsScanningAll(false);
+    }
+  };
   const [isLoadingVerdict, setIsLoadingVerdict] = useState(true);
   const [isLoadingTransfers, setIsLoadingTransfers] = useState(true);
   const [expandedFileId, setExpandedFileId] = useState<string | null>(null);
-  const [previewFileId, setPreviewFileId] = useState<string | null>(null);
+  const [previewFile, setPreviewFile] = useState<FileRecord | null>(null);
 
   useEffect(() => {
     getToken().then(setToken);
@@ -195,7 +236,7 @@ export default function AdminCaseDetailPage() {
       }
     };
     load();
-  }, [caseId, getToken, toast]);
+  }, [caseId, getToken, toast, aiTrigger]);
 
   useEffect(() => {
     const load = async () => {
@@ -254,7 +295,7 @@ export default function AdminCaseDetailPage() {
         <div className="rounded-3xl border border-dash-border bg-dash-sidebar p-20 text-center">
           <p className="text-dash-muted text-sm font-medium">Case subject not found in secure storage.</p>
           <Link href="/admin/cases" className="text-dash-accent text-xs font-bold uppercase tracking-widest hover:text-dash-accent mt-4 block transition-colors">
-            â† Return to Archives
+            ← Return to Archives
           </Link>
         </div>
       </div>
@@ -284,7 +325,7 @@ export default function AdminCaseDetailPage() {
         id: t._id,
         type: "transfer",
         title: "Custody Hand-off",
-        subtitle: `${t.fromUserId?.fullName || "Custodian"} âž” ${t.toUserId?.fullName || "Custodian"}`,
+        subtitle: `${t.fromUserId?.fullName || "Custodian"} ➔ ${t.toUserId?.fullName || "Custodian"}`,
         description: t.reason,
         timestamp: t.transferredAt,
         txHash: t.onChainTxHash,
@@ -315,7 +356,7 @@ export default function AdminCaseDetailPage() {
   return (
     <div className="w-full space-y-6 pb-10 overflow-x-hidden">
 
-      {/* â”€â”€ Page Header â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Page Header ──────────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <Link href="/admin/cases" className="text-[10px] font-bold uppercase tracking-widest text-dash-muted hover:text-dash-accent transition-colors flex items-center gap-2">
@@ -346,15 +387,15 @@ export default function AdminCaseDetailPage() {
               download
               className="flex items-center gap-2 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-lg hover:bg-emerald-500/10 transition-colors text-xs font-bold uppercase tracking-wider h-11"
             >
-              â†“ Download Forensic Certificate
+              ↓ Download Forensic Certificate
             </motion.a>
           )}
         </div>
       </motion.div>
 
-      {/* â”€â”€ Row 1: Case Info + Overall Risk â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 1: Case Info + Overall Risk ──────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Case Details â€” 2/3 */}
+        {/* Case Details — 2/3 */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -379,7 +420,7 @@ export default function AdminCaseDetailPage() {
           </div>
         </motion.div>
 
-        {/* Overall Risk Score â€” 1/3 */}
+        {/* Overall Risk Score — 1/3 */}
         <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -454,7 +495,7 @@ export default function AdminCaseDetailPage() {
         </motion.div>
       </div>
 
-      {/* â”€â”€ Row 2: Evidence Files (full-width) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 2: Evidence Files (full-width) ───────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -480,19 +521,18 @@ export default function AdminCaseDetailPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-bold text-dash-text truncate group-hover/file:text-dash-accent transition-colors uppercase tracking-tight">{file.originalName}</p>
-                  <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1">{file.mimeType} Â· {formatFileSize(file.sizeBytes)}</p>
+                  <p className="text-[10px] text-dash-muted font-bold uppercase tracking-widest mt-1">{file.mimeType} · {formatFileSize(file.sizeBytes)}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
                     type="button"
-                    onClick={() => setPreviewFileId(previewFileId === file.fileId ? null : file.fileId)}
-                    className="text-[9px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-2.5 py-1 rounded transition-colors flex items-center gap-1"
+                    onClick={() => setPreviewFile(file)}
+                    className="text-[9px] font-bold uppercase tracking-widest text-dash-text bg-dash-input border border-dash-border hover:bg-dash-hover px-2.5 py-1 rounded transition-colors flex items-center gap-1 cursor-pointer"
                   >
                     <span>Preview</span>
-                    <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${previewFileId === file.fileId ? "rotate-180" : ""}`} />
                   </button>
                   <a
-                    href={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
+                    href={getIpfsGatewayUrl(file.ipfsCid)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="shrink-0 text-[10px] font-bold uppercase tracking-[0.2em] text-dash-accent/60 hover:text-dash-accent transition-colors border border-emerald-500/20 bg-emerald-500/5 px-3 py-1 rounded"
@@ -540,47 +580,7 @@ export default function AdminCaseDetailPage() {
                 </div>
               </div>
 
-              {/* Collapsible Dropdown Preview Container */}
-              <AnimatePresence>
-                {previewFileId === file.fileId && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden pt-2"
-                  >
-                    {file.mimeType.startsWith("image/") && (
-                      <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1 animate-in fade-in duration-300">
-                        <img
-                          src={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
-                          alt={file.originalName}
-                          className="w-full h-auto max-h-[300px] object-contain rounded-lg"
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                    {file.mimeType.startsWith("video/") && (
-                      <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1 animate-in fade-in duration-300">
-                        <video
-                          src={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
-                          controls
-                          className="w-full h-auto max-h-[300px] rounded-lg"
-                        />
-                      </div>
-                    )}
-                    {file.mimeType === "application/pdf" && (
-                      <div className="overflow-hidden rounded-xl border border-dash-border/60 bg-dash-input/30 p-1 h-[400px] animate-in fade-in duration-300">
-                        <iframe
-                          src={`https://${file.ipfsCid}.ipfs.w3s.link/${encodeURIComponent(file.originalName)}`}
-                          className="w-full h-full rounded-lg"
-                          title={file.originalName}
-                        />
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+
             </motion.div>
           ))}
         </div>
@@ -602,126 +602,158 @@ export default function AdminCaseDetailPage() {
         )}
       </motion.div>
 
-      {/* â”€â”€ Row 3: Neural Review (2/3) + Timeline & Comments (1/3) â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-
-        {/* Neural Review â€” 2/3 */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="lg:col-span-2 rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-5 shadow-2xl relative overflow-hidden group"
-        >
-          <div className="flex items-center gap-4">
+      {/* ── Row 3: Neural Review (Full Width) ────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="w-full rounded-2xl border border-dash-border bg-dash-card backdrop-blur-xl p-6 space-y-5 shadow-2xl relative overflow-hidden group"
+      >
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
             <h2 className="text-sm font-bold text-dash-text uppercase tracking-[0.2em]">Neural Review</h2>
             <div className="h-px flex-1 bg-dash-border" />
-            <span className="text-[10px] font-bold text-dash-muted/50 uppercase tracking-widest">{caseData.files.length} File{caseData.files.length !== 1 ? "s" : ""}</span>
           </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <span className="text-[10px] font-bold text-dash-muted/50 uppercase tracking-widest">
+              {caseData.files.length} File{caseData.files.length !== 1 ? "s" : ""}
+            </span>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleRescanAll}
+              disabled={isScanningAll || isLoadingAi}
+              className="gap-2 text-[10px] font-bold uppercase tracking-widest cursor-pointer py-1 h-7"
+            >
+              {isScanningAll ? (
+                <>
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  Scanning Case...
+                </>
+              ) : (
+                "Rescan All Files"
+              )}
+            </Button>
+          </div>
+        </div>
 
-          {/* Accordion of reports per file */}
-          <div className="space-y-3">
-            {caseData.files.map((file) => {
-              const report = aiReports.find((r) => r.fileId === file.fileId);
-              const isOpen = expandedFileId === file.fileId;
-              return (
-                <div
-                  key={file.fileId}
-                  className="rounded-xl border border-dash-border bg-dash-card/50 overflow-hidden transition-all duration-300"
+        {/* Accordion of reports per file */}
+        <div className="space-y-3">
+          {caseData.files.map((file) => {
+            const report = aiReports.find((r) => r.fileId === file.fileId);
+            const isOpen = expandedFileId === file.fileId;
+            return (
+              <div
+                key={file.fileId}
+                className="rounded-xl border border-dash-border bg-dash-card/50 overflow-hidden transition-all duration-300"
+              >
+                {/* Header */}
+                <button
+                  type="button"
+                  onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
+                  className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover transition-colors cursor-pointer focus:outline-none"
                 >
-                  {/* Header */}
-                  <button
-                    type="button"
-                    onClick={() => setExpandedFileId(isOpen ? null : file.fileId)}
-                    className="w-full flex items-center justify-between gap-4 p-4 text-left hover:bg-dash-hover transition-colors cursor-pointer focus:outline-none"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
-                        {file.originalName}
-                      </p>
-                      <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
-                        {file.mimeType}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      {report ? (
-                        <TamperScoreBadge score={report.tamperScore} />
-                      ) : isLoadingAi ? (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
-                          Scanning
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted/70 uppercase tracking-wider">
-                          <span className="w-1.5 h-1.5 rounded-full bg-dash-muted/30" />
-                          Pending
-                        </span>
-                      )}
-                      {isOpen ? (
-                        <ChevronUp className="w-4 h-4 text-dash-muted" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-dash-muted" />
-                      )}
-                    </div>
-                  </button>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-bold text-dash-text truncate uppercase tracking-tight">
+                      {file.originalName}
+                    </p>
+                    <p className="text-[9px] text-dash-muted font-bold uppercase tracking-widest mt-0.5">
+                      {file.mimeType}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {report ? (
+                      <TamperScoreBadge score={report.tamperScore} />
+                    ) : isLoadingAi ? (
+                      <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted animate-pulse uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+                        Scanning
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 text-[10px] text-dash-muted/70 uppercase tracking-wider">
+                        <span className="w-1.5 h-1.5 rounded-full bg-dash-muted/30" />
+                        Pending
+                      </span>
+                    )}
+                    {isOpen ? (
+                      <ChevronUp className="w-4 h-4 text-dash-muted" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-dash-muted" />
+                    )}
+                  </div>
+                </button>
 
-                  {/* Body */}
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <div className="border-t border-dash-border p-5 bg-dash-bg/40 space-y-4">
-                          {/* GPS Capture Record */}
-                          {file.gpsLat !== null && file.gpsLng !== null && (
-                            <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 space-y-2">
-                              <p className="text-[9px] font-bold text-emerald-400/60 uppercase tracking-widest">GPS Capture Record</p>
-                              <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px]">
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Latitude</span>
-                                  <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}Â°</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                  <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Longitude</span>
-                                  <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}Â°</span>
-                                </div>
-                                {file.gpsAccuracy != null && (
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Accuracy</span>
-                                    <span className="font-mono text-emerald-300/90">Â±{Math.round(file.gpsAccuracy)}m</span>
-                                  </div>
-                                )}
+                {/* Body */}
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-t border-dash-border p-5 bg-dash-bg/40 space-y-4">
+                        {/* GPS Capture Record */}
+                        {file.gpsLat !== null && file.gpsLng !== null && (
+                          <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-4 py-3 space-y-2">
+                            <p className="text-[9px] font-bold text-emerald-400/60 uppercase tracking-widest">GPS Capture Record</p>
+                            <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px]">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Latitude</span>
+                                <span className="font-mono text-emerald-300/90">{file.gpsLat.toFixed(6)}°</span>
                               </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Longitude</span>
+                                <span className="font-mono text-emerald-300/90">{file.gpsLng.toFixed(6)}°</span>
+                              </div>
+                              {file.gpsAccuracy != null && (
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-dash-muted/60 font-bold uppercase tracking-wider text-[9px] shrink-0">Accuracy</span>
+                                  <span className="font-mono text-emerald-300/90">±{Math.round(file.gpsAccuracy)}m</span>
+                                </div>
+                              )}
                             </div>
-                          )}
+                          </div>
+                        )}
+                        <div>
                           {report ? (
                             <AiReportPanel report={report} isLoading={false} />
-                          ) : (
+                          ) : isLoadingAi ? (
                             <AiReportPanel report={null} isLoading={true} />
+                          ) : (
+                            <div className="py-6 text-center space-y-2">
+                              <p className="text-xs text-dash-muted uppercase tracking-wider font-bold">
+                                No scan report available
+                              </p>
+                              <p className="text-xs text-dash-muted/70 leading-relaxed max-w-md mx-auto">
+                                The AI analysis was not triggered or encountered an error. Click &quot;Rescan All Files&quot; above to scan.
+                              </p>
+                            </div>
                           )}
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {/* Right column: Timeline + Comments â€” 1/3 */}
-        <div className="flex flex-col gap-6">
-          {!isLoadingTransfers && !isLoadingCase && (
-            <CustodyTimeline nodes={timelineNodes} className="flex-1" />
-          )}
-          <CommentsPanel caseId={caseId} className="flex-1" />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      </motion.div>
 
-      {/* â”€â”€ Row 4: Terminal Verdict (full-width, conditional) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── Row 4: Chain of Custody (Full Width) ─────────────────────────── */}
+      {!isLoadingTransfers && !isLoadingCase && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+        >
+          <CustodyTimeline nodes={timelineNodes} className="w-full" />
+        </motion.div>
+      )}
+
+      {/* ── Row 4: Terminal Verdict (full-width, conditional) ─────────────── */}
       <AnimatePresence>
         {!isLoadingVerdict && verdict && (
           <motion.div
@@ -762,6 +794,12 @@ export default function AdminCaseDetailPage() {
         )}
       </AnimatePresence>
 
+      <CaseChatWidget caseId={caseId} />
+      <EvidencePreviewDialog
+        open={previewFile !== null}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+      />
     </div>
   );
 }
