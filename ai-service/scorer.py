@@ -332,7 +332,6 @@ def sanitize_error_message(msg: str) -> str:
     if not msg:
         return msg
     import re
-    import os
     # Regex to match Windows absolute paths (e.g. C:\Users\...\file.mp4)
     # and Unix absolute/relative paths with folders (e.g. /tmp/file.mp4)
     win_path_rx = r'[a-zA-Z]:\\[^\s:|]+(?:\\[^\s:|]+)*'
@@ -340,7 +339,7 @@ def sanitize_error_message(msg: str) -> str:
     
     def replace_path(match):
         path_str = match.group(0)
-        return os.path.basename(path_str)
+        return re.split(r'[/\\]', path_str)[-1]
         
     sanitized = re.sub(win_path_rx, replace_path, msg)
     sanitized = re.sub(unix_path_rx, replace_path, sanitized)
