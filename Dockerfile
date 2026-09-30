@@ -15,7 +15,14 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    JWT_SECRET="docker_build_dummy_jwt_secret_key_1234567890" \
+    REFRESH_TOKEN_SECRET="docker_build_dummy_refresh_token_secret_key_1234567890" \
+    MONGODB_URI="mongodb://localhost:27017/proofchain_build" \
+    NEXT_PUBLIC_CONTRACT_ADDRESS="0x0000000000000000000000000000000000000000" \
+    POLYGON_RPC_URL="https://rpc-amoy.polygon.technology" \
+    FASTAPI_URL="http://localhost:8000" \
+    INTERNAL_AI_KEY="docker_build_dummy_ai_key"
 
 # Build Next.js app
 RUN npm run build
