@@ -71,6 +71,16 @@ Forensic investigators use AI models (like Gemini) to look for anomalies.
 
 ---
 
+## 🔑 Demo Credentials
+
+For testing and demonstration purposes, use the following pre-configured demo account credentials:
+
+| Role | Email | Password | Full Name | Access Level |
+| :--- | :--- | :--- | :--- | :--- |
+| **Forensic Analyst** | `analyst.demo@proofchain.local` | `Analyst@Demo2026!` | Forensic Analyst (Demo) | Case analysis, evidence review, and verdict reporting |
+
+---
+
 ## 🛠️ Technology Stack
 
 ProofChain is built on modern web technologies:
