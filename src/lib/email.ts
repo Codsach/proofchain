@@ -1,18 +1,30 @@
-import { Resend, type ErrorResponse } from "resend";
+/**
+ * email.ts — Nodemailer (Gmail SMTP) transport
+ *
+ * Replaces the former Resend integration.
+ * Required env vars (add to .env.local):
+ *   GMAIL_USER          – the Gmail address used to send  (e.g. yourapp@gmail.com)
+ *   GMAIL_APP_PASSWORD  – Google App Password (16-char, no spaces)
+ *                         Generate at: https://myaccount.google.com/apppasswords
+ *                         (requires 2-Step Verification to be enabled on the account)
+ *
+ * Optional env vars (keep the same ones used before):
+ *   NEXT_PUBLIC_APP_URL / APP_URL  – canonical origin for email links
+ */
+
+import nodemailer, { type Transporter } from "nodemailer";
 import User from "@/lib/models/User";
 
-const DEFAULT_FROM_ADDRESS = "ProofChain <onboarding@resend.dev>";
-
+// ---------------------------------------------------------------------------
+// Error class (same public API as before so callers need no changes)
+// ---------------------------------------------------------------------------
 export class EmailDeliveryError extends Error {
-  code?: ErrorResponse["name"];
+  code?: string;
   statusCode?: number;
 
   constructor(
     message: string,
-    options?: {
-      code?: ErrorResponse["name"];
-      statusCode?: number;
-    }
+    options?: { code?: string; statusCode?: number }
   ) {
     super(message);
     this.name = "EmailDeliveryError";
@@ -21,6 +33,40 @@ export class EmailDeliveryError extends Error {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Nodemailer transporter (lazy singleton)
+// ---------------------------------------------------------------------------
+let _transporter: Transporter | null = null;
+
+function getTransporter(): Transporter {
+  if (_transporter) return _transporter;
+
+  const user = process.env.GMAIL_USER;
+  const pass = process.env.GMAIL_APP_PASSWORD;
+
+  if (!user || !pass) {
+    throw new EmailDeliveryError(
+      "Gmail SMTP is not configured. Set GMAIL_USER and GMAIL_APP_PASSWORD in .env.local."
+    );
+  }
+
+  _transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: { user, pass },
+  });
+
+  return _transporter;
+}
+
+function getDefaultFrom(): string {
+  const user = process.env.GMAIL_USER ?? "noreply@gmail.com";
+  const name = process.env.EMAIL_FROM_NAME ?? "ProofChain";
+  return `"${name}" <${user}>`;
+}
+
+// ---------------------------------------------------------------------------
+// Core send function (same signature / return semantics as the old Resend one)
+// ---------------------------------------------------------------------------
 type SendEmailParams = {
   to: string | string[];
   subject: string;
@@ -30,67 +76,76 @@ type SendEmailParams = {
   replyTo?: string | string[];
 };
 
-function getResendClient() {
-  const apiKey = process.env.RESEND_API_KEY;
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  text,
+  from,
+  replyTo,
+}: SendEmailParams) {
+  const transporter = getTransporter();
 
-  if (!apiKey) {
-    throw new EmailDeliveryError(
-      "RESEND_API_KEY is not configured. Verification emails cannot be sent."
-    );
+  try {
+    const info = await transporter.sendMail({
+      from: from ?? getDefaultFrom(),
+      to: Array.isArray(to) ? to.join(", ") : to,
+      subject,
+      html,
+      text,
+      replyTo: replyTo
+        ? Array.isArray(replyTo)
+          ? replyTo.join(", ")
+          : replyTo
+        : undefined,
+    });
+
+    return { id: info.messageId };
+  } catch (err: unknown) {
+    const msg =
+      err instanceof Error ? err.message : "Unknown SMTP error";
+
+    // Surface actionable hints for common Gmail SMTP failures
+    let hint = msg;
+    if (msg.includes("Invalid login") || msg.includes("Username and Password not accepted")) {
+      hint =
+        "Gmail rejected the credentials. Make sure GMAIL_APP_PASSWORD is a valid App Password " +
+        "(generated at myaccount.google.com/apppasswords) and that 2FA is enabled on the account.";
+    } else if (msg.includes("5.7.0") || msg.includes("less secure")) {
+      hint =
+        "Gmail blocked the sign-in. Use an App Password instead of your regular Gmail password.";
+    }
+
+    throw new EmailDeliveryError(hint, { statusCode: 502 });
   }
-
-  return new Resend(apiKey);
 }
 
-function getDefaultFromAddress() {
-  const configuredFrom =
-    process.env.RESEND_FROM ?? process.env.RESEND_FROM_EMAIL;
-
-  if (!configuredFrom) {
-    return DEFAULT_FROM_ADDRESS;
-  }
-
-  if (configuredFrom.includes("<")) {
-    return configuredFrom;
-  }
-
-  const fromName = process.env.RESEND_FROM_NAME ?? "ProofChain";
-  return `${fromName} <${configuredFrom}>`;
-}
-
-function getEmailErrorMessage(error: ErrorResponse) {
-  switch (error.name) {
-    case "invalid_from_address":
-      return "Email delivery is not configured correctly. Set RESEND_FROM to a verified sender or use ProofChain <onboarding@resend.dev> while testing.";
-    case "missing_api_key":
-    case "invalid_api_key":
-    case "restricted_api_key":
-      return "Email delivery is not configured correctly. Check RESEND_API_KEY.";
-    default:
-      return error.message;
-  }
-}
-
+// ---------------------------------------------------------------------------
+// URL helpers (unchanged from old implementation)
+// ---------------------------------------------------------------------------
 export function getAppBaseUrl(request?: Request) {
   const configuredBaseUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
 
-  // If a production base URL is configured (and is not localhost), use it
   if (configuredBaseUrl && !configuredBaseUrl.includes("localhost")) {
     return configuredBaseUrl.replace(/\/$/, "");
   }
 
-  // Check the incoming request host to determine if it is vercel
   if (request) {
     const urlObj = new URL(request.url);
-    const host = request.headers.get("x-forwarded-host") || request.headers.get("host") || urlObj.host;
-    
-    if (host && (host.includes("vercel.app") || host.includes("proofchain-web"))) {
+    const host =
+      request.headers.get("x-forwarded-host") ||
+      request.headers.get("host") ||
+      urlObj.host;
+
+    if (
+      host &&
+      (host.includes("vercel.app") || host.includes("proofchain-web"))
+    ) {
       return "https://proofchain-web.vercel.app";
     }
   }
 
-  // Default to the deployed production domain to ensure all verification scans and email links function correctly on all devices
   return "https://proofchain-web.vercel.app";
 }
 
@@ -112,40 +167,9 @@ export function buildAppUrl(
   return url.toString();
 }
 
-export async function sendEmail({
-  to,
-  subject,
-  html,
-  text,
-  from,
-  replyTo,
-}: SendEmailParams) {
-  const resend = getResendClient();
-  const { data, error } = await resend.emails.send({
-    from: from ?? getDefaultFromAddress(),
-    to,
-    subject,
-    html,
-    text,
-    replyTo,
-  });
-
-  if (error) {
-    throw new EmailDeliveryError(getEmailErrorMessage(error), {
-      code: error.name,
-      statusCode: error.statusCode ?? undefined,
-    });
-  }
-
-  if (!data) {
-    throw new EmailDeliveryError(
-      "Email provider did not return a delivery id for this message."
-    );
-  }
-
-  return data;
-}
-
+// ---------------------------------------------------------------------------
+// Domain-specific email helpers (same signatures as before)
+// ---------------------------------------------------------------------------
 export async function notifyInvestigator(
   investigatorId: string,
   caseId: string,
@@ -153,7 +177,9 @@ export async function notifyInvestigator(
   verdict: string,
   reason: string
 ) {
-  const investigator = await User.findById(investigatorId).select("email fullName");
+  const investigator = await User.findById(investigatorId).select(
+    "email fullName"
+  );
   if (!investigator) return;
 
   const appUrl = getAppBaseUrl();
@@ -201,8 +227,12 @@ export async function notifyAnalyst(
   const caseCount = caseIds.length;
   const isMultiple = caseCount > 1;
 
-  const titleText = isMultiple ? `You have been assigned ${caseCount} new cases` : `A new case has been assigned to you`;
-  const subjectText = isMultiple ? `New Assignment: ${caseCount} Cases` : `New Case Assignment: ${caseIds[0].substring(0, 8)}`;
+  const titleText = isMultiple
+    ? `You have been assigned ${caseCount} new cases`
+    : `A new case has been assigned to you`;
+  const subjectText = isMultiple
+    ? `New Assignment: ${caseCount} Cases`
+    : `New Case Assignment: ${caseIds[0].substring(0, 8)}`;
 
   await sendEmail({
     to: analyst.email,
@@ -214,11 +244,10 @@ export async function notifyAnalyst(
         <p>${titleText}.</p>
         <div style="background:#1C1C28;border-radius:6px;padding:16px;margin:16px 0;">
           <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Action Type</p>
-          <p style="margin:0 0 16px;font-weight:bold;text-transform:capitalize;">${actionType.replace('_', ' ')}</p>
-          
-          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Case ${isMultiple ? 'IDs' : 'ID'}</p>
+          <p style="margin:0 0 16px;font-weight:bold;text-transform:capitalize;">${actionType.replace("_", " ")}</p>
+          <p style="margin:0 0 8px;font-size:12px;color:#8888AA;">Case ${isMultiple ? "IDs" : "ID"}</p>
           <ul style="margin:0;padding-left:16px;color:#00C9A7;font-family:monospace;">
-            ${caseIds.map(id => `<li>${id.substring(0, 16)}...</li>`).join('')}
+            ${caseIds.map((id) => `<li>${id.substring(0, 16)}...</li>`).join("")}
           </ul>
         </div>
         <a href="${appUrl}/analyst"
@@ -262,7 +291,11 @@ export async function notifyPasswordChange(email: string, fullName: string) {
   });
 }
 
-export async function sendPasswordResetEmail(email: string, fullName: string, resetUrl: string) {
+export async function sendPasswordResetEmail(
+  email: string,
+  fullName: string,
+  resetUrl: string
+) {
   await sendEmail({
     to: email,
     subject: "Reset your ProofChain password",
